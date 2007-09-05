@@ -1,0 +1,5 @@
+h1. Someday vanilla will have examples.
+
+* How to build an app
+* How to make a simple non-document based app
+* How to make a document based app

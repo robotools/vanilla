@@ -1,0 +1,9 @@
+h1. This is the documentation section.
+
+This would have info on things such as the coordinate system, callbacks, image types, etc.
+
+Working with Images
+
+Various Vanilla controls allow for the display of images. 
+
+Images may be saved in a multitude of file types: EPS, PDF, PNG, TIFF, PICT and many more. 

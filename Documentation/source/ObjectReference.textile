@@ -1,0 +1,7 @@
+h1. This is the object reference section.
+
+This should have a nicely formatted list of all objects arranged by the type of object.
+
+Perhaps this can be built programmatically built by scanning the classes for doc and subclassing info...
+
+All of the pages in this section *are programmatically generated!*

@@ -1,0 +1,3 @@
+h1. Where to download vanilla.
+
+This should point to all versions and the public repository. Remind Tal to talk to his webhost about setting up a public subversion repository.

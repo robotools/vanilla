@@ -1,0 +1,200 @@
+Bugs:
+- RadioGroup has cell sizing problems. The cell size is the same as posSize[2]
+  and this causes problems when a negative value is used for the width. It would be
+  possible to get around this by getting the width of the NSMatrix from .frame()
+  but since the cell sizing occurs during RadioGroup.__init__, this won't work.
+  During __init__, the matrix has not been assigned to a superview, and it is
+  during superview assignment that the matrix is sized, soooo the matrix has a width
+  of 0 during __init__ which doesn't help out. One possible solution is to set
+  matrix.autosizesCells, but that resizes both the width and height of the cells
+  which really sucks in vertical radio groups. The other option is to subclass
+  NSMatrix and override viewDidMoveToSuperview so that the cell sizing happens
+  once the matrix joins a superview and, therefore, has a width. I think this is
+  the way to go, but I don't know how a subclass could work with the 
+  nsSubclasses.getNSSubClass function.
+
+Needed Features:
+- More button styles? TexturedSquareButton, RoundedButton, RoundedImageButton, etc.
+- Image (NSImageView)
+- SegmentedControl
+
+Ideas:
+- All objects should either have a _view attr or a _getView() method, that
+  gives us access to the underlying NSView we're wrapping. This may replace
+  nsObject. (They have a _getContentView method. Not good enough?)
+  (Not really; all our widgets represent an nsView, yet not all our nsObjects
+  are views.)
+- Allow for non vanilla NS objects to be assigned to a window. This would
+  be very useful in cases such as custom drawing boards.
+  This is actually very easy to implement. To do it, all we need to do is
+  test for instances of NSView in the _setattr and _delattr functions in
+  vanillaBase. I haven't run into a need for this functionality, though. 
+- ImageButton should support more features such as alt images and on/off behavior.
+
+Rejected Ideas:
+- use floats to convey that an object should be positioned relative to its
+  superview. The only problem is that objects would become fixed after initial
+  positioning. This may not be a huge problem...
+- use properties for setting/getting posSize in window and objects.
+  (I'm not sure if we should do this. Everything else is handled via methods
+  x.getSelection(), x.setItems(...), etc. Why should posSize be different?)
+- how about Window subclasses: ModalDialog
+
+Documentation Needs:
+- List of standard sizes for all controls in all sizes. (Done.)
+- The generated doc is getting to be very long. Once the module has been
+  split up into separate files, the doc generator should be reworked. (Done.)
+- Establish some type of syntax for highlighting portions of the doc
+  with bold, italic, etc? (Done.)
+- Make doc strings follow PEP 257. (Done. Except for the line length.
+  I don't work on Emacs v1.0,)
+
+Done:
+- RadioGroup
+- SquareButton
+- Sheet
+- ProgressSpinner
+- need to have a window delegate. Maybe vanilla. Window should be an NSObject
+  subclass, so _it_ can be the delegate
+- need to release cyclic references when a window closes
+- Window's _window should be retained after all, and released on close
+  (need to carefully check how/if that works with sheets
+- Drawer
+- Group
+- ColorWell
+- TextEditor needs lots of methods for managing the selection, etc.
+- FloatingWindow
+- TextBox needs an alignment argument "left", "right", "center"
+- we have too many rect representations:
+  - posSize: (l, t, w, h), negative values meaning relative to parent frame,
+      coords go from top to bottom
+  - frame: a Cocoa frame ((x, y), (w, h)), coords go from bottom to top
+  - bounds: (l, t, r, b), as in getBounds() and setBounds()
+  Maybe we can get rid of the last one? Hm, getPosSize() returns a posSize
+  that no longer contains negative values. It's all pretty confusing.
+  (I agree. Let's get rid of bounds. As for returning the negative values,
+  we could keep the self._posSize that is set during __init__ after
+  self._setFrame. That would make it trivial for us to return the exact values
+  set for the object, not values derived from the NS objects's frame.)
+- ImageButton
+- ScrollView (What would be a use case for this?) (Anything that needs to scroll?)
+- SplitPanes
+- Multicolumn List. The plan is to have a separate datasource for multicolumn 
+  tables. This datasource will use getattr(item, column.identifier()) to get the
+  proper data.
+- We need to be able to subclass NS objects so that we can implement special behaviors.
+  For example, we need keyDown in List, but that must be implemented by a NSTableView
+  subclass. (Also see note about RadioGroup sizing problem). The temporary solution to
+  this is to copy the attrs from methods from _VanillaMethods in nsSubclasses. This is
+  obviously a bad idea. So far this has been done for: List, EditText
+- new window method: window.addToDocument(nsDocument) this will make it
+  much, much easier to use vanilla windows as document windows.
+- List: If we want cell editing, we need some sort of support for
+  "formatters", so numeric data doesn't turn into strings.
+- The List object needs to be overhauled. Internally it should use Cocoa Bindings.
+  The columnTitles argument should be replaced with a columnInfo argument which
+  will contain info about each column (title, id, width, cell type). It should
+  be possible to put controls into the List. This will require a new line of
+  wrapped objects that represent cell types.
+
+Fixed bugs:
+- CheckBox is sometimes causing crashes when selected.
+  In the test window, click checkbox 2 to see the crash.
+  This was caused by us not handling overwriting an existing widget in
+  __setattr__ correctly. It caused the vanilla wrapper to go away, which
+  caused the callback wrapper to go away. The nsObject (still alive, as it
+  is retained by the superview) has borrowed reference to the callback wrapper,
+  which is now gone, so the pointer is stale. Kaboom.
+- RadioGroup seems to be clipping long text.
+- Box title is gray, not black.
+- Autosizing magic is a little buggy. In the test window, text tab, drag the
+  window so that the height is above the top of the TextEditor. Then drag
+  the height back down. I'm almost certain that this is not a vanilla bug
+  as I can duplicate it in InterfaceBuilder. Furthermore, I can't fix the
+  behavior in InterfaceBuilder. Tal: you're right, this is not a vanilla
+  bug. The workaround is to set the minimum size of the window large enough
+  to prevent this from happening. I'm fairly sure this is just how the Cocoa
+  geometry works.
+- fixed circular ref leak involving Drawer
+- Window and VanillaBaseObject could share __setattr__ logic. The fact that
+  Window is an NSObject and VBO isn't may make this impossible, though.
+- Our buttons have their labels set one pixel higher than IB buttons. It's
+  actually a text size issue All default text sizes need to conform to the
+  Aqua Human Interface Guidelines (chart found in the Fonts section).
+  font = NSFont.systemFontOfSize_(NSFont.systemFontSizeForControlSize_(NSRegularControlSize))
+  control.setFont_(font)
+  This is a fairly widespread problem. It appears that TextBox, EditText,
+  ComboBox, PopUpButton, Button, SquareButton, RadioGroup, Tabs and Box*
+  are all displaying the problem. We can solve this by adding a
+  _setDefaultFont method to VanillaBaseObject, but somehow this doesn't
+  seem right. The main problem is that not everything that subclasses
+  VanillaBaseObject needs to/can have its font size set.
+  (setFont_() is a method on NSControl, so if we use VanillaBaseControl
+  for all NSControl derived views, we should be fine. Whenever we have a
+  sizeStyle keyword arg, we should also use it for TextBox; I think that's
+  better than to allow all font settings, better force the user to stay
+  consistent with Aqua.)
+  Perhaps we need another subclass or two...  Fixing the font problem is
+  very simple. I just want to make sure I'm being smart about how it is
+  done. Hm. *Box uses NSSmallControlSize for the font size
+- support the various sizes for controls? this will be done in the control.__init__.
+  it will be a sizeStyle argument that defaults to "regular". other options will be
+  "mini" and "small". (see comments about font size problem above)
+- Slider needs a tickPosition argument in __init__
+  No. Cocoa handles the default position just fine. Let's force callers
+  to use the setTickMarkPosition method.
+- unbordered ImageButtons look odd when pushed.
+  (2 things needed to happen: the images that are used in the button
+  need to have declared transparency, either by explicitly saving the tif with
+  transparency in PhotoShop or by using a file format that supports transparency
+  more easily; the highlightsBy flag needed to be changed on the nsObject.)
+- EditText is not calling the callback continuously. (Though it is set to)
+  setContinuous does not seem to apply to NSTextField. So, the solution was to
+  subclass NSTextField and use textDidChange to trigger the callback.
+- Many controls have buffers around the image to compensate for shadows, etc.
+  This makes it cumbersome to get controls neatly lined up. For example, adding
+  an EditText with a left position of 10 and a Button with the same left position
+  will cause the controls to appear misaligned. Maybe we could compensate for this
+  by internally offsetting the frame of the controls by preset amounts. In other
+  words, the scripter would pass a coordinate of 10, we would then switch th
+  coordinate to 7 which would make it optically align to 10. Hm.
+- Fix window cascading problem.
+- in the new List, __setitem__ selects the item set in a single column list
+  but not in a multi column list.
+- in the new List, editing of single column lists does not work
+- CheckBox, the text in mini and small are out of alignment with the box
+  (I [Tal] am stumped. I've done everything I can think of. I've even programmatically
+  compared the various attributes set by vanilla to the same attributes set by IB.
+  Nothing stands out.)
+- w.bind("<activate>", callback) and friends.
+- The window bindings defined in the code are <foo> but the doc lists them as foo.
+- ProgressBar
+- need to examine the Tabs API. It should have a "select" method for selecting
+  a particular tab.
+- key bindings for controls. this should be simple. we just need to figure out
+  how the API is going to work.
+
+
+
+W compatibility:
+(This is not a list of *needed* things as many of them are not
+necessary or feasible. this is simply a reference. This also
+exists so that we can anticipate the W could... questions.)
+- Window.__init__ needs tabbable, show, fontsettings
+- TextBox.__init__ needs align, fontsettings, backgroundcolor
+- EditText.__init__ needs inset, fontsettings, tabsettings
+- TextEditor needs wrap, inset, fontsettings, tabsettings
+- HorizontalLine and VerticalLine.__init__ need thickness
+- List.__init__ needs flags, typingcassensitive
+- no BevelButton control
+- no PopupWidget or PopupMenu controls
+- no RadioButton control (RadioGroup is to be used instead)
+- no ScrollBar control (views that require scroll bars get them automatically.
+  and the hackers [like me] that used scroll bars as sliders now have Slider.)
+- no Frame class (not sure what Frame did)
+- no BevelBox class
+- no HorizontalPanes or VerticalPanes classes
+- no ColorPicker class
+- no FontMenu class
+- no PyEditor control
+- no Dialog or ModalDialog classes
