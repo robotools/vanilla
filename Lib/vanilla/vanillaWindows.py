@@ -318,6 +318,7 @@ class Window(NSObject):
         | *imagePath* (optional) | A file path to an image. Defaults to _None_. |
         | *imageNamed* (optional) | The name of an image already loaded as a _NSImage_ by the application. Defaults to _None_. |
         | *imageObject* (optional) | A _NSImage_ object. Defaults to _None_. |
+        | *selectable* (optional) | A boolean representing if the item is selectable or not. The default value is _False_. For more information on selectable toolbar items, refer to Apple's "documentation":http://developer.apple.com/documentation/Cocoa/Conceptual/Toolbars/Tasks/SelectableItems.html|
         | *view* (optional) | A _NSView_ object to be used instead of an image. Defaults to _None_. |
         | *visibleByDefault* (optional) | If the item should be visible by default pass True to this argument. If the item should be added to the toolbar only through the customization palette, use a value of _False_. Defaults to _True_. |
 
@@ -343,6 +344,7 @@ class Window(NSObject):
         self._toolbarDefaultItemIdentifiers = []
         self._toolbarAllowedItemIdentifiers = []
         self._toolbarCallbackWrappers = {}
+        self._toolbarSelectableItemIdentifiers = []
         #
         # create the toolbar items
         for itemData in toolbarItems:
@@ -416,6 +418,9 @@ class Window(NSObject):
             toolbarItem.setAction_("action:")
             self._toolbarCallbackWrappers[itemIdentifier] = target
         #
+        if itemData.get('selectable', False):
+            self._toolbarSelectableItemIdentifiers.append(itemIdentifier)
+        #
         self._toolbarItems[itemIdentifier] = toolbarItem
 
     # Toolbar delegate methods
@@ -428,6 +433,9 @@ class Window(NSObject):
 
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, itemIdentifier, flag):
         return self._toolbarItems[itemIdentifier]
+
+    def toolbarSelectableItemIdentifiers_(self, toolbar):
+        return self._toolbarSelectableItemIdentifiers
 
     ###
 
@@ -464,7 +472,7 @@ class Window(NSObject):
         | *"became key"*    | Called immediately after the window has become the key window. |
         | *"resigned key"*  | Called immediately after the window has lost its key window status. |
 
-        _For more information about main and key windows, refer to the Cocoa "documentation": http://developer.apple.com/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyWindow.html on the subject._
+        _For more information about main and key windows, refer to the Cocoa "documentation":http://developer.apple.com/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyWindow.html on the subject._
 
         *callback* The callback that will be called when the event occurs. It should accept a _sender_ argument which will be the Window that called the callback.
         
