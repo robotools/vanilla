@@ -169,28 +169,28 @@ def _unwrapWindow(window):
     return window
 
 def message(messageText='', informativeText='', alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
-    parentWindow = _unwrapWindow(window)
+    parentWindow = _unwrapWindow(parentWindow)
     alert = BaseMessageDialog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(
         messageText=messageText, informativeText=informativeText, alertStyle=alertStyle, buttonTitlesValues=[("OK", 1)], parentWindow=parentWindow, resultCallback=resultCallback)
     if resultCallback is None:
         return 1
 
 def askYesNoCancel(messageText='', informativeText='', alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
-    parentWindow = _unwrapWindow(window)
+    parentWindow = _unwrapWindow(parentWindow)
     alert = BaseMessageDialog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(
         messageText=messageText, informativeText=informativeText, alertStyle=alertStyle, buttonTitlesValues=[("Cancel", -1), ("Yes", 1), ("No", 0)], parentWindow=parentWindow, resultCallback=resultCallback)
     if resultCallback is None:
         return alert._value
 
 def askYesNo(messageText='', informativeText='', alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
-    parentWindow = _unwrapWindow(window)
+    parentWindow = _unwrapWindow(parentWindow)
     alert = BaseMessageDialog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(
         messageText=messageText, informativeText=informativeText, alertStyle=alertStyle, buttonTitlesValues=[("Yes", 1), ("No", 0)], parentWindow=parentWindow, resultCallback=resultCallback)
     if resultCallback is None:
         return alert._value
 
 def getFile(messageText=None, title=None, directory=None, fileName=None, allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None):
-    parentWindow = _unwrapWindow(window)
+    parentWindow = _unwrapWindow(parentWindow)
     basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
     basePanel.title = title
@@ -205,7 +205,7 @@ def getFile(messageText=None, title=None, directory=None, fileName=None, allowsM
         return basePanel._result
 
 def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelection=False, parentWindow=None, resultCallback=None):
-    parentWindow = _unwrapWindow(window)
+    parentWindow = _unwrapWindow(parentWindow)
     basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
     basePanel.title = title
@@ -218,7 +218,7 @@ def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelect
         return basePanel._result
 
 def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None, allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None):
-    parentWindow = _unwrapWindow(window)
+    parentWindow = _unwrapWindow(parentWindow)
     basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
     basePanel.title = title
@@ -233,7 +233,7 @@ def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None,
         return basePanel._result
 
 def putFile(messageText=None, title=None, directory=None, fileName=None, canCreateDirectories=True, fileTypes=None, parentWindow=None, resultCallback=None, accessoryView=None):
-    parentWindow = _unwrapWindow(window)
+    parentWindow = _unwrapWindow(parentWindow)
     basePanel = PutFilePanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
     basePanel.title = title
