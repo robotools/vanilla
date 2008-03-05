@@ -432,7 +432,7 @@ class Window(NSObject):
         return self._toolbarAllowedItemIdentifiers
 
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, itemIdentifier, flag):
-        return self._toolbarItems[itemIdentifier]
+        return self._toolbarItems.get(itemIdentifier)
 
     def toolbarSelectableItemIdentifiers_(self, toolbar):
         return self._toolbarSelectableItemIdentifiers
