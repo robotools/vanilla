@@ -23,7 +23,7 @@ class SearchBox(VanillaBaseControl):
     SearchBoxDemo()
     """
     
-    def __init__(self, posSize, text="", callback=None, sizeStyle="regular"):
+    def __init__(self, posSize, text="", callback=None, formatter=None, sizeStyle="regular"):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the search box.
 
@@ -36,6 +36,8 @@ class SearchBox(VanillaBaseControl):
         
         *callback* The method to be called when the user presses the search box.
         
+        *formatter* An "NSFormatter": http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html for controlling the display and input of the text entry.
+        
         *sizeStyle* A string representing the desired size style of the search box. The options are:
         
         | "regular" |
@@ -45,6 +47,10 @@ class SearchBox(VanillaBaseControl):
         self._setupView("NSSearchField", posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setStringValue_(text)
+        cell = self._nsObject.cell()
+        cell.setScrollable_(True)
+        if formatter is not None:
+            cell.setFormatter_(formatter)
     
     def getNSSearchField(self):
         """
