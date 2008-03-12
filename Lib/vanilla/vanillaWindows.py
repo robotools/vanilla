@@ -514,6 +514,7 @@ class Window(NSObject):
             if key in self._bindings:
                 for callback in self._bindings[key]:
                     # XXX this return causes only the first binding to be called XXX
+                    # see http://code.typesupply.com/ticket/2
                     return callback(self)
 
     def windowWillClose_(self, notification):
