@@ -513,6 +513,7 @@ class Window(NSObject):
         if hasattr(self, '_bindings'):
             if key in self._bindings:
                 for callback in self._bindings[key]:
+                    # XXX this return causes only the first binding to be called XXX
                     return callback(self)
 
     def windowWillClose_(self, notification):
