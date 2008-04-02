@@ -1,5 +1,5 @@
 import time
-from Foundation import NSKeyValueObservingOptionNew, NSNotFound
+from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
 from nsSubclasses import getNSSubclass
 from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
@@ -160,6 +160,8 @@ class List(VanillaBaseObject):
     """
 
     _tableViewClass = _VanillaTableViewSubclass
+    _arrayControllerClass = NSArrayController
+    _arrayControllerObserverClass = _VanillaArrayControllerObserver
 
     def __init__(self, posSize, items, dataSource=None, columnDescriptions=None,
                 showColumnTitles=True, selectionCallback=None, doubleClickCallback=None,
@@ -228,7 +230,7 @@ class List(VanillaBaseObject):
         self._nsObject.setDocumentView_(self._tableView)
         # set up an observer that will be called by the bindings when a cell is edited
         self._editCallback = editCallback
-        self._editObserver = _VanillaArrayControllerObserver.alloc().init()
+        self._editObserver = self._arrayControllerObserverClass.alloc().init()
         if editCallback is not None:
             self._editObserver._targetMethod = self._edit # circular reference to be killed in _breakCycles
         if items is not None:
@@ -236,9 +238,10 @@ class List(VanillaBaseObject):
             items = [self._wrapItem(item) for item in items]
             items = NSMutableArray.arrayWithArray_(items)
             # set up an array controller
-            self._arrayController = NSArrayController.alloc().initWithContent_(items)
+            self._arrayController = self._arrayControllerClass.alloc().initWithContent_(items)
             self._arrayController.setSelectsInsertedObjects_(False)
             self._arrayController.setAvoidsEmptySelection_(not allowsEmptySelection)
+            self._tableView.setDataSource_(self._arrayController)
         else:
             self._tableView.setDataSource_(dataSource)
             self._arrayController = None
@@ -278,7 +281,7 @@ class List(VanillaBaseObject):
         # the selection method will be called when the items are added to the table view.
         if selectionCallback is not None:
             self._selectionCallback = selectionCallback
-            self._selectionObserver = _VanillaArrayControllerObserver.alloc().init()
+            self._selectionObserver = self._arrayControllerObserverClass.alloc().init()
             self._arrayController.addObserver_forKeyPath_options_context_(self._selectionObserver, 'selectionIndexes', NSKeyValueObservingOptionNew, 0)
             self._selectionObserver._targetMethod = self._selection # circular reference to be killed in _breakCycles
         # set the double click callback the standard way
