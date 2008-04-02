@@ -87,6 +87,12 @@ class VanillaBaseObject(object):
         """
         self._nsObject.setEnabled_(onOff)
 
+    def isVisible(self):
+        """
+        Return a bool indicting if the object is visible or not.
+        """
+        return not self._nsObject.isHidden()
+
     def show(self, onOff):
         """
         Show or hide the object.
