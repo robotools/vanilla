@@ -45,6 +45,9 @@ class SegmentedButton(VanillaBaseControl):
             if image is not None:
                 nsObject.setImage_forSegment_(image, segmentIndex)
 
+    def getNSSegmentedButton(self):
+        return self._nsObject
+
     def enable(self, value):
         for index in xrange(self._nsObject.segmentCount()):
             self._nsObject.setEnabled_forSegment_(value, index)
