@@ -12,7 +12,7 @@ class _VanillaTextEditorDelegate(NSObject):
 
 
 class TextEditor(VanillaBaseObject):
-    
+
     """
     Standard long text entry control.
     
@@ -33,6 +33,8 @@ class TextEditor(VanillaBaseObject):
     TextEditorDemo()
     """
 
+    _textViewClass = NSTextView
+
     def __init__(self, posSize, text="", callback=None, readOnly=False, checksSpelling=False):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the text entry control.
@@ -50,7 +52,7 @@ class TextEditor(VanillaBaseObject):
         self._nsObject.setHasVerticalScroller_(True)
         self._nsObject.setBorderType_(NSBezelBorder)
         self._nsObject.setDrawsBackground_(True)
-        self._textView = getNSSubclass("NSTextView")(self)
+        self._textView = getNSSubclass(self._textViewClass)(self)
         self._textView.setAllowsUndo_(True)
         self._textView.setString_(text)
         self._textView.setContinuousSpellCheckingEnabled_(checksSpelling)
