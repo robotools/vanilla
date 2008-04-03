@@ -192,7 +192,7 @@ class ImageButton(SquareButton):
     
     def __init__(self, posSize,
                 imagePath=None, imageNamed=None, imageObject=None,
-                title=None, bordered=True, imagePosition="top", callback=None,):
+                title=None, bordered=True, imagePosition="top", callback=None, sizeStyle="regular"):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the button.
 
@@ -223,16 +223,16 @@ class ImageButton(SquareButton):
         | "small"   |
         | "mini"    |
         """
-        super(ImageButton,  self).__init__(posSize, title=title, callback=callback)
+        super(ImageButton,  self).__init__(posSize, title=title, callback=callback, sizeStyle=sizeStyle)
+        image = None
         if imagePath is not None:
             image = NSImage.alloc().initWithContentsOfFile_(imagePath)
         elif imageNamed is not None:
             image = NSImage.imageNamed_(imageNamed)
         elif imageObject is not None:
             image = imageObject
-        else:
-            raise ValueError, "no image source defined"
-        self._nsObject.setImage_(image)
+        if image is not None:
+            self._nsObject.setImage_(image)
         self._nsObject.setBordered_(bordered)
         if title is None:
             position = NSImageOnly
@@ -326,3 +326,7 @@ class HelpButton(Button):
             AH.AHGoToPage(helpBookName, self._page, self._anchor)
         elif self._anchor is not None:
             AH.AHLookupAnchor(helpBookName, self._anchor)
+
+
+
+

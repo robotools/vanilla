@@ -58,3 +58,10 @@ try:
     __all__.append('LevelIndicatorListCell')
 except (ImportError, NameError):
     pass
+
+# OS 10.5 objects
+try:
+    from vanillaGradientButton import GradientButton
+    __all__.append('GradientButton')
+except (ImportError, NameError):
+    pass
