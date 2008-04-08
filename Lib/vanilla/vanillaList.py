@@ -1,4 +1,5 @@
 import time
+import objc
 from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
 from nsSubclasses import getNSSubclass
@@ -52,6 +53,22 @@ class _VanillaArrayControllerObserver(NSObject):
 
 class _VanillaArrayController(NSArrayController):
 
+    def tableView_writeRowsWithIndexes_toPasteboard_(self,
+        tableView, indexes, pboard):
+        vanillaWrapper = tableView.vanillaWrapper()
+        if not vanillaWrapper._allowsDrag:
+            return False
+        first = indexes.firstIndex()
+        last = indexes.lastIndex() + 1
+        indexes = xrange(first, last)
+        objects = NSMutableArray.array()
+        for index in indexes:
+            obj = vanillaWrapper[index]
+            objects.addObject_(obj)
+        pboard.declareTypes_owner_([vanillaWrapper._allowedDragType], self)
+        pboard.setPropertyList_forType_(objects.description(), vanillaWrapper._allowedDragType)
+        return True
+
     def tableView_validateDrop_proposedRow_proposedDropOperation_(self,
         tableView, draggingInfo, row, dropOperation):
         vanillaWrapper = tableView.vanillaWrapper()
@@ -62,6 +79,8 @@ class _VanillaArrayController(NSArrayController):
         pboard = draggingInfo.draggingPasteboard()
         if vanillaWrapper._dropDataFormat == "property list":
             data = pboard.propertyListForType_(vanillaWrapper._allowedDropType)
+            if isinstance(data, (NSString, objc.pyobjc_unicode)):
+                data = data.propertyList()
         elif vanillaWrapper._dropDataFormat == "string":
             data = pboard.stringForType_(vanillaWrapper._allowedDropType)
         else:
@@ -78,6 +97,8 @@ class _VanillaArrayController(NSArrayController):
         pboard = draggingInfo.draggingPasteboard()
         if vanillaWrapper._dropDataFormat == "property list":
             data = pboard.propertyListForType_(vanillaWrapper._allowedDropType)
+            if isinstance(data, (NSString, objc.pyobjc_unicode)):
+                data = data.propertyList()
         elif vanillaWrapper._dropDataFormat == "string":
             data = pboard.stringForType_(vanillaWrapper._allowedDropType)
         else:
@@ -206,7 +227,8 @@ class List(VanillaBaseObject):
                 autohidesScrollers=True, rowHeight=17.0,
                 allowedDropType=None, dropOperation=None, dropDataFormat=None,
                 acceptDropFromSelf=False, acceptDropFromOthers=True,
-                allowDropBetweenRows=True, allowDropOnRow=False):
+                allowDropBetweenRows=True, allowDropOnRow=False,
+                allowsDrag=False, allowedDragType=None):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the list.
         
@@ -259,7 +281,7 @@ class List(VanillaBaseObject):
 
         *autohidesScrollers* Boolean representing if scrollbars should automatically be hidden if possible.
         
-        *allowedDropType* A single drop type indicating what drop types the list accepts. For example, NSFilenamesPboardType or "MyCustomPboardType"
+        *allowedDropType* A single drop type indicating what drop types the list accepts. For example, NSFilenamesPboardType or "MyCustomPboardType".
         
         *dropOperation* A "drag operation":http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Protocols/NSDraggingInfo_Protocol/Reference/Reference.html that the list accepts. The default is NSDragOperationCopy.
         
@@ -276,6 +298,10 @@ class List(VanillaBaseObject):
         *allowDropBetweenRows* A boolean indicating if the list accepts drops between rows.
         
         *allowDropOnRow* A boolean indicating if the list accepts drops on rows.
+        
+        *allowsDrag* A boolean indicating if items can br dragged from the list.
+        
+        *allowedDragType* A single drag type indicating what drag types the list creates. For example, NSFilenamesPboardType or "MyCustomPboardType".
         """
         if items is not None and dataSource is not None:
             raise VanillaError("can't pass both items and dataSource arguments")
@@ -371,6 +397,8 @@ class List(VanillaBaseObject):
             self._dropDataFormat = dropDataFormat
             self._allowDropBetweenRows = allowDropBetweenRows
             self._allowDropOnRow = allowDropOnRow
+        self._allowsDrag = allowsDrag
+        self._allowedDragType = allowedDragType
     
     def getNSScrollView(self):
         """
@@ -538,7 +566,6 @@ class List(VanillaBaseObject):
     def _proposeDrop(self, data, row, isProposal):
         if self._dropCallback is not None:
             result = self._dropCallback(self, data, row, isProposal)
-            print result
             if result:
                 return self._dropOperation
             else:
