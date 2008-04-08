@@ -83,6 +83,7 @@ class _VanillaArrayController(NSArrayController):
             return NSDragOperationNone
         if dropOperation == NSTableViewDropOn and not vanillaWrapper._allowDropOnRow:
             return NSDragOperationNone
+        dropOnRow = dropOperation == NSTableViewDropOn
         # get the data
         pboard = draggingInfo.draggingPasteboard()
         if vanillaWrapper._dropDataFormat == "property list":
@@ -94,7 +95,8 @@ class _VanillaArrayController(NSArrayController):
         else:
             data = pboard.dataForType_(vanillaWrapper._allowedDropType)
         # propose the drop
-        return tableView.vanillaWrapper()._proposeDrop(data, row, isProposal=True)
+        dropInformation = dict(data=data, rowIndex=row, dropOnRow=dropOnRow, isProposal=True)
+        return tableView.vanillaWrapper()._proposeDrop(dropInformation)
 
     def tableView_acceptDrop_row_dropOperation_(self,
         tableView, draggingInfo, row, dropOperation):
@@ -110,6 +112,7 @@ class _VanillaArrayController(NSArrayController):
             return NSDragOperationNone
         if dropOperation == NSTableViewDropOn and not vanillaWrapper._allowDropOnRow:
             return NSDragOperationNone
+        dropOnRow = dropOperation == NSTableViewDropOn
         # get the data
         pboard = draggingInfo.draggingPasteboard()
         if vanillaWrapper._dropDataFormat == "property list":
@@ -121,7 +124,8 @@ class _VanillaArrayController(NSArrayController):
         else:
             data = pboard.dataForType_(vanillaWrapper._allowedDropType)
         # propose the drop
-        return tableView.vanillaWrapper()._proposeDrop(data, row, isProposal=False)
+        dropInformation = dict(data=data, rowIndex=row, dropOnRow=dropOnRow, isProposal=False)
+        return tableView.vanillaWrapper()._proposeDrop(dropInformation)
 
 
 class List(VanillaBaseObject):
@@ -277,11 +281,11 @@ class List(VanillaBaseObject):
         
         *editCallback* Callback to be called after an item has been edited.
         
-        *dropCallback* Callback to be called when a drop is proposed and when a drop is to occur. This method should return a boolean representing if the drop is acceptable or not. This method must accept four arguments:
+        *dropCallback* Callback to be called when a drop is proposed and when a drop is to occur. This method should return a boolean representing if the drop is acceptable or not. This method must accept _sender_ and _dropInfo_ arguments. The _dropInfo_ will be a dictionary with the following key value pairs:
         
-        | *sender*     | The list object calling the method. |
-        | *data*       | The data proposed for the drop. This data will be of the type specified by dropDataFormat.
-        | *row*        | The row where the drop is proposed.
+        | *data*       | The data proposed for the drop. This data will be of the type specified by dropDataFormat. |
+        | *rowIndex*   | The row where the drop is proposed. |
+        | *dropOnRow*  | A boolean representing if the row is being dropped on. If this is False, the drop should occur between rows. |
         | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to accept the drop. |
         
         *enableDelete* A boolean representing if items in the list can be deleted via the interface.
@@ -588,9 +592,9 @@ class List(VanillaBaseObject):
         if self._selectionCallback is not None: 
             self._selectionCallback(self)
     
-    def _proposeDrop(self, data, row, isProposal):
+    def _proposeDrop(self, dropInformation):
         if self._dropCallback is not None:
-            result = self._dropCallback(self, data, row, isProposal)
+            result = self._dropCallback(self, dropInformation)
             if result:
                 return self._dropOperation
             else:
