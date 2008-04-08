@@ -18,7 +18,7 @@ else:
 
 
 class _VanillaTableViewSubclass(NSTableView):
-    
+
     def keyDown_(self, event):
         didSomething = self.vanillaWrapper()._keyDown(event)
         if not didSomething:
@@ -48,6 +48,41 @@ class _VanillaArrayControllerObserver(NSObject):
     def observeValueForKeyPath_ofObject_change_context_(self, keyPath, obj, change, context):
         if hasattr(self, '_targetMethod') and self._targetMethod is not None:
             self._targetMethod()
+
+
+class _VanillaArrayController(NSArrayController):
+
+    def tableView_validateDrop_proposedRow_proposedDropOperation_(self,
+        tableView, draggingInfo, row, dropOperation):
+        vanillaWrapper = tableView.vanillaWrapper()
+        if dropOperation == NSTableViewDropAbove and not vanillaWrapper._allowDropBetweenRows:
+            return NSDragOperationNone
+        if dropOperation == NSTableViewDropOn and not vanillaWrapper._allowDropOnRow:
+            return NSDragOperationNone
+        pboard = draggingInfo.draggingPasteboard()
+        if vanillaWrapper._dropDataFormat == "property list":
+            data = pboard.propertyListForType_(vanillaWrapper._allowedDropType)
+        elif vanillaWrapper._dropDataFormat == "string":
+            data = pboard.stringForType_(vanillaWrapper._allowedDropType)
+        else:
+            data = pboard.dataForType_(vanillaWrapper._allowedDropType)
+        return tableView.vanillaWrapper()._proposeDrop(data, row, isProposal=True)
+
+    def tableView_acceptDrop_row_dropOperation_(self,
+        tableView, draggingInfo, row, dropOperation):
+        vanillaWrapper = tableView.vanillaWrapper()
+        if dropOperation == NSTableViewDropAbove and not vanillaWrapper._allowDropBetweenRows:
+            return NSDragOperationNone
+        if dropOperation == NSTableViewDropOn and not vanillaWrapper._allowDropOnRow:
+            return NSDragOperationNone
+        pboard = draggingInfo.draggingPasteboard()
+        if vanillaWrapper._dropDataFormat == "property list":
+            data = pboard.propertyListForType_(vanillaWrapper._allowedDropType)
+        elif vanillaWrapper._dropDataFormat == "string":
+            data = pboard.stringForType_(vanillaWrapper._allowedDropType)
+        else:
+            data = pboard.dataForType_(vanillaWrapper._allowedDropType)
+        return tableView.vanillaWrapper()._proposeDrop(data, row, isProposal=False)
 
 
 class List(VanillaBaseObject):
@@ -160,15 +195,18 @@ class List(VanillaBaseObject):
     """
 
     _tableViewClass = _VanillaTableViewSubclass
-    _arrayControllerClass = NSArrayController
+    _arrayControllerClass = _VanillaArrayController
     _arrayControllerObserverClass = _VanillaArrayControllerObserver
 
-    def __init__(self, posSize, items, dataSource=None, columnDescriptions=None,
-                showColumnTitles=True, selectionCallback=None, doubleClickCallback=None,
-                editCallback=None, enableDelete=False, enableTypingSensitivity=False,
+    def __init__(self, posSize, items, dataSource=None, columnDescriptions=None, showColumnTitles=True,
+                selectionCallback=None, doubleClickCallback=None, editCallback=None, dropCallback=None,
+                enableDelete=False, enableTypingSensitivity=False,
                 allowsMultipleSelection=True, allowsEmptySelection=True,
                 drawVerticalLines=False, drawHorizontalLines=False,
-                autohidesScrollers=True, rowHeight=17.0):
+                autohidesScrollers=True, rowHeight=17.0,
+                allowedDropType=None, dropOperation=None, dropDataFormat=None,
+                acceptDropFromSelf=False, acceptDropFromOthers=True,
+                allowDropBetweenRows=True, allowDropOnRow=False):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the list.
         
@@ -198,6 +236,13 @@ class List(VanillaBaseObject):
         
         *editCallback* Callback to be called after an item has been edited.
         
+        *dropCallback* Callback to be called when a drop is proposed and when a drop is to occur. This method should return a boolean representing if the drop is acceptable or not. This method must accept four arguments:
+        
+        | *sender*     | The list object calling the method. |
+        | *data*       | The data proposed for the drop. This data will be of the type specified by dropDataFormat.
+        | *row*        | The row where the drop is proposed.
+        | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to accept the drop. |
+        
         *enableDelete* A boolean representing if items in the list can be deleted via the interface.
         
         *enableTypingSensitivity* A boolean representing if typing in the list will jump to the closest match as the entered keystrokes. _Available only in single column lists._
@@ -213,6 +258,24 @@ class List(VanillaBaseObject):
         *rowHeight* The height of the rows in the list.
 
         *autohidesScrollers* Boolean representing if scrollbars should automatically be hidden if possible.
+        
+        *allowedDropType* A single drop type indicating what drop types the list accepts. For example, NSFilenamesPboardType or "MyCustomPboardType"
+        
+        *dropOperation* A "drag operation":http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Protocols/NSDraggingInfo_Protocol/Reference/Reference.html that the list accepts. The default is NSDragOperationCopy.
+        
+        *acceptDropFromSelf* A boolean indicating is the list accepts a drop from itself.
+        
+        *acceptDropFromOthers* A boolean indicating if the list accepts a drop from something other than itself.
+        
+        *dropDataFormat* The type of data passed to the dropCallback. The options are:
+        
+        | *string*        | The data will be a NSString object. |
+        | *property list* | The data will be a property list object. |
+        | *data*          | The data will be a NSData object. |
+        
+        *allowDropBetweenRows* A boolean indicating if the list accepts drops between rows.
+        
+        *allowDropOnRow* A boolean indicating if the list accepts drops on rows.
         """
         if items is not None and dataSource is not None:
             raise VanillaError("can't pass both items and dataSource arguments")
@@ -289,6 +352,25 @@ class List(VanillaBaseObject):
             self._doubleClickTarget = VanillaCallbackWrapper(doubleClickCallback)
             self._tableView.setTarget_(self._doubleClickTarget)
             self._tableView.setDoubleAction_("action:")
+        # set the drop data
+        self._dropCallback = dropCallback
+        if dropCallback is not None:
+            if dropOperation is None:
+                dropOperation = NSDragOperationCopy
+            self._dropOperation = dropOperation
+            self._allowedDropType = allowedDropType
+            self._tableView.registerForDraggedTypes_([allowedDropType])
+            if acceptDropFromSelf:
+                self._tableView.setDraggingSourceOperationMask_forLocal_(dropOperation, False)
+            else:
+                self._tableView.setDraggingSourceOperationMask_forLocal_(NSDragOperationNone, False)
+            if acceptDropFromOthers:
+                self._tableView.setDraggingSourceOperationMask_forLocal_(dropOperation, True)
+            else:
+                self._tableView.setDraggingSourceOperationMask_forLocal_(NSDragOperationNone, True)
+            self._dropDataFormat = dropDataFormat
+            self._allowDropBetweenRows = allowDropBetweenRows
+            self._allowDropOnRow = allowDropOnRow
     
     def getNSScrollView(self):
         """
@@ -453,6 +535,16 @@ class List(VanillaBaseObject):
         if self._selectionCallback is not None: 
             self._selectionCallback(self)
     
+    def _proposeDrop(self, data, row, isProposal):
+        if self._dropCallback is not None:
+            result = self._dropCallback(self, data, row, isProposal)
+            print result
+            if result:
+                return self._dropOperation
+            else:
+                return NSDragOperationNone
+        return NSDragOperationNone
+    
     def _keyDown(self, event):
         # this method is called by the NSTableView subclass after a key down
         # has occurred. the subclass expects that a boolean will be returned
@@ -616,7 +708,7 @@ class List(VanillaBaseObject):
         if index < len(self._arrayController.content()):
             index = self._getSortedIndexesFromUnsortedIndexes([index])[0]
         self._arrayController.insertObject_atArrangedObjectIndex_(item, index)
-    
+
     def extend(self, items):
         items = [self._wrapItem(item) for item in items]
         self._arrayController.addObjects_(items)
