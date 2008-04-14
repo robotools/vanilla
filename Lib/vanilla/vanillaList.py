@@ -56,76 +56,94 @@ class _VanillaArrayController(NSArrayController):
     def tableView_writeRowsWithIndexes_toPasteboard_(self,
         tableView, indexes, pboard):
         vanillaWrapper = tableView.vanillaWrapper()
-        if not vanillaWrapper._allowsDrag:
+        settings = vanillaWrapper._dragSettings
+        if settings is None:
             return False
-        first = indexes.firstIndex()
-        last = indexes.lastIndex() + 1
-        indexes = xrange(first, last)
-        objects = NSMutableArray.array()
-        for index in indexes:
-            obj = vanillaWrapper[index]
-            objects.addObject_(obj)
-        pboard.declareTypes_owner_([vanillaWrapper._allowedDragType], self)
-        pboard.setPropertyList_forType_(objects.description(), vanillaWrapper._allowedDragType)
+        indexes = list(vanillaWrapper._iterIndexSet(indexes))
+        packCallback = settings["callback"]
+        if packCallback is not None:
+            objects = packCallback(vanillaWrapper, indexes)
+            if not isinstance(objects, NSArray):
+                objects = NSArray.arrayWithArray_(objects)
+        else:
+            objects = NSMutableArray.array()
+            for index in indexes:
+                obj = vanillaWrapper[index]
+                objects.addObject_(obj)
+        dragType = settings["type"]
+        pboard.declareTypes_owner_([dragType], self)
+        pboard.setPropertyList_forType_(objects.description(), dragType)
         return True
+
+    def _handleDrop(self, isProposal, tableView, draggingInfo, row, dropOperation):
+        vanillaWrapper = tableView.vanillaWrapper()
+        draggingSource = draggingInfo.draggingSource()
+        sourceForCallback = draggingSource
+        if hasattr(draggingSource, "vanillaWrapper") and getattr(draggingSource, "vanillaWrapper") is not None:
+            sourceForCallback = getattr(draggingSource, "vanillaWrapper")()
+        # make the info dict
+        dropOnRow = dropOperation == NSTableViewDropOn
+        dropInformation = dict(isProposal=isProposal, dropOnRow=dropOnRow, rowIndex=row, data=None, source=sourceForCallback)
+        # drag from self
+        if draggingSource == tableView:
+            if vanillaWrapper._selfDropSettings is None:
+                return NSDragOperationNone
+            settings = vanillaWrapper._selfDropSettings
+            return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
+        # drag from same document
+        document = tableView.window().document()
+        if document is not None and document != draggingSource.window().document():
+            if vanillaWrapper._selfDocumentDropSettings is None:
+                return NSDragOperationNone
+            settings = vanillaWrapper._selfDocumentDropSettings
+            return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
+        # drag from same application
+        applicationWindows = NSApp().windows()
+        if draggingSource is not None and draggingSource.window() in applicationWindows:
+            if vanillaWrapper._selfApplicationDropSettings is None:
+                return NSDragOperationNone
+            settings = vanillaWrapper._selfApplicationDropSettings
+            return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
+        # fall back to drag from other application
+        if vanillaWrapper._otherApplicationDropSettings is None:
+            return NSDragOperationNone
+        settings = vanillaWrapper._otherApplicationDropSettings
+        return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
+
+    def _handleDropBasedOnSettings(self, settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation):
+        # handle drop position
+        validDropPosition = self._validateDropPosition(settings, dropOnRow)
+        if not validDropPosition:
+            return NSDragOperationNone
+        # unpack data
+        dropInformation["data"] = self._unpackPboard(settings, draggingInfo)
+        # call the callback
+        result = settings["callback"](vanillaWrapper, dropInformation)
+        if result:
+            return settings.get("operation", NSDragOperationCopy)
+        return NSDragOperationNone
+
+    def _validateDropPosition(self, settings, dropOnRow):
+        if dropOnRow and not settings.get("allowsDropOnRows", False):
+            return False
+        if not dropOnRow and not settings.get("allowsDropBetweenRows", True):
+            return False
+        return True
+
+    def _unpackPboard(self, settings, draggingInfo):
+        pboard = draggingInfo.draggingPasteboard()
+        data = pboard.propertyListForType_(settings["type"])
+        if isinstance(data, (NSString, objc.pyobjc_unicode)):
+            data = data.propertyList()
+        return data
 
     def tableView_validateDrop_proposedRow_proposedDropOperation_(self,
         tableView, draggingInfo, row, dropOperation):
-        vanillaWrapper = tableView.vanillaWrapper()
-        draggingSource = draggingInfo.draggingSource()
-        # handle dragging from self/others
-        if not vanillaWrapper._acceptDropFromSelf and tableView == draggingSource:
-            return NSDragOperationNone
-        if not vanillaWrapper._acceptDropFromOthers and tableView != draggingSource:
-            return NSDragOperationNone
-        # handle drop position
-        if dropOperation == NSTableViewDropAbove and not vanillaWrapper._allowDropBetweenRows:
-            return NSDragOperationNone
-        if dropOperation == NSTableViewDropOn and not vanillaWrapper._allowDropOnRow:
-            return NSDragOperationNone
-        dropOnRow = dropOperation == NSTableViewDropOn
-        # get the data
-        pboard = draggingInfo.draggingPasteboard()
-        if vanillaWrapper._dropDataFormat == "property list":
-            data = pboard.propertyListForType_(vanillaWrapper._allowedDropType)
-            if isinstance(data, (NSString, objc.pyobjc_unicode)):
-                data = data.propertyList()
-        elif vanillaWrapper._dropDataFormat == "string":
-            data = pboard.stringForType_(vanillaWrapper._allowedDropType)
-        else:
-            data = pboard.dataForType_(vanillaWrapper._allowedDropType)
-        # propose the drop
-        dropInformation = dict(data=data, rowIndex=row, dropOnRow=dropOnRow, isProposal=True)
-        return tableView.vanillaWrapper()._proposeDrop(dropInformation)
+        return self._handleDrop(True, tableView, draggingInfo, row, dropOperation)
 
     def tableView_acceptDrop_row_dropOperation_(self,
         tableView, draggingInfo, row, dropOperation):
-        vanillaWrapper = tableView.vanillaWrapper()
-        draggingSource = draggingInfo.draggingSource()
-        # handle dragging from self/others
-        if not vanillaWrapper._acceptDropFromSelf and tableView == draggingSource:
-            return NSDragOperationNone
-        if not vanillaWrapper._acceptDropFromOthers and tableView != draggingSource:
-            return NSDragOperationNone
-        # handle drop position
-        if dropOperation == NSTableViewDropAbove and not vanillaWrapper._allowDropBetweenRows:
-            return NSDragOperationNone
-        if dropOperation == NSTableViewDropOn and not vanillaWrapper._allowDropOnRow:
-            return NSDragOperationNone
-        dropOnRow = dropOperation == NSTableViewDropOn
-        # get the data
-        pboard = draggingInfo.draggingPasteboard()
-        if vanillaWrapper._dropDataFormat == "property list":
-            data = pboard.propertyListForType_(vanillaWrapper._allowedDropType)
-            if isinstance(data, (NSString, objc.pyobjc_unicode)):
-                data = data.propertyList()
-        elif vanillaWrapper._dropDataFormat == "string":
-            data = pboard.stringForType_(vanillaWrapper._allowedDropType)
-        else:
-            data = pboard.dataForType_(vanillaWrapper._allowedDropType)
-        # propose the drop
-        dropInformation = dict(data=data, rowIndex=row, dropOnRow=dropOnRow, isProposal=False)
-        return tableView.vanillaWrapper()._proposeDrop(dropInformation)
+        return self._handleDrop(False, tableView, draggingInfo, row, dropOperation)
 
 
 class List(VanillaBaseObject):
@@ -247,11 +265,11 @@ class List(VanillaBaseObject):
                 allowsMultipleSelection=True, allowsEmptySelection=True,
                 drawVerticalLines=False, drawHorizontalLines=False,
                 autohidesScrollers=True, rowHeight=17.0,
-                allowedDropType=None, dropOperation=None, dropDataFormat=None,
-                acceptDropFromSelf=False, acceptDropFromOthers=True,
-                acceptDropFromSelfApplication=True, acceptDropFromOtherApplication=False,
-                allowDropBetweenRows=True, allowDropOnRow=False,
-                allowsDrag=False, allowedDragType=None):
+                selfDropSettings=None,
+                selfDocumentDropSettings=None,
+                selfApplicationDropSettings=None,
+                otherApplicationDropSettings=None,
+                dragSettings=None):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the list.
         
@@ -281,13 +299,6 @@ class List(VanillaBaseObject):
         
         *editCallback* Callback to be called after an item has been edited.
         
-        *dropCallback* Callback to be called when a drop is proposed and when a drop is to occur. This method should return a boolean representing if the drop is acceptable or not. This method must accept _sender_ and _dropInfo_ arguments. The _dropInfo_ will be a dictionary with the following key value pairs:
-        
-        | *data*       | The data proposed for the drop. This data will be of the type specified by dropDataFormat. |
-        | *rowIndex*   | The row where the drop is proposed. |
-        | *dropOnRow*  | A boolean representing if the row is being dropped on. If this is False, the drop should occur between rows. |
-        | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to accept the drop. |
-        
         *enableDelete* A boolean representing if items in the list can be deleted via the interface.
         
         *enableTypingSensitivity* A boolean representing if typing in the list will jump to the closest match as the entered keystrokes. _Available only in single column lists._
@@ -304,31 +315,31 @@ class List(VanillaBaseObject):
 
         *autohidesScrollers* Boolean representing if scrollbars should automatically be hidden if possible.
         
-        *allowedDropType* A single drop type indicating what drop types the list accepts. For example, NSFilenamesPboardType or "MyCustomPboardType".
+        *NOTE: Drag and drop is very experimental. It may change.*
         
-        *dropOperation* A "drag operation":http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Protocols/NSDraggingInfo_Protocol/Reference/Reference.html that the list accepts. The default is NSDragOperationCopy.
+        *selfDropSettings* A dictionary defining the drop settings when the source of the drop is this list. The dictionary form is described below.
         
-        *acceptDropFromSelf* A boolean indicating is the list accepts a drop from itself.
+        *selfDocumentDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same document as this list. The dictionary form is described below.
         
-        *acceptDropFromOthers* A boolean indicating if the list accepts a drop from something other than itself.
+        *selfApplicationDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same application as this list. The dictionary form is described below.
         
-        *acceptDropFromSelfApplication* A boolean indicating is the list accepts a drop from an application other than the one the list is within.
+        *otherApplicationDropSettings* A dictionary defining the drop settings when the source of the drop is contained an application other than the one that contains this list. The dictionary form is described below.
         
-        *acceptDropFromOtherApplication* A boolean indicating if the list accepts a drop from an application other than the one the list is within.
+        The drop settings dictionaries should be of this form:
         
-        *dropDataFormat* The type of data passed to the dropCallback. The options are:
+        | *type*                            | A single drop type indicating what drop types the list accepts. For example, NSFilenamesPboardType or "MyCustomPboardType". |
+        | *operation* (optional)            | A "drag operation":http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Protocols/NSDraggingInfo_Protocol/Reference/Reference.html that the list accepts. The default is NSDragOperationCopy. |
+        | *allowDropBetweenRows* (optional) | A boolean indicating if the list accepts drops between rows. The default is True. |
+        | *allowDropOnRow* (optional)       | A boolean indicating if the list accepts drops on rows. The default is False. |
+        | *callback*                        | Callback to be called when a drop is proposed and when a drop is to occur. This method should return a boolean representing if the drop is acceptable or not. This method must accept _sender_ and _dropInfo_ arguments. The _dropInfo_ will be a dictionary as described below. |
         
-        | *string*        | The data will be a NSString object. |
-        | *property list* | The data will be a property list object. |
-        | *data*          | The data will be a NSData object. |
+        The dropInfo dictionary passed to drop callbacks will be of this form:
         
-        *allowDropBetweenRows* A boolean indicating if the list accepts drops between rows.
-        
-        *allowDropOnRow* A boolean indicating if the list accepts drops on rows.
-        
-        *allowsDrag* A boolean indicating if items can br dragged from the list.
-        
-        *allowedDragType* A single drag type indicating what drag types the list creates. For example, NSFilenamesPboardType or "MyCustomPboardType".
+        | *data*       | The data proposed for the drop. This data will be of the type specified by dropDataFormat. |
+        | *rowIndex*   | The row where the drop is proposed. |
+        | *source*     | The source from which items are being dragged. If this object is wrapped by Vanilla, the Vanilla object will be passed as the source. |
+        | *dropOnRow*  | A boolean representing if the row is being dropped on. If this is False, the drop should occur between rows. |
+        | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to accept the drop. |
         """
         if items is not None and dataSource is not None:
             raise VanillaError("can't pass both items and dataSource arguments")
@@ -406,28 +417,30 @@ class List(VanillaBaseObject):
             self._tableView.setTarget_(self._doubleClickTarget)
             self._tableView.setDoubleAction_("action:")
         # set the drop data
-        self._dropCallback = dropCallback
-        if dropCallback is not None:
-            if dropOperation is None:
-                dropOperation = NSDragOperationCopy
-            self._dropOperation = dropOperation
-            self._allowedDropType = allowedDropType
-            self._tableView.registerForDraggedTypes_([allowedDropType])
-            if acceptDropFromSelfApplication:
-                self._tableView.setDraggingSourceOperationMask_forLocal_(dropOperation, False)
-            else:
-                self._tableView.setDraggingSourceOperationMask_forLocal_(NSDragOperationNone, False)
-            if acceptDropFromOtherApplication:
-                self._tableView.setDraggingSourceOperationMask_forLocal_(dropOperation, True)
-            else:
-                self._tableView.setDraggingSourceOperationMask_forLocal_(NSDragOperationNone, True)
-            self._dropDataFormat = dropDataFormat
-            self._allowDropBetweenRows = allowDropBetweenRows
-            self._allowDropOnRow = allowDropOnRow
-            self._acceptDropFromSelf = acceptDropFromSelf
-            self._acceptDropFromOthers = acceptDropFromOthers
-        self._allowsDrag = allowsDrag
-        self._allowedDragType = allowedDragType
+        self._selfDropSettings = selfDropSettings
+        self._selfDocumentDropSettings = selfDocumentDropSettings
+        self._otherApplicationDropSettings = selfApplicationDropSettings
+        self._otherApplicationDropSettings = otherApplicationDropSettings
+        allDropTypes = []
+        for settings in (selfDropSettings, selfDocumentDropSettings, selfApplicationDropSettings, otherApplicationDropSettings):
+            if settings is None:
+                continue
+            dropType = settings["type"]
+            allDropTypes.append(dropType)
+        self._tableView.registerForDraggedTypes_(allDropTypes)
+        # set the default drop operation masks
+        notLocal = NSDragOperationNone
+        if otherApplicationDropSettings is not None:
+            notLocal = otherApplicationDropSettings.get("operation", NSDragOperationCopy)
+        self._tableView.setDraggingSourceOperationMask_forLocal_(notLocal, False)
+        local = NSDragOperationNone
+        for settings in (selfDropSettings, selfDocumentDropSettings, selfApplicationDropSettings):
+            if settings is None:
+                continue
+            local = settings.get("operation", NSDragOperationCopy)
+        self._tableView.setDraggingSourceOperationMask_forLocal_(local, True)
+        # set the drag data
+        self._dragSettings = dragSettings
     
     def getNSScrollView(self):
         """
@@ -449,7 +462,11 @@ class List(VanillaBaseObject):
             self._selectionObserver._targetMethod = None
         if hasattr(self, '_doubleClickTarget') and self._doubleClickTarget is not None:
             self._doubleClickTarget.callback = None
-    
+        self._selfDropSettings = None
+        self._selfDocumentDropSettings = None
+        self._otherApplicationDropSettings = None
+        self._otherApplicationDropSettings = None
+
     def _handleColumnWidths(self, columnDescriptions):
         # if the width is set in one of the columns,
         # it must be set in all columns if the OS < 10.4.
@@ -591,15 +608,6 @@ class List(VanillaBaseObject):
     def _selection(self):
         if self._selectionCallback is not None: 
             self._selectionCallback(self)
-    
-    def _proposeDrop(self, dropInformation):
-        if self._dropCallback is not None:
-            result = self._dropCallback(self, dropInformation)
-            if result:
-                return self._dropOperation
-            else:
-                return NSDragOperationNone
-        return NSDragOperationNone
     
     def _keyDown(self, event):
         # this method is called by the NSTableView subclass after a key down
