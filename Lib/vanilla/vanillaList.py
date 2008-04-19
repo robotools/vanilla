@@ -255,6 +255,7 @@ class List(VanillaBaseObject):
     - putting NSObject in list. requires column descriptions with a proper key tied to the NSObject.
     """
 
+    _scrollViewClass = NSScrollView
     _tableViewClass = _VanillaTableViewSubclass
     _arrayControllerClass = _VanillaArrayController
     _arrayControllerObserverClass = _VanillaArrayControllerObserver
@@ -345,7 +346,7 @@ class List(VanillaBaseObject):
             raise VanillaError("can't pass both items and dataSource arguments")
         self._posSize = posSize
         self._enableDelete = enableDelete
-        self._nsObject = getNSSubclass('NSScrollView')(self)
+        self._nsObject = getNSSubclass(self._scrollViewClass)(self)
         self._nsObject.setAutohidesScrollers_(autohidesScrollers)
         self._nsObject.setHasHorizontalScroller_(True)
         self._nsObject.setHasVerticalScroller_(True)
