@@ -261,7 +261,7 @@ class List(VanillaBaseObject):
     _arrayControllerObserverClass = _VanillaArrayControllerObserver
 
     def __init__(self, posSize, items, dataSource=None, columnDescriptions=None, showColumnTitles=True,
-                selectionCallback=None, doubleClickCallback=None, editCallback=None, dropCallback=None,
+                selectionCallback=None, doubleClickCallback=None, editCallback=None,
                 enableDelete=False, enableTypingSensitivity=False,
                 allowsMultipleSelection=True, allowsEmptySelection=True,
                 drawVerticalLines=False, drawHorizontalLines=False,
