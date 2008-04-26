@@ -3,7 +3,7 @@ from nsSubclasses import getNSSubclass
 from vanillaBase import VanillaBaseObject, VanillaCallbackWrapper
 
 
-class _VanillaTextEditorDelegate(NSObject):
+class VanillaTextEditorDelegate(NSObject):
     
     def textDidChange_(self, notification):
         if hasattr(self, '_target'):
@@ -88,7 +88,7 @@ class TextEditor(VanillaBaseObject):
             self._target = VanillaCallbackWrapper(callback)
             delegate = self._textView.delegate()
             if delegate is None:
-                self._textViewDelegate = delegate = _VanillaTextEditorDelegate.alloc().init()
+                self._textViewDelegate = delegate = VanillaTextEditorDelegate.alloc().init()
                 self._textView.setDelegate_(delegate)
             delegate._target = self._target
 
