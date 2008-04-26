@@ -18,7 +18,7 @@ class VanillaTabItem(VanillaBaseObject):
         _breakCycles(self._tabItem.view())
 
 
-class _VanillaTabsDelegate(NSObject):
+class VanillaTabsDelegate(NSObject):
 
     def tabView_didSelectTabViewItem_(self, tabView, tabViewItem):
         if hasattr(self, '_target'):
@@ -116,7 +116,7 @@ class Tabs(VanillaBaseObject):
             self._target = VanillaCallbackWrapper(callback)
             delegate = self._nsObject.delegate()
             if delegate is None:
-                self._delegate = delegate = _VanillaTabsDelegate.alloc().init()
+                self._delegate = delegate = VanillaTabsDelegate.alloc().init()
                 self._nsObject.setDelegate_(delegate)
             delegate._target = self._target
 
