@@ -46,8 +46,10 @@ class Button(VanillaBaseControl):
     ButtonDemo()
     """
 
+    nsButtonClass = NSButton
     nsBezelStyle = NSRoundedBezelStyle
     nsButtonType = NSMomentaryPushInButton
+
     _frameAdjustments = {
         'mini': (-1, -2, 2, 2),
         'small': (-5, -7, 10, 11),
@@ -73,7 +75,7 @@ class Button(VanillaBaseControl):
         | "small"   |
         | "mini"    |
         """
-        self._setupView("NSButton", posSize, callback=callback)
+        self._setupView(self.nsButtonClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setTitle_(title)
         self._nsObject.setBezelStyle_(self.nsBezelStyle)

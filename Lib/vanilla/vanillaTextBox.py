@@ -29,6 +29,8 @@ class TextBox(VanillaBaseControl):
     TextBoxDemo()
     """
 
+    nsTextFieldClass = NSTextField
+
     def __init__(self, posSize, text="", alignment="natural", selectable=False, sizeStyle="regular"):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the text box.
@@ -56,7 +58,7 @@ class TextBox(VanillaBaseControl):
         | "small"   |
         | "mini"    |
         """
-        self._setupView("NSTextField", posSize)
+        self._setupView(self.nsTextFieldClass, posSize)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setStringValue_(text)
         self._nsObject.setDrawsBackground_(False)

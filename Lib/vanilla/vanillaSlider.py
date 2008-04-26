@@ -31,7 +31,9 @@ class Slider(VanillaBaseControl):
              
     SliderDemo()
     """
-    
+
+    nsSliderClass = NSSlider
+
     _allFrameAdjustments = {
         'H-Slider-Above': {
             'mini': (0, 0, 0, 0),
@@ -101,7 +103,7 @@ class Slider(VanillaBaseControl):
         | "small"   |
         | "mini"    |
         """
-        self._setupView("NSSlider", posSize, callback=callback)
+        self._setupView(self.nsSliderClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setMinValue_(minValue)
         self._nsObject.setMaxValue_(maxValue)

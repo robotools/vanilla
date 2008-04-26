@@ -3,10 +3,12 @@ from vanillaBase import VanillaBaseObject, _breakCycles, _sizeStyleMap, VanillaC
         _reverseSizeStyleMap
 
 
-class _VanillaTabItem(VanillaBaseObject):
+class VanillaTabItem(VanillaBaseObject):
+
+    nsTabViewItemClass = NSTabViewItem
 
     def __init__(self, title):
-        self._tabItem = NSTabViewItem.alloc().initWithIdentifier_(title)
+        self._tabItem = self.nsTabViewItemClass.alloc().initWithIdentifier_(title)
         self._tabItem.setLabel_(title)
 
     def _getContentView(self):
@@ -53,7 +55,10 @@ class Tabs(VanillaBaseObject):
     pre.
     myTab = self.w.tabs[0]
     """
-    
+
+    nsTabViewClass = NSTabView
+    vanillaTabViewItemClass = VanillaTabItem
+
     _allFrameAdjustments = {
         # The sizeStyle will be part of the
         # className used for the lookup here.
@@ -76,11 +81,11 @@ class Tabs(VanillaBaseObject):
         | "small"   |
         | "mini"    |
         """
-        self._setupView("NSTabView", posSize) # hold off on setting callback
+        self._setupView(self.nsTabViewClass, posSize) # hold off on setting callback
         self._setSizeStyle(sizeStyle)
         self._tabItems = []
         for title in titles:
-            tab = _VanillaTabItem(title)
+            tab = self.vanillaTabViewItemClass(title)
             self._tabItems.append(tab)
             self._nsObject.addTabViewItem_(tab._tabItem)
         if not showTabs:

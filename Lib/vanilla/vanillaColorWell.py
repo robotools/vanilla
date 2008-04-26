@@ -28,6 +28,8 @@ class ColorWell(VanillaBaseObject):
     ColorWellDemo()
     """
 
+    nsColorWellClass = NSColorWell
+
     def __init__(self, posSize, callback=None, color=None):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the color well.
@@ -36,7 +38,7 @@ class ColorWell(VanillaBaseObject):
         
         *color* A _NSColor_ object. If _None_ is given, the color shown will be white.
         """
-        self._setupView("NSColorWell", posSize, callback=callback)
+        self._setupView(self.nsColorWellClass, posSize, callback=callback)
         if color is not None:
             self._nsObject.setColor_(color)
         colorPanel = NSColorPanel.sharedColorPanel()

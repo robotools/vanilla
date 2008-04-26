@@ -1,3 +1,4 @@
+from AppKit import NSSearchField
 from vanillaBase import VanillaBaseControl
 
 
@@ -22,7 +23,9 @@ class SearchBox(VanillaBaseControl):
         
     SearchBoxDemo()
     """
-    
+
+    nsSearchFieldClass = NSSearchField
+
     def __init__(self, posSize, text="", callback=None, formatter=None, sizeStyle="regular"):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the search box.
@@ -44,7 +47,7 @@ class SearchBox(VanillaBaseControl):
         | "small"   |
         | "mini"    |
         """
-        self._setupView("NSSearchField", posSize, callback=callback)
+        self._setupView(self.nsSearchFieldClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setStringValue_(text)
         cell = self._nsObject.cell()

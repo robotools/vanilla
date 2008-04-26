@@ -25,6 +25,7 @@ class RadioGroup(VanillaBaseControl):
     RadioGroupDemo()
     """
 
+    nsMatrixClass = NSMatrix
     nsCellClass = NSButtonCell
 
     def __init__(self, posSize, titles, isVertical=True, callback=None, sizeStyle="regular"):
@@ -43,7 +44,7 @@ class RadioGroup(VanillaBaseControl):
         | "small"   |
         | "mini"    |
         """
-        self._setupView("NSMatrix", posSize, callback=callback)
+        self._setupView(self.nsMatrixClass, posSize, callback=callback)
         self._isVertical = isVertical
         matrix = self._nsObject
         matrix.setMode_(NSRadioModeMatrix)

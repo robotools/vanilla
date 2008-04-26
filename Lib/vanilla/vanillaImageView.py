@@ -22,6 +22,8 @@ _imageScaleMap = {
 
 class ImageView(VanillaBaseObject):
 
+    nsImageViewClass = NSImageView
+
     def __init__(self, posSize, horizontalAlignment="center", verticalAlignment="center", scale="proportional"):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the view.
@@ -44,7 +46,7 @@ class ImageView(VanillaBaseObject):
         | "fit"          | Distort the proportions of the image until it fits exactly in the view. |
         | "none"         | Do not scale the image. |
         """
-        self._setupView("NSImageView", posSize)
+        self._setupView(self.nsImageViewClass, posSize)
         align = _imageAlignmentMap[(horizontalAlignment, verticalAlignment)]
         self._nsObject.setImageAlignment_(align)
         scale = _imageScaleMap[scale]

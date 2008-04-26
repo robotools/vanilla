@@ -954,7 +954,6 @@ def CheckBoxListCell(title=None):
 
 
 def SliderListCell(minValue=0, maxValue=100):
-    
     """
     An object that displays a slider in a List column.
     

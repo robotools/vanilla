@@ -27,7 +27,9 @@ class ProgressBar(VanillaBaseObject):
                  
     ProgressBarDemo()
     """
-    
+
+    nsProgressIndicatorClass = NSProgressIndicator
+
     _allFrameAdjustments = {
         'small': (-1, -0, 2, 0),
         'regular': (-2, -0, 4, 0),
@@ -52,7 +54,7 @@ class ProgressBar(VanillaBaseObject):
         | "regular" |
         | "small"   |
         """
-        self._setupView('NSProgressIndicator', posSize)
+        self._setupView(self.nsProgressIndicatorClass, posSize)
         self._frameAdjustments = self._allFrameAdjustments[sizeStyle]
         self._nsObject.setControlSize_(_sizeStyleMap[sizeStyle])
         self._nsObject.setMinValue_(minValue)

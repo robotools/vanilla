@@ -41,6 +41,8 @@ class Drawer(VanillaBaseObject):
     No special naming is required for the attributes. However, each attribute must have a unique name.
     """
 
+    nsDrawerClass = NSDrawer
+
     def __init__(self, size, parentWindow, minSize=None, maxSize=None,
             preferredEdge="left", forceEdge=False, leadingOffset=20, trailingOffset=20):
         """
@@ -68,7 +70,7 @@ class Drawer(VanillaBaseObject):
         from vanillaWindows import Window
         self._preferredEdge = preferredEdge
         self._forceEdge = forceEdge
-        drawer = self._nsObject = NSDrawer.alloc().initWithContentSize_preferredEdge_(
+        drawer = self._nsObject = self.nsDrawerClass.alloc().initWithContentSize_preferredEdge_(
                 size, _drawerEdgeMap[preferredEdge])
         drawer.setLeadingOffset_(leadingOffset)
         drawer.setTrailingOffset_(trailingOffset)

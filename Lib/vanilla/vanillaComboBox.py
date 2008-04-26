@@ -1,3 +1,4 @@
+from AppKit import NSComboBox
 from vanillaBase import VanillaBaseControl
 
 
@@ -23,7 +24,9 @@ class ComboBox(VanillaBaseControl):
             
     ComboBoxDemo()
     """
-    
+
+    nsComboBoxClass = NSComboBox
+
     _frameAdjustments = {
         'mini': (0, -4, 1, 5),
         'small': (0, -4, 3, 5),
@@ -54,7 +57,7 @@ class ComboBox(VanillaBaseControl):
         | "small"   |
         | "mini"    |
         """
-        self._setupView("NSComboBox", posSize, callback=callback)
+        self._setupView(self.nsComboBoxClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.addItemsWithObjectValues_(items)
         self._nsObject.setCompletes_(completes)

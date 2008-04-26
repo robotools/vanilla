@@ -33,13 +33,15 @@ class Box(VanillaBaseObject):
         'Box-None': (-3, -4, 6, 6)
     }
 
+    nsBoxClass = NSBox
+
     def __init__(self, posSize, title=None):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the box.
         
         *title* The title to be displayed dabove the box. Pass _None_ if no title is desired.
         """
-        self._setupView("NSBox", posSize)
+        self._setupView(self.nsBoxClass, posSize)
         if title:
             self._nsObject.setTitle_(title)
             self._nsObject.titleCell().setTextColor_(NSColor.blackColor())
@@ -90,8 +92,10 @@ class Box(VanillaBaseObject):
 
 class _Line(Box):
 
+    nsBoxClass = NSBox
+
     def __init__(self, posSize):
-        self._setupView("NSBox", posSize)
+        self._setupView(self.nsBoxClass, posSize)
         self._nsObject.setBorderType_(NSLineBorder)
         self._nsObject.setBoxType_(NSBoxSeparator)
         self._nsObject.setTitlePosition_(NSNoTitle)

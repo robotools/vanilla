@@ -33,6 +33,7 @@ class TextEditor(VanillaBaseObject):
     TextEditorDemo()
     """
 
+    nsScrollViewClass = NSScrollView
     nsTextViewClass = NSTextView
 
     def __init__(self, posSize, text="", callback=None, readOnly=False, checksSpelling=False):
@@ -48,7 +49,7 @@ class TextEditor(VanillaBaseObject):
         *checksSpelling* Boolean representing if spelling should be automatically checked or not.
         """
         self._posSize = posSize
-        self._nsObject = NSScrollView.alloc().init()  # no need to do getNSSubclass() here
+        self._nsObject = self.nsScrollViewClass.alloc().init()  # no need to do getNSSubclass() here
         self._nsObject.setHasVerticalScroller_(True)
         self._nsObject.setBorderType_(NSBezelBorder)
         self._nsObject.setDrawsBackground_(True)

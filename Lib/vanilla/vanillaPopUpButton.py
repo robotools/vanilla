@@ -1,3 +1,4 @@
+from AppKit import NSPopUpButton
 from vanillaBase import VanillaBaseControl
 
 
@@ -23,7 +24,9 @@ class PopUpButton(VanillaBaseControl):
             
     PopUpButtonDemo()
     """
-    
+
+    nsPopUpButtonClass = NSPopUpButton
+
     _frameAdjustments = {
         'mini': (-1, 0, 3, 0),
         'small': (-3, -4, 6, 5),
@@ -49,7 +52,7 @@ class PopUpButton(VanillaBaseControl):
         | "small"   |
         | "mini"    |
         """
-        self._setupView("NSPopUpButton", posSize, callback=callback)
+        self._setupView(self.nsPopUpButtonClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.addItemsWithTitles_(items)
         

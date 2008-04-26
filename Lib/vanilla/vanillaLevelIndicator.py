@@ -43,7 +43,9 @@ class LevelIndicator(VanillaBaseControl):
               
     LevelIndicatorDemo()
     """
-    
+
+    nsLevelIndicatorClass = NSLevelIndicator
+
     def __init__(self, posSize, style="discrete",
                     value=5, minValue=0, maxValue=10, warningValue=None, criticalValue=None,
                     tickMarkPosition=None, minorTickMarkCount=None, majorTickMarkCount=None,
@@ -91,7 +93,7 @@ class LevelIndicator(VanillaBaseControl):
         
         *callback* The method to be called when the level indicator has been edited. If no callback is given, the level indicator will not be editable.
         """
-        self._setupView("NSLevelIndicator", posSize, callback=callback)
+        self._setupView(self.nsLevelIndicatorClass, posSize, callback=callback)
         self._nsObject.cell().setLevelIndicatorStyle_(_levelIndicatorStyleMap[style])
         self._nsObject.setMinValue_(minValue)
         self._nsObject.setMaxValue_(maxValue)

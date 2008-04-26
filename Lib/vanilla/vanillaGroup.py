@@ -1,3 +1,4 @@
+from AppKit import NSView
 from vanillaBase import VanillaBaseObject
 
 
@@ -24,12 +25,14 @@ class Group(VanillaBaseObject):
     
     No special naming is required for the attributes. However, each attribute must have a unique name.
     """
-    
+
+    nsViewClass = NSView
+
     def __init__(self, posSize):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the group.
         """
-        self._setupView("NSView", posSize)
+        self._setupView(self.nsViewClass, posSize)
     
     def getNSView(self):
         """

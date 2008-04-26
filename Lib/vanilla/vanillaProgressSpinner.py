@@ -22,6 +22,8 @@ class ProgressSpinner(VanillaBaseObject):
     ProgressSpinnerDemo()
     """
 
+    nsProgressIndicatorClass = NSProgressIndicator
+
     def __init__(self, posSize, displayWhenStopped=False, sizeStyle="regular"):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the spinner. The size of the spinner sould match the appropriate value for the given sizeStyle.
@@ -37,7 +39,7 @@ class ProgressSpinner(VanillaBaseObject):
         | "regular" |
         | "small"   |
         """
-        self._setupView("NSProgressIndicator", posSize)
+        self._setupView(self.nsProgressIndicatorClass, posSize)
         sizeStyle = _sizeStyleMap[sizeStyle]
         self._nsObject.setControlSize_(sizeStyle)
         self._nsObject.setStyle_(NSProgressIndicatorSpinningStyle)
