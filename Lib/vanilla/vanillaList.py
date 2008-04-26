@@ -18,12 +18,12 @@ else:
     _haveResizingMasks = True
 
 
-class _VanillaTableViewSubclass(NSTableView):
+class VanillaTableViewSubclass(NSTableView):
 
     def keyDown_(self, event):
         didSomething = self.vanillaWrapper()._keyDown(event)
         if not didSomething:
-            super(_VanillaTableViewSubclass, self).keyDown_(event)
+            super(VanillaTableViewSubclass, self).keyDown_(event)
 
     def textDidEndEditing_(self, notification):
         info = notification.userInfo()
@@ -38,20 +38,34 @@ class _VanillaTableViewSubclass(NSTableView):
                     notification.name(),
                     notification.object(),
                     info)
-            super(_VanillaTableViewSubclass, self).textDidEndEditing_(newNotification)
+            super(VanillaTableViewSubclass, self).textDidEndEditing_(newNotification)
             self.window().makeFirstResponder_(self)
         else:
-            super(_VanillaTableViewSubclass, self).textDidEndEditing_(notification)
+            super(VanillaTableViewSubclass, self).textDidEndEditing_(notification)
+
+class _VanillaTableViewSubclass(VanillaTableViewSubclass):
+
+    def init(self):
+        from warnings import warn
+        warn(DeprecationWarning("_VanillaTableViewSubclass is deprecated. Use VanillaTableViewSubclass"))
+        return super(_VanillaTableViewSubclass, self).init()
 
 
-class _VanillaArrayControllerObserver(NSObject):
+class VanillaArrayControllerObserver(NSObject):
     
     def observeValueForKeyPath_ofObject_change_context_(self, keyPath, obj, change, context):
         if hasattr(self, '_targetMethod') and self._targetMethod is not None:
             self._targetMethod()
 
+class _VanillaArrayControllerObserver(VanillaArrayControllerObserver):
 
-class _VanillaArrayController(NSArrayController):
+    def init(self):
+        from warnings import warn
+        warn(DeprecationWarning("_VanillaArrayControllerObserver is deprecated. Use VanillaArrayControllerObserver"))
+        return super(_VanillaArrayControllerObserver, self).init()
+
+
+class VanillaArrayController(NSArrayController):
 
     def tableView_writeRowsWithIndexes_toPasteboard_(self,
         tableView, indexes, pboard):
@@ -144,6 +158,13 @@ class _VanillaArrayController(NSArrayController):
     def tableView_acceptDrop_row_dropOperation_(self,
         tableView, draggingInfo, row, dropOperation):
         return self._handleDrop(False, tableView, draggingInfo, row, dropOperation)
+
+class _VanillaArrayController(VanillaArrayController):
+
+    def init(self):
+        from warnings import warn
+        warn(DeprecationWarning("_VanillaArrayController is deprecated. Use VanillaArrayController"))
+        return super(_VanillaArrayController, self).init()
 
 
 class List(VanillaBaseObject):
@@ -256,9 +277,9 @@ class List(VanillaBaseObject):
     """
 
     nsScrollViewClass = NSScrollView
-    nsTableViewClass = _VanillaTableViewSubclass
-    nsArrayControllerClass = _VanillaArrayController
-    nsArrayControllerObserverClass = _VanillaArrayControllerObserver
+    nsTableViewClass = VanillaTableViewSubclass
+    nsArrayControllerClass = VanillaArrayController
+    nsArrayControllerObserverClass = VanillaArrayControllerObserver
 
     def __init__(self, posSize, items, dataSource=None, columnDescriptions=None, showColumnTitles=True,
                 selectionCallback=None, doubleClickCallback=None, editCallback=None,
