@@ -46,8 +46,8 @@ class Button(VanillaBaseControl):
     ButtonDemo()
     """
 
-    _nsBezelStyle = NSRoundedBezelStyle
-    _nsButtonType = NSMomentaryPushInButton
+    nsBezelStyle = NSRoundedBezelStyle
+    nsButtonType = NSMomentaryPushInButton
     _frameAdjustments = {
         'mini': (-1, -2, 2, 2),
         'small': (-5, -7, 10, 11),
@@ -76,8 +76,18 @@ class Button(VanillaBaseControl):
         self._setupView("NSButton", posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setTitle_(title)
-        self._nsObject.setBezelStyle_(self._nsBezelStyle)
-        self._nsObject.setButtonType_(self._nsButtonType)
+        self._nsObject.setBezelStyle_(self.nsBezelStyle)
+        self._nsObject.setButtonType_(self.nsButtonType)
+
+    def _testForDeprecatedAttributes(self):
+        super(Button, self)._testForDeprecatedAttributes()
+        from warnings import warn
+        if hasattr(self, "_nsBezelStyle"):
+            warn(DeprecationWarning("The _nsBezelStyle attribute is deprecated. Use the nsBezelStyle attribute."))
+            self.nsBezelStyle = self._nsBezelStyle
+        if hasattr(self, "_nsButtonType"):
+            warn(DeprecationWarning("The _nsButtonType attribute is deprecated. Use the nsButtonType attribute."))
+            self.nsButtonType = self._nsButtonType
 
     def getNSButton(self):
         """
@@ -138,7 +148,7 @@ class SquareButton(Button):
     SquareButtonDemo()
     """
     
-    _nsBezelStyle = NSShadowlessSquareBezelStyle
+    nsBezelStyle = NSShadowlessSquareBezelStyle
     _frameAdjustments = None
     
     def __init__(self, posSize, title, callback=None, sizeStyle="regular"):
@@ -291,7 +301,7 @@ class HelpButton(Button):
     HelpButtonDemo()
     """
 
-    _nsBezelStyle = NSHelpButtonBezelStyle
+    nsBezelStyle = NSHelpButtonBezelStyle
     _frameAdjustments = {
         'regular': (0, -3, 0, 3),
         }

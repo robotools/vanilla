@@ -255,10 +255,10 @@ class List(VanillaBaseObject):
     - putting NSObject in list. requires column descriptions with a proper key tied to the NSObject.
     """
 
-    _scrollViewClass = NSScrollView
-    _tableViewClass = _VanillaTableViewSubclass
-    _arrayControllerClass = _VanillaArrayController
-    _arrayControllerObserverClass = _VanillaArrayControllerObserver
+    nsScrollViewClass = NSScrollView
+    nsTableViewClass = _VanillaTableViewSubclass
+    nsArrayControllerClass = _VanillaArrayController
+    nsArrayControllerObserverClass = _VanillaArrayControllerObserver
 
     def __init__(self, posSize, items, dataSource=None, columnDescriptions=None, showColumnTitles=True,
                 selectionCallback=None, doubleClickCallback=None, editCallback=None,
@@ -348,7 +348,7 @@ class List(VanillaBaseObject):
             raise VanillaError("can't pass both items and dataSource arguments")
         self._posSize = posSize
         self._enableDelete = enableDelete
-        self._nsObject = getNSSubclass(self._scrollViewClass)(self)
+        self._nsObject = getNSSubclass(self.nsScrollViewClass)(self)
         self._nsObject.setAutohidesScrollers_(autohidesScrollers)
         self._nsObject.setHasHorizontalScroller_(True)
         self._nsObject.setHasVerticalScroller_(True)
@@ -356,11 +356,11 @@ class List(VanillaBaseObject):
         self._nsObject.setDrawsBackground_(True)
         self._setAutosizingFromPosSize(posSize)
         # add a table view to the scroll view
-        self._tableView = getNSSubclass(self._tableViewClass)(self)
+        self._tableView = getNSSubclass(self.nsTableViewClass)(self)
         self._nsObject.setDocumentView_(self._tableView)
         # set up an observer that will be called by the bindings when a cell is edited
         self._editCallback = editCallback
-        self._editObserver = self._arrayControllerObserverClass.alloc().init()
+        self._editObserver = self.nsArrayControllerObserverClass.alloc().init()
         if editCallback is not None:
             self._editObserver._targetMethod = self._edit # circular reference to be killed in _breakCycles
         if items is not None:
@@ -368,7 +368,7 @@ class List(VanillaBaseObject):
             items = [self._wrapItem(item) for item in items]
             items = NSMutableArray.arrayWithArray_(items)
             # set up an array controller
-            self._arrayController = self._arrayControllerClass.alloc().initWithContent_(items)
+            self._arrayController = self.nsArrayControllerClass.alloc().initWithContent_(items)
             self._arrayController.setSelectsInsertedObjects_(False)
             self._arrayController.setAvoidsEmptySelection_(not allowsEmptySelection)
             self._tableView.setDataSource_(self._arrayController)
@@ -414,7 +414,7 @@ class List(VanillaBaseObject):
         # the selection method will be called when the items are added to the table view.
         if selectionCallback is not None:
             self._selectionCallback = selectionCallback
-            self._selectionObserver = self._arrayControllerObserverClass.alloc().init()
+            self._selectionObserver = self.nsArrayControllerObserverClass.alloc().init()
             self._arrayController.addObserver_forKeyPath_options_context_(self._selectionObserver, 'selectionIndexes', NSKeyValueObservingOptionNew, 0)
             self._selectionObserver._targetMethod = self._selection # circular reference to be killed in _breakCycles
         # set the double click callback the standard way
@@ -447,7 +447,23 @@ class List(VanillaBaseObject):
         self._tableView.setDraggingSourceOperationMask_forLocal_(local, True)
         # set the drag data
         self._dragSettings = dragSettings
-    
+
+    def _testForDeprecatedAttributes(self):
+        super(List, self)._testForDeprecatedAttributes()
+        from warnings import warn
+        if hasattr(self, "_scrollViewClass"):
+            warn(DeprecationWarning("The _scrollViewClass attribute is deprecated. Use the nsScrollViewClass attribute."))
+            self.nsScrollViewClass = self._scrollViewClass
+        if hasattr(self, "_tableViewClass"):
+            warn(DeprecationWarning("The _tableViewClass attribute is deprecated. Use the nsTableViewClass attribute."))
+            self.nsTableViewClass = self._tableViewClass
+        if hasattr(self, "_arrayControllerClass"):
+            warn(DeprecationWarning("The _arrayControllerClass attribute is deprecated. Use the nsArrayControllerClass attribute."))
+            self.nsArrayControllerClass = self._arrayControllerClass
+        if hasattr(self, "_arrayControllerObserverClass"):
+            warn(DeprecationWarning("The _arrayControllerObserverClass attribute is deprecated. Use the nsArrayControllerObserverClass attribute."))
+            self.nsArrayControllerObserverClass = self._arrayControllerObserverClass
+
     def getNSScrollView(self):
         """
         Return the _NSScrollView_ that this object wraps.

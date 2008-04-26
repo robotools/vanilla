@@ -40,14 +40,14 @@ class Window(NSObject):
     def __new__(cls, *args, **kwargs):
         return cls.alloc().init()
 
-    _nsWindowStyleMask = NSTitledWindowMask
+    nsWindowStyleMask = NSTitledWindowMask
     # use the unified title and toolbar in 10.4+
     try:
-        _nsWindowStyleMask |= NSUnifiedTitleAndToolbarWindowMask
+        nsWindowStyleMask |= NSUnifiedTitleAndToolbarWindowMask
     except NameError:
         pass
-    _nsWindowClass = NSWindow
-    _nsWindowLevel = NSNormalWindowLevel
+    nsWindowClass = NSWindow
+    nsWindowLevel = NSNormalWindowLevel
 
     def __init__(self, posSize, title="", minSize=None, maxSize=None, textured=False,
                 autosaveName=None, closable=True, miniaturizable=True, initiallyVisible=True):
@@ -70,7 +70,7 @@ class Window(NSObject):
 
         *initiallyVisible* Boolean value representing if the window will be initially visible. Default is True. If False, you can show the window later by calling window.show().
         """
-        mask = self._nsWindowStyleMask
+        mask = self.nsWindowStyleMask
         if closable:
             mask = mask | NSClosableWindowMask
         if miniaturizable:
@@ -89,7 +89,7 @@ class Window(NSObject):
             l, t, w, h = posSize
             cascade = False
         frame = _calcFrame(NSScreen.mainScreen().visibleFrame(), ((l, t), (w, h)))
-        self._window = self._nsWindowClass.alloc().initWithContentRect_styleMask_backing_defer_(
+        self._window = self.nsWindowClass.alloc().initWithContentRect_styleMask_backing_defer_(
             frame, mask, NSBackingStoreBuffered, False)
         if autosaveName is not None:
             # This also sets the window frame if it was previously stored.
@@ -103,11 +103,23 @@ class Window(NSObject):
         if maxSize is not None:
             self._window.setMaxSize_(maxSize)
         self._window.setTitle_(title)
-        self._window.setLevel_(self._nsWindowLevel)
+        self._window.setLevel_(self.nsWindowLevel)
         self._window.setReleasedWhenClosed_(False)
         self._window.setDelegate_(self)
         self._bindings = {}
         self._initiallyVisible = initiallyVisible
+
+    def _testForDeprecatedAttributes(self):
+        from warnings import warn
+        if hasattr(self, "_nsWindowStyleMask"):
+            warn(DeprecationWarning("The _nsWindowStyleMask attribute is deprecated. Use the nsWindowStyleMask attribute."))
+            self.nsWindowStyleMask = self._nsWindowStyleMask
+        if hasattr(self, "_nsWindowClass"):
+            warn(DeprecationWarning("The _nsWindowClass attribute is deprecated. Use the nsWindowClass attribute."))
+            self.nsWindowClass = self._nsWindowClass
+        if hasattr(self, "_nsWindowLevel"):
+            warn(DeprecationWarning("The _nsWindowLevel attribute is deprecated. Use the nsWindowLevel attribute."))
+            self.nsWindowLevel = self._nsWindowLevel
 
     def _cascade(self):
         allLeftTop = []
@@ -588,9 +600,9 @@ class FloatingWindow(Window):
     No special naming is required for the attributes. However, each attribute must have a unique name.
     """
 
-    _nsWindowStyleMask = NSTitledWindowMask | NSUtilityWindowMask
-    _nsWindowClass = NSPanel
-    _nsWindowLevel = NSFloatingWindowLevel
+    nsWindowStyleMask = NSTitledWindowMask | NSUtilityWindowMask
+    nsWindowClass = NSPanel
+    nsWindowLevel = NSFloatingWindowLevel
 
     def __init__(self, posSize, title="", minSize=None, maxSize=None,
             textured=False, autosaveName=None, closable=True,

@@ -37,7 +37,7 @@ class EditText(VanillaBaseControl):
     EditTextDemo()
     """
     
-    _textFieldClass = NSTextField
+    nsTextFieldClass = NSTextField
 
     def __init__(self, posSize, text="", callback=None, continuous=True, readOnly=False, formatter=None, placeholder=None, sizeStyle="regular"):
         """
@@ -68,7 +68,7 @@ class EditText(VanillaBaseControl):
         """
         #
         self._continuous = continuous
-        self._setupView(self._textFieldClass, posSize, callback)
+        self._setupView(self.nsTextFieldClass, posSize, callback)
         self._posSize = posSize
         #
         #
@@ -83,6 +83,13 @@ class EditText(VanillaBaseControl):
             cell.setFormatter_(formatter)
         if placeholder:
             cell.setPlaceholderString_(placeholder)
+
+    def _testForDeprecatedAttributes(self):
+        super(EditText, self)._testForDeprecatedAttributes()
+        from warnings import warn
+        if hasattr(self, "_textFieldClass"):
+            warn(DeprecationWarning("The _textFieldClass attribute is deprecated. Use the nsTextFieldClass attribute."))
+            self.nsTextFieldClass = self._textFieldClass
 
     def getNSTextField(self):
         """
@@ -141,5 +148,5 @@ class SecureEditText(EditText):
     SecureEditTextDemo()
     """
 
-    _textFieldClass = NSSecureTextField
+    nsTextFieldClass = NSSecureTextField
 

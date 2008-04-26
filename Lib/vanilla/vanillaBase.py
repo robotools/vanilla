@@ -16,6 +16,7 @@ class VanillaBaseObject(object):
         _delAttr(VanillaBaseObject, self, attr)
 
     def _setupView(self, classOrName, posSize, callback=None):
+        self._testForDeprecatedAttributes()
         cls = getNSSubclass(classOrName)
         self._nsObject = cls(self)
         self._posSize = posSize
@@ -25,6 +26,9 @@ class VanillaBaseObject(object):
     def _breakCycles(self):
         if hasattr(self, "_target"):
             self._target.callback = None
+
+    def _testForDeprecatedAttributes(self):
+        pass
 
     def _setCallback(self, callback):
         if callback is not None:

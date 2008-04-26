@@ -33,7 +33,7 @@ class TextEditor(VanillaBaseObject):
     TextEditorDemo()
     """
 
-    _textViewClass = NSTextView
+    nsTextViewClass = NSTextView
 
     def __init__(self, posSize, text="", callback=None, readOnly=False, checksSpelling=False):
         """
@@ -52,7 +52,7 @@ class TextEditor(VanillaBaseObject):
         self._nsObject.setHasVerticalScroller_(True)
         self._nsObject.setBorderType_(NSBezelBorder)
         self._nsObject.setDrawsBackground_(True)
-        self._textView = getNSSubclass(self._textViewClass)(self)
+        self._textView = getNSSubclass(self.nsTextViewClass)(self)
         self._textView.setAllowsUndo_(True)
         self._textView.setString_(text)
         self._textView.setContinuousSpellCheckingEnabled_(checksSpelling)
@@ -62,6 +62,13 @@ class TextEditor(VanillaBaseObject):
         # do the base object init methods
         self._setCallback(callback)
         self._setAutosizingFromPosSize(posSize)
+
+    def _testForDeprecatedAttributes(self):
+        super(TextEditor, self)._testForDeprecatedAttributes()
+        from warnings import warn
+        if hasattr(self, "_textViewClass"):
+            warn(DeprecationWarning("The _textViewClass attribute is deprecated. Use the nsTextViewClass attribute."))
+            self.nsTextViewClass = self._textViewClass
 
     def getNSScrollView(self):
         """

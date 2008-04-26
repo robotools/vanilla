@@ -3,5 +3,5 @@ from vanillaButton import ImageButton
 
 class GradientButton(ImageButton):
 
-    _nsBezelStyle = NSSmallSquareBezelStyle
+    nsBezelStyle = NSSmallSquareBezelStyle
 

@@ -25,7 +25,7 @@ class RadioGroup(VanillaBaseControl):
     RadioGroupDemo()
     """
 
-    _cellClass = NSButtonCell
+    nsCellClass = NSButtonCell
 
     def __init__(self, posSize, titles, isVertical=True, callback=None, sizeStyle="regular"):
         """
@@ -47,7 +47,7 @@ class RadioGroup(VanillaBaseControl):
         self._isVertical = isVertical
         matrix = self._nsObject
         matrix.setMode_(NSRadioModeMatrix)
-        matrix.setCellClass_(self._cellClass)
+        matrix.setCellClass_(self.nsCellClass)
         # XXX! this does not work for vertical radio groups!
         matrix.setAutosizesCells_(True)
         #
@@ -77,6 +77,13 @@ class RadioGroup(VanillaBaseControl):
             cell.setTitle_(title)
             cell.setControlSize_(cellSizeStyle)
             cell.setFont_(font)
+
+    def _testForDeprecatedAttributes(self):
+        super(RadioGroup, self)._testForDeprecatedAttributes()
+        from warnings import warn
+        if hasattr(self, "_cellClass"):
+            warn(DeprecationWarning("The _cellClass attribute is deprecated. Use the nsCellClass attribute."))
+            self.nsCellClass = self._cellClass
 
     def getNSMatrix(self):
         """

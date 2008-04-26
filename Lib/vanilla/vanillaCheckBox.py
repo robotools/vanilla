@@ -12,7 +12,7 @@ from vanilla import *
 
 class _CheckBoxStandardBuild(Button):
 
-    _nsButtonType = NSSwitchButton
+    nsButtonType = NSSwitchButton
     _frameAdjustments = {
         'mini': (-4, -4, 6, 8),
         'small': (-3, -2, 5, 4),
@@ -49,7 +49,7 @@ class _CheckBoxStandardBuild(Button):
 
 class _CheckBoxManualBuildButton(Button):
     
-    _nsButtonType = NSSwitchButton
+    nsButtonType = NSSwitchButton
     _frameAdjustments = {
         'regular': (-2, -3, 4, 4),
         'small': (-3, -7, 5, 4),
@@ -69,7 +69,7 @@ class _CheckBoxManualBuildButton(Button):
 
 class _CheckBoxManualBuildTextButton(Button):
     
-    _nsBezelStyle = NSShadowlessSquareBezelStyle
+    nsBezelStyle = NSShadowlessSquareBezelStyle
     _frameAdjustments = None
     
     def __init__(self, posSize, title, callback, sizeStyle):

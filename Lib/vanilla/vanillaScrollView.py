@@ -30,7 +30,7 @@ class ScrollView(VanillaBaseObject):
     ScrollViewDemo()
     """
 
-    _scrollViewClass = NSScrollView
+    nsScrollViewClass = NSScrollView
 
     def __init__(self, posSize, nsView, hasHorizontalScroller=True, hasVerticalScroller=True,
                     autohidesScrollers=False, backgroundColor=None, clipView=None):
@@ -47,7 +47,7 @@ class ScrollView(VanillaBaseObject):
         
         *backgroundColor* A _NSColor_ object representing the background color of the scroll view.
         """
-        self._setupView(self._scrollViewClass, posSize)
+        self._setupView(self.nsScrollViewClass, posSize)
         if clipView is not None:
             self._nsObject.setContentView_(clipView)
         self._nsObject.setDocumentView_(nsView)
@@ -57,7 +57,14 @@ class ScrollView(VanillaBaseObject):
         self._nsObject.setBorderType_(NSBezelBorder)
         if backgroundColor:
             self._nsObject.setBackgroundColor_(backgroundColor)
-    
+
+    def _testForDeprecatedAttributes(self):
+        super(ScrollView, self)._testForDeprecatedAttributes()
+        from warnings import warn
+        if hasattr(self, "_scrollViewClass"):
+            warn(DeprecationWarning("The _scrollViewClass attribute is deprecated. Use the nsScrollViewClass attribute."))
+            self.nsScrollViewClass = self._scrollViewClass
+
     def getNSScrollView(self):
         """
         Return the _NSScrollView_ that this object wraps.
