@@ -2,7 +2,7 @@ from AppKit import *
 from vanillaBase import VanillaBaseControl, VanillaCallbackWrapper
 
 
-class _VanillaEditTextDelegate(VanillaCallbackWrapper):
+class VanillaEditTextDelegate(VanillaCallbackWrapper):
 
     _continuous = True
 
@@ -99,7 +99,7 @@ class EditText(VanillaBaseControl):
 
     def _setCallback(self, callback):
         if callback is not None:
-            self._target = _VanillaEditTextDelegate(callback)
+            self._target = VanillaEditTextDelegate(callback)
             self._target._continuous = self._continuous
             self._nsObject.setDelegate_(self._target)
 
