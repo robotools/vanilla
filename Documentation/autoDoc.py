@@ -131,6 +131,15 @@ def _lstrip(docString):
     return '\n'.join(strippedLines)
 
 def extractMethodDoc(func, className):
+    if func is None:
+        return
+    # hack around standard attributes
+    if isinstance(func, (dict, int)):
+        return
+    if repr(func).startswith("<objective-c class"):
+        return
+    if "VanillaTabItem" in repr(func):
+        return
     funcName = func.__name__
     if hasattr(func, 'callable'):
         # hack around objc
@@ -340,7 +349,10 @@ def docObjects():
             if (className, attr) in methodFilter:
                 continue
             # get the method name and formatted doc
-            methodName, methodDoc = extractMethodDoc(getattr(cls, attr), className)
+            result = extractMethodDoc(getattr(cls, attr), className)
+            if result is None:
+                continue
+            methodName, methodDoc = result
             methods[methodName] = methodDoc
         sortedMethods = methods.keys()
         sortedMethods.sort()
