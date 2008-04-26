@@ -265,7 +265,7 @@ class List(VanillaBaseObject):
                 enableDelete=False, enableTypingSensitivity=False,
                 allowsMultipleSelection=True, allowsEmptySelection=True,
                 drawVerticalLines=False, drawHorizontalLines=False,
-                autohidesScrollers=True, rowHeight=17.0,
+                autohidesScrollers=True, drawFocusRing=True, rowHeight=17.0,
                 selfDropSettings=None,
                 selfDocumentDropSettings=None,
                 selfApplicationDropSettings=None,
@@ -311,6 +311,8 @@ class List(VanillaBaseObject):
         *drawVerticalLines* Boolean representing if vertical lines should be drawn in the list.
         
         *drawHorizontalLines* Boolean representing if horizontal lines should be drawn in the list.
+        
+        *drawFocusRing* Boolean representing if the standard focus ring should be drawn when the list is selected.
         
         *rowHeight* The height of the rows in the list.
 
@@ -379,6 +381,8 @@ class List(VanillaBaseObject):
             self._tableView.setCornerView_(None)
         # set the table attributes
         self._tableView.setUsesAlternatingRowBackgroundColors_(True)
+        if not drawFocusRing:
+            self._tableView.setFocusRingType_(NSFocusRingTypeNone)
         self._tableView.setRowHeight_(rowHeight)
         self._tableView.setAllowsEmptySelection_(allowsEmptySelection)
         self._tableView.setAllowsMultipleSelection_(allowsMultipleSelection)
