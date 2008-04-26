@@ -392,6 +392,7 @@ class List(VanillaBaseObject):
             self._tableView.setGridStyleMask_(lineType)
         # set up the columns. also make a flag that will be used
         # when unwrapping items.
+        self._orderedColumnIdentifiers = []
         self._typingSensitiveColumn = 0
         if not columnDescriptions:
             self._makeColumnWithoutColumnDescriptions()
@@ -496,6 +497,7 @@ class List(VanillaBaseObject):
     
     def _makeColumnWithoutColumnDescriptions(self):
         column = NSTableColumn.alloc().initWithIdentifier_("item")
+        self._orderedColumnIdentifiers.append("item")
         # set the data cell
         column.dataCell().setDrawsBackground_(False)
         if self._arrayController is not None:
@@ -527,6 +529,7 @@ class List(VanillaBaseObject):
                 self._typingSensitiveColumn = columnIndex
             # instantiate the column.
             column = NSTableColumn.alloc().initWithIdentifier_(key)
+            self._orderedColumnIdentifiers.append(key)
             # set the width
             if width is not None:
                 # set the resizing mask in OS > 10.3
@@ -805,6 +808,19 @@ class List(VanillaBaseObject):
             yield i
             i = s.indexGreaterThanIndex_(i)
 
+    def getEditedColumnAndRow(self):
+        # get the column and unsort
+        columnIndex = self._tableView.editedColumn()
+        if columnIndex != -1:
+            column = self._tableView.tableColumns()[columnIndex]
+            identifier = column.identifier()
+            columnIndex = self._orderedColumnIdentifiers.index(identifier)
+        # get the row and unsort
+        rowIndex = self._tableView.editedRow()
+        if rowIndex != -1:
+            rowIndex = self._getUnsortedIndexesFromSortedIndexes([rowIndex])[0]
+        return columnIndex, rowIndex
+
     def getSelection(self):
         """
         Get a list of indexes of selected items in the list.
@@ -834,6 +850,14 @@ class List(VanillaBaseObject):
         content = self._arrayController.content()
         items = [content[index] for index in selection]
         self._arrayController.removeObjects_(items)
+    
+    def scrollToSelection(self):
+        selection = self.getSelection()
+        if not selection:
+            return
+        indexes = self._getSortedIndexesFromUnsortedIndexes(selection)
+        index = min(indexes)
+        self._tableView.scrollRowToVisible_(index)
     
     # methods for handling sorted/unsorted index conversion
     
