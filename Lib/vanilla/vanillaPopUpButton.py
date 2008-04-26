@@ -27,7 +27,7 @@ class PopUpButton(VanillaBaseControl):
 
     nsPopUpButtonClass = NSPopUpButton
 
-    _frameAdjustments = {
+    frameAdjustments = {
         'mini': (-1, 0, 3, 0),
         'small': (-3, -4, 6, 5),
         'regular': (-3, -4, 6, 6),

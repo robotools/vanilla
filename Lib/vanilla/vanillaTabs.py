@@ -59,7 +59,7 @@ class Tabs(VanillaBaseObject):
     nsTabViewClass = NSTabView
     vanillaTabViewItemClass = VanillaTabItem
 
-    _allFrameAdjustments = {
+    allFrameAdjustments = {
         # The sizeStyle will be part of the
         # className used for the lookup here.
         'Tabs-mini': (-7, -10, 14, 12),
@@ -108,7 +108,7 @@ class Tabs(VanillaBaseObject):
             return frame
         sizeStyle = _reverseSizeStyleMap[self._nsObject.controlSize()]
         tabsType = 'Tabs-' + sizeStyle
-        self._frameAdjustments = self._allFrameAdjustments[tabsType]
+        self.frameAdjustments = self.allFrameAdjustments[tabsType]
         return super(Tabs, self)._adjustPosSize(frame)
 
     def _setCallback(self, callback):

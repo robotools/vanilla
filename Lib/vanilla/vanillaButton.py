@@ -50,7 +50,7 @@ class Button(VanillaBaseControl):
     nsBezelStyle = NSRoundedBezelStyle
     nsButtonType = NSMomentaryPushInButton
 
-    _frameAdjustments = {
+    frameAdjustments = {
         'mini': (-1, -2, 2, 2),
         'small': (-5, -7, 10, 11),
         'regular': (-6, -8, 12, 12),
@@ -151,7 +151,7 @@ class SquareButton(Button):
     """
     
     nsBezelStyle = NSShadowlessSquareBezelStyle
-    _frameAdjustments = None
+    frameAdjustments = None
     
     def __init__(self, posSize, title, callback=None, sizeStyle="regular"):
         """
@@ -200,7 +200,7 @@ class ImageButton(SquareButton):
     ImageButtonDemo()
     """
     
-    _frameAdjustments = None
+    frameAdjustments = None
     
     def __init__(self, posSize,
                 imagePath=None, imageNamed=None, imageObject=None,
@@ -304,7 +304,7 @@ class HelpButton(Button):
     """
 
     nsBezelStyle = NSHelpButtonBezelStyle
-    _frameAdjustments = {
+    frameAdjustments = {
         'regular': (0, -3, 0, 3),
         }
 

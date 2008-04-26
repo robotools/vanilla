@@ -13,7 +13,7 @@ from vanilla import *
 class _CheckBoxStandardBuild(Button):
 
     nsButtonType = NSSwitchButton
-    _frameAdjustments = {
+    frameAdjustments = {
         'mini': (-4, -4, 6, 8),
         'small': (-3, -2, 5, 4),
         'regular': (-2, -2, 4, 4),
@@ -50,7 +50,7 @@ class _CheckBoxStandardBuild(Button):
 class _CheckBoxManualBuildButton(Button):
     
     nsButtonType = NSSwitchButton
-    _frameAdjustments = {
+    frameAdjustments = {
         'regular': (-2, -3, 4, 4),
         'small': (-3, -7, 5, 4),
         'mini': (-3, -11, 6, 8),
@@ -70,7 +70,7 @@ class _CheckBoxManualBuildButton(Button):
 class _CheckBoxManualBuildTextButton(Button):
     
     nsBezelStyle = NSShadowlessSquareBezelStyle
-    _frameAdjustments = None
+    frameAdjustments = None
     
     def __init__(self, posSize, title, callback, sizeStyle):
         super(_CheckBoxManualBuildTextButton, self).__init__(posSize, title=title, callback=callback)
@@ -86,7 +86,7 @@ class _CheckBoxManualBuild(VanillaBaseObject):
     # this is necessary to create the appropriate buffer
     # and to handle the alignment.
     
-    _allFrameAdjustments = {
+    allFrameAdjustments = {
         'mini': (0, -4, 0, 8),
         'small': (0, -2, 0, 4),
         'regular': (0, -2, 0, 4),
@@ -109,10 +109,10 @@ class _CheckBoxManualBuild(VanillaBaseObject):
                 }
         left, top, width, height = posSize
         #
-        self._frameAdjustments = self._allFrameAdjustments[sizeStyle]
+        self.frameAdjustments = self.allFrameAdjustments[sizeStyle]
         #
         buttonWidth, buttonHeight = buttonSizes[sizeStyle]
-        buttonLeft, buttonTop = self._frameAdjustments[:2]
+        buttonLeft, buttonTop = self.frameAdjustments[:2]
         buttonLeft= abs(buttonLeft)
         buttonTop = abs(buttonTop)
         #

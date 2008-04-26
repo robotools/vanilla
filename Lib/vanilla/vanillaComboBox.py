@@ -27,7 +27,7 @@ class ComboBox(VanillaBaseControl):
 
     nsComboBoxClass = NSComboBox
 
-    _frameAdjustments = {
+    frameAdjustments = {
         'mini': (0, -4, 1, 5),
         'small': (0, -4, 3, 5),
         'regular': (0, -3, 3, 5),

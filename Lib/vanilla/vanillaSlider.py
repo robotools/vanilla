@@ -34,7 +34,7 @@ class Slider(VanillaBaseControl):
 
     nsSliderClass = NSSlider
 
-    _allFrameAdjustments = {
+    allFrameAdjustments = {
         'H-Slider-Above': {
             'mini': (0, 0, 0, 0),
             'small': (0, -1, 0, -1),
@@ -154,7 +154,7 @@ class Slider(VanillaBaseControl):
                 elif tickPos == NSTickMarkAbove:
                     tickPos = 'Above'
         sliderType = prefix + 'Slider-' + tickPos
-        self._frameAdjustments = self._allFrameAdjustments[sliderType]
+        self.frameAdjustments = self.allFrameAdjustments[sliderType]
         # now let the super class do the work
         return super(Slider, self)._adjustPosSize(frame)
     

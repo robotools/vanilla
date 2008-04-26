@@ -7,7 +7,7 @@ class VanillaError(Exception): pass
 
 class VanillaBaseObject(object):
     
-    _frameAdjustments = None
+    frameAdjustments = None
 
     def __setattr__(self, attr, value):
         _setAttr(VanillaBaseObject, self, attr, value)
@@ -28,7 +28,13 @@ class VanillaBaseObject(object):
             self._target.callback = None
 
     def _testForDeprecatedAttributes(self):
-        pass
+        from warnings import warn
+        if hasattr(self, "_frameAdjustments"):
+            warn(DeprecationWarning("The _frameAdjustments attribute is deprecated. Use the frameAdjustments attribute."))
+            self.frameAdjustments = self._frameAdjustments
+        if hasattr(self, "_allFrameAdjustments"):
+            warn(DeprecationWarning("The _allFrameAdjustments attribute is deprecated. Use the allFrameAdjustments attribute."))
+            self.allFrameAdjustments = self._allFrameAdjustments
 
     def _setCallback(self, callback):
         if callback is not None:
@@ -68,7 +74,7 @@ class VanillaBaseObject(object):
         else:
             sizeStyle = None
         #
-        adjustments = self._frameAdjustments
+        adjustments = self.frameAdjustments
         if adjustments:
             if sizeStyle is None:
                 aL, aB, aW, aH = adjustments

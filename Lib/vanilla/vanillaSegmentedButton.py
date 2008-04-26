@@ -13,7 +13,7 @@ class SegmentedButton(VanillaBaseControl):
 
     nsSegmentedControlClass = NSSegmentedControl
 
-    _frameAdjustments = {
+    frameAdjustments = {
         "mini": (0, -1, 0, 1), #15
         "small": (-2, -4, 2, 5), #20
         "regular": (0, -4, 0, 5), #24

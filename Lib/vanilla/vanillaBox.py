@@ -25,7 +25,7 @@ class Box(VanillaBaseObject):
     No special naming is required for the attributes. However, each attribute must have a unique name.
     """
     
-    _allFrameAdjustments = {
+    allFrameAdjustments = {
         # Box does not have sizeStyle, but the
         # adjustment is differeent based on the
         # presence of a title.
@@ -65,7 +65,7 @@ class Box(VanillaBaseObject):
             else:
                 title = 'None'
             boxType = 'Box-' + title
-            self._frameAdjustments = self._allFrameAdjustments[boxType]
+            self.frameAdjustments = self.allFrameAdjustments[boxType]
         return super(Box, self)._adjustPosSize(frame)
 
     def _getContentView(self):
