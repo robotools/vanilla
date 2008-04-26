@@ -10,10 +10,10 @@ _tickPositionMap = {
 
 
 class Slider(VanillaBaseControl):
-    
+
     """
     A standard slider control. Sliders can be vertical or horizontal and they can show tick marks or not show tick marks.
-    
+
     pre.
     from vanilla import *
      
@@ -27,7 +27,7 @@ class Slider(VanillaBaseControl):
              self.w.open()
              
          def sliderCallback(self, sender):
-             print 'slider edit!', sender.get()
+             print "slider edit!", sender.get()
              
     SliderDemo()
     """
@@ -35,35 +35,35 @@ class Slider(VanillaBaseControl):
     nsSliderClass = NSSlider
 
     allFrameAdjustments = {
-        'H-Slider-Above': {
-            'mini': (0, 0, 0, 0),
-            'small': (0, -1, 0, -1),
-            'regular': (-2, -2, 4, 2),
+        "H-Slider-Above": {
+            "mini": (0, 0, 0, 0),
+            "small": (0, -1, 0, -1),
+            "regular": (-2, -2, 4, 2),
         },
-        'H-Slider-Below': {
-            'mini': (0, 0, 0, 0),
-            'small': (0, 0, 0, 0),
-            'regular': (-2, 0, 4, 1),
+        "H-Slider-Below": {
+            "mini": (0, 0, 0, 0),
+            "small": (0, 0, 0, 0),
+            "regular": (-2, 0, 4, 1),
         },
-        'H-Slider-None': {
-            'mini': (0, -1, 0, 2),
-            'small': (0, -2, 0, 3),
-            'regular': (-2, -4, 4, 6),
+        "H-Slider-None": {
+            "mini": (0, -1, 0, 2),
+            "small": (0, -2, 0, 3),
+            "regular": (-2, -4, 4, 6),
         },
-        'V-Slider-Left': {
-            'mini': (0, -1, 1, 1),
-            'small': (0, -1, 1, 1),
-            'regular': (0, -3, 2, 5),
+        "V-Slider-Left": {
+            "mini": (0, -1, 1, 1),
+            "small": (0, -1, 1, 1),
+            "regular": (0, -3, 2, 5),
         },
-        'V-Slider-Right': {
-            'mini': (0, -1, 1, 1),
-            'small': (-1, -1, 2, 1),
-            'regular': (-2, -3, 2, 5),
+        "V-Slider-Right": {
+            "mini": (0, -1, 1, 1),
+            "small": (-1, -1, 2, 1),
+            "regular": (-2, -3, 2, 5),
         },
-        'V-Slider-None': {
-            'mini': (0, -1, 1, 1),
-            'small': (-2, -1, 4, 1),
-            'regular': (-3, -3, 6, 5),
+        "V-Slider-None": {
+            "mini": (0, -1, 1, 1),
+            "small": (-2, -1, 4, 1),
+            "regular": (-3, -3, 6, 5),
         },
     }
 
@@ -82,23 +82,23 @@ class Slider(VanillaBaseControl):
         | Regular | W | 24 | H | 23 |
         | Small   | W | 17 | H | 17 |
         | Mini    | W | 16 | H | 16 |
-        
+
         *minValue* The minimum value allowed by the slider.
-        
+
         *maxValue* The maximum value allowed by the slider.
-        
+
         *value* The initial value of the slider.
-        
+
         *tickMarkCount* The number of tick marcks to be displayed on the slider. If _None_ is given, no tick marks will be displayed.
-        
+
         *stopOnTickMarks* Boolean representing if the slider knob should only stop on the tick marks.
-        
+
         *continuous* Boolean representing if the assigned callback should be called during slider editing. If _False_ is given, the callback will be called after the editing has finished.
-        
+
         *callback* The method to be called when the slider has been edited.
-        
+
         *sizeStyle* A string representing the desired size style of the slider. The options are:
-        
+
         | "regular" |
         | "small"   |
         | "mini"    |
@@ -116,48 +116,48 @@ class Slider(VanillaBaseControl):
             self._nsObject.setContinuous_(True)
         else:
             self._nsObject.setContinuous_(False)
-    
+
     def getNSSlider(self):
         """
         Return the _NSSlider_ that this object wraps.
         """
         return self._nsObject
-    
+
     def _adjustPosSize(self, frame):
         # temporarily store the some data for positioning reference
         w, h = self._posSize[2:]
         if w > h:
-            prefix = 'H-'
+            prefix = "H-"
             isVertical = False
         else:
             isVertical = True
-            prefix = 'V-'
-        tickPos = 'None'
+            prefix = "V-"
+        tickPos = "None"
         tickMarkCount = self._nsObject.numberOfTickMarks()
         if tickMarkCount:
             tickPos = self._nsObject.tickMarkPosition()
             if isVertical:
                 if tickPos == NSTickMarkLeft:
-                    tickPos = 'Left'
+                    tickPos = "Left"
                 elif tickPos == NSTickMarkRight:
-                    tickPos = 'Right'
+                    tickPos = "Right"
                 # during __init__, the _nsObject will be unable
                 # to determine if the slider is horizontal or
                 # vertical, so it will return the position for
                 # horizontal sliders. override that and default
                 # to right here.
                 else:
-                    tickPos = 'Right'
+                    tickPos = "Right"
             else:
                 if tickPos == NSTickMarkBelow:
-                    tickPos = 'Below'
+                    tickPos = "Below"
                 elif tickPos == NSTickMarkAbove:
-                    tickPos = 'Above'
-        sliderType = prefix + 'Slider-' + tickPos
+                    tickPos = "Above"
+        sliderType = prefix + "Slider-" + tickPos
         self.frameAdjustments = self.allFrameAdjustments[sliderType]
         # now let the super class do the work
         return super(Slider, self)._adjustPosSize(frame)
-    
+
     def get(self):
         """
         Get the value of the slider.
@@ -191,14 +191,14 @@ class Slider(VanillaBaseControl):
     def setTickMarkPosition(self, value):
         """
         Set the position of the tick marks on the slider.
-        
+
         For vertical sliders, the options are:
-        
+
         | "left"  |
         | "right" |
-        
+
         For horizontal sliders, the options are:
-        
+
         | "top"    |
         | "bottom" |
         """

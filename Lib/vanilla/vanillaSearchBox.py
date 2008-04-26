@@ -3,10 +3,10 @@ from vanillaBase import VanillaBaseControl
 
 
 class SearchBox(VanillaBaseControl):
-    
+
     """
     A text entry field similar to the search field in Safari.
-    
+
     pre.
     from vanilla import *
      
@@ -19,7 +19,7 @@ class SearchBox(VanillaBaseControl):
             self.w.open()
             
         def searchBoxCallback(self, sender):
-            print 'search box entry!', sender.get()
+            print "search box entry!", sender.get()
         
     SearchBoxDemo()
     """
@@ -34,15 +34,15 @@ class SearchBox(VanillaBaseControl):
         | Regular | H | 22          |
         | Small   | H | 19          |
         | Mini    | H | 15          |
-        
+
         *text* The text to be displayed in the search box.
-        
+
         *callback* The method to be called when the user presses the search box.
-        
+
         *formatter* An "NSFormatter": http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html for controlling the display and input of the text entry.
-        
+
         *sizeStyle* A string representing the desired size style of the search box. The options are:
-        
+
         | "regular" |
         | "small"   |
         | "mini"    |
@@ -54,13 +54,13 @@ class SearchBox(VanillaBaseControl):
         cell.setScrollable_(True)
         if formatter is not None:
             cell.setFormatter_(formatter)
-    
+
     def getNSSearchField(self):
         """
         Return the _NSSearchField_ that this object wraps.
         """
         return self._nsObject
-    
+
     def get(self):
         """
         Get the contents of the search box.
@@ -70,7 +70,7 @@ class SearchBox(VanillaBaseControl):
     def set(self, value):
         """
         Set the contents of the search box.
-        
+
         *value* A string representing the contents of the search box.
         """
         self._nsObject.setStringValue_(value)

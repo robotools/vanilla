@@ -3,10 +3,10 @@ from vanillaBase import VanillaBaseObject, _sizeStyleMap
 
 
 class ProgressSpinner(VanillaBaseObject):
-    
+
     """
     An animated, spinning progress indicator.
-    
+
     pre.
     from vanilla import *
      
@@ -27,15 +27,15 @@ class ProgressSpinner(VanillaBaseObject):
     def __init__(self, posSize, displayWhenStopped=False, sizeStyle="regular"):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the spinner. The size of the spinner sould match the appropriate value for the given sizeStyle.
-        
+
         |\\5. *Standard Dimensions* |
         | Regular | W | 32 | H | 32 |
         | Small   | W | 16 | H | 16 |
-        
+
         *displayWhenStopped* Boolean representing if the spiiner should be displayed when it is not spinning.
-        
+
         *sizeStyle* A string representing the desired size style of the spinner. The options are:
-        
+
         | "regular" |
         | "small"   |
         """

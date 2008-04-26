@@ -12,12 +12,12 @@ _drawerEdgeMap = {
 
 
 class Drawer(VanillaBaseObject):
-    
+
     """
     A drawer attached to a window. Drawers are capable of containing controls.
-    
+
     To add a control to a drawer, simply set it as an attribute of the drawer.
-    
+
     pre.
     from vanilla import *
      
@@ -25,11 +25,11 @@ class Drawer(VanillaBaseObject):
         
         def __init__(self):
             self.w = Window((200, 200))
-            self.w.button = Button((10, 10, -10, 20), 'Toggle Drawer',
+            self.w.button = Button((10, 10, -10, 20), "Toggle Drawer",
                                 callback=self.toggleDrawer)
             self.d = Drawer((100, 150), self.w)
             self.d.textBox = TextBox((10, 10, -10, -10),
-                                'This is a drawer.')
+                                "This is a drawer.")
             self.w.open()
             self.d.open()
             
@@ -37,7 +37,7 @@ class Drawer(VanillaBaseObject):
             self.d.toggle()
             
     DrawerDemo()
-    
+
     No special naming is required for the attributes. However, each attribute must have a unique name.
     """
 
@@ -49,22 +49,22 @@ class Drawer(VanillaBaseObject):
         *size* Tuple of form (width, height) representing the size of the drawer.
 
         *parentWindow* The window that the drawer should be attached to.
-        
+
         *minSize* Tuple of form (width, height) representing the minimum size of the drawer.
-        
+
         *maxSize* Tuple of form (width, height) representing the maximum size of the drawer.
-        
+
         *preferredEdge* The preferred edge of the window that the drawe should be attached to. If the drwer cannot be opened on the preferred edge, it will be opened on the opposite edge. The options are:
-        
+
         | "left"   |
         | "right"  |
         | "top"    |
         | "bottom" |
-        
+
         *forceEdge* Boolean representing if the drawer should _always_ be opened on the preferred edge.
-        
+
         *leadingOffset* Distance between the top or left edge of the drawer and the parent window.
-        
+
         *trailingOffset* Distance between the bottom or right edge of the drawer and the parent window.
         """
         from vanillaWindows import Window
@@ -81,7 +81,7 @@ class Drawer(VanillaBaseObject):
         if isinstance(parentWindow, Window):
             parentWindow = parentWindow._window
         drawer.setParentWindow_(parentWindow)
-        
+
     def getNSDrawer(self):
         """
         Return the _NSDrawer_ that this object wraps.

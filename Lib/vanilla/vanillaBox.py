@@ -3,12 +3,12 @@ from vanillaBase import VanillaBaseObject, _breakCycles
 
 
 class Box(VanillaBaseObject):
-    
+
     """
     A bordered container for other controls.
-    
+
     To add a control to a box, simply set it as an attribute of the box.
-    
+
     pre.
     from vanilla import *
      
@@ -17,20 +17,20 @@ class Box(VanillaBaseObject):
         def __init__(self):
             self.w = Window((150, 70))
             self.w.box = Box((10, 10, -10, -10))
-            self.w.box.text = TextBox((10, 10, -10, -10), 'This is a box')
+            self.w.box.text = TextBox((10, 10, -10, -10), "This is a box")
             self.w.open()
             
     BoxDemo()
-    
+
     No special naming is required for the attributes. However, each attribute must have a unique name.
     """
-    
+
     allFrameAdjustments = {
         # Box does not have sizeStyle, but the
         # adjustment is differeent based on the
         # presence of a title.
-        'Box-Titled': (-3, -4, 6, 4),
-        'Box-None': (-3, -4, 6, 6)
+        "Box-Titled": (-3, -4, 6, 4),
+        "Box-None": (-3, -4, 6, 6)
     }
 
     nsBoxClass = NSBox
@@ -49,7 +49,7 @@ class Box(VanillaBaseObject):
             self._nsObject.setTitleFont_(font)
         else:
             self._nsObject.setTitlePosition_(NSNoTitle)
-    
+
     def getNSBox(self):
         """
         Return the _NSBox_ that this object wraps.
@@ -57,14 +57,14 @@ class Box(VanillaBaseObject):
         return self._nsObject
 
     def _adjustPosSize(self, frame):
-        # skip supclasses
-        if self.__class__.__name__ == 'Box':
+        # skip subclasses
+        if self.__class__.__name__ == "Box":
             pos = self._nsObject.titlePosition()
             if pos != NSNoTitle:
-                title = 'Titled'
+                title = "Titled"
             else:
-                title = 'None'
-            boxType = 'Box-' + title
+                title = "None"
+            boxType = "Box-" + title
             self.frameAdjustments = self.allFrameAdjustments[boxType]
         return super(Box, self)._adjustPosSize(frame)
 
@@ -105,7 +105,7 @@ class HorizontalLine(_Line):
     
     """
     A horizontal line.
-    
+
     pre.
     from vanilla import *
      
@@ -118,11 +118,11 @@ class HorizontalLine(_Line):
             
     HorizontalLineDemo()
     """
-    
+
     def __init__(self, posSize):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the line.
-        
+
         |\\2. *Standard Dimensions* |
         | H | 1                     |
         """
@@ -130,10 +130,10 @@ class HorizontalLine(_Line):
 
 
 class VerticalLine(_Line):
-    
+
     """
     A vertical line.
-    
+
     pre.
     from vanilla import *
      
@@ -150,7 +150,7 @@ class VerticalLine(_Line):
     def __init__(self, posSize):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the line.
-        
+
         |\\2. *Standard Dimensions* |
         | V | 1                     |
         """

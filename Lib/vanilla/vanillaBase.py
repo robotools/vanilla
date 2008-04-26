@@ -6,7 +6,7 @@ class VanillaError(Exception): pass
 
 
 class VanillaBaseObject(object):
-    
+
     frameAdjustments = None
 
     def __setattr__(self, attr, value):
@@ -69,7 +69,7 @@ class VanillaBaseObject(object):
         self._nsObject.setFrame_(frame)
 
     def _adjustPosSize(self, frame):
-        if hasattr(self._nsObject, 'cell') and self._nsObject.cell() is not None:
+        if hasattr(self._nsObject, "cell") and self._nsObject.cell() is not None:
             sizeStyle = _reverseSizeStyleMap[self._nsObject.cell().controlSize()]
         else:
             sizeStyle = None

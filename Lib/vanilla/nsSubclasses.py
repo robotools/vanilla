@@ -22,7 +22,8 @@ class _VanillaMethods:
 
 _subclasses = {}
 def getNSSubclass(classOrName=None):
-    """Return a subclass of a given Objective-C class.
+    """
+    Return a subclass of a given Objective-C class.
     This subclass allows us to store a weakref to a Vanilla wrapper
     object. This way we can always get back at it. Mainly meant to
     translate "sender" arguments of action methods to a Vanilla object.

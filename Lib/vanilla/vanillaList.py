@@ -54,7 +54,7 @@ class _VanillaTableViewSubclass(VanillaTableViewSubclass):
 class VanillaArrayControllerObserver(NSObject):
     
     def observeValueForKeyPath_ofObject_change_context_(self, keyPath, obj, change, context):
-        if hasattr(self, '_targetMethod') and self._targetMethod is not None:
+        if hasattr(self, "_targetMethod") and self._targetMethod is not None:
             self._targetMethod()
 
 class _VanillaArrayControllerObserver(VanillaArrayControllerObserver):
@@ -168,13 +168,12 @@ class _VanillaArrayController(VanillaArrayController):
 
 
 class List(VanillaBaseObject):
-    
+
     """
     A control that shows a list of items. These lists can contain one or more columns.
-    
-    
+
     h6. A single column example:
-    
+
     pre.
     from vanilla import *
         
@@ -182,7 +181,7 @@ class List(VanillaBaseObject):
         
         def __init__(self):
             self.w = Window((100, 100))
-            self.w.myList = List((0, 0, -0, -0), ['A', 'B', 'C'],
+            self.w.myList = List((0, 0, -0, -0), ["A", "B", "C"],
                          selectionCallback=self.selectionCallback)
             self.w.open()
         
@@ -190,9 +189,9 @@ class List(VanillaBaseObject):
             print sender.getSelection()
         
     ListDemo()
-    
+
     h6. A mutliple column example:
-    
+
     pre.
     from vanilla import *
      
@@ -201,8 +200,8 @@ class List(VanillaBaseObject):
         def __init__(self):
             self.w = Window((100, 100))
             self.w.myList = List((0, 0, -0, -0),
-                         [{'One': 'A', 'Two': 'a'}, {'One': 'B', 'Two': 'b'}],
-                         columnDescriptions=[{'title': 'One'}, {'title': 'Two'}],
+                         [{"One": "A", "Two": "a"}, {"One": "B", "Two": "b"}],
+                         columnDescriptions=[{"title": "One"}, {"title": "Two"}],
                          selectionCallback=self.selectionCallback)
             self.w.open()
             
@@ -210,16 +209,16 @@ class List(VanillaBaseObject):
             print sender.getSelection()
             
     ListDemo()
-    
+
     h6. Pythonic list behavior
-    
+
     List objects behave like standard Python lists. For xample, given this List:
-    
+
     pre.
-    self.w.myList = List((10, 10, 200, 100), ['A', 'B', 'C'])
-    
+    self.w.myList = List((10, 10, 200, 100), ["A", "B", "C"])
+
     The following Python list methods work:
-    
+
     pre.
     # Getting the length of the List.
     >>> len(self.w.myList)
@@ -227,51 +226,51 @@ class List(VanillaBaseObject):
      
     # Retrieving an item or items from a List.
     >>> self.w.myList[1]
-    'B'
+    "B"
     >>> self.w.myList[:2]
-    ['A', 'B']
+    ["A", "B"]
      
     # Setting an item in a List.
-    >>> self.w.myList[1] = 'XYZ'
+    >>> self.w.myList[1] = "XYZ"
     >>> self.w.myList.get()
-    ['A', 'XYZ', 'C']
+    ["A", "XYZ", "C"]
      
     # Deleting an item at an index in a List.
     >>> del self.w.myList[1]
     >>> self.w.myList.get()
-    ['A', 'C']
+    ["A", "C"]
      
     # Appending an item to a List.
-    >>> self.w.myList.append('Z')
+    >>> self.w.myList.append("Z")
     >>> self.w.myList.get()
-    ['A', 'B', 'C', 'Z']
+    ["A", "B", "C", "Z"]
      
     # Removing the first occurance of an item in a List.
-    >>> self.w.myList.remove('A')
+    >>> self.w.myList.remove("A")
     >>> self.w.myList.get()
-    ['B', 'C']
+    ["B", "C"]
      
     # Getting the index for the first occurance of an item in a List.
-    >>> self.w.myList.index('B')
+    >>> self.w.myList.index("B")
     1
      
     # Inserting an item into a List.
-    >>> self.w.myList.insert(1, 'XYZ')
+    >>> self.w.myList.insert(1, "XYZ")
     >>> self.w.myList.get()
-    ['A', 'XYZ', 'B', 'C']
+    ["A", "XYZ", "B", "C"]
      
     # Extending a List.
-    >>> self.w.myList.extend(['X', 'Y', 'Z'])
+    >>> self.w.myList.extend(["X", "Y", "Z"])
     >>> self.w.myList.get()
-    ['A', 'B', 'C', 'X', 'Y', 'Z']
+    ["A", "B", "C", "X", "Y", "Z"]
      
     # Iterating over a List.
     >>> for i in self.w.myList:
     >>>     i
-    'A'
-    'B'
-    'C'
-    
+    "A"
+    "B"
+    "C"
+
     need to explain:
     - putting NSObject in list. requires column descriptions with a proper key tied to the NSObject.
     """
@@ -294,7 +293,7 @@ class List(VanillaBaseObject):
                 dragSettings=None):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the list.
-        
+
         *items* The items to be displayed in the list. In the case of multiple
         column lists, this should be a list of dictionaries with the data for
         each column keyed by the column key as defined in columnDescriptions.
@@ -312,53 +311,53 @@ class List(VanillaBaseObject):
         | *"editable"* (optional)        | Enable or disable editing in the column. If nothing is given, it will follow the editability of the rest of the list. |
         | *"width"* (optional)           | The width of the column. In OS 10.3 and lower the width must be defined for *all* columns if the width is defined for one column. |
         | *"typingSensitive"* (optional) | A boolean representing that this column should be the column that responds to user key input. Only one column can be flagged as True. If no column is flagged, the first column will automatically be flagged. |
-        
+
         *showColumnTitles* Boolean representing if the column titles should be shown or not. Column titles will not be shown in single column lists.
-        
+
         *selectionCallback* Callback to be called when the selection in the list changes.
-        
+
         *doubleClickCallback* Callback to be called when an item is double clicked.
-        
+
         *editCallback* Callback to be called after an item has been edited.
-        
+
         *enableDelete* A boolean representing if items in the list can be deleted via the interface.
-        
+
         *enableTypingSensitivity* A boolean representing if typing in the list will jump to the closest match as the entered keystrokes. _Available only in single column lists._
-        
+
         *allowsMultipleSelection* A boolean representing if the list allows more than one item to be selected.
-        
+
         *allowsEmptySelection* A boolean representing if the list allows zero items to be selected.
-        
+
         *drawVerticalLines* Boolean representing if vertical lines should be drawn in the list.
-        
+
         *drawHorizontalLines* Boolean representing if horizontal lines should be drawn in the list.
-        
+
         *drawFocusRing* Boolean representing if the standard focus ring should be drawn when the list is selected.
-        
+
         *rowHeight* The height of the rows in the list.
 
         *autohidesScrollers* Boolean representing if scrollbars should automatically be hidden if possible.
-        
+
         *NOTE: Drag and drop is very experimental. It may change.*
-        
+
         *selfDropSettings* A dictionary defining the drop settings when the source of the drop is this list. The dictionary form is described below.
-        
+
         *selfDocumentDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same document as this list. The dictionary form is described below.
-        
+
         *selfApplicationDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same application as this list. The dictionary form is described below.
-        
+
         *otherApplicationDropSettings* A dictionary defining the drop settings when the source of the drop is contained an application other than the one that contains this list. The dictionary form is described below.
-        
+
         The drop settings dictionaries should be of this form:
-        
+
         | *type*                            | A single drop type indicating what drop types the list accepts. For example, NSFilenamesPboardType or "MyCustomPboardType". |
         | *operation* (optional)            | A "drag operation":http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Protocols/NSDraggingInfo_Protocol/Reference/Reference.html that the list accepts. The default is NSDragOperationCopy. |
         | *allowDropBetweenRows* (optional) | A boolean indicating if the list accepts drops between rows. The default is True. |
         | *allowDropOnRow* (optional)       | A boolean indicating if the list accepts drops on rows. The default is False. |
         | *callback*                        | Callback to be called when a drop is proposed and when a drop is to occur. This method should return a boolean representing if the drop is acceptable or not. This method must accept _sender_ and _dropInfo_ arguments. The _dropInfo_ will be a dictionary as described below. |
-        
+
         The dropInfo dictionary passed to drop callbacks will be of this form:
-        
+
         | *data*       | The data proposed for the drop. This data will be of the type specified by dropDataFormat. |
         | *rowIndex*   | The row where the drop is proposed. |
         | *source*     | The source from which items are being dragged. If this object is wrapped by Vanilla, the Vanilla object will be passed as the source. |
@@ -436,7 +435,7 @@ class List(VanillaBaseObject):
         if selectionCallback is not None:
             self._selectionCallback = selectionCallback
             self._selectionObserver = self.nsArrayControllerObserverClass.alloc().init()
-            self._arrayController.addObserver_forKeyPath_options_context_(self._selectionObserver, 'selectionIndexes', NSKeyValueObservingOptionNew, 0)
+            self._arrayController.addObserver_forKeyPath_options_context_(self._selectionObserver, "selectionIndexes", NSKeyValueObservingOptionNew, 0)
             self._selectionObserver._targetMethod = self._selection # circular reference to be killed in _breakCycles
         # set the double click callback the standard way
         if doubleClickCallback is not None:
@@ -490,20 +489,20 @@ class List(VanillaBaseObject):
         Return the _NSScrollView_ that this object wraps.
         """
         return self._nsObject
-    
+
     def getNSTableView(self):
         """
         Return the _NSTableView_ that this object wraps.
         """
         return self._tableView
-    
+
     def _breakCycles(self):
         super(List, self)._breakCycles()
-        if hasattr(self, '_editCallback') and self._editObserver is not None:
+        if hasattr(self, "_editCallback") and self._editObserver is not None:
             self._editObserver._targetMethod = None
-        if hasattr(self, '_selectionCallback') and self._selectionCallback is not None:
+        if hasattr(self, "_selectionCallback") and self._selectionCallback is not None:
             self._selectionObserver._targetMethod = None
-        if hasattr(self, '_doubleClickTarget') and self._doubleClickTarget is not None:
+        if hasattr(self, "_doubleClickTarget") and self._doubleClickTarget is not None:
             self._doubleClickTarget.callback = None
         self._selfDropSettings = None
         self._selfDocumentDropSettings = None
@@ -515,19 +514,19 @@ class List(VanillaBaseObject):
         # it must be set in all columns if the OS < 10.4.
         # raise an error if the width is not defined in all.
         if not _haveResizingMasks:
-            columnDataWithWidths = [column for column in columnDescriptions if column.get('width') is not None]
+            columnDataWithWidths = [column for column in columnDescriptions if column.get("width") is not None]
             if columnDataWithWidths and not len(columnDataWithWidths) == len(columnDescriptions):
-                raise VanillaError('The width of all columns must be set in this version of the operating system')
+                raise VanillaError("The width of all columns must be set in this version of the operating system")
         # we also use this opportunity to determine if
         # autoresizing should be set for the table.
         autoResize = True
         for column in columnDescriptions:
-            if column.get('width') is not None:
+            if column.get("width") is not None:
                 autoResize = False
                 break
         if autoResize:
             self._setColumnAutoresizing()
-    
+
     def _setColumnAutoresizing(self):
         # set the resizing mask in OS > 10.3
         if _haveResizingMasks:
@@ -535,7 +534,7 @@ class List(VanillaBaseObject):
         # use the method in OS < 10.4
         else:
             self._tableView.setAutoresizesAllColumnsToFit_(True)
-    
+
     def _makeColumnWithoutColumnDescriptions(self):
         column = NSTableColumn.alloc().initWithIdentifier_("item")
         self._orderedColumnIdentifiers.append("item")
@@ -543,8 +542,8 @@ class List(VanillaBaseObject):
         column.dataCell().setDrawsBackground_(False)
         if self._arrayController is not None:
             # assign the key to the binding
-            keyPath = 'arrangedObjects.item'
-            column.bind_toObject_withKeyPath_options_('value', self._arrayController, keyPath, None)
+            keyPath = "arrangedObjects.item"
+            column.bind_toObject_withKeyPath_options_("value", self._arrayController, keyPath, None)
             # set the column as editable if we have a callback
             if self._editCallback is not None:
                 self._arrayController.addObserver_forKeyPath_options_context_(self._editObserver, keyPath, NSKeyValueObservingOptionNew, 0)
@@ -552,21 +551,21 @@ class List(VanillaBaseObject):
                 column.setEditable_(False)
         # finally, add the column to the table view
         self._tableView.addTableColumn_(column)
-        
+
     def _makeColumnsWithColumnDescriptions(self, columnDescriptions):
         # make sure that the column widths are in the correct format.
         self._handleColumnWidths(columnDescriptions)
         # create each column.
         for columnIndex, data in enumerate(columnDescriptions):
-            title = data['title']
-            key = data.get('key', title)
-            width = data.get('width')
-            formatter = data.get('formatter')
-            cell = data.get('cell')
-            editable = data.get('editable')
-            keyPath = 'arrangedObjects.%s' % key
+            title = data["title"]
+            key = data.get("key", title)
+            width = data.get("width")
+            formatter = data.get("formatter")
+            cell = data.get("cell")
+            editable = data.get("editable")
+            keyPath = "arrangedObjects.%s" % key
             # check for typing sensitivity.
-            if data.get('typingSensitive'):
+            if data.get("typingSensitive"):
                 self._typingSensitiveColumn = columnIndex
             # instantiate the column.
             column = NSTableColumn.alloc().initWithIdentifier_(key)
@@ -602,7 +601,7 @@ class List(VanillaBaseObject):
                 dataCell.setFormatter_(formatter)
             if self._arrayController is not None:
                 # assign the key to the binding
-                column.bind_toObject_withKeyPath_options_('value', self._arrayController, keyPath, None)
+                column.bind_toObject_withKeyPath_options_("value", self._arrayController, keyPath, None)
             # set the editability of the column.
             # if no value was defined in the column data,
             # base the editability on the presence of
@@ -622,7 +621,7 @@ class List(VanillaBaseObject):
                 # do this *after* adding the column to the table, or the first column
                 # will have the wrong width (at least on 10.3)
                 column.setWidth_(width)
-    
+
     def _wrapItem(self, item):
         # if the item is an instance of NSObject, assume that
         # it is KVC compliant and return it.
@@ -643,17 +642,17 @@ class List(VanillaBaseObject):
             item = NSMutableDictionary.dictionaryWithDictionary_(item)
         # the item is not a dictionary, so wrap it inside of a dictionary.
         else:
-            item = NSMutableDictionary.dictionaryWithDictionary_({'item': item})
+            item = NSMutableDictionary.dictionaryWithDictionary_({"item": item})
         return item
-    
+
     def _edit(self):
         if self._editCallback is not None:
             self._editCallback(self)
-    
+
     def _selection(self):
         if self._selectionCallback is not None: 
             self._selectionCallback(self)
-    
+
     def _keyDown(self, event):
         # this method is called by the NSTableView subclass after a key down
         # has occurred. the subclass expects that a boolean will be returned
@@ -767,18 +766,18 @@ class List(VanillaBaseObject):
                 self.setSelection([lastResortIndex])
                 return True
         return False
-    
-    ##
-    ## list behavior
-    ##
-    
+
+    # -------------
+    # list behavior
+    # -------------
+
     def __len__(self):
         return len(self._arrayController.content())
 
     def __getitem__(self, index):
         item = self._arrayController.content()[index]
         if not self._itemsWereDict:
-            item = item['item']
+            item = item["item"]
         return item
 
     def __setitem__(self, index, value):
@@ -793,9 +792,9 @@ class List(VanillaBaseObject):
             for key, value in value.items():
                 item[key] = value
         else:
-            item['item'] = value
+            item["item"] = value
         self._editCallback = editCallback
-            
+
     def __delitem__(self, index):
         index = self._getSortedIndexesFromUnsortedIndexes([index])[0]
         self._arrayController.removeObjectAtArrangedObjectIndex_(index)
@@ -822,7 +821,9 @@ class List(VanillaBaseObject):
         items = [self._wrapItem(item) for item in items]
         self._arrayController.addObjects_(items)
 
-    ###
+    # ----------------
+    # vanilla behavior
+    # ----------------
 
     def set(self, items):
         """
@@ -840,9 +841,9 @@ class List(VanillaBaseObject):
         """
         items = list(self._arrayController.content())
         if not self._itemsWereDict:
-            items = [item['item'] for item in items]
+            items = [item["item"] for item in items]
         return items
-    
+
     def _iterIndexSet(self, s):
         i = s.firstIndex()
         while i != NSNotFound:
@@ -873,11 +874,11 @@ class List(VanillaBaseObject):
         # create a list containing only the selected indexes.
         selectedRowIndexes = list(self._iterIndexSet(selectedRowIndexes))
         return self._getUnsortedIndexesFromSortedIndexes(selectedRowIndexes)
-        
+
     def setSelection(self, selection):
         """
         Set the selected items in the list.
-        
+
         *selection* should be a list of indexes.
         """
         indexes = self._getSortedIndexesFromUnsortedIndexes(selection)
@@ -885,13 +886,13 @@ class List(VanillaBaseObject):
         for index in selection:
             indexSet.addIndex_(index)
         self._arrayController.setSelectionIndexes_(indexSet)
-    
+
     def _removeSelection(self):
         selection = self.getSelection()
         content = self._arrayController.content()
         items = [content[index] for index in selection]
         self._arrayController.removeObjects_(items)
-    
+
     def scrollToSelection(self):
         selection = self.getSelection()
         if not selection:
@@ -899,9 +900,9 @@ class List(VanillaBaseObject):
         indexes = self._getSortedIndexesFromUnsortedIndexes(selection)
         index = min(indexes)
         self._tableView.scrollRowToVisible_(index)
-    
+
     # methods for handling sorted/unsorted index conversion
-    
+
     def _getUnsortedIndexesFromSortedIndexes(self, indexes):
         arrayController = self._arrayController
         sortDescriptors = arrayController.sortDescriptors()
@@ -927,7 +928,7 @@ class List(VanillaBaseObject):
             if not sortedObjects:
                 break
         return unsortedIndexes
-    
+
     def _getSortedIndexesFromUnsortedIndexes(self, indexes):
         arrayController = self._arrayController
         sortDescriptors = arrayController.sortDescriptors()
@@ -958,7 +959,7 @@ class List(VanillaBaseObject):
 def CheckBoxListCell(title=None):
     """
     An object that displays a check box in a List column.
-    
+
     *This object should only be used in the _columnDescriptions_ argument during the construction of a List.*
 
     *title* The title to be set in *all* items in the List column.
@@ -969,7 +970,7 @@ def CheckBoxListCell(title=None):
     font = NSFont.systemFontOfSize_(NSFont.systemFontSizeForControlSize_(NSSmallControlSize))
     cell.setFont_(font)
     if title is None:
-        title = ''
+        title = ""
     cell.setTitle_(title)
     return cell
 
@@ -977,11 +978,11 @@ def CheckBoxListCell(title=None):
 def SliderListCell(minValue=0, maxValue=100):
     """
     An object that displays a slider in a List column.
-    
+
     *This object should only be used in the _columnDescriptions_ argument during the construction of a List.*
 
     *minValue* The minimum value for the slider.
-    
+
     *maxValue* The maximum value for the slider.
     """
     cell = NSSliderCell.alloc().init()

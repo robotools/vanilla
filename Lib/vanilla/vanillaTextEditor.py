@@ -4,9 +4,9 @@ from vanillaBase import VanillaBaseObject, VanillaCallbackWrapper
 
 
 class VanillaTextEditorDelegate(NSObject):
-    
+
     def textDidChange_(self, notification):
-        if hasattr(self, '_target'):
+        if hasattr(self, "_target"):
             textView = notification.object()
             self._target.action_(textView)
 
@@ -15,7 +15,7 @@ class TextEditor(VanillaBaseObject):
 
     """
     Standard long text entry control.
-    
+
     pre.
     from vanilla import *
      
@@ -28,7 +28,7 @@ class TextEditor(VanillaBaseObject):
             self.w.open()
             
         def textEditorCallback(self, sender):
-            print 'text entry!', sender.get()
+            print "text entry!", sender.get()
         
     TextEditorDemo()
     """
@@ -39,13 +39,13 @@ class TextEditor(VanillaBaseObject):
     def __init__(self, posSize, text="", callback=None, readOnly=False, checksSpelling=False):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the text entry control.
-        
+
         *text* The text to be displayed in the text entry control.
-        
+
         *callback* The method to be called when the user presses the text entry control.
-        
+
         *readOnly* Boolean representing if the text can be edited or not.
-        
+
         *checksSpelling* Boolean representing if spelling should be automatically checked or not.
         """
         self._posSize = posSize
@@ -76,7 +76,7 @@ class TextEditor(VanillaBaseObject):
         Return the _NSScrollView_ that this object wraps.
         """
         return self._nsObject
-    
+
     def getNSTextView(self):
         """
         Return the _NSTextView_ that this object wraps.
@@ -101,7 +101,7 @@ class TextEditor(VanillaBaseObject):
     def set(self, value):
         """
         Set the contents of the text box.
-        
+
         *value* A string representing the contents of the text box.
         """
         self._textView.setString_(value)

@@ -3,10 +3,10 @@ from vanillaBase import VanillaBaseControl, _sizeStyleMap
 
 
 class RadioGroup(VanillaBaseControl):
-    
+
     """
     A collection of radio buttons.
-    
+
     pre.
     from vanilla import *
      
@@ -15,12 +15,12 @@ class RadioGroup(VanillaBaseControl):
         def __init__(self):
             self.w = Window((100, 60))
             self.w.radioGroup = RadioGroup((10, 10, -10, 40),
-                                    ['Option 1', 'Option 2'],
+                                    ["Option 1", "Option 2"],
                                     callback=self.radioGroupCallback)
             self.w.open()
             
         def radioGroupCallback(self, sender):
-            print 'radio group edit!', sender.get()
+            print "radio group edit!", sender.get()
             
     RadioGroupDemo()
     """
@@ -31,15 +31,15 @@ class RadioGroup(VanillaBaseControl):
     def __init__(self, posSize, titles, isVertical=True, callback=None, sizeStyle="regular"):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the radio group.
-        
+
         *titles* A list of titles to be shown next to the radio buttons.
-        
+
         *isVertical* Boolean representing if the radio group is vertical or horizontal.
-        
+
         *callback* The method to be caled when a radio button is selected.
-        
+
         *sizeStyle* A string representing the desired size style of the radio group. The options are:
-        
+
         | "regular" |
         | "small"   |
         | "mini"    |
@@ -51,7 +51,6 @@ class RadioGroup(VanillaBaseControl):
         matrix.setCellClass_(self.nsCellClass)
         # XXX! this does not work for vertical radio groups!
         matrix.setAutosizesCells_(True)
-        #
         # we handle the control size setting here
         # since the actual NS object is a NSMatrix
         cellSizeStyle = _sizeStyleMap[sizeStyle]
@@ -67,7 +66,7 @@ class RadioGroup(VanillaBaseControl):
             matrix.setIntercellSpacing_((3.0, 2.0))
             matrix.setCellSize_((posSize[2], 12))
         else:
-            raise ValueError, "sizeStyle must be 'regular', 'small' or 'mini'"
+            raise ValueError("sizeStyle must be 'regular', 'small' or 'mini'")
         for x in range(len(titles)):
             if isVertical:
                 matrix.addRow()

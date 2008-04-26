@@ -19,7 +19,7 @@ class EditText(VanillaBaseControl):
 
     """
     Standard short text entry control.
-    
+
     pre.
     from vanilla import *
      
@@ -32,11 +32,11 @@ class EditText(VanillaBaseControl):
             self.w.open()
             
         def editTextCallback(self, sender):
-            print 'text entry!', sender.get()
+            print "text entry!", sender.get()
         
     EditTextDemo()
     """
-    
+
     nsTextFieldClass = NSTextField
 
     def __init__(self, posSize, text="", callback=None, continuous=True, readOnly=False, formatter=None, placeholder=None, sizeStyle="regular"):
@@ -47,31 +47,28 @@ class EditText(VanillaBaseControl):
         | Regular | H | 22          |
         | Small   | H | 19          |
         | Mini    | H | 16          |
-        
+
         *text* An object representing the contents of the text entry control. If no formatter has been assigned to the control, this should be a string. If a formatter has been assigned, this should be an object of the type that the formatter expects.
-        
+
         *callback* The method to be called when the user enters text.
-        
+
         *continuous* If True, the callback (if any) will be called upon each keystroke, if False, only call the callback when editing finishes. Default is True.
-        
+
         *readOnly* Boolean representing if the text can be edited or not.
-        
+
         *formatter* An "NSFormatter": http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html for controlling the display and input of the text entry.
-        
+
         *placeholder* A placeholder string to be shown when the text entry control is empty.
-        
+
         *sizeStyle* A string representing the desired size style of the text entry control. The options are:
-        
+
         | "regular" |
         | "small"   |
         | "mini"    |
         """
-        #
         self._continuous = continuous
         self._setupView(self.nsTextFieldClass, posSize, callback)
         self._posSize = posSize
-        #
-        #
         self._setSizeStyle(sizeStyle)
         self._nsObject.setObjectValue_(text)
         self._nsObject.setDrawsBackground_(True)
@@ -106,7 +103,7 @@ class EditText(VanillaBaseControl):
     def get(self):
         """
         Get the contents of the text entry control.
-        
+
         If no formatter has been assigned to the control, this returns a string. If a formatter has been assigned, this returns an object which has been translated by the formatter.
         """
         return self._nsObject.objectValue()
@@ -114,7 +111,7 @@ class EditText(VanillaBaseControl):
     def set(self, value):
         """
         Set the contents of the text entry control.
-        
+
         *value* An object representing the contents of the text entry control. If no formatter has been assigned to the control, this should be a string. If a formatter has been assigned, this should be an object of the type that the formatter expects.
         """
         self._nsObject.setObjectValue_(value)
@@ -130,7 +127,7 @@ class SecureEditText(EditText):
 
     """
     Standard secure text entry control.
-    
+
     pre.
     from vanilla import *
      
@@ -143,7 +140,7 @@ class SecureEditText(EditText):
             self.w.open()
             
         def secureEditTextCallback(self, sender):
-            print 'text entry!', sender.get()
+            print "text entry!", sender.get()
         
     SecureEditTextDemo()
     """

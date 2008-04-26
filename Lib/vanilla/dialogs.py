@@ -10,7 +10,7 @@ __all__ = ["message", "askYesNoCancel", "askYesNo", "getFile", "getFolder", "get
 class BaseMessageDialog(NSObject):
 
     def initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(self,
-        messageText='', informativeText='', alertStyle=NSInformationalAlertStyle, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
+        messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
 
         self = super(BaseMessageDialog, self).init()
         self.retain()
@@ -48,7 +48,7 @@ class BaseMessageDialog(NSObject):
         if self._resultCallback is not None:
             self._resultCallback(self._value)
 
-    alertDidEnd_returnCode_contextInfo_ = selector(alertDidEnd_returnCode_contextInfo_, signature='v@:@i@')
+    alertDidEnd_returnCode_contextInfo_ = selector(alertDidEnd_returnCode_contextInfo_, signature="v@:@i@")
 
     def windowWillClose_(self, notification):
         self.autorelease()
@@ -168,21 +168,21 @@ def _unwrapWindow(window):
         window = window.getNSWindow()
     return window
 
-def message(messageText='', informativeText='', alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
+def message(messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
     parentWindow = _unwrapWindow(parentWindow)
     alert = BaseMessageDialog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(
         messageText=messageText, informativeText=informativeText, alertStyle=alertStyle, buttonTitlesValues=[("OK", 1)], parentWindow=parentWindow, resultCallback=resultCallback)
     if resultCallback is None:
         return 1
 
-def askYesNoCancel(messageText='', informativeText='', alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
+def askYesNoCancel(messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
     parentWindow = _unwrapWindow(parentWindow)
     alert = BaseMessageDialog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(
         messageText=messageText, informativeText=informativeText, alertStyle=alertStyle, buttonTitlesValues=[("Cancel", -1), ("Yes", 1), ("No", 0)], parentWindow=parentWindow, resultCallback=resultCallback)
     if resultCallback is None:
         return alert._value
 
-def askYesNo(messageText='', informativeText='', alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
+def askYesNo(messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
     parentWindow = _unwrapWindow(parentWindow)
     alert = BaseMessageDialog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(
         messageText=messageText, informativeText=informativeText, alertStyle=alertStyle, buttonTitlesValues=[("Yes", 1), ("No", 0)], parentWindow=parentWindow, resultCallback=resultCallback)

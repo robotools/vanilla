@@ -92,8 +92,8 @@ class SplitView(VanillaBaseObject):
      
         def __init__(self):
             self.w = Window((200, 200), "SplitView Demo", minSize=(100, 100))
-            list1 = List((0, 0, -0, 100), ['A', 'B', 'C'])
-            list2 = List((0, 0, -0, 100), ['a', 'b', 'c'])
+            list1 = List((0, 0, -0, 100), ["A", "B", "C"])
+            list2 = List((0, 0, -0, 100), ["a", "b", "c"])
             paneDescriptors = [
                 dict(view=list1),
                 dict(view=list2),

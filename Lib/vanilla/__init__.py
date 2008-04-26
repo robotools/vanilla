@@ -24,44 +24,44 @@ from vanillaTextEditor import TextEditor
 from vanillaWindows import Window, FloatingWindow, Sheet
 
 __all__ = [
-    'VanillaBaseObject', 'VanillaBaseControl', 'VanillaError',
-    'Box', 'HorizontalLine', 'VerticalLine',
-    'Button', 'SquareButton', 'ImageButton', 'HelpButton',
-    'CheckBox',
-    'ColorWell',
-    'ComboBox',
-    'Drawer',
-    'EditText',
-    'Group',
-    'ImageView',
-    'List', 'CheckBoxListCell', 'SliderListCell',
-    'PopUpButton',
-    'ProgressBar',
-    'ProgressSpinner',
-    'RadioGroup',
-    'ScrollView',
-    'SearchBox',
-    'SecureEditText',
-    'SegmentedButton',
-    'Slider',
-    'SplitView',
-    'Tabs',
-    'TextBox',
-    'TextEditor',
-    'Window', 'FloatingWindow', 'Sheet'
+    "VanillaBaseObject", "VanillaBaseControl", "VanillaError",
+    "Box", "HorizontalLine", "VerticalLine",
+    "Button", "SquareButton", "ImageButton", "HelpButton",
+    "CheckBox",
+    "ColorWell",
+    "ComboBox",
+    "Drawer",
+    "EditText",
+    "Group",
+    "ImageView",
+    "List", "CheckBoxListCell", "SliderListCell",
+    "PopUpButton",
+    "ProgressBar",
+    "ProgressSpinner",
+    "RadioGroup",
+    "ScrollView",
+    "SearchBox",
+    "SecureEditText",
+    "SegmentedButton",
+    "Slider",
+    "SplitView",
+    "Tabs",
+    "TextBox",
+    "TextEditor",
+    "Window", "FloatingWindow", "Sheet"
     ]
 
 # OS 10.4+ objects
 try:
     from vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
-    __all__.append('LevelIndicator')
-    __all__.append('LevelIndicatorListCell')
+    __all__.append("LevelIndicator")
+    __all__.append("LevelIndicatorListCell")
 except (ImportError, NameError):
     pass
 
 # OS 10.5 objects
 try:
     from vanillaGradientButton import GradientButton
-    __all__.append('GradientButton')
+    __all__.append("GradientButton")
 except (ImportError, NameError):
     pass

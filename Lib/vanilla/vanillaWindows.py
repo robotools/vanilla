@@ -27,9 +27,9 @@ class Window(NSObject):
     class WindowDemo(object):
          
         def __init__(self):
-            self.w = Window((200, 70), 'Window Demo')
-            self.w.myButton = Button((10, 10, -10, 20), 'My Button')
-            self.w.myTextBox = TextBox((10, 40, -10, 17), 'My Text Box')
+            self.w = Window((200, 70), "Window Demo")
+            self.w.myButton = Button((10, 10, -10, 20), "My Button")
+            self.w.myTextBox = TextBox((10, 40, -10, 17), "My Text Box")
             self.w.open()
              
     WindowDemo()
@@ -308,149 +308,6 @@ class Window(NSObject):
         b = b - y
         self._window.setFrame_display_animate_(((l, b), (w, h)), True, animate)
 
-    ###
-    ### Toolbar
-    ###
-
-    # credit where credit is due: much of this was learned
-    # from the PyObjC demo: WSTConnectionWindowControllerClass
-
-    def addToolbar(self, toolbarIdentifier, toolbarItems, addStandardItems=True):
-        """
-        Add a toolbar to the window.
-
-        *toolbarIdentifier* A string representing a unique name for the toolbar.
-
-        *toolbarItems* An ordered list of dictionaries containing the following items:
-
-        | *itemIdentifier* | A unique string identifier for the item. This is only used internally. |
-        | *label* (optional) | The text label for the item. Defaults to _None_. |
-        | *paletteLabel* (optional) | The text label shown in the customization palette. Defaults to _label_. |
-        | *toolTip* (optional) | The tool tip for the item. Defaults to _label_. |
-        | *imagePath* (optional) | A file path to an image. Defaults to _None_. |
-        | *imageNamed* (optional) | The name of an image already loaded as a _NSImage_ by the application. Defaults to _None_. |
-        | *imageObject* (optional) | A _NSImage_ object. Defaults to _None_. |
-        | *selectable* (optional) | A boolean representing if the item is selectable or not. The default value is _False_. For more information on selectable toolbar items, refer to Apple's "documentation":http://developer.apple.com/documentation/Cocoa/Conceptual/Toolbars/Tasks/SelectableItems.html|
-        | *view* (optional) | A _NSView_ object to be used instead of an image. Defaults to _None_. |
-        | *visibleByDefault* (optional) | If the item should be visible by default pass True to this argument. If the item should be added to the toolbar only through the customization palette, use a value of _False_. Defaults to _True_. |
-
-        *addStandardItems* A boolean, specifying whether the standard Cocoa toolbar items
-        should be added. Defaults to _True_. If you set it to _False_, you must specify any
-        standard items manually in *toolbarItems*, by using the constants from the AppKit module:
-
-        | *NSToolbarSeparatorItemIdentifier* | The Separator item. |
-        | *NSToolbarSpaceItemIdentifier* | The Space item. |
-        | *NSToolbarFlexibleSpaceItemIdentifier* | The Flexible Space item. |
-        | *NSToolbarShowColorsItemIdentifier* | The Colors item. Shows the color panel. |
-        | *NSToolbarShowFontsItemIdentifier* | The Fonts item. Shows the font panel. |
-        | *NSToolbarCustomizeToolbarItemIdentifier* | The Customize item. Shows the customization palette. |
-        | *NSToolbarPrintItemIdentifier* | The Print item. Refer to Apple's _NSToolbarItem_ documentation for more information. |
-
-        pre. {itemIdentifier: NSToolbarSpaceItemIdentifier}
-        
-        Returns a dictionary containing the created toolbar items, mapped by itemIdentifier.
-        """
-
-        # create the reference structures
-        self._toolbarItems = {}
-        self._toolbarDefaultItemIdentifiers = []
-        self._toolbarAllowedItemIdentifiers = []
-        self._toolbarCallbackWrappers = {}
-        self._toolbarSelectableItemIdentifiers = []
-        #
-        # create the toolbar items
-        for itemData in toolbarItems:
-            self._createToolbarItem(itemData)
-
-        if addStandardItems:
-            for standardItem in STANDARD_TOOLBAR_ITEMS:
-                if standardItem not in self._toolbarAllowedItemIdentifiers:
-                    self._toolbarAllowedItemIdentifiers.append(standardItem)
-        #
-        # create the toolbar
-        toolbar = NSToolbar.alloc().initWithIdentifier_(toolbarIdentifier)
-        toolbar.setDelegate_(self)
-        toolbar.setAllowsUserCustomization_(True)
-        toolbar.setAutosavesConfiguration_(True)
-        #
-        self._window.setToolbar_(toolbar)
-        # Return the dict of toolbar items, so our caller can choose to
-        # keep references to them if needed.
-        return self._toolbarItems
-
-    def _createToolbarItem(self, itemData):
-        itemIdentifier = itemData.get('itemIdentifier')
-        if itemIdentifier is None:
-            raise VanillaError('toolbar item data must contain a unique itemIdentifier string')
-        if itemIdentifier in self._toolbarItems:
-            raise VanillaError('toolbar itemIdentifier is not unique: %r' % itemIdentifier)
-
-        if itemIdentifier not in self._toolbarAllowedItemIdentifiers:
-            self._toolbarAllowedItemIdentifiers.append(itemIdentifier)
-        if itemData.get('visibleByDefault', True):
-            self._toolbarDefaultItemIdentifiers.append(itemIdentifier)
-
-        if itemIdentifier.startswith('NS'):
-            # no need to create an actual item for a standard Cocoa toolbar item
-            return
-
-        label = itemData.get('label')
-        paletteLabel = itemData.get('paletteLabel', label)
-        toolTip = itemData.get('toolTip', label)
-        imagePath = itemData.get('imagePath')
-        imageNamed = itemData.get('imageNamed')
-        imageObject = itemData.get('imageObject')
-        view = itemData.get('view')
-        callback = itemData.get('callback', None)
-        #
-        # create the NSImage if needed
-        if imagePath is not None:
-            image = NSImage.alloc().initWithContentsOfFile_(imagePath)
-        elif imageNamed is not None:
-            image = NSImage.imageNamed_(imageNamed)
-        elif imageObject is not None:
-            image = imageObject
-        else:
-            image = None
-        #
-        toolbarItem = NSToolbarItem.alloc().initWithItemIdentifier_(itemIdentifier)
-        toolbarItem.setLabel_(label)
-        toolbarItem.setPaletteLabel_(paletteLabel)
-        toolbarItem.setToolTip_(toolTip)
-        if image is not None:
-            toolbarItem.setImage_(image)
-        elif view is not None:
-            toolbarItem.setView_(view)
-            toolbarItem.setMinSize_(view.frame().size)
-            toolbarItem.setMaxSize_(view.frame().size)
-        #
-        if callback is not None:
-            target = VanillaCallbackWrapper(callback)
-            toolbarItem.setTarget_(target)
-            toolbarItem.setAction_("action:")
-            self._toolbarCallbackWrappers[itemIdentifier] = target
-        #
-        if itemData.get('selectable', False):
-            self._toolbarSelectableItemIdentifiers.append(itemIdentifier)
-        #
-        self._toolbarItems[itemIdentifier] = toolbarItem
-
-    # Toolbar delegate methods
-
-    def toolbarDefaultItemIdentifiers_(self, anIdentifier):
-        return self._toolbarDefaultItemIdentifiers
-
-    def toolbarAllowedItemIdentifiers_(self, anIdentifier):
-        return self._toolbarAllowedItemIdentifiers
-
-    def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, itemIdentifier, flag):
-        return self._toolbarItems.get(itemIdentifier)
-
-    def toolbarSelectableItemIdentifiers_(self, toolbar):
-        return self._toolbarSelectableItemIdentifiers
-
-    ###
-
     def resize(self, width, height, animate=True):
         """
         Change the size of the window to _width_ and _height_.
@@ -487,30 +344,30 @@ class Window(NSObject):
         _For more information about main and key windows, refer to the Cocoa "documentation":http://developer.apple.com/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyWindow.html on the subject._
 
         *callback* The callback that will be called when the event occurs. It should accept a _sender_ argument which will be the Window that called the callback.
-        
+
         pre.
         class WindowBindDemo(object):
              
             def __init__(self):
                 self.w = Window((200, 200))
-                self.w.bind('move', self.windowMoved)
+                self.w.bind("move", self.windowMoved)
                 self.w.open()
                  
             def windowMoved(self, sender):
-                print 'window moved!', sender
+                print "window moved!", sender
                  
         WindowBindDemo()
         """
         if event not in self._bindings:
             self._bindings[event] = []
         self._bindings[event].append(callback)
-    
+
     def unbind(self, event, callback):
         """
         Unbind a callback from an event.
-        
+
         *event* A string representing the desired event. Refer to _bind_ for the options.
-        
+
         *callback* The callback that has been bound to the event.
         """
         self._bindings[event].remove(callback)
@@ -522,7 +379,7 @@ class Window(NSObject):
         # call the delegate method which calls
         # this method) before the super
         # call in __init__ is complete.
-        if hasattr(self, '_bindings'):
+        if hasattr(self, "_bindings"):
             if key in self._bindings:
                 for callback in self._bindings[key]:
                     # XXX this return causes only the first binding to be called XXX
@@ -531,9 +388,9 @@ class Window(NSObject):
 
     def windowWillClose_(self, notification):
         self.hide()
-        self._alertBindings('close')
+        self._alertBindings("close")
         # remove all bindings to prevent circular refs
-        if hasattr(self, '_bindings'):
+        if hasattr(self, "_bindings"):
             del self._bindings
         self._breakCycles()
         # We must make sure that the window does _not_ get deallocated during
@@ -550,31 +407,160 @@ class Window(NSObject):
         self.autorelease()     # see self.open()
 
     def windowDidBecomeKey_(self, notification):
-        self._alertBindings('became key')
+        self._alertBindings("became key")
 
     def windowDidResignKey_(self, notification):
-        self._alertBindings('resigned key')
+        self._alertBindings("resigned key")
 
     def windowDidBecomeMain_(self, notification):
-        self._alertBindings('became main')
+        self._alertBindings("became main")
 
     def windowDidResignMain_(self, notification):
-        self._alertBindings('resigned main')
+        self._alertBindings("resigned main")
 
     def windowDidMove_(self, notification):
-        self._alertBindings('move')
+        self._alertBindings("move")
 
     def windowDidResize_(self, notification):
-        self._alertBindings('resize')
+        self._alertBindings("resize")
 
     def windowShouldClose_(self, notification):
-        shouldClose = self._alertBindings('should close')
+        shouldClose = self._alertBindings("should close")
         if shouldClose is None:
             shouldClose = True
         return shouldClose
 
-#   def __del__(self):
-#       print "Window.__del__"
+    # -------
+    # Toolbar
+    # -------
+
+    # credit where credit is due: much of this was learned
+    # from the PyObjC demo: WSTConnectionWindowControllerClass
+
+    def addToolbar(self, toolbarIdentifier, toolbarItems, addStandardItems=True):
+        """
+        Add a toolbar to the window.
+
+        *toolbarIdentifier* A string representing a unique name for the toolbar.
+
+        *toolbarItems* An ordered list of dictionaries containing the following items:
+
+        | *itemIdentifier* | A unique string identifier for the item. This is only used internally. |
+        | *label* (optional) | The text label for the item. Defaults to _None_. |
+        | *paletteLabel* (optional) | The text label shown in the customization palette. Defaults to _label_. |
+        | *toolTip* (optional) | The tool tip for the item. Defaults to _label_. |
+        | *imagePath* (optional) | A file path to an image. Defaults to _None_. |
+        | *imageNamed* (optional) | The name of an image already loaded as a _NSImage_ by the application. Defaults to _None_. |
+        | *imageObject* (optional) | A _NSImage_ object. Defaults to _None_. |
+        | *selectable* (optional) | A boolean representing if the item is selectable or not. The default value is _False_. For more information on selectable toolbar items, refer to Apple's "documentation":http://developer.apple.com/documentation/Cocoa/Conceptual/Toolbars/Tasks/SelectableItems.html|
+        | *view* (optional) | A _NSView_ object to be used instead of an image. Defaults to _None_. |
+        | *visibleByDefault* (optional) | If the item should be visible by default pass True to this argument. If the item should be added to the toolbar only through the customization palette, use a value of _False_. Defaults to _True_. |
+
+        *addStandardItems* A boolean, specifying whether the standard Cocoa toolbar items
+        should be added. Defaults to _True_. If you set it to _False_, you must specify any
+        standard items manually in *toolbarItems*, by using the constants from the AppKit module:
+
+        | *NSToolbarSeparatorItemIdentifier* | The Separator item. |
+        | *NSToolbarSpaceItemIdentifier* | The Space item. |
+        | *NSToolbarFlexibleSpaceItemIdentifier* | The Flexible Space item. |
+        | *NSToolbarShowColorsItemIdentifier* | The Colors item. Shows the color panel. |
+        | *NSToolbarShowFontsItemIdentifier* | The Fonts item. Shows the font panel. |
+        | *NSToolbarCustomizeToolbarItemIdentifier* | The Customize item. Shows the customization palette. |
+        | *NSToolbarPrintItemIdentifier* | The Print item. Refer to Apple's _NSToolbarItem_ documentation for more information. |
+
+        pre. {itemIdentifier: NSToolbarSpaceItemIdentifier}
+
+        Returns a dictionary containing the created toolbar items, mapped by itemIdentifier.
+        """
+
+        # create the reference structures
+        self._toolbarItems = {}
+        self._toolbarDefaultItemIdentifiers = []
+        self._toolbarAllowedItemIdentifiers = []
+        self._toolbarCallbackWrappers = {}
+        self._toolbarSelectableItemIdentifiers = []
+        # create the toolbar items
+        for itemData in toolbarItems:
+            self._createToolbarItem(itemData)
+        if addStandardItems:
+            for standardItem in STANDARD_TOOLBAR_ITEMS:
+                if standardItem not in self._toolbarAllowedItemIdentifiers:
+                    self._toolbarAllowedItemIdentifiers.append(standardItem)
+        # create the toolbar
+        toolbar = NSToolbar.alloc().initWithIdentifier_(toolbarIdentifier)
+        toolbar.setDelegate_(self)
+        toolbar.setAllowsUserCustomization_(True)
+        toolbar.setAutosavesConfiguration_(True)
+        self._window.setToolbar_(toolbar)
+        # Return the dict of toolbar items, so our caller can choose to
+        # keep references to them if needed.
+        return self._toolbarItems
+
+    def _createToolbarItem(self, itemData):
+        itemIdentifier = itemData.get("itemIdentifier")
+        if itemIdentifier is None:
+            raise VanillaError("toolbar item data must contain a unique itemIdentifier string")
+        if itemIdentifier in self._toolbarItems:
+            raise VanillaError("toolbar itemIdentifier is not unique: %r" % itemIdentifier)
+
+        if itemIdentifier not in self._toolbarAllowedItemIdentifiers:
+            self._toolbarAllowedItemIdentifiers.append(itemIdentifier)
+        if itemData.get("visibleByDefault", True):
+            self._toolbarDefaultItemIdentifiers.append(itemIdentifier)
+
+        if itemIdentifier.startswith("NS"):
+            # no need to create an actual item for a standard Cocoa toolbar item
+            return
+
+        label = itemData.get("label")
+        paletteLabel = itemData.get("paletteLabel", label)
+        toolTip = itemData.get("toolTip", label)
+        imagePath = itemData.get("imagePath")
+        imageNamed = itemData.get("imageNamed")
+        imageObject = itemData.get("imageObject")
+        view = itemData.get("view")
+        callback = itemData.get("callback", None)
+        # create the NSImage if needed
+        if imagePath is not None:
+            image = NSImage.alloc().initWithContentsOfFile_(imagePath)
+        elif imageNamed is not None:
+            image = NSImage.imageNamed_(imageNamed)
+        elif imageObject is not None:
+            image = imageObject
+        else:
+            image = None
+        toolbarItem = NSToolbarItem.alloc().initWithItemIdentifier_(itemIdentifier)
+        toolbarItem.setLabel_(label)
+        toolbarItem.setPaletteLabel_(paletteLabel)
+        toolbarItem.setToolTip_(toolTip)
+        if image is not None:
+            toolbarItem.setImage_(image)
+        elif view is not None:
+            toolbarItem.setView_(view)
+            toolbarItem.setMinSize_(view.frame().size)
+            toolbarItem.setMaxSize_(view.frame().size)
+        if callback is not None:
+            target = VanillaCallbackWrapper(callback)
+            toolbarItem.setTarget_(target)
+            toolbarItem.setAction_("action:")
+            self._toolbarCallbackWrappers[itemIdentifier] = target
+        if itemData.get("selectable", False):
+            self._toolbarSelectableItemIdentifiers.append(itemIdentifier)
+        self._toolbarItems[itemIdentifier] = toolbarItem
+
+    # Toolbar delegate methods
+
+    def toolbarDefaultItemIdentifiers_(self, anIdentifier):
+        return self._toolbarDefaultItemIdentifiers
+
+    def toolbarAllowedItemIdentifiers_(self, anIdentifier):
+        return self._toolbarAllowedItemIdentifiers
+
+    def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, itemIdentifier, flag):
+        return self._toolbarItems.get(itemIdentifier)
+
+    def toolbarSelectableItemIdentifiers_(self, toolbar):
+        return self._toolbarSelectableItemIdentifiers
 
 
 class FloatingWindow(Window):
@@ -586,15 +572,15 @@ class FloatingWindow(Window):
 
     pre.
     from vanilla import *
-
+     
     class FloatingWindowDemo(object):
-
+         
         def __init__(self):
-            self.w = FloatingWindow((200, 70), 'FloatingWindow Demo')
-            self.w.myButton = Button((10, 10, -10, 20), 'My Button')
-            self.w.myTextBox = TextBox((10, 40, -10, 17), 'My Text Box')
+            self.w = FloatingWindow((200, 70), "FloatingWindow Demo")
+            self.w.myButton = Button((10, 10, -10, 20), "My Button")
+            self.w.myTextBox = TextBox((10, 40, -10, 17), "My Text Box")
             self.w.open()
-
+             
     FloatingWindowDemo()
 
     No special naming is required for the attributes. However, each attribute must have a unique name.
@@ -643,15 +629,15 @@ class Sheet(Window):
 
     pre.
     from vanilla import *
-
+     
     class SheetDemo(object):
-
+         
         def __init__(self, parentWindow):
             self.w = Sheet((200, 70), parentWindow)
-            self.w.myButton = Button((10, 10, -10, 20), 'My Button')
-            self.w.myTextBox = TextBox((10, 40, -10, 17), 'My Text Box')
+            self.w.myButton = Button((10, 10, -10, 20), "My Button")
+            self.w.myTextBox = TextBox((10, 40, -10, 17), "My Text Box")
             self.w.open()
-
+             
     SheetDemo()
 
     No special naming is required for the attributes. However, each attribute must have a unique name.

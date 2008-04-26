@@ -6,7 +6,7 @@ class PopUpButton(VanillaBaseControl):
     
     """
     A button which, when selected, displays a list of items for the user to choose from.
-    
+
     pre.
     from vanilla import *
      
@@ -15,12 +15,12 @@ class PopUpButton(VanillaBaseControl):
         def __init__(self):
             self.w = Window((100, 40))
             self.w.popUpButton = PopUpButton((10, 10, -10, 20),
-                                  ['A', 'B', 'C'],
+                                  ["A", "B", "C"],
                                   callback=self.popUpButtonCallback)
             self.w.open()
             
         def popUpButtonCallback(self, sender):
-            print 'pop up button selection!', sender.get()
+            print "pop up button selection!", sender.get()
             
     PopUpButtonDemo()
     """
@@ -28,9 +28,9 @@ class PopUpButton(VanillaBaseControl):
     nsPopUpButtonClass = NSPopUpButton
 
     frameAdjustments = {
-        'mini': (-1, 0, 3, 0),
-        'small': (-3, -4, 6, 5),
-        'regular': (-3, -4, 6, 6),
+        "mini": (-1, 0, 3, 0),
+        "small": (-3, -4, 6, 5),
+        "regular": (-3, -4, 6, 6),
     }
 
     def __init__(self, posSize, items, callback=None, sizeStyle="regular"):
@@ -41,13 +41,13 @@ class PopUpButton(VanillaBaseControl):
         | Regular | H | 20          |
         | Small   | H | 17          |
         | Mini    | H | 15          |
-        
+
         *items* A list of items to appear in the pop up list.
-        
+
         *callback* The method to be called when the user selects an item in the pop up list.
-        
+
         *sizeStyle* A string representing the desired size style of the pop up button. The options are:
-        
+
         | "regular" |
         | "small"   |
         | "mini"    |
@@ -55,7 +55,7 @@ class PopUpButton(VanillaBaseControl):
         self._setupView(self.nsPopUpButtonClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.addItemsWithTitles_(items)
-        
+
     def getNSPopUpButton(self):
         """
         Return the _NSPopUpButton_ that this object wraps.
