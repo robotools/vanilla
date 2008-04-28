@@ -104,9 +104,16 @@ class VanillaArrayController(NSArrayController):
                 return NSDragOperationNone
             settings = vanillaWrapper._selfDropSettings
             return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
+        # drag from same window
+        window = tableView.window()
+        if window is not None and window == draggingSource.window() and vanillaWrapper._selfWindowDropSettings is not None:
+            if vanillaWrapper._selfWindowDropSettings is None:
+                return NSDragOperationNone
+            settings = vanillaWrapper._selfWindowDropSettings
+            return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
         # drag from same document
         document = tableView.window().document()
-        if document is not None and document != draggingSource.window().document():
+        if document is not None and document == draggingSource.window().document():
             if vanillaWrapper._selfDocumentDropSettings is None:
                 return NSDragOperationNone
             settings = vanillaWrapper._selfDocumentDropSettings
@@ -287,6 +294,7 @@ class List(VanillaBaseObject):
                 drawVerticalLines=False, drawHorizontalLines=False,
                 autohidesScrollers=True, drawFocusRing=True, rowHeight=17.0,
                 selfDropSettings=None,
+                selfWindowDropSettings=None,
                 selfDocumentDropSettings=None,
                 selfApplicationDropSettings=None,
                 otherApplicationDropSettings=None,
@@ -342,7 +350,9 @@ class List(VanillaBaseObject):
 
         *selfDropSettings* A dictionary defining the drop settings when the source of the drop is this list. The dictionary form is described below.
 
-        *selfDocumentDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same document as this list. The dictionary form is described below.
+        *selfWindowDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same document as this list. The dictionary form is described below.
+
+        *selfDocumentDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same window as this list. The dictionary form is described below.
 
         *selfApplicationDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same application as this list. The dictionary form is described below.
 
@@ -444,11 +454,12 @@ class List(VanillaBaseObject):
             self._tableView.setDoubleAction_("action:")
         # set the drop data
         self._selfDropSettings = selfDropSettings
+        self._selfWindowDropSettings = selfWindowDropSettings
         self._selfDocumentDropSettings = selfDocumentDropSettings
         self._otherApplicationDropSettings = selfApplicationDropSettings
         self._otherApplicationDropSettings = otherApplicationDropSettings
         allDropTypes = []
-        for settings in (selfDropSettings, selfDocumentDropSettings, selfApplicationDropSettings, otherApplicationDropSettings):
+        for settings in (selfDropSettings, selfWindowDropSettings, selfDocumentDropSettings, selfApplicationDropSettings, otherApplicationDropSettings):
             if settings is None:
                 continue
             dropType = settings["type"]
@@ -505,6 +516,7 @@ class List(VanillaBaseObject):
         if hasattr(self, "_doubleClickTarget") and self._doubleClickTarget is not None:
             self._doubleClickTarget.callback = None
         self._selfDropSettings = None
+        self._selfWindowDropSettings = None
         self._selfDocumentDropSettings = None
         self._otherApplicationDropSettings = None
         self._otherApplicationDropSettings = None
