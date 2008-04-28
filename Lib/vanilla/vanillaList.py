@@ -106,7 +106,7 @@ class VanillaArrayController(NSArrayController):
             return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
         # drag from same window
         window = tableView.window()
-        if window is not None and window == draggingSource.window() and vanillaWrapper._selfWindowDropSettings is not None:
+        if window is not None and draggingSource is not None and window == draggingSource.window() and vanillaWrapper._selfWindowDropSettings is not None:
             if vanillaWrapper._selfWindowDropSettings is None:
                 return NSDragOperationNone
             settings = vanillaWrapper._selfWindowDropSettings
