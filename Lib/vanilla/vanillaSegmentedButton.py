@@ -12,6 +12,7 @@ _trackingModeMap = {
 class SegmentedButton(VanillaBaseControl):
 
     nsSegmentedControlClass = NSSegmentedControl
+    nsSegmentedCellClass = NSSegmentedCell
 
     frameAdjustments = {
         "mini": (0, -1, 0, 1), #15
@@ -20,7 +21,11 @@ class SegmentedButton(VanillaBaseControl):
         }
 
     def __init__(self, posSize, segmentDescriptions, callback=None, selectionStyle="one", sizeStyle="small"):
-        self._setupView(self.nsSegmentedControlClass, posSize, callback=callback)
+        self._setupView(self.nsSegmentedControlClass, posSize)
+        if self.nsSegmentedCellClass != NSSegmentedCell:
+            self._nsObject.setCell_(self.nsSegmentedCellClass.alloc().init())
+        if callback is not None:
+            self._setCallback(callback)
         self._setSizeStyle(sizeStyle)
         nsObject = self._nsObject
         nsObject.setSegmentCount_(len(segmentDescriptions))
