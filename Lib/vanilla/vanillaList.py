@@ -319,6 +319,7 @@ class List(VanillaBaseObject):
         | *"editable"* (optional)        | Enable or disable editing in the column. If nothing is given, it will follow the editability of the rest of the list. |
         | *"width"* (optional)           | The width of the column. In OS 10.3 and lower the width must be defined for *all* columns if the width is defined for one column. |
         | *"typingSensitive"* (optional) | A boolean representing that this column should be the column that responds to user key input. Only one column can be flagged as True. If no column is flagged, the first column will automatically be flagged. |
+        | *binding* (optional)           | A string indicating which "binding object":http://developer.apple.com/documentation/Cocoa/Reference/CocoaBindingsRef/CocoaBindingsRef.html the column's cell should be bound to. By default, this is "value." You should only override this in very specific cases. |
 
         *showColumnTitles* Boolean representing if the column titles should be shown or not. Column titles will not be shown in single column lists.
 
@@ -575,6 +576,7 @@ class List(VanillaBaseObject):
             formatter = data.get("formatter")
             cell = data.get("cell")
             editable = data.get("editable")
+            binding = data.get("binding", "value")
             keyPath = "arrangedObjects.%s" % key
             # check for typing sensitivity.
             if data.get("typingSensitive"):
@@ -613,7 +615,7 @@ class List(VanillaBaseObject):
                 dataCell.setFormatter_(formatter)
             if self._arrayController is not None:
                 # assign the key to the binding
-                column.bind_toObject_withKeyPath_options_("value", self._arrayController, keyPath, None)
+                column.bind_toObject_withKeyPath_options_(binding, self._arrayController, keyPath, None)
             # set the editability of the column.
             # if no value was defined in the column data,
             # base the editability on the presence of
