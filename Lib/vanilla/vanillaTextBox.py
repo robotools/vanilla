@@ -40,7 +40,7 @@ class TextBox(VanillaBaseControl):
         | Small   | H | 14          |
         | Mini    | H | 11          |
 
-        *text* The text to be displayed in the text box.
+        *text* The text to be displayed in the text box. If the object is a NSAttributedString, the attributes will be used for display.
 
         *alignment* A string representing the desired visual alignment of the text in the text box. The options are:
 
@@ -60,7 +60,10 @@ class TextBox(VanillaBaseControl):
         """
         self._setupView(self.nsTextFieldClass, posSize)
         self._setSizeStyle(sizeStyle)
-        self._nsObject.setStringValue_(text)
+        if isinstance(text, NSAttributedString):
+            self._nsObject.setAttributedStringValue_(text)
+        else:
+            self._nsObject.setStringValue_(text)
         self._nsObject.setDrawsBackground_(False)
         self._nsObject.setBezeled_(False)
         self._nsObject.setEditable_(False)
@@ -85,4 +88,7 @@ class TextBox(VanillaBaseControl):
 
         *value* A string representing the contents of the text box.
         """
-        self._nsObject.setStringValue_(value)
+        if isinstance(value, NSAttributedString):
+            self._nsObject.setAttributedStringValue_(value)
+        else:
+            self._nsObject.setStringValue_(value)
