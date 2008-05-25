@@ -1,4 +1,4 @@
-from AppKit import NSPopUpButton, NSPopUpButtonCell
+from AppKit import NSPopUpButton, NSPopUpButtonCell, NSMenuItem
 from vanillaBase import VanillaBaseControl
 
 
@@ -59,7 +59,7 @@ class PopUpButton(VanillaBaseControl):
         if callback is not None:
             self._setCallback(callback)
         self._setSizeStyle(sizeStyle)
-        self._nsObject.addItemsWithTitles_(items)
+        self.setItems(items)
 
     def getNSPopUpButton(self):
         """
@@ -84,7 +84,12 @@ class PopUpButton(VanillaBaseControl):
         Set the items to appear in the pop up list.
         """
         self._nsObject.removeAllItems()
-        self._nsObject.addItemsWithTitles_(items)
+        for item in items:
+            if isinstance(item, NSMenuItem):
+                menu = self._nsObject.menu()
+                menu.addItem_(item)
+            else:
+                self._nsObject.addItemWithTitle_(item)
 
     def getItems(self):
         """
