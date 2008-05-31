@@ -74,6 +74,7 @@ class VanillaArrayController(NSArrayController):
         if settings is None:
             return False
         indexes = list(vanillaWrapper._iterIndexSet(indexes))
+        indexes = vanillaWrapper._getUnsortedIndexesFromSortedIndexes(indexes)
         packCallback = settings["callback"]
         if packCallback is not None:
             objects = packCallback(vanillaWrapper, indexes)
