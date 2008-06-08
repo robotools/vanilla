@@ -458,7 +458,7 @@ class List(VanillaBaseObject):
         self._selfDropSettings = selfDropSettings
         self._selfWindowDropSettings = selfWindowDropSettings
         self._selfDocumentDropSettings = selfDocumentDropSettings
-        self._otherApplicationDropSettings = selfApplicationDropSettings
+        self._selfApplicationDropSettings = selfApplicationDropSettings
         self._otherApplicationDropSettings = otherApplicationDropSettings
         allDropTypes = []
         for settings in (selfDropSettings, selfWindowDropSettings, selfDocumentDropSettings, selfApplicationDropSettings, otherApplicationDropSettings):
