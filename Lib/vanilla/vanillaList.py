@@ -901,6 +901,7 @@ class List(VanillaBaseObject):
         for index in selection:
             indexSet.addIndex_(index)
         self._arrayController.setSelectionIndexes_(indexSet)
+        self.scrollToSelection()
 
     def _removeSelection(self):
         selection = self.getSelection()
