@@ -114,14 +114,14 @@ class VanillaArrayController(NSArrayController):
             return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
         # drag from same document
         document = tableView.window().document()
-        if document is not None and document == draggingSource.window().document():
+        if document is not None and draggingSource is not None and document == draggingSource.window().document():
             if vanillaWrapper._selfDocumentDropSettings is None:
                 return NSDragOperationNone
             settings = vanillaWrapper._selfDocumentDropSettings
             return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
         # drag from same application
         applicationWindows = NSApp().windows()
-        if draggingSource is not None and draggingSource.window() in applicationWindows:
+        if draggingSource is not None and draggingSource is not None and draggingSource.window() in applicationWindows:
             if vanillaWrapper._selfApplicationDropSettings is None:
                 return NSDragOperationNone
             settings = vanillaWrapper._selfApplicationDropSettings
