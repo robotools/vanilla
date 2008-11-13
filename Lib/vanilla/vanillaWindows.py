@@ -50,7 +50,7 @@ class Window(NSObject):
     nsWindowLevel = NSNormalWindowLevel
 
     def __init__(self, posSize, title="", minSize=None, maxSize=None, textured=False,
-                autosaveName=None, closable=True, miniaturizable=True, initiallyVisible=True):
+                autosaveName=None, closable=True, miniaturizable=True, initiallyVisible=True, screen=None):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the window. It may also be a tuple of form (width, height). In this case, the window will be positioned on screen automatically. 
 
@@ -69,6 +69,8 @@ class Window(NSObject):
         *miniaturizable* Boolean value representing if the window should have a minimize button in the title bar.
 
         *initiallyVisible* Boolean value representing if the window will be initially visible. Default is True. If False, you can show the window later by calling window.show().
+
+        *screen* A "NSScreen":http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Classes/NSScreen_Class/Reference/Reference.html object indicating the screen that the window should be drawn to. When None the window will be drawn to the main screen.
         """
         mask = self.nsWindowStyleMask
         if closable:
@@ -88,9 +90,11 @@ class Window(NSObject):
         else:
             l, t, w, h = posSize
             cascade = False
-        frame = _calcFrame(NSScreen.mainScreen().visibleFrame(), ((l, t), (w, h)))
-        self._window = self.nsWindowClass.alloc().initWithContentRect_styleMask_backing_defer_(
-            frame, mask, NSBackingStoreBuffered, False)
+        if screen is None:
+            screen = NSScreen.mainScreen()
+        frame = _calcFrame(screen.visibleFrame(), ((l, t), (w, h)))
+        self._window = self.nsWindowClass.alloc().initWithContentRect_styleMask_backing_defer_screen_(
+            frame, mask, NSBackingStoreBuffered, False, screen)
         if autosaveName is not None:
             # This also sets the window frame if it was previously stored.
             # Make sure we do this before cascading.
@@ -592,7 +596,7 @@ class FloatingWindow(Window):
 
     def __init__(self, posSize, title="", minSize=None, maxSize=None,
             textured=False, autosaveName=None, closable=True,
-            initiallyVisible=True):
+            initiallyVisible=True, screen=None):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the window. It may also be a tuple of form (width, height). In this case, the window will be positioned on screen automatically. 
 
@@ -607,9 +611,11 @@ class FloatingWindow(Window):
         *autosaveName* A string representing a unique name for the window. If given, this name will be used to store the window position and size in the application preferences.
 
         *closable* Boolean value representing if the window should have a close button in the title bar.
+
+        *screen* A "NSScreen":http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Classes/NSScreen_Class/Reference/Reference.html object indicating the screen that the window should be drawn to. When None the window will be drawn to the main screen.
         """
         super(FloatingWindow, self).__init__(posSize, title, minSize, maxSize,
-                textured, autosaveName, closable, initiallyVisible=initiallyVisible)
+                textured, autosaveName, closable, initiallyVisible=initiallyVisible, screen=screen)
         self._window.setBecomesKeyOnlyIfNeeded_(True)
 
     def show(self):
