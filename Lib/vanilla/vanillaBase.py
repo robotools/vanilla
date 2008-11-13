@@ -144,7 +144,7 @@ class VanillaBaseObject(object):
         Change the size of the object to _width_ and _height_.
         """
         l, t, w, h = self.getPosSize()
-        self.setPosSize((l, t, x, y))
+        self.setPosSize((l, t, width, height))
 
 
 class VanillaBaseControl(VanillaBaseObject):
