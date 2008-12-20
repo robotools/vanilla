@@ -33,7 +33,7 @@ class ScrollView(VanillaBaseObject):
     nsScrollViewClass = NSScrollView
 
     def __init__(self, posSize, nsView, hasHorizontalScroller=True, hasVerticalScroller=True,
-                    autohidesScrollers=False, backgroundColor=None, clipView=None):
+                    autohidesScrollers=False, backgroundColor=None, clipView=None, drawsBackground=True):
         """
         *posSize* Tuple of form (left, top, width, height) representing the position and size of the scroll view.
 
@@ -46,6 +46,8 @@ class ScrollView(VanillaBaseObject):
         *autohidesScrollers* Boolean representing if the scroll view auto hides its scrollers.
 
         *backgroundColor* A _NSColor_ object representing the background color of the scroll view.
+
+        *drawsBackground* Boolean representing if the background should be drawn.
         """
         self._setupView(self.nsScrollViewClass, posSize)
         if clipView is not None:
@@ -57,6 +59,7 @@ class ScrollView(VanillaBaseObject):
         self._nsObject.setBorderType_(NSBezelBorder)
         if backgroundColor:
             self._nsObject.setBackgroundColor_(backgroundColor)
+        self._nsObject.setDrawsBackground_(drawsBackground)
 
     def _testForDeprecatedAttributes(self):
         super(ScrollView, self)._testForDeprecatedAttributes()
