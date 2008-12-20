@@ -1,5 +1,5 @@
 from AppKit import *
-from vanilla import *
+from vanilla import Button, VanillaBaseObject
 
 
 # In OS 10.0-10.X (tested up to OS 10.4) the small and mini check box
