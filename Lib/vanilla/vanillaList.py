@@ -316,7 +316,7 @@ class List(VanillaBaseObject):
         | *"title"*                      | The title to appear in the column header. |
         | *"key"* (optional)             | The key from which this column should get its data from each dictionary in _items_. If nothing is given, the key will be the string given in _title_. |
         | *"formatter"* (optional)       | An "NSFormatter":http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html for cntrolling the display and input of the column's cells. |
-        | *"cell type"* (optional)       | A cell type to be displayed in the column. If nothing is given, a text cell is used. |
+        | *"cell"* (optional)            | A cell type to be displayed in the column. If nothing is given, a text cell is used. |
         | *"editable"* (optional)        | Enable or disable editing in the column. If nothing is given, it will follow the editability of the rest of the list. |
         | *"width"* (optional)           | The width of the column. In OS 10.3 and lower the width must be defined for *all* columns if the width is defined for one column. |
         | *"typingSensitive"* (optional) | A boolean representing that this column should be the column that responds to user key input. Only one column can be flagged as True. If no column is flagged, the first column will automatically be flagged. |
