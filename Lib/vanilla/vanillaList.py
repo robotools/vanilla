@@ -840,6 +840,12 @@ class List(VanillaBaseObject):
     # vanilla behavior
     # ----------------
 
+    def enable(self, onOff):
+        """
+        Enable or disable the object. *onOff* should be a boolean.
+        """
+        self._tableView.setEnabled_(onOff)
+
     def set(self, items):
         """
         Set the items in the list.
