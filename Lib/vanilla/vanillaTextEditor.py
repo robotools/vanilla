@@ -35,6 +35,7 @@ class TextEditor(VanillaBaseObject):
 
     nsScrollViewClass = NSScrollView
     nsTextViewClass = NSTextView
+    delegateClass = VanillaTextEditorDelegate
 
     def __init__(self, posSize, text="", callback=None, readOnly=False, checksSpelling=False):
         """
@@ -88,7 +89,7 @@ class TextEditor(VanillaBaseObject):
             self._target = VanillaCallbackWrapper(callback)
             delegate = self._textView.delegate()
             if delegate is None:
-                self._textViewDelegate = delegate = VanillaTextEditorDelegate.alloc().init()
+                self._textViewDelegate = delegate = self.delegateClass.alloc().init()
                 self._textView.setDelegate_(delegate)
             delegate._target = self._target
 
