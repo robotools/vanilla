@@ -162,6 +162,7 @@ class SplitView(VanillaBaseObject):
                 view.expandWithAnimation()
             else:
                 view.expand()
+        self._nsObject.adjustSubviews()
 
     def togglePane(self, identifier, animate=True):
         currentState = self.isPaneVisible(identifier)
