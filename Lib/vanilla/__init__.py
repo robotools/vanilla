@@ -56,6 +56,8 @@ try:
     from vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
     __all__.append("LevelIndicator")
     __all__.append("LevelIndicatorListCell")
+    from vanillaDatePicker import DatePicker
+    __all__.append("DatePicker")
 except (ImportError, NameError):
     pass
 

@@ -5,6 +5,10 @@ from AppKit import *
 import vanilla
 reload(vanilla)
 from vanilla import *
+#from RBSplitView.vanillaRBSplitView import VRBSplitView as SplitView
+
+import objc
+objc.setVerbose(True)
 
 vanillaPath = os.path.dirname(os.path.dirname(os.path.dirname(vanilla.__file__)))
 iconPath = os.path.join(vanillaPath, "Data", "testIcon.tif")
@@ -481,26 +485,43 @@ class MiscTest(BaseTest):
         self.w.bar1.set(0)
 
 
+class _VanillaTestViewForSplitView(NSView):
+
+    def drawRect_(self, rect):
+        from AppKit import NSRectFill, NSBezierPath, NSColor
+        self.color.set()
+        NSRectFill(self.bounds())
+        NSColor.blackColor().set()
+        p = NSBezierPath.bezierPathWithRect_(self.bounds())
+        p.setLineWidth_(10)
+        p.stroke()
+
+
+class TestSplitSubview(VanillaBaseObject):
+
+    def __init__(self, posSize, color):
+        self._setupView(_VanillaTestViewForSplitView, posSize)
+        self._nsObject.color = color
+
 class TestSplitView(BaseTest):
 
     def __init__(self, drawGrid=False):
-        from vanilla.vanillaSplitView import _TestView as TestView
         self.w = Window((600, 500), "", minSize=(300, 250))
 
         grp = Group((0, 0, 0, 0))
-        grp.button = Button((10, 10, 80, 20), "Toggle", self.buttonCallback)
+        grp.button = Button((10, 10, -10, 20), "Toggle", self.buttonCallback)
 
-        self.view1 = TestView((0, 0, 0, 0))
+        self.view1 = TestSplitSubview((0, 0, 0, 0), NSColor.redColor())
         paneDescriptions2 = [
-            dict(view=self.view1, size=100, visible=True),
-            dict(view=grp, size=189),
-            dict(view=TestView((0, 0, 0, 0))),
-            dict(view=TestView((0, 0, 0, 0))),
+            dict(view=self.view1, canCollapse=True, size=50, identifier="pane1"),
+            dict(view=grp, identifier="pane2"),
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.greenColor()), minSize=50, identifier="pane3"),
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.yellowColor()), identifier="pane4"),
         ]
         self.nestedSplit = SplitView((0, 0, 0, 0), paneDescriptions2, isVertical=True)
         paneDescriptions1 = [
-            dict(view=self.nestedSplit, minSize=100),
-            dict(view=TestView((0, 0, 0, 0)), size=100),
+            dict(view=self.nestedSplit, identifier="pane5"),
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.magentaColor()), minSize=100, size=100, canCollapse=True, identifier="pane6"),
         ]
         self.w.splitView = SplitView((10, 10, -10, -10), paneDescriptions1, isVertical=False)
 
@@ -509,7 +530,7 @@ class TestSplitView(BaseTest):
         self.w.open()
 
     def buttonCallback(self, sender):
-        self.nestedSplit.toggleSubview(self.view1)
+        self.nestedSplit.togglePane("pane1")
 
 
 class Test(object):
