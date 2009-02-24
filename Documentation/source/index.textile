@@ -1,3 +1,0 @@
-h1. This is Vanilla!
-
-Tal should write some kind of intro.
