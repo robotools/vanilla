@@ -1,16 +1,28 @@
 from AppKit import NSObject
 from PyObjCTools import NibClassBuilder, AppHelper
-from simpleAppWindow import SimpleAppWindow
-
+import vanilla
 
 NibClassBuilder.extractClasses("MainMenu")
 
 
 class SimpleAppAppDelegate(NSObject):
-    
+
     def applicationDidFinishLaunching_(self, notification):
         SimpleAppWindow()
 
 
+class SimpleAppWindow(object):
+
+    def __init__(self):
+        self.w = vanilla.Window((250, 120), "Simple App Window", closable=False)
+        self.w.text = vanillaTextBox((10, 10, -10, 70), "This is a simple window. It doesn't do much. You see that button? Press it and some text will be printed in Console.app.")
+        self.w.button = vanilla.Button((10, 90, -10, 20), "Press me", callback=self.buttonCallback)
+        self.w.open()
+
+    def buttonCallback(self, sender):
+        print "You pressed the button!"
+
+
 if __name__ == "__main__":
     AppHelper.runEventLoop()
+

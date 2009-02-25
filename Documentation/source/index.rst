@@ -6,7 +6,7 @@ Welcome to Vanilla's documentation!
 ===================================
 
 Concepts
-^^^^^^^^
+========
 
 .. toctree::
    :maxdepth: 1

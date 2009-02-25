@@ -107,9 +107,9 @@ class HUDNSWindow(NSPanel):
 
 class HUDWindow(FloatingWindow):
 
-    _nsWindowStyleMask = NSBorderlessWindowMask
-    _nsWindowLevel = NSFloatingWindowLevel
-    _nsWindowClass = HUDNSWindow
+    nsWindowStyleMask = NSBorderlessWindowMask
+    nsWindowLevel = NSFloatingWindowLevel
+    nsWindowClass = HUDNSWindow
 
     def __init__(self, posSize, title="", minSize=None, maxSize=None,
             autosaveName=None, closable=True, roundBottomOfWindow=True,
