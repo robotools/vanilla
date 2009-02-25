@@ -15,7 +15,7 @@ class SimpleAppWindow(object):
 
     def __init__(self):
         self.w = vanilla.Window((250, 120), "Simple App Window", closable=False)
-        self.w.text = vanillaTextBox((10, 10, -10, 70), "This is a simple window. It doesn't do much. You see that button? Press it and some text will be printed in Console.app.")
+        self.w.text = vanilla.TextBox((10, 10, -10, 70), "This is a simple window. It doesn't do much. You see that button? Press it and some text will be printed in Console.app.")
         self.w.button = vanilla.Button((10, 90, -10, 20), "Press me", callback=self.buttonCallback)
         self.w.open()
 
