@@ -5,24 +5,51 @@ from vanillaBase import VanillaBaseControl
 class PopUpButton(VanillaBaseControl):
     
     """
-    A button which, when selected, displays a list of items for the user to choose from.
+    A button which, when selected, displays a list of items for the user to choose from.::
 
-    pre.
-    from vanilla import *
-     
-    class PopUpButtonDemo(object):
-        
-        def __init__(self):
-            self.w = Window((100, 40))
-            self.w.popUpButton = PopUpButton((10, 10, -10, 20),
-                                  ["A", "B", "C"],
-                                  callback=self.popUpButtonCallback)
-            self.w.open()
-            
-        def popUpButtonCallback(self, sender):
-            print "pop up button selection!", sender.get()
-            
-    PopUpButtonDemo()
+        from vanilla import *
+
+        class PopUpButtonDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 40))
+                self.w.popUpButton = PopUpButton((10, 10, -10, 20),
+                                      ["A", "B", "C"],
+                                      callback=self.popUpButtonCallback)
+                self.w.open()
+
+            def popUpButtonCallback(self, sender):
+                print "pop up button selection!", sender.get()
+
+        PopUpButtonDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    size of the pop up button. The size of the button sould match the appropriate value
+    for the given *sizeStyle*.
+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +---------+---+-----------+
+    | Regular | H | 20        |
+    +---------+---+-----------+
+    | Small   | H | 17        |
+    +---------+---+-----------+
+    | Mini    | H | 15        |
+    +---------+---+-----------+
+
+    **items** A list of items to appear in the pop up list.
+
+    **callback** The method to be called when the user selects an item in the pop up list.
+
+    **sizeStyle** A string representing the desired size style of the pop up button. The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
     """
 
     nsPopUpButtonClass = NSPopUpButton
@@ -35,24 +62,6 @@ class PopUpButton(VanillaBaseControl):
     }
 
     def __init__(self, posSize, items, callback=None, sizeStyle="regular"):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the pop up button. The size of the button sould match the appropriate value for the given _sizeStyle_.
-
-        |\\3. *Standard Dimensions* |
-        | Regular | H | 20          |
-        | Small   | H | 17          |
-        | Mini    | H | 15          |
-
-        *items* A list of items to appear in the pop up list.
-
-        *callback* The method to be called when the user selects an item in the pop up list.
-
-        *sizeStyle* A string representing the desired size style of the pop up button. The options are:
-
-        | "regular" |
-        | "small"   |
-        | "mini"    |
-        """
         self._setupView(self.nsPopUpButtonClass, posSize)
         if self.nsPopUpButtonCellClass != NSPopUpButtonCell:
             self._nsObject.setCell_(self.nsPopUpButtonCellClass.alloc().init())
@@ -63,7 +72,7 @@ class PopUpButton(VanillaBaseControl):
 
     def getNSPopUpButton(self):
         """
-        Return the _NSPopUpButton_ that this object wraps.
+        Return the *NSPopUpButton* that this object wraps.
         """
         return self._nsObject
 

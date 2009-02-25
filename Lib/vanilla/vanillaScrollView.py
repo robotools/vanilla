@@ -5,50 +5,54 @@ from vanillaBase import VanillaBaseObject
 class ScrollView(VanillaBaseObject):
 
     """
-    A view with scrollers for containing another view.
+    A view with scrollers for containing another view.::
 
-    pre.
-    from AppKit import NSView, NSColor, NSRectFill
-    from vanilla import *
-     
-    class DemoView(NSView):
-        
-        def drawRect_(self, rect):
-            NSColor.redColor().set()
-            NSRectFill(self.bounds())
-            
-    class ScrollViewDemo(object):
-        
-        def __init__(self):
-            self.w = Window((200, 200))
-            self.view = DemoView.alloc().init()
-            self.view.setFrame_(((0, 0), (300, 300)))
-            self.w.scrollView = ScrollView((10, 10, -10, -10),
-                                    self.view)
-            self.w.open()
-            
-    ScrollViewDemo()
+        from AppKit import NSView, NSColor, NSRectFill
+        from vanilla import *
+
+        class DemoView(NSView):
+
+            def drawRect_(self, rect):
+                NSColor.redColor().set()
+                NSRectFill(self.bounds())
+
+
+        class ScrollViewDemo(object):
+
+            def __init__(self):
+                self.w = Window((200, 200))
+                self.view = DemoView.alloc().init()
+                self.view.setFrame_(((0, 0), (300, 300)))
+                self.w.scrollView = ScrollView((10, 10, -10, -10),
+                                        self.view)
+                self.w.open()
+
+        ScrollViewDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the
+    position and size of the scroll view.
+
+    **nsView** A *NSView* object.
+
+    **hasHorizontalScroller** Boolean representing if the scroll view has
+    horizontal scrollers.
+
+    **hasVerticalScroller** Boolean representing if the scroll view has
+    vertical scrollers.
+
+    **autohidesScrollers** Boolean representing if the scroll view auto-hides
+    its scrollers.
+
+    **backgroundColor** A *NSColor* object representing the background
+    color of the scroll view.
+
+    **drawsBackground** Boolean representing if the background should be drawn.
     """
 
     nsScrollViewClass = NSScrollView
 
     def __init__(self, posSize, nsView, hasHorizontalScroller=True, hasVerticalScroller=True,
                     autohidesScrollers=False, backgroundColor=None, clipView=None, drawsBackground=True):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the scroll view.
-
-        *nsView* A _NSView_ object.
-
-        *hasHorizontalScroller* Boolean representing if the scroll view has horizontal scrollers.
-
-        *hasVerticalScroller* Boolean representing if the scroll view has vertical scrollers.
-
-        *autohidesScrollers* Boolean representing if the scroll view auto hides its scrollers.
-
-        *backgroundColor* A _NSColor_ object representing the background color of the scroll view.
-
-        *drawsBackground* Boolean representing if the background should be drawn.
-        """
         self._setupView(self.nsScrollViewClass, posSize)
         if clipView is not None:
             self._nsObject.setContentView_(clipView)
@@ -70,7 +74,7 @@ class ScrollView(VanillaBaseObject):
 
     def getNSScrollView(self):
         """
-        Return the _NSScrollView_ that this object wraps.
+        Return the *NSScrollView* that this object wraps.
         """
         return self._nsObject
 

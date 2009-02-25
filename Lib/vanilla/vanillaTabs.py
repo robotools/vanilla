@@ -30,30 +30,48 @@ class Tabs(VanillaBaseObject):
     """
     A drawer attached to a window. Drawers are capable of containing controls.
 
-    To add a control to a tab, simply set it as an attribute of the tab.
+    To add a control to a tab, simply set it as an attribute of the tab.::
 
-    pre.
-    from vanilla import *
-     
-    class TabDemo(object):
-        
-        def __init__(self):
-            self.w = Window((250, 100))
-            self.w.tabs = Tabs((10, 10, -10, -10), ["Tab One", "Tab Two"])
-            tab1 = self.w.tabs[0]
-            tab1.text = TextBox((10, 10, -10, -10), "This is tab 1")
-            tab2 = self.w.tabs[1]
-            tab2.text = TextBox((10, 10, -10, -10), "This is tab 2")
-            self.w.open()
-            
-    TabDemo()
+        from vanilla import *
 
-    No special naming is required for the attributes. However, each attribute must have a unique name.
+        class TabDemo(object):
 
-    To retrieve a particular tab, access it by index:
+            def __init__(self):
+                self.w = Window((250, 100))
+                self.w.tabs = Tabs((10, 10, -10, -10), ["Tab One", "Tab Two"])
+                tab1 = self.w.tabs[0]
+                tab1.text = TextBox((10, 10, -10, -10), "This is tab 1")
+                tab2 = self.w.tabs[1]
+                tab2.text = TextBox((10, 10, -10, -10), "This is tab 2")
+                self.w.open()
 
-    pre.
-    myTab = self.w.tabs[0]
+        TabDemo()
+
+    No special naming is required for the attributes. However, each attribute
+    must have a unique name.
+
+    To retrieve a particular tab, access it by index:::
+
+        myTab = self.w.tabs[0]
+
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position
+    and size of the tabs.
+
+    **titles** An ordered list of tab titles.
+
+    **callback** The method to be called when the user selects a new tab.
+
+    **sizeStyle** A string representing the desired size style of the tabs.
+    The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
     """
 
     nsTabViewClass = NSTabView
@@ -68,19 +86,6 @@ class Tabs(VanillaBaseObject):
     }
 
     def __init__(self, posSize, titles=["Tab"], callback=None, sizeStyle="regular", showTabs=True):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the tabs.
-
-        *titles* An ordered list of tab titles.
-
-        *callback* The method to be called when the user selects a new tab.
-
-        *sizeStyle* A string representing the desired size style of the tabs. The options are:
-
-        | "regular" |
-        | "small"   |
-        | "mini"    |
-        """
         self._setupView(self.nsTabViewClass, posSize) # hold off on setting callback
         self._setSizeStyle(sizeStyle)
         self._tabItems = []
@@ -99,7 +104,7 @@ class Tabs(VanillaBaseObject):
 
     def getNSTabView(self):
         """
-        Return the _NSTabView_ that this object wraps.
+        Return the *NSTabView* that this object wraps.
         """
         return self._nsObject
 
@@ -146,6 +151,6 @@ class Tabs(VanillaBaseObject):
         """
         Set the selected tab.
 
-        *value* The index of the tab to be selected.
+        **value** The index of the tab to be selected.
         """
         self._nsObject.selectTabViewItemAtIndex_(value)

@@ -27,23 +27,50 @@ _keyMap = {
 class Button(VanillaBaseControl):
 
     """
-    A standard button.
+    A standard button.::
 
-    pre.
-    from vanilla import *
-     
-    class ButtonDemo(object):
-            
-         def __init__(self):
-             self.w = Window((100, 40))
-             self.w.button = Button((10, 10, -10, 20), "A Button",
-                                callback=self.buttonCallback)
-             self.w.open()
-             
-         def buttonCallback(self, sender):
-             print "button hit!"
-        
-    ButtonDemo()
+        from vanilla import *
+
+        class ButtonDemo(object):
+
+             def __init__(self):
+                 self.w = Window((100, 40))
+                 self.w.button = Button((10, 10, -10, 20), "A Button",
+                                    callback=self.buttonCallback)
+                 self.w.open()
+
+             def buttonCallback(self, sender):
+                 print "button hit!"
+
+        ButtonDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position
+    and size of the button. The size of the button sould match the appropriate value
+    for the given *sizeStyle*.
+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +=========+===+===========+
+    | Regular | H | 20        |
+    +---------+---+-----------+
+    | Small   | H | 17        |
+    +---------+---+-----------+
+    | Mini    | H | 14        |
+    +---------+---+-----------+
+
+    **title** The text to be displayed on the button. Pass *None* is no title is desired.
+
+    **callback** The method to be called when the user presses the button.
+
+    **sizeStyle** A string representing the desired size style of the button. The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
     """
 
     nsButtonClass = NSButton
@@ -57,24 +84,6 @@ class Button(VanillaBaseControl):
         }
 
     def __init__(self, posSize, title, callback=None, sizeStyle="regular"):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the button. The size of the button sould match the appropriate value for the given _sizeStyle_.
-
-        |\\3. *Standard Dimensions* |
-        | Regular | H | 20          |
-        | Small   | H | 17          |
-        | Mini    | H | 14          |
-
-        *title* The text to be displayed on the button. Pass _None_ is no title is desired.
-
-        *callback* The method to be called when the user presses the button.
-
-        *sizeStyle* A string representing the desired size style of the button. The options are:
-
-        | "regular" |
-        | "small"   |
-        | "mini"    |
-        """
         self._setupView(self.nsButtonClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setTitle_(title)
@@ -93,7 +102,7 @@ class Button(VanillaBaseControl):
 
     def getNSButton(self):
         """
-        Return the _NSButton_ that this object wraps.
+        Return the *NSButton* that this object wraps.
         """
         return self._nsObject
 
@@ -101,26 +110,43 @@ class Button(VanillaBaseControl):
         """
         Bind a key to the button.
 
-        *key* A single character or one of the following:
+        **key** A single character or one of the following:
 
+        +-----------------+
         | "help"          |
+        +-----------------+
         | "home"          |
+        +-----------------+
         | "end"           |
+        +-----------------+
         | "pageup"        |
+        +-----------------+
         | "pagedown"      |
+        +-----------------+
         | "forwarddelete" |
+        +-----------------+
         | "leftarrow"     |
+        +-----------------+
         | "rightarrow"    |
+        +-----------------+
         | "uparrow"       |
+        +-----------------+
         | "downarrow"     |
+        +-----------------+
 
-        *modifiers* A list containing nothing or as many of the following as desired:
+        **modifiers** A list containing nothing or as many of the following as desired:
 
+        +------------+
         | "command"  |
+        +------------+
         | "control"  |
+        +------------+
         | "option"   |
+        +------------+
         | "shift"    |
+        +------------+
         | "capslock" |
+        +------------+
         """
         modifiers = sum([_modifierMap[i] for i in modifiers])
         key = _keyMap.get(key, key)
@@ -131,44 +157,46 @@ class Button(VanillaBaseControl):
 class SquareButton(Button):
 
     """
-    A standard square button.
+    A standard square button.::
 
-    pre.
-    from vanilla import *
-     
-    class SquareButtonDemo(object):
-        
-         def __init__(self):
-             self.w = Window((200, 100))
-             self.w.button = SquareButton((10, 10, -10, -10), "A Button",
-                                callback=self.buttonCallback)
-             self.w.open()
-             
-         def buttonCallback(self, sender):
-             print "button hit!"
-             
-    SquareButtonDemo()
+        from vanilla import *
+
+        class SquareButtonDemo(object):
+
+             def __init__(self):
+                 self.w = Window((200, 100))
+                 self.w.button = SquareButton((10, 10, -10, -10), "A Button",
+                                    callback=self.buttonCallback)
+                 self.w.open()
+
+             def buttonCallback(self, sender):
+                 print "button hit!"
+
+        SquareButtonDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the button.
+
+    **title** The text to be displayed on the button. Pass _None_ is no title is desired.
+
+    **callback** The method to be called when the user presses the button.
+
+    **sizeStyle** A string representing the desired size style of the button. The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
     """
-    
+
     nsBezelStyle = NSShadowlessSquareBezelStyle
     frameAdjustments = None
-    
+
     def __init__(self, posSize, title, callback=None, sizeStyle="regular"):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the button.
-
-        *title* The text to be displayed on the button. Pass _None_ is no title is desired.
-
-        *callback* The method to be called when the user presses the button.
-
-        *sizeStyle* A string representing the desired size style of the button. The options are:
-
-        | "regular" |
-        | "small"   |
-        | "mini"    |
-        """
         super(SquareButton, self).__init__(posSize=posSize, title=title, callback=callback, sizeStyle=sizeStyle)
-        
+
 
 _imagePositionMap = {
         "left": NSImageLeft,
@@ -180,24 +208,61 @@ _imagePositionMap = {
 class ImageButton(SquareButton):
 
     """
-    A button with an image.
+    A button with an image.::
 
-    pre.
-    from vanilla import *
-     
-    class ImageButtonDemo(object):
-        
-         def __init__(self):
-             path = "/path/to/an/image"
-             self.w = Window((50, 50))
-             self.w.button = ImageButton((10, 10, 30, 30), imagePath=path,
-                                callback=self.buttonCallback)
-             self.w.open()
-             
-         def buttonCallback(self, sender):
-             print "button hit!"
-             
-    ImageButtonDemo()
+        from vanilla import *
+
+        class ImageButtonDemo(object):
+
+             def __init__(self):
+                 path = "/path/to/an/image"
+                 self.w = Window((50, 50))
+                 self.w.button = ImageButton((10, 10, 30, 30), imagePath=path,
+                                    callback=self.buttonCallback)
+                 self.w.open()
+
+             def buttonCallback(self, sender):
+                 print "button hit!"
+
+        ImageButtonDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the button.
+
+    **title** The text to be displayed on the button. Pass *None* is no title is desired.
+
+    **bordered** Boolean representing if the button should be bordered.
+
+    **imagePath** A file path to an image.
+
+    **imageNamed** The name of an image already load as a *NSImage* by the application.
+
+    **imageObject** A *NSImage* object.
+
+    *Only one of imagePath, imageNamed, imageObject should be set.*
+
+    **imagePosition** The position of the image relative to the title. The options are:
+
+    +----------+
+    | "top"    |
+    +----------+
+    | "bottom" |
+    +----------+
+    | "left"   |
+    +----------+
+    | "right"  |
+    +----------+
+
+    **callback** The method to be called when the user presses the button.
+
+    **sizeStyle** A string representing the desired size style of the button. The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
     """
 
     frameAdjustments = None
@@ -205,36 +270,6 @@ class ImageButton(SquareButton):
     def __init__(self, posSize,
                 imagePath=None, imageNamed=None, imageObject=None,
                 title=None, bordered=True, imagePosition="top", callback=None, sizeStyle="regular"):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the button.
-
-        *title* The text to be displayed on the button. Pass _None_ is no title is desired.
-
-        *bordered* Boolean representing if the button should be bordered.
-
-        *imagePath* A file path to an image.
-
-        *imageNamed* The name of an image already load as a _NSImage_ by the application.
-
-        *imageObject* A _NSImage_ object.
-
-        _Only one of imagePath, imageNamed, imageObject should be set._
-
-        *imagePosition* The position of the image relative to the title. The options are:
-
-        | "top"    |
-        | "bottom" |
-        | "left"   |
-        | "right"  |
-
-        *callback* The method to be called when the user presses the button.
-
-        *sizeStyle* A string representing the desired size style of the button. The options are:
-
-        | "regular" |
-        | "small"   |
-        | "mini"    |
-        """
         super(ImageButton,  self).__init__(posSize, title=title, callback=callback, sizeStyle=sizeStyle)
         image = None
         if imagePath is not None:
@@ -262,13 +297,13 @@ class ImageButton(SquareButton):
         """
         Set the image in the button.
 
-        *imagePath* A file path to an image.
+        **imagePath** A file path to an image.
 
-        *imageNamed* The name of an image already load as a _NSImage_ by the application.
+        **imageNamed** The name of an image already load as a *NSImage* by the application.
 
-        *imageObject* A _NSImage_ object.
+        **imageObject** A *NSImage* object.
 
-        _Only one of imagePath, imageNamed, imageObject should be set._
+        *Only one of imagePath, imageNamed, imageObject should be set.*
         """
         if imagePath is not None:
             image = NSImage.alloc().initWithContentsOfFile_(imagePath)
@@ -284,23 +319,35 @@ class ImageButton(SquareButton):
 class HelpButton(Button):
 
     """
-    A standard help button.
+    A standard help button.::
 
-    pre.
-    from vanilla import *
-     
-    class HelpButtonDemo(object):
-         
-         def __init__(self):
-             self.w = Window((90, 40))
-             self.w.button = HelpButton((10, 10, 21, 20),
-                                callback=self.buttonCallback)
-             self.w.open()
-              
-         def buttonCallback(self, sender):
-             print "help button hit!"
-              
-    HelpButtonDemo()
+        from vanilla import *
+
+        class HelpButtonDemo(object):
+
+             def __init__(self):
+                 self.w = Window((90, 40))
+                 self.w.button = HelpButton((10, 10, 21, 20),
+                                    callback=self.buttonCallback)
+                 self.w.open()
+
+             def buttonCallback(self, sender):
+                 print "help button hit!"
+
+        HelpButtonDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    size of the button. The size of the button sould match the standard dimensions.
+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +--------+----------------+
+    | Width  | 21             |
+    +--------+----------------+
+    | Height | 20             |
+    +--------+----------------+
+
+    **callback** The method to be called when the user presses the button.
     """
 
     nsBezelStyle = NSHelpButtonBezelStyle
@@ -309,15 +356,6 @@ class HelpButton(Button):
         }
 
     def __init__(self, posSize, callback=None, page=None, anchor=None):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the button. The size of the button sould match the standard dimensions.
-
-        |\\3. *Standard Dimensions* |
-        | Width  | 21 |
-        | Height | 20 |
-
-        *callback* The method to be called when the user presses the button.
-        """
         # XXX perhaps this should choke if more than one arg is present.
         # callback, page and anchor are all mutually exclusive.
         self._page = page

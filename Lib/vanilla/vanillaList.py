@@ -180,107 +180,230 @@ class List(VanillaBaseObject):
     """
     A control that shows a list of items. These lists can contain one or more columns.
 
-    h6. A single column example:
+    A single column example::
 
-    pre.
-    from vanilla import *
-        
-    class ListDemo(object):
-        
-        def __init__(self):
-            self.w = Window((100, 100))
-            self.w.myList = List((0, 0, -0, -0), ["A", "B", "C"],
-                         selectionCallback=self.selectionCallback)
-            self.w.open()
-        
-        def selectionCallback(self, sender):
-            print sender.getSelection()
-        
-    ListDemo()
+        from vanilla import *
 
-    h6. A mutliple column example:
+        class ListDemo(object):
 
-    pre.
-    from vanilla import *
-     
-    class ListDemo(object):
-        
-        def __init__(self):
-            self.w = Window((100, 100))
-            self.w.myList = List((0, 0, -0, -0),
-                         [{"One": "A", "Two": "a"}, {"One": "B", "Two": "b"}],
-                         columnDescriptions=[{"title": "One"}, {"title": "Two"}],
-                         selectionCallback=self.selectionCallback)
-            self.w.open()
-            
-        def selectionCallback(self, sender):
-            print sender.getSelection()
-            
-    ListDemo()
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0), ["A", "B", "C"],
+                             selectionCallback=self.selectionCallback)
+                self.w.open()
 
-    h6. Pythonic list behavior
+            def selectionCallback(self, sender):
+                print sender.getSelection()
 
-    List objects behave like standard Python lists. For xample, given this List:
+        ListDemo()
 
-    pre.
-    self.w.myList = List((10, 10, 200, 100), ["A", "B", "C"])
+    A mutliple column example::
 
-    The following Python list methods work:
+        from vanilla import *
 
-    pre.
-    # Getting the length of the List.
-    >>> len(self.w.myList)
-    3
-     
-    # Retrieving an item or items from a List.
-    >>> self.w.myList[1]
-    "B"
-    >>> self.w.myList[:2]
-    ["A", "B"]
-     
-    # Setting an item in a List.
-    >>> self.w.myList[1] = "XYZ"
-    >>> self.w.myList.get()
-    ["A", "XYZ", "C"]
-     
-    # Deleting an item at an index in a List.
-    >>> del self.w.myList[1]
-    >>> self.w.myList.get()
-    ["A", "C"]
-     
-    # Appending an item to a List.
-    >>> self.w.myList.append("Z")
-    >>> self.w.myList.get()
-    ["A", "B", "C", "Z"]
-     
-    # Removing the first occurance of an item in a List.
-    >>> self.w.myList.remove("A")
-    >>> self.w.myList.get()
-    ["B", "C"]
-     
-    # Getting the index for the first occurance of an item in a List.
-    >>> self.w.myList.index("B")
-    1
-     
-    # Inserting an item into a List.
-    >>> self.w.myList.insert(1, "XYZ")
-    >>> self.w.myList.get()
-    ["A", "XYZ", "B", "C"]
-     
-    # Extending a List.
-    >>> self.w.myList.extend(["X", "Y", "Z"])
-    >>> self.w.myList.get()
-    ["A", "B", "C", "X", "Y", "Z"]
-     
-    # Iterating over a List.
-    >>> for i in self.w.myList:
-    >>>     i
-    "A"
-    "B"
-    "C"
+        class ListDemo(object):
 
-    need to explain:
-    - putting NSObject in list. requires column descriptions with a proper key tied to the NSObject.
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                             [{"One": "A", "Two": "a"}, {"One": "B", "Two": "b"}],
+                             columnDescriptions=[{"title": "One"}, {"title": "Two"}],
+                             selectionCallback=self.selectionCallback)
+                self.w.open()
+
+            def selectionCallback(self, sender):
+                print sender.getSelection()
+
+        ListDemo()
+
+    List objects behave like standard Python lists. For xample, given this List:::
+
+        self.w.myList = List((10, 10, 200, 100), ["A", "B", "C"])
+
+    The following Python list methods work:::
+
+        # Getting the length of the List.
+        >>> len(self.w.myList)
+        3
+
+        # Retrieving an item or items from a List.
+        >>> self.w.myList[1]
+        "B"
+        >>> self.w.myList[:2]
+        ["A", "B"]
+
+        # Setting an item in a List.
+        >>> self.w.myList[1] = "XYZ"
+        >>> self.w.myList.get()
+        ["A", "XYZ", "C"]
+
+        # Deleting an item at an index in a List.
+        >>> del self.w.myList[1]
+        >>> self.w.myList.get()
+        ["A", "C"]
+
+        # Appending an item to a List.
+        >>> self.w.myList.append("Z")
+        >>> self.w.myList.get()
+        ["A", "B", "C", "Z"]
+
+        # Removing the first occurance of an item in a List.
+        >>> self.w.myList.remove("A")
+        >>> self.w.myList.get()
+        ["B", "C"]
+
+        # Getting the index for the first occurance of an item in a List.
+        >>> self.w.myList.index("B")
+        1
+
+        # Inserting an item into a List.
+        >>> self.w.myList.insert(1, "XYZ")
+        >>> self.w.myList.get()
+        ["A", "XYZ", "B", "C"]
+
+        # Extending a List.
+        >>> self.w.myList.extend(["X", "Y", "Z"])
+        >>> self.w.myList.get()
+        ["A", "B", "C", "X", "Y", "Z"]
+
+        # Iterating over a List.
+        >>> for i in self.w.myList:
+        >>>     i
+        "A"
+        "B"
+        "C"
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the
+    position and size of the list.
+
+    **items** The items to be displayed in the list. In the case of multiple
+    column lists, this should be a list of dictionaries with the data for
+    each column keyed by the column key as defined in columnDescriptions.
+    If you intend to use a dataSource, *items* must be *None*.
+
+    **dataSource** A Cocoa object supporting the *NSTableDataSource*
+    protocol. If *dataSource* is given, *items* must be *None*.
+
+    **columnDescriptions** An ordered list of dictionaries describing the
+    columns. This is only necessary for multiple column lists.
+
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"title"*                      | The title to appear in the column header.                                      |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"key"* (optional)             | The key from which this column should get                                      |
+    |                                | its data from each dictionary in *items*. If                                   |
+    |                                | nothing is given, the key will be the string                                   |
+    |                                | given in *title*.                                                              |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"formatter"* (optional)       | An `NSFormatter` <http://tinyurl.com/NSFormatter>`_                            |
+    |                                | for cntrolling the display and input of the                                    |
+    |                                | column's cells.                                                                |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"cell"* (optional)            | A cell type to be displayed in the column.                                     |
+    |                                | If nothing is given, a text cell is used.                                      |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"editable"* (optional)        | Enable or disable editing in the column. If                                    |
+    |                                | nothing is given, it will follow the                                           |
+    |                                | editability of the rest of the list.                                           |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"width"* (optional)           | The width of the column. In OS 10.3 and                                        |
+    |                                | lower the width must be defined for *all*                                      |
+    |                                | columns if the width is defined for one                                        |
+    |                                | column.                                                                        |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"typingSensitive"* (optional) | A boolean representing that this column                                        |
+    |                                | should be the column that responds to user                                     |
+    |                                | key input. Only one column can be flagged as                                   |
+    |                                | True. If no column is flagged, the first                                       |
+    |                                | column will automatically be flagged.                                          |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *binding* (optional)           | A string indicating which `binding object <http://tinyurl.com/CocoaBindings>`_ |
+    |                                | the column's cell should be bound to. By                                       |
+    |                                | default, this is "value." You should only                                      |
+    |                                | override this in very specific cases.                                          |
+    +--------------------------------+--------------------------------------------------------------------------------+
+
+    **showColumnTitles** Boolean representing if the column titles should be shown or not.
+    Column titles will not be shown in single column lists.
+
+    **selectionCallback** Callback to be called when the selection in the list changes.
+
+    **doubleClickCallback** Callback to be called when an item is double clicked.
+
+    **editCallback** Callback to be called after an item has been edited.
+
+    **enableDelete** A boolean representing if items in the list can be deleted via the interface.
+
+    **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
+    closest match as the entered keystrokes. *Available only in single column lists.*
+
+    **allowsMultipleSelection** A boolean representing if the list allows more than one item to be selected.
+
+    **allowsEmptySelection** A boolean representing if the list allows zero items to be selected.
+
+    **drawVerticalLines** Boolean representing if vertical lines should be drawn in the list.
+
+    **drawHorizontalLines** Boolean representing if horizontal lines should be drawn in the list.
+
+    **drawFocusRing** Boolean representing if the standard focus ring should be drawn when the list is selected.
+
+    **rowHeight** The height of the rows in the list.
+
+    **autohidesScrollers** Boolean representing if scrollbars should automatically be hidden if possible.
+
+    **selfDropSettings** A dictionary defining the drop settings when the source of the drop
+    is this list. The dictionary form is described below.
+
+    **selfWindowDropSettings** A dictionary defining the drop settings when the source of the drop
+    is contained the same document as this list. The dictionary form is described below.
+
+    **selfDocumentDropSettings** A dictionary defining the drop settings when the source of the drop
+    is contained the same window as this list. The dictionary form is described below.
+
+    **selfApplicationDropSettings** A dictionary defining the drop settings when the source of the drop
+    is contained the same application as this list. The dictionary form is described below.
+
+    **otherApplicationDropSettings** A dictionary defining the drop settings when the source of the drop
+    is contained an application other than the one that contains this list. The dictionary form is described below.
+
+    The drop settings dictionaries should be of this form:
+
+    +-----------------------------------+--------------------------------------------------------------------+
+    | *type*                            | A single drop type indicating what drop types the list accepts.    |
+    |                                   | For example, NSFilenamesPboardType or "MyCustomPboardType".        |
+    +-----------------------------------+--------------------------------------------------------------------+
+    | *operation* (optional)            | A "drag operation <http://tinyurl.com/NSDraggingIn>`_ that         |
+    |                                   | the list accepts. The default is *NSDragOperationCopy*.            |
+    +-----------------------------------+--------------------------------------------------------------------+
+    | *allowDropBetweenRows* (optional) | A boolean indicating if the list accepts drops between rows.       |
+    |                                   | The default is True.                                               |
+    +-----------------------------------+--------------------------------------------------------------------+
+    | *allowDropOnRow* (optional)       | A boolean indicating if the list accepts drops on rows.            |
+    |                                   | The default is False.                                              |
+    +-----------------------------------+--------------------------------------------------------------------+
+    | *callback*                        | Callback to be called when a drop is proposed and when a drop      |
+    |                                   | is to occur. This method should return a boolean representing      |
+    |                                   | if the drop is acceptable or not. This method must accept *sender* |
+    |                                   | and *dropInfo* arguments. The _dropInfo_ will be a dictionary as   |
+    |                                   | described below.                                                   |
+    +-----------------------------------+--------------------------------------------------------------------+
+
+    The dropInfo dictionary passed to drop callbacks will be of this form:
+
+    +--------------+--------------------------------------------------------------------------------------------+
+    | *data*       | The data proposed for the drop. This data will be of the type specified by dropDataFormat. |
+    +--------------+--------------------------------------------------------------------------------------------+
+    | *rowIndex*   | The row where the drop is proposed.                                                        |
+    +--------------+--------------------------------------------------------------------------------------------+
+    | *source*     | The source from which items are being dragged. If this object is wrapped by Vanilla, the   |
+    |              | Vanilla object will be passed as the source.                                               |
+    +--------------+--------------------------------------------------------------------------------------------+
+    | *dropOnRow*  | A boolean representing if the row is being dropped on. If this is False, the drop should   |
+    |              | occur between rows.                                                                        |
+    +--------------+--------------------------------------------------------------------------------------------+
+    | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to       |
+    |              | accept the drop.                                                                           |
+    +--------------+--------------------------------------------------------------------------------------------+
     """
 
     nsScrollViewClass = NSScrollView
@@ -300,82 +423,6 @@ class List(VanillaBaseObject):
                 selfApplicationDropSettings=None,
                 otherApplicationDropSettings=None,
                 dragSettings=None):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the list.
-
-        *items* The items to be displayed in the list. In the case of multiple
-        column lists, this should be a list of dictionaries with the data for
-        each column keyed by the column key as defined in columnDescriptions.
-        If you intend to use a dataSource, _items_ must be _None_.
-
-        *dataSource* A Cocoa object supporting the _NSTableDataSource_
-        protocol. If _dataSource_ is given, _items_ must be _None_.
-
-        *columnDescriptions* An ordered list of dictionaries describing the columns. This is only necessary for multiple column lists.
-
-        | *"title"*                      | The title to appear in the column header. |
-        | *"key"* (optional)             | The key from which this column should get its data from each dictionary in _items_. If nothing is given, the key will be the string given in _title_. |
-        | *"formatter"* (optional)       | An "NSFormatter":http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html for cntrolling the display and input of the column's cells. |
-        | *"cell"* (optional)            | A cell type to be displayed in the column. If nothing is given, a text cell is used. |
-        | *"editable"* (optional)        | Enable or disable editing in the column. If nothing is given, it will follow the editability of the rest of the list. |
-        | *"width"* (optional)           | The width of the column. In OS 10.3 and lower the width must be defined for *all* columns if the width is defined for one column. |
-        | *"typingSensitive"* (optional) | A boolean representing that this column should be the column that responds to user key input. Only one column can be flagged as True. If no column is flagged, the first column will automatically be flagged. |
-        | *binding* (optional)           | A string indicating which "binding object":http://developer.apple.com/documentation/Cocoa/Reference/CocoaBindingsRef/CocoaBindingsRef.html the column's cell should be bound to. By default, this is "value." You should only override this in very specific cases. |
-
-        *showColumnTitles* Boolean representing if the column titles should be shown or not. Column titles will not be shown in single column lists.
-
-        *selectionCallback* Callback to be called when the selection in the list changes.
-
-        *doubleClickCallback* Callback to be called when an item is double clicked.
-
-        *editCallback* Callback to be called after an item has been edited.
-
-        *enableDelete* A boolean representing if items in the list can be deleted via the interface.
-
-        *enableTypingSensitivity* A boolean representing if typing in the list will jump to the closest match as the entered keystrokes. _Available only in single column lists._
-
-        *allowsMultipleSelection* A boolean representing if the list allows more than one item to be selected.
-
-        *allowsEmptySelection* A boolean representing if the list allows zero items to be selected.
-
-        *drawVerticalLines* Boolean representing if vertical lines should be drawn in the list.
-
-        *drawHorizontalLines* Boolean representing if horizontal lines should be drawn in the list.
-
-        *drawFocusRing* Boolean representing if the standard focus ring should be drawn when the list is selected.
-
-        *rowHeight* The height of the rows in the list.
-
-        *autohidesScrollers* Boolean representing if scrollbars should automatically be hidden if possible.
-
-        *NOTE: Drag and drop is very experimental. It may change.*
-
-        *selfDropSettings* A dictionary defining the drop settings when the source of the drop is this list. The dictionary form is described below.
-
-        *selfWindowDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same document as this list. The dictionary form is described below.
-
-        *selfDocumentDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same window as this list. The dictionary form is described below.
-
-        *selfApplicationDropSettings* A dictionary defining the drop settings when the source of the drop is contained the same application as this list. The dictionary form is described below.
-
-        *otherApplicationDropSettings* A dictionary defining the drop settings when the source of the drop is contained an application other than the one that contains this list. The dictionary form is described below.
-
-        The drop settings dictionaries should be of this form:
-
-        | *type*                            | A single drop type indicating what drop types the list accepts. For example, NSFilenamesPboardType or "MyCustomPboardType". |
-        | *operation* (optional)            | A "drag operation":http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Protocols/NSDraggingInfo_Protocol/Reference/Reference.html that the list accepts. The default is NSDragOperationCopy. |
-        | *allowDropBetweenRows* (optional) | A boolean indicating if the list accepts drops between rows. The default is True. |
-        | *allowDropOnRow* (optional)       | A boolean indicating if the list accepts drops on rows. The default is False. |
-        | *callback*                        | Callback to be called when a drop is proposed and when a drop is to occur. This method should return a boolean representing if the drop is acceptable or not. This method must accept _sender_ and _dropInfo_ arguments. The _dropInfo_ will be a dictionary as described below. |
-
-        The dropInfo dictionary passed to drop callbacks will be of this form:
-
-        | *data*       | The data proposed for the drop. This data will be of the type specified by dropDataFormat. |
-        | *rowIndex*   | The row where the drop is proposed. |
-        | *source*     | The source from which items are being dragged. If this object is wrapped by Vanilla, the Vanilla object will be passed as the source. |
-        | *dropOnRow*  | A boolean representing if the row is being dropped on. If this is False, the drop should occur between rows. |
-        | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to accept the drop. |
-        """
         if items is not None and dataSource is not None:
             raise VanillaError("can't pass both items and dataSource arguments")
         self._posSize = posSize
@@ -499,13 +546,13 @@ class List(VanillaBaseObject):
 
     def getNSScrollView(self):
         """
-        Return the _NSScrollView_ that this object wraps.
+        Return the *NSScrollView* that this object wraps.
         """
         return self._nsObject
 
     def getNSTableView(self):
         """
-        Return the _NSTableView_ that this object wraps.
+        Return the *NSTableView* that this object wraps.
         """
         return self._tableView
 
@@ -842,15 +889,15 @@ class List(VanillaBaseObject):
 
     def enable(self, onOff):
         """
-        Enable or disable the object. *onOff* should be a boolean.
+        Enable or disable the object. **onOff** should be a boolean.
         """
         self._tableView.setEnabled_(onOff)
 
     def set(self, items):
         """
         Set the items in the list.
-        
-        *items* should follow the same format as described in the constructor.
+
+        **items** should follow the same format as described in the constructor.
         """
         items = [self._wrapItem(item) for item in items]
         items = NSMutableArray.arrayWithArray_(items)
@@ -900,7 +947,7 @@ class List(VanillaBaseObject):
         """
         Set the selected items in the list.
 
-        *selection* should be a list of indexes.
+        **selection** should be a list of indexes.
         """
         indexes = self._getSortedIndexesFromUnsortedIndexes(selection)
         indexSet = NSMutableIndexSet.indexSet()
@@ -916,6 +963,7 @@ class List(VanillaBaseObject):
         self._arrayController.removeObjects_(items)
 
     def scrollToSelection(self):
+        """Scroll the selected rows to visible."""
         selection = self.getSelection()
         if not selection:
             return
@@ -982,9 +1030,10 @@ def CheckBoxListCell(title=None):
     """
     An object that displays a check box in a List column.
 
-    *This object should only be used in the _columnDescriptions_ argument during the construction of a List.*
+    **This object should only be used in the *columnDescriptions*
+    argument during the construction of a List.**
 
-    *title* The title to be set in *all* items in the List column.
+    **title** The title to be set in *all* items in the List column.
     """
     cell = NSButtonCell.alloc().init()
     cell.setButtonType_(NSSwitchButton)
@@ -1001,11 +1050,12 @@ def SliderListCell(minValue=0, maxValue=100):
     """
     An object that displays a slider in a List column.
 
-    *This object should only be used in the _columnDescriptions_ argument during the construction of a List.*
+    **This object should only be used in the *columnDescriptions*
+    argument during the construction of a List.**
 
-    *minValue* The minimum value for the slider.
+    **minValue** The minimum value for the slider.
 
-    *maxValue* The maximum value for the slider.
+    **maxValue** The maximum value for the slider.
     """
     cell = NSSliderCell.alloc().init()
     cell.setControlSize_(NSSmallControlSize)

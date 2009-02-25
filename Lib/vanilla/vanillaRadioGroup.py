@@ -5,45 +5,50 @@ from vanillaBase import VanillaBaseControl, _sizeStyleMap
 class RadioGroup(VanillaBaseControl):
 
     """
-    A collection of radio buttons.
+    A collection of radio buttons.::
 
-    pre.
-    from vanilla import *
-     
-    class RadioGroupDemo(object):
-        
-        def __init__(self):
-            self.w = Window((100, 60))
-            self.w.radioGroup = RadioGroup((10, 10, -10, 40),
-                                    ["Option 1", "Option 2"],
-                                    callback=self.radioGroupCallback)
-            self.w.open()
-            
-        def radioGroupCallback(self, sender):
-            print "radio group edit!", sender.get()
-            
-    RadioGroupDemo()
+        from vanilla import *
+
+        class RadioGroupDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 60))
+                self.w.radioGroup = RadioGroup((10, 10, -10, 40),
+                                        ["Option 1", "Option 2"],
+                                        callback=self.radioGroupCallback)
+                self.w.open()
+
+            def radioGroupCallback(self, sender):
+                print "radio group edit!", sender.get()
+
+        RadioGroupDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing
+    the position and size of the radio group.
+
+    **titles** A list of titles to be shown next to the radio buttons.
+
+    **isVertical** Boolean representing if the radio group is
+    vertical or horizontal.
+
+    **callback** The method to be caled when a radio button is selected.
+
+    **sizeStyle** A string representing the desired size style of the radio group.
+    The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
     """
 
     nsMatrixClass = NSMatrix
     nsCellClass = NSButtonCell
 
     def __init__(self, posSize, titles, isVertical=True, callback=None, sizeStyle="regular"):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the radio group.
-
-        *titles* A list of titles to be shown next to the radio buttons.
-
-        *isVertical* Boolean representing if the radio group is vertical or horizontal.
-
-        *callback* The method to be caled when a radio button is selected.
-
-        *sizeStyle* A string representing the desired size style of the radio group. The options are:
-
-        | "regular" |
-        | "small"   |
-        | "mini"    |
-        """
         self._setupView(self.nsMatrixClass, posSize, callback=callback)
         self._isVertical = isVertical
         matrix = self._nsObject
@@ -87,7 +92,7 @@ class RadioGroup(VanillaBaseControl):
 
     def getNSMatrix(self):
         """
-        Return the _NSMatrix_ that this object wraps.
+        Return the *NSMatrix* that this object wraps.
         """
         return self._nsObject
 

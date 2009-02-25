@@ -27,7 +27,7 @@ class _CheckBoxStandardBuild(Button):
         """
         Set the state of the check box.
 
-        *value* A boolean representing the state of the check box.
+        **value** A boolean representing the state of the check box.
         """
         self._nsObject.setState_(value)
 
@@ -133,9 +133,9 @@ class _CheckBoxManualBuild(VanillaBaseObject):
 
     def getNSButton(self):
         """
-        Return the _NSButton_ that this object wraps.
+        Return the *NSButton* that this object wraps.
 
-        _This is currently not implemented for CheckBox._
+        *This is currently not implemented for CheckBox.*
         """
         # this is not possible since the control is built from parts
         raise NotImplementedError
@@ -155,7 +155,7 @@ class _CheckBoxManualBuild(VanillaBaseObject):
 
     def enable(self, onOff):
         """
-        Enable or disable the object. *onOff* should be a boolean.
+        Enable or disable the object. **onOff** should be a boolean.
         """
         self._checkBox.enable(onOff)
         self._textButton.enable(onOff)
@@ -164,7 +164,7 @@ class _CheckBoxManualBuild(VanillaBaseObject):
         """
         Set the control title.
 
-        *title* A string representing the title.
+        **title** A string representing the title.
         """
         self._textButton.setTitle(title)
 
@@ -184,7 +184,7 @@ class _CheckBoxManualBuild(VanillaBaseObject):
         """
         Set the state of the check box.
 
-        *value* A boolean representing the state of the check box.
+        **value** A boolean representing the state of the check box.
         """
         self._checkBox.set(value)
 
@@ -200,45 +200,53 @@ class _CheckBoxManualBuild(VanillaBaseObject):
 class CheckBox(_CheckBoxManualBuild):
 
     """
-    A standard check box.
+    A standard check box.::
 
-    pre.
-    from vanilla import *
-     
-    class CheckBoxDemo(object):
-         
-        def __init__(self):
-            self.w = Window((100, 40))
-            self.w.checkBox = CheckBox((10, 10, -10, 20), "A CheckBox",
-                               callback=self.checkBoxCallback, value=True)
-            self.w.open()
-             
-        def checkBoxCallback(self, sender):
-            print "check box state change!", sender.get()
-             
-    CheckBoxDemo()
+        from vanilla import *
+
+        class CheckBoxDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 40))
+                self.w.checkBox = CheckBox((10, 10, -10, 20), "A CheckBox",
+                                   callback=self.checkBoxCallback, value=True)
+                self.w.open()
+
+            def checkBoxCallback(self, sender):
+                print "check box state change!", sender.get()
+
+        CheckBoxDemo()
+
+    **posSize** Tuple of form (left, top, width, height) representing the position and size of
+    the check box. The size of the check box should match the appropriate value for the given *sizeStyle*.
+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +---------+---+-----------+
+    | Regular | H | 22        |
+    +---------+---+-----------+
+    | Small   | H | 18        |
+    +---------+---+-----------+
+    | Mini    | H | 10        |
+    +---------+---+-----------+
+
+    **title** The text to be displayed next to the check box. Pass *None* is no title is desired.
+
+    **callback** The method to be called when the user changes the state of the check box.
+
+    **value** A boolean representing the state of the check box.
+
+    **sizeStyle** A string representing the desired size style of the check box. The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
     """
 
     def __init__(self, posSize, title, callback=None, value=False, sizeStyle="regular"):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position ad size of the check box. The size of the check box should match the appropriate value for the given _sizeStyle_.
-
-        |\\3. *Standard Dimensions* |
-        | Regular | H | 22          |
-        | Small   | H | 18          |
-        | Mini    | H | 10          |
-
-        *title* The text to be displayed next to the check box. Pass _None_ is no title is desired.
-
-        *callback* The method to be called when the user changes the state of the check box.
-
-        *value* A boolean representing the state of the check box.
-
-        *sizeStyle* A string representing the desired size style of the check box. The options are:
-
-        | "regular" |
-        | "small"   |
-        | "mini"    |
-        """
         super(CheckBox, self).__init__(posSize=posSize, title=title, callback=callback, value=value, sizeStyle=sizeStyle)
 

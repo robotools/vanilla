@@ -7,22 +7,25 @@ class Box(VanillaBaseObject):
     """
     A bordered container for other controls.
 
-    To add a control to a box, simply set it as an attribute of the box.
+    To add a control to a box, simply set it as an attribute of the box.::
 
-    pre.
-    from vanilla import *
-     
-    class BoxDemo(object):
-        
-        def __init__(self):
-            self.w = Window((150, 70))
-            self.w.box = Box((10, 10, -10, -10))
-            self.w.box.text = TextBox((10, 10, -10, -10), "This is a box")
-            self.w.open()
-            
-    BoxDemo()
+        from vanilla import *
+
+        class BoxDemo(object):
+
+            def __init__(self):
+                self.w = Window((150, 70))
+                self.w.box = Box((10, 10, -10, -10))
+                self.w.box.text = TextBox((10, 10, -10, -10), "This is a box")
+                self.w.open()
+
+        BoxDemo()
 
     No special naming is required for the attributes. However, each attribute must have a unique name.
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the box.
+
+    **title** The title to be displayed dabove the box. Pass *None* if no title is desired.
     """
 
     allFrameAdjustments = {
@@ -36,11 +39,6 @@ class Box(VanillaBaseObject):
     nsBoxClass = NSBox
 
     def __init__(self, posSize, title=None):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the box.
-        
-        *title* The title to be displayed dabove the box. Pass _None_ if no title is desired.
-        """
         self._setupView(self.nsBoxClass, posSize)
         if title:
             self._nsObject.setTitle_(title)
@@ -52,7 +50,7 @@ class Box(VanillaBaseObject):
 
     def getNSBox(self):
         """
-        Return the _NSBox_ that this object wraps.
+        Return the *NSBox* that this object wraps.
         """
         return self._nsObject
 
@@ -77,13 +75,13 @@ class Box(VanillaBaseObject):
         if view is not None:
             _breakCycles(view)
 
-    def setTitle_(self, title):
+    def setTitle(self, title):
         """
         Set the title of the box.
         """
         self._nsObject.setTitle_(title)
 
-    def getTitle_(self):
+    def getTitle(self):
         """
         Get the title of the box.
         """
@@ -104,54 +102,56 @@ class _Line(Box):
 class HorizontalLine(_Line):
     
     """
-    A horizontal line.
+    A horizontal line.::
 
-    pre.
-    from vanilla import *
-     
-    class HorizontalLineDemo(object):
-        
-        def __init__(self):
-            self.w = Window((100, 20))
-            self.w.line = HorizontalLine((10, 10, -10, 1))
-            self.w.open()
-            
-    HorizontalLineDemo()
+        from vanilla import *
+
+        class HorizontalLineDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 20))
+                self.w.line = HorizontalLine((10, 10, -10, 1))
+                self.w.open()
+
+        HorizontalLineDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the line.
+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +---+---------------------+
+    | H | 1                   |
+    +---+---------------------+
     """
 
     def __init__(self, posSize):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the line.
-
-        |\\2. *Standard Dimensions* |
-        | H | 1                     |
-        """
         super(HorizontalLine, self).__init__(posSize)
 
 
 class VerticalLine(_Line):
 
     """
-    A vertical line.
+    A vertical line.::
 
-    pre.
-    from vanilla import *
-     
-    class VerticalLineDemo(object):
-        
-        def __init__(self):
-            self.w = Window((80, 100))
-            self.w.line = VerticalLine((40, 10, 1, -10))
-            self.w.open()
-            
-    VerticalLineDemo()
+        from vanilla import *
+
+        class VerticalLineDemo(object):
+
+            def __init__(self):
+                self.w = Window((80, 100))
+                self.w.line = VerticalLine((40, 10, 1, -10))
+                self.w.open()
+
+        VerticalLineDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the line.
+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +---+---------------------+
+    | V | 1                   |
+    +---+---------------------+
     """
 
     def __init__(self, posSize):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the line.
-
-        |\\2. *Standard Dimensions* |
-        | V | 1                     |
-        """
         super(VerticalLine, self).__init__(posSize)

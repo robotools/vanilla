@@ -37,44 +37,54 @@ class VanillaRBSplitView(RBSplitView):
 class SplitView(VanillaBaseObject):
 
     """
-    View that can be split into two or more subviews with dividers.
+    View that can be split into two or more subviews with dividers.::
 
-    pre.
-    from vanilla import *
-     
-    class SplitViewDemo(object):
-     
-        def __init__(self):
-            self.w = Window((200, 200), "SplitView Demo", minSize=(100, 100))
-            list1 = List((0, 0, -0, 100), ["A", "B", "C"])
-            list2 = List((0, 0, -0, 100), ["a", "b", "c"])
-            paneDescriptors = [
-                dict(view=list1),
-                dict(view=list2),
-            ]
-            self.w.splitView = SplitView((0, 0, -0, -0), paneDescriptors)
-            self.w.open()
-     
-    SplitViewDemo()
+        from vanilla import *
+
+        class SplitViewDemo(object):
+
+            def __init__(self):
+                self.w = Window((200, 200), "SplitView Demo", minSize=(100, 100))
+                list1 = List((0, 0, -0, 100), ["A", "B", "C"])
+                list2 = List((0, 0, -0, 100), ["a", "b", "c"])
+                paneDescriptors = [
+                    dict(view=list1, identifier="pane1"),
+                    dict(view=list2, identifier="pane2"),
+                ]
+                self.w.splitView = SplitView((0, 0, -0, -0), paneDescriptors)
+                self.w.open()
+
+        SplitViewDemo()
+
+    The wrapped object is an `RBSplitView <http://www.brockerhoff.net/src/rbs.html>`_ object.
+
+    **posSize** Tuple of form *(left, top, width, height)* representing
+    the position and size of the split view.
+
+    **paneDescriptions** An ordered list of dictionaries describing the
+    subviews, or "panes". Those dictionaries can have the following keys:
+
+    +-----------------+-----------------------------------------------------------------------------+
+    | *view*          | A view, either a Vanilla object or a NSView. Required.                      |
+    +-----------------+-----------------------------------------------------------------------------+
+    | *"identifier"*  | A string identifying the pane. Required.                                    |
+    +-----------------+-----------------------------------------------------------------------------+
+    | *"size"*        | The initial size of the pane. Optional.                                     |
+    +-----------------+-----------------------------------------------------------------------------+
+    | *"minSize"*     | The minimum size of the pane. Optional. The default is 1.                   |
+    +-----------------+-----------------------------------------------------------------------------+
+    | *"maxSize"*     | The maximum size of the pane. Optional. The default is no maximum size.     |
+    +-----------------+-----------------------------------------------------------------------------+
+    | *"canCollapse"* | Boolean indicating if the pane can collapse. Optional. The default is True. |
+    +-----------------+-----------------------------------------------------------------------------+
+
+    **isVertical** Boolean representing if the split view is vertical.
+    Default is *True*.
     """
 
     rbSplitViewClass = VanillaRBSplitView
 
     def __init__(self, posSize, paneDescriptions, isVertical=True, dividerThickness=8, dividerImage="thumb"):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the split view.
-
-        *paneDescriptions* An ordered list of dictionaries describing the subviews, or "panes". Those dictionaries can have the following keys:
-
-        | *view*          | A view, either a Vanilla object or a NSView. Required. |
-        | *"identifier"*  | A string identifying the pane. Required. |
-        | *"size"*        | The initial size of the pane. Optional. |
-        | *"minSize"*     | The minimum size of the pane. Optional. The default is 1. |
-        | *"maxSize"*     | The maximum size of the pane. Optional. The default is no maximum size. |
-        | *"canCollapse"* | Boolean indicating if the pane can collapse. Optional. The default is True. |
-
-        *isVertical* Boolean representing if the split view is vertical. Default is True.
-        """
         self._haveSetupSubviews = False
         self._setupView(self.rbSplitViewClass, posSize)
         if dividerImage != "thumb":
@@ -141,13 +151,26 @@ class SplitView(VanillaBaseObject):
         rbSplitView.adjustSubviews()
 
     def getRBSplitView(self):
+        """
+        Return the *RBSplitView* that this object wraps.
+        """
         return self._nsObject
 
     def isPaneVisible(self, identifier):
+        """
+        Returns a boolean indicating if the pane with **identifier**
+        is visible or not.
+        """
         view = self._identifierToSubview[identifier]
         return bool(not view.isCollapsed())
 
     def showPane(self, identifier, onOff, animate=True):
+        """
+        Set the visibility of the pane with **identifier**.
+        **onOff* should be a boolean indicating the desired
+        visibility of the pane. If **animate** is True,
+        the pane will expand or collapse with and animation.
+        """
         currentState = self.isPaneVisible(identifier)
         if currentState == onOff:
             return
@@ -165,5 +188,10 @@ class SplitView(VanillaBaseObject):
         self._nsObject.adjustSubviews()
 
     def togglePane(self, identifier, animate=True):
+        """
+        Toggle the visibility of the pane with **identifier**.
+        If **animate** is True, the pane will expand or collapse
+        with and animation.
+        """
         currentState = self.isPaneVisible(identifier)
         self.showPane(identifier, not currentState, animate)

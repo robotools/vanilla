@@ -12,24 +12,77 @@ _tickPositionMap = {
 class Slider(VanillaBaseControl):
 
     """
-    A standard slider control. Sliders can be vertical or horizontal and they can show tick marks or not show tick marks.
+    A standard slider control. Sliders can be vertical or horizontal and
+    they can show tick marks or not show tick marks.::
 
-    pre.
-    from vanilla import *
-     
-    class SliderDemo(object):
-        
-         def __init__(self):
-             self.w = Window((200, 43))
-             self.w.slider = Slider((10, 10, -10, 23),
-                                tickMarkCount=10,
-                                callback=self.sliderCallback)
-             self.w.open()
-             
-         def sliderCallback(self, sender):
-             print "slider edit!", sender.get()
-             
-    SliderDemo()
+        from vanilla import *
+
+        class SliderDemo(object):
+
+             def __init__(self):
+                 self.w = Window((200, 43))
+                 self.w.slider = Slider((10, 10, -10, 23),
+                                    tickMarkCount=10,
+                                    callback=self.sliderCallback)
+                 self.w.open()
+
+             def sliderCallback(self, sender):
+                 print "slider edit!", sender.get()
+
+        SliderDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    size of the slider. The size of the slider sould match the appropriate value for
+    the given *sizeStyle*.
+
+    +---------------------------+
+    | **Standard Dimensions**   |
+    +---------------------------+
+    | *without ticks*           |
+    +---------+---+----+---+----+
+    | Regular | W | 15 | H | 15 |
+    +---------+---+----+---+----+
+    | Small   | W | 12 | H | 11 |
+    +---------+---+----+---+----+
+    | Mini    | W | 10 | H | 10 |
+    +---------+---+----+---+----+
+    | *with ticks*              |
+    +---------+---+----+---+----+
+    | Regular | W | 24 | H | 23 |
+    +---------+---+----+---+----+
+    | Small   | W | 17 | H | 17 |
+    +---------+---+----+---+----+
+    | Mini    | W | 16 | H | 16 |
+    +---------+---+----+---+----+
+
+    **minValue** The minimum value allowed by the slider.
+
+    **maxValue** The maximum value allowed by the slider.
+
+    **value** The initial value of the slider.
+
+    **tickMarkCount** The number of tick marcks to be displayed on the slider.
+    If *None* is given, no tick marks will be displayed.
+
+    **stopOnTickMarks** Boolean representing if the slider knob should only
+    stop on the tick marks.
+
+    **continuous** Boolean representing if the assigned callback should be
+    called during slider editing. If *False* is given, the callback will be
+    called after the editing has finished.
+
+    **callback** The method to be called when the slider has been edited.
+
+    **sizeStyle** A string representing the desired size style of the slider.
+    The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
     """
 
     nsSliderClass = NSSlider
@@ -70,39 +123,6 @@ class Slider(VanillaBaseControl):
     def __init__(self, posSize, minValue=0, maxValue=100, value=50,
             tickMarkCount=None, stopOnTickMarks=False, continuous=True,
             callback=None, sizeStyle="regular"):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position ad size of the slider. The size of the slider sould match the appropriate value for the given _sizeStyle_.
-        
-        |\\5. *Standard Dimensions* |
-        |\\5. _without ticks_       |
-        | Regular | W | 15 | H | 15 |
-        | Small   | W | 12 | H | 11 |
-        | Mini    | W | 10 | H | 10 |
-        |\\5. _with ticks_          |
-        | Regular | W | 24 | H | 23 |
-        | Small   | W | 17 | H | 17 |
-        | Mini    | W | 16 | H | 16 |
-
-        *minValue* The minimum value allowed by the slider.
-
-        *maxValue* The maximum value allowed by the slider.
-
-        *value* The initial value of the slider.
-
-        *tickMarkCount* The number of tick marcks to be displayed on the slider. If _None_ is given, no tick marks will be displayed.
-
-        *stopOnTickMarks* Boolean representing if the slider knob should only stop on the tick marks.
-
-        *continuous* Boolean representing if the assigned callback should be called during slider editing. If _False_ is given, the callback will be called after the editing has finished.
-
-        *callback* The method to be called when the slider has been edited.
-
-        *sizeStyle* A string representing the desired size style of the slider. The options are:
-
-        | "regular" |
-        | "small"   |
-        | "mini"    |
-        """
         self._setupView(self.nsSliderClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setMinValue_(minValue)
@@ -119,7 +139,7 @@ class Slider(VanillaBaseControl):
 
     def getNSSlider(self):
         """
-        Return the _NSSlider_ that this object wraps.
+        Return the *NSSlider* that this object wraps.
         """
         return self._nsObject
 
@@ -194,13 +214,19 @@ class Slider(VanillaBaseControl):
 
         For vertical sliders, the options are:
 
+        +---------+
         | "left"  |
+        +---------+
         | "right" |
+        +---------+
 
         For horizontal sliders, the options are:
 
+        +----------+
         | "top"    |
+        +----------+
         | "bottom" |
+        +----------+
         """
         # don't rely on self._nsObject.isVertical here
         # because if this is called before the object

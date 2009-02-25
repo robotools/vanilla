@@ -93,7 +93,7 @@ class VanillaBaseObject(object):
 
     def enable(self, onOff):
         """
-        Enable or disable the object. *onOff* should be a boolean.
+        Enable or disable the object. **onOff** should be a boolean.
         """
         self._nsObject.setEnabled_(onOff)
 
@@ -107,13 +107,13 @@ class VanillaBaseObject(object):
         """
         Show or hide the object.
 
-        *onOff* A boolean value representing if the object should be shown or not.
+        **onOff** A boolean value representing if the object should be shown or not.
         """
         self._nsObject.setHidden_(not onOff)
 
     def getPosSize(self):
         """
-        The position and size of the object as a tuple of form (left, top, width, height).
+        The position and size of the object as a tuple of form *(left, top, width, height)*.
         """
         return self._posSize
 
@@ -121,7 +121,7 @@ class VanillaBaseObject(object):
         """
         Set the postion and size of the object.
 
-        *posSize* A tuple of form (left, top, width, height).
+        **posSize** A tuple of form *(left, top, width, height)*.
         """
         self._posSize = posSize
         self._setAutosizingFromPosSize(posSize)
@@ -132,7 +132,7 @@ class VanillaBaseObject(object):
 
     def move(self, x, y):
         """
-        Move the object by _x_ units and _y_ units.
+        Move the object by **x** units and **y** units.
         """
         l, t, w, h = self.getPosSize()
         l = l + x
@@ -141,7 +141,7 @@ class VanillaBaseObject(object):
 
     def resize(self, width, height):
         """
-        Change the size of the object to _width_ and _height_.
+        Change the size of the object to **width** and **height**.
         """
         l, t, w, h = self.getPosSize()
         self.setPosSize((l, t, width, height))
@@ -159,7 +159,7 @@ class VanillaBaseControl(VanillaBaseObject):
         """
         Set the control title.
 
-        *title* A string representing the title.
+        **title** A string representing the title.
         """
         self._nsObject.setTitle_(title)
 

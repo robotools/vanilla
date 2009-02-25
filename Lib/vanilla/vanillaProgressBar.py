@@ -4,28 +4,56 @@ from vanillaBase import VanillaBaseObject, _sizeStyleMap
 class ProgressBar(VanillaBaseObject):
 
     """
-    A standard progress bar.
+    A standard progress bar.::
 
-    pre.
-    from vanilla import *
-     
-    class ProgressBarDemo(object):
-         
-        def __init__(self):
-            self.w = Window((200, 65))
-            self.w.bar = ProgressBar((10, 10, -10, 16))
-            self.w.button = Button((10, 35, -10, 20), "Go!",
-                                callback=self.showProgress)
-            self.w.open()
-             
-        def showProgress(self, sender):
-            import time
-            self.w.bar.set(0)
-            for i in range(10):
-                self.w.bar.increment(10)
-                time.sleep(.2)
-                 
-    ProgressBarDemo()
+        from vanilla import *
+
+        class ProgressBarDemo(object):
+
+            def __init__(self):
+                self.w = Window((200, 65))
+                self.w.bar = ProgressBar((10, 10, -10, 16))
+                self.w.button = Button((10, 35, -10, 20), "Go!",
+                                    callback=self.showProgress)
+                self.w.open()
+
+            def showProgress(self, sender):
+                import time
+                self.w.bar.set(0)
+                for i in range(10):
+                    self.w.bar.increment(10)
+                    time.sleep(.2)
+
+        ProgressBarDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing
+    the position and size of the progress bar. The height of the progress
+    bar sould match the appropriate value for the given *sizeStyle*.
+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +---------+---+-----------+
+    | Regular | H | 16        |
+    +---------+---+-----------+
+    | Small   | H | 10        |
+    +---------+---+-----------+
+
+    **minValue** The minimum value of the progress bar.
+
+    **maxValue** The maximum value of the progress bar.
+
+    **isIndeterminate** Boolean representing if the progress bar is indeterminate.
+    Determinate progress bars show how much of the task has been completed.
+    Indeterminate progress bars simply show that the application is busy.
+
+    **sizeStyle** A string representing the desired size style of the pregress bar.
+    The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
     """
 
     nsProgressIndicatorClass = NSProgressIndicator
@@ -36,24 +64,6 @@ class ProgressBar(VanillaBaseObject):
     }
 
     def __init__(self, posSize, minValue=0, maxValue=100, isIndeterminate=False, sizeStyle="regular"):
-        """
-        *posSize* Tuple of form (left, top, width, height) representing the position and size of the progress bar. The height of the progress bar sould match the appropriate value for the given sizeStyle.
-
-        |\\5. *Standard Dimensions* |
-        | Regular | H | 16          |
-        | Small   | H | 10          |
-
-        *minValue* The minimum value of the progress bar.
-
-        *maxValue* The maximum value of the progress bar.
-
-        *isIndeterminate* Boolean representing if the progress bar is indeterminate. Determinate progress bars show how much of the task has been completed. Indeterminate progress bars simply show that the application is busy.
-
-        *sizeStyle* A string representing the desired size style of the pregress bar. The options are:
-
-        | "regular" |
-        | "small"   |
-        """
         self._setupView(self.nsProgressIndicatorClass, posSize)
         self.frameAdjustments = self.allFrameAdjustments[sizeStyle]
         self._nsObject.setControlSize_(_sizeStyleMap[sizeStyle])
@@ -65,7 +75,7 @@ class ProgressBar(VanillaBaseObject):
 
     def getNSProgressIndicator(self):
         """
-        Return the _NSProgressIndicator_ that this object wraps.
+        Return the *NSProgressIndicator* that this object wraps.
         """
         return self._nsObject
 
@@ -76,9 +86,9 @@ class ProgressBar(VanillaBaseObject):
 
     def set(self, value):
         """
-        Set the value of the progress bar to _value_.
-        
-        _Only available in determinate progress bars._
+        Set the value of the progress bar to **value**.
+
+        *Only available in determinate progress bars.*
         """
         self._nsObject.setDoubleValue_(value)
         self._nsObject.display()
@@ -87,15 +97,15 @@ class ProgressBar(VanillaBaseObject):
         """
         Get the current value of the progress bar.
 
-        _Only available in determinate progress bars._
+        *Only available in determinate progress bars.*
         """
         return self._nsObject.doubleValue()
 
     def increment(self, value=1):
         """
-        Increment the progress bar by _value_.
+        Increment the progress bar by **value**.
 
-        _Only available in determinate progress bars._
+        *Only available in determinate progress bars.*
         """
         self._nsObject.incrementBy_(value)
         self._nsObject.display()
@@ -104,7 +114,7 @@ class ProgressBar(VanillaBaseObject):
         """
         Start the animation.
 
-        _Only available in indeterminate progress bars._
+        *Only available in indeterminate progress bars.*
         """
         self._nsObject.startAnimation_(None)
 
@@ -112,6 +122,6 @@ class ProgressBar(VanillaBaseObject):
         """
         Stop the animation.
 
-        _Only available in indeterminate progress bars._
+        *Only available in indeterminate progress bars.*
         """
         self._nsObject.stopAnimation_(None)
