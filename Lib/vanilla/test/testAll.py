@@ -285,7 +285,7 @@ class ListTest(BaseTest):
     def __init__(self, drawGrid=False):
         self.w = Window((440, 500), "List Test", minSize=(400, 400))
 
-        simpleList = List((0, 0, -0, 100), listOptions, enableTypingSensitivity=True)
+        simpleList = List((0, 0, 0, 0), listOptions, enableTypingSensitivity=True)
 
         multiItems = [
             {"name": name, "path": os.path.basename(getattr(module, "__file__", "Unknown"))}
@@ -295,7 +295,7 @@ class ListTest(BaseTest):
             {"title": "Module Name", "key": "name"},
             {"title": "File Name", "key": "path"}
         ]
-        multiList = List((0, 110, -0, 100), multiItems, columnDescriptions=columnDescriptions, enableTypingSensitivity=True)
+        multiList = List((0, 0, 0, 0), multiItems, columnDescriptions=columnDescriptions, enableTypingSensitivity=True)
 
         miscItems = [
             {"slider": 50, "checkBox": False},
@@ -311,12 +311,12 @@ class ListTest(BaseTest):
             {"title": "CheckBoxListCell", "key": "checkBox",
             "cell": CheckBoxListCell()},
         ]
-        miscCellList = List((0, 330, -0, 100), items=miscItems, columnDescriptions=columnDescriptions)
+        miscCellList = List((0, 0, 0, 0), items=miscItems, columnDescriptions=columnDescriptions)
 
         paneDescriptions = [
-            dict(view=simpleList),
-            dict(view=multiList),
-            dict(view=miscCellList),
+            dict(view=simpleList, identifier="simpleList"),
+            dict(view=multiList, identifier="multiList"),
+            dict(view=miscCellList, identifier="miscCellList"),
         ]
 
         # only add the ListIndicator tests if the controls are available
@@ -339,12 +339,12 @@ class ListTest(BaseTest):
                 {"title": "relevancy",
                 "cell": LevelIndicatorListCell(style="relevancy")},
             ]
-            levelIndicatorList = List((0, 220, -0, 100), items=listIndicatorItems, columnDescriptions=columnDescriptions)
-            paneDescriptions.append(dict(view=levelIndicatorList))
+            levelIndicatorList = List((0, 0, 0, 0), items=listIndicatorItems, columnDescriptions=columnDescriptions)
+            paneDescriptions.append(dict(view=levelIndicatorList, identifier="levelIndicatorList"))
         except NameError:
             pass
 
-        self.w.splitView = SplitView((0, 0, -0, -0), paneDescriptions)
+        self.w.splitView = SplitView((0, 0, -0, -0), paneDescriptions, isVertical=False)
 
         if drawGrid:
             self.drawGrid()
@@ -401,8 +401,8 @@ class ViewTest(BaseTest):
         view1 = ScrollView((0, 0, 0, 50), self.splitViewNSView1, autohidesScrollers=True, backgroundColor=NSColor.redColor())
         view2 = ScrollView((0, 0, 0, -10), self.splitViewNSView2, autohidesScrollers=True, backgroundColor=NSColor.redColor())
         paneDescriptions = [
-            dict(view=view1),
-            dict(view=view2),
+            dict(view=view1, identifier="view1"),
+            dict(view=view2, identifier="view2"),
         ]
         self.w.splitView = SplitView((10, 220, -10, -10), paneDescriptions)
 
