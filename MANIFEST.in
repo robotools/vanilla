@@ -1,0 +1,7 @@
+include License.txt
+include Install.txt
+recursive-include Data
+recursive-include Documentation *
+recursive-include Lib *.py
+recursive-include Lib/vanilla/externalFrameworks/RBSplitView *.png
+recursive-include Lib/vanilla/externalFrameworks/RBSplitView/RBSplitView.framework *
