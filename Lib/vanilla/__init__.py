@@ -76,6 +76,6 @@ class _NoRBSplitView(object):
 try:
     from vanillaSplitView import SplitView
     from vanilla.externalFrameworks import RBSplitView
-except ImportError:
+except (ImportError, ValueError):
     SplitView = _NoRBSplitView
 
