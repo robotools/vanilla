@@ -167,6 +167,22 @@ class VanillaArrayController(NSArrayController):
         tableView, draggingInfo, row, dropOperation):
         return self._handleDrop(False, tableView, draggingInfo, row, dropOperation)
 
+    # 10.6
+
+    def tableView_objectValueForTableColumn_row_(self,
+        tableView, column, row):
+        content = self.content()
+        columnID = column.identifier()
+        item = content[row]
+        if isinstance(item, NSDictionary):
+            return item[columnID]
+        else:
+            return getattr(item, columnID)()
+
+    def numberOfRowsInTableView_(self, view):
+        return len(self.content())
+
+
 class _VanillaArrayController(VanillaArrayController):
 
     def init(self):
@@ -731,7 +747,7 @@ class List(VanillaBaseObject):
             NSBackspaceCharacter,
             NSDeleteFunctionKey,
             NSDeleteCharacter,
-            unichr(NSDeleteCharacter),
+            unichr(0x007F),
         ]
         nonCharacters = [
             NSUpArrowFunctionKey,
@@ -740,9 +756,9 @@ class List(VanillaBaseObject):
             NSRightArrowFunctionKey,
             NSPageUpFunctionKey,
             NSPageDownFunctionKey,
-            unichr(NSEnterCharacter),
-            unichr(NSCarriageReturnCharacter),
-            unichr(NSTabCharacter),
+            unichr(0x0003),
+            u"\r",
+            u"\t",
         ]
         if characters in deleteCharacters:
             if self._enableDelete:
