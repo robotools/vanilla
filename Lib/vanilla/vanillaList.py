@@ -877,6 +877,10 @@ class List(VanillaBaseObject):
         index = self._getSortedIndexesFromUnsortedIndexes([index])[0]
         self._arrayController.removeObjectAtArrangedObjectIndex_(index)
 
+    def __contains__(self, item):
+        item = self._wrapItem(item)
+        return self._arrayController.content().containsObject_(item)
+
     def append(self, item):
         item = self._wrapItem(item)
         self._arrayController.addObject_(item)
