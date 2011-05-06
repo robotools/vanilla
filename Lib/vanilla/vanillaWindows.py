@@ -260,7 +260,7 @@ class Window(NSObject):
         A boolean value representing if the window is visible or not.
         """
         return self._window.isVisible()
-    
+
     def _calculateTitlebarHeight(self):
         # Note: this will include the toolbar height if there is one
         contentFrame = self._window.contentRectForFrameRect_(self._window.frame())
@@ -304,7 +304,7 @@ class Window(NSObject):
             # so, asjust it.
             (sL, sB), (sW, sH) = screenFrame
             screenFrame = ((sL, 0), (sW, sH + sB))
-        frame = _calcFrame(screenFrame, ((l, t), (w, h)))
+        frame = _calcFrame(screenFrame, ((l, t), (w, h)), absolutePositioning=True)
         self._window.setFrame_display_animate_(frame, True, animate)
 
     def center(self):

@@ -209,18 +209,19 @@ _reverseSizeStyleMap = {
 }
 
 
-def _calcFrame(parentFrame, posSize):
+def _calcFrame(parentFrame, posSize, absolutePositioning=False):
     """Convert a vanilla posSize rect to a Cocoa frame."""
     (pL, pB), (pW, pH) = parentFrame
     (l, t), (w, h) = posSize
-    if l < 0:
-        l = pW + l
-    if w <= 0:
-        w = pW + w - l
-    if t < 0:
-        t = pH + t
-    if h <= 0:
-        h = pH + h - t
+    if not absolutePositioning:
+        if l < 0:
+            l = pW + l
+        if w <= 0:
+            w = pW + w - l
+        if t < 0:
+            t = pH + t
+        if h <= 0:
+            h = pH + h - t
     b = pH - t - h  # flip it upside down
     return (l, b), (w, h)
 
