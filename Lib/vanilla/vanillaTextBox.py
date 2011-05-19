@@ -37,7 +37,7 @@ class TextBox(VanillaBaseControl):
     +---------+---+-----------+
     | Small   | H | 14        |
     +---------+---+-----------+
-    | Mini    | H | 11        |
+    | Mini    | H | 12        |
     +---------+---+-----------+
 
     **text** The text to be displayed in the text box. If the object is a

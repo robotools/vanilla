@@ -119,7 +119,7 @@ class _CheckBoxManualBuild(VanillaBaseObject):
         # adjust the position of the text button in relation to the check box
         textBoxPosSize = {
                 # left, top, height
-                "mini": (10, 4, 11),
+                "mini": (10, 4, 12),
                 "small": (14, 4, 14),
                 "regular": (16, 3, 17)
                 }
