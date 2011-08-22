@@ -18,20 +18,20 @@ class VanillaRBSplitView(RBSplitView):
         if vanillaWrapper is not None and self.superview() is not None:
             vanillaWrapper._setupPanes()
 
-    def _recurseThroughSubviews(self, view):
+    def adjustPosSizeInVanillaSubviewsForView_(self, view):
         if hasattr(view, "vanillaWrapper"):
             vanillaWrapper = view.vanillaWrapper()
             if vanillaWrapper is not None:
                 posSize = vanillaWrapper.getPosSize()
                 vanillaWrapper.setPosSize(posSize)
                 for subview in view.subviews():
-                    self._recurseThroughSubviews(subview)
+                    self.adjustPosSizeInVanillaSubviewsForView_(subview)
 
     def viewDidMoveToWindow(self):
         for subview in self.subviews():
             if isinstance(subview, RBSplitSubview):
                 for subsubview in subview.subviews():
-                    self._recurseThroughSubviews(subsubview)
+                    self.adjustPosSizeInVanillaSubviewsForView_(subsubview)
 
 
 class SplitView(VanillaBaseObject):
