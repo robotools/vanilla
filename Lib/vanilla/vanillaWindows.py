@@ -3,17 +3,6 @@ from vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame
         VanillaCallbackWrapper, VanillaError, VanillaBaseControl
 
 
-STANDARD_TOOLBAR_ITEMS = [
-    NSToolbarFlexibleSpaceItemIdentifier,
-    NSToolbarSpaceItemIdentifier,
-    NSToolbarSeparatorItemIdentifier,
-    NSToolbarCustomizeToolbarItemIdentifier,
-    NSToolbarPrintItemIdentifier,
-    NSToolbarShowFontsItemIdentifier,
-    NSToolbarShowColorsItemIdentifier,
-]
-
-
 class Window(NSObject):
 
     """
@@ -522,7 +511,15 @@ class Window(NSObject):
 
         Returns a dictionary containing the created toolbar items, mapped by itemIdentifier.
         """
-
+        STANDARD_TOOLBAR_ITEMS = [
+            NSToolbarFlexibleSpaceItemIdentifier,
+            NSToolbarSpaceItemIdentifier,
+            NSToolbarSeparatorItemIdentifier,
+            NSToolbarCustomizeToolbarItemIdentifier,
+            NSToolbarPrintItemIdentifier,
+            NSToolbarShowFontsItemIdentifier,
+            NSToolbarShowColorsItemIdentifier,
+        ]
         # create the reference structures
         self._toolbarItems = {}
         self._toolbarDefaultItemIdentifiers = []
