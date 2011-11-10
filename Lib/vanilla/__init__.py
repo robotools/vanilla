@@ -64,6 +64,8 @@ except (ImportError, NameError):
 try:
     from vanillaGradientButton import GradientButton
     __all__.append("GradientButton")
+    from vanillaPathControl import PathControl
+    __all__.append("PathControl")
 except (ImportError, NameError):
     pass
 

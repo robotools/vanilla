@@ -134,7 +134,7 @@ class TextTest(BaseTest):
 class ButtonTest(BaseTest):
 
     def __init__(self, drawGrid=False):
-        self.w = Window((440, 690), "Button Test")
+        self.w = Window((440, 800), "Button Test")
 
         _top = 10
         top = _top
@@ -239,40 +239,48 @@ class ButtonTest(BaseTest):
             setattr(self.w, attrName, button)
             top += 30
 
-        # only add the ListIndicator tests if the controls are available
-        try:
-            _top = top
+        _top = top
 
-            left = _left
-            width = 120
-            self.w.DLevelIndicator = LevelIndicator((left, top, width, 18), style="discrete",
-                        value=5, warningValue=7, criticalValue=9,
-                        callback=self.getCallback)
-            top += 30
-            self.w.DLevelIndicator_ticksAbove = LevelIndicator((left, top, width, 25), style="discrete",
-                        value=5, warningValue=7, criticalValue=9,
-                        tickMarkPosition="above", minorTickMarkCount=5, majorTickMarkCount=3, callback=self.getCallback)
-            top += 30
-            self.w.DLevelIndicator_ticksBelow = LevelIndicator((left, top, width, 25), style="discrete",
-                        value=5, warningValue=7, criticalValue=9,
-                        tickMarkPosition="below", minorTickMarkCount=5, majorTickMarkCount=3, callback=self.getCallback)
+        left = _left
+        width = 120
+        self.w.DLevelIndicator = LevelIndicator((left, top, width, 18), style="discrete",
+                    value=5, warningValue=7, criticalValue=9,
+                    callback=self.getCallback)
+        top += 30
+        self.w.DLevelIndicator_ticksAbove = LevelIndicator((left, top, width, 25), style="discrete",
+                    value=5, warningValue=7, criticalValue=9,
+                    tickMarkPosition="above", minorTickMarkCount=5, majorTickMarkCount=3, callback=self.getCallback)
+        top += 30
+        self.w.DLevelIndicator_ticksBelow = LevelIndicator((left, top, width, 25), style="discrete",
+                    value=5, warningValue=7, criticalValue=9,
+                    tickMarkPosition="below", minorTickMarkCount=5, majorTickMarkCount=3, callback=self.getCallback)
 
-            left = 300
-            top = _top
-            width = 120
-            self.w.CLevelIndicator = LevelIndicator((left, top, width, 16), style="continuous",
-                        value=5, warningValue=7, criticalValue=9,
-                        callback=self.getCallback)
+        left = 300
+        top = _top
+        width = 120
+        self.w.CLevelIndicator = LevelIndicator((left, top, width, 16), style="continuous",
+                    value=5, warningValue=7, criticalValue=9,
+                    callback=self.getCallback)
+        top += 30
+        self.w.CLevelIndicator_ticksAbove = LevelIndicator((left, top, width, 23), style="continuous",
+                    value=5, warningValue=7, criticalValue=9,
+                    tickMarkPosition="above", minorTickMarkCount=5, majorTickMarkCount=3, callback=self.getCallback)
+        top += 30
+        self.w.CLevelIndicator_ticksBelow = LevelIndicator((left, top, width, 23), style="continuous",
+                    value=5, warningValue=7, criticalValue=9,
+                    tickMarkPosition="below", minorTickMarkCount=5, majorTickMarkCount=3, callback=self.getCallback)
+
+        _top = 660
+        top = _top
+        pathControlSizeStyles = [("regular", 22), ("small", 20), ("mini", 18)]
+        left = 10
+        width = -10
+        url = NSURL.fileURLWithPath_(__file__)
+        for sizeStyle, height in pathControlSizeStyles:
+            attrName = "PathControl_%s" % sizeStyle
+            button = PathControl((left, top, width, height), url, callback=None, sizeStyle=sizeStyle)
+            setattr(self.w, attrName, button)
             top += 30
-            self.w.CLevelIndicator_ticksAbove = LevelIndicator((left, top, width, 23), style="continuous",
-                        value=5, warningValue=7, criticalValue=9,
-                        tickMarkPosition="above", minorTickMarkCount=5, majorTickMarkCount=3, callback=self.getCallback)
-            top += 30
-            self.w.CLevelIndicator_ticksBelow = LevelIndicator((left, top, width, 23), style="continuous",
-                        value=5, warningValue=7, criticalValue=9,
-                        tickMarkPosition="below", minorTickMarkCount=5, majorTickMarkCount=3, callback=self.getCallback)
-        except NameError:
-            pass
 
         if drawGrid:
             self.drawGrid()
