@@ -359,6 +359,19 @@ class ListTest(BaseTest):
 
         self.w.open()
 
+class BrowserTest(BaseTest):
+
+    def __init__(self, drawGrid=False):
+        self.w = Window((440, 500), "Browser Test", minSize=(400, 400))
+
+        import vanilla
+        self.w.browser = ObjectBrowser((0, 0, 0, 0), vanilla)
+
+        if drawGrid:
+            self.drawGrid()
+
+        self.w.open()
+
 
 class TestCustomNSView(NSView):
 
@@ -544,17 +557,18 @@ class TestSplitView(BaseTest):
 class Test(object):
 
     def __init__(self):
-        self.w = FloatingWindow((200, 300, 120, 310))
+        self.w = FloatingWindow((200, 300, 120, 340))
         self.w.drawGrid = CheckBox((10, 10, -10, 22), "Draw Grid", value=False)
         self.w.windows = Button((10, 40, -10, 20), "Windows", callback=self.openTestCallback)
         self.w.geometry = Button((10, 70, -10, 20), "Geometry", callback=self.openTestCallback)
         self.w.text = Button((10, 100, -10, 20), "Text", callback=self.openTestCallback)
         self.w.buttons = Button((10, 130, -10, 20), "Buttons", callback=self.openTestCallback)
         self.w.list = Button((10, 160, -10, 20), "List", callback=self.openTestCallback)
-        self.w.view = Button((10, 190, -10, 20), "Views", callback=self.openTestCallback)
-        self.w.toolbar = Button((10, 220, -10, 20), "Toolbar", callback=self.openTestCallback)
-        self.w.misc = Button((10, 250, -10, 20), "Misc.", callback=self.openTestCallback)
-        self.w.split = Button((10, 280, -10, 20), "SplitView", callback=self.openTestCallback)
+        self.w.browser = Button((10, 190, -10, 20), "Browser", callback=self.openTestCallback)
+        self.w.view = Button((10, 220, -10, 20), "Views", callback=self.openTestCallback)
+        self.w.toolbar = Button((10, 250, -10, 20), "Toolbar", callback=self.openTestCallback)
+        self.w.misc = Button((10, 280, -10, 20), "Misc.", callback=self.openTestCallback)
+        self.w.split = Button((10, 310, -10, 20), "SplitView", callback=self.openTestCallback)
         self.w.open()
 
     def openTestCallback(self, sender):
@@ -570,6 +584,8 @@ class Test(object):
             ButtonTest(self.w.drawGrid.get())
         elif title == "List":
             ListTest(self.w.drawGrid.get())
+        elif title == "Browser":
+            BrowserTest(self.w.drawGrid.get())
         elif title == "Views":
             ViewTest(self.w.drawGrid.get())
         elif title == "Toolbar":

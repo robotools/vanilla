@@ -1,5 +1,6 @@
 from vanillaBase import VanillaBaseObject, VanillaBaseControl, VanillaError
 from vanillaBox import Box, HorizontalLine, VerticalLine
+from vanillaBrowser import ObjectBrowser
 from vanillaButton import Button, SquareButton, ImageButton, HelpButton
 from vanillaCheckBox import CheckBox
 from vanillaColorWell import ColorWell
@@ -34,6 +35,7 @@ __all__ = [
     "Group",
     "ImageView",
     "List", "CheckBoxListCell", "SliderListCell",
+    "ObjectBrowser",
     "PopUpButton",
     "ProgressBar",
     "ProgressSpinner",
