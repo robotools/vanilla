@@ -978,9 +978,11 @@ class List(VanillaBaseObject):
 
     def _removeSelection(self):
         selection = self.getSelection()
-        content = self._arrayController.content()
-        items = [content[index] for index in selection]
-        self._arrayController.removeObjects_(items)
+        selection = self._getSortedIndexesFromUnsortedIndexes(selection)
+        indexSet = NSMutableIndexSet.indexSet()
+        for index in selection:
+            indexSet.addIndex_(index)
+        self._arrayController.removeObjectsAtArrangedObjectIndexes_(indexSet)
 
     def scrollToSelection(self):
         """Scroll the selected rows to visible."""
@@ -1083,3 +1085,29 @@ def SliderListCell(minValue=0, maxValue=100):
     cell.setMaxValue_(maxValue)
     return cell
 
+
+def PopUpButtonListCell(items):
+    """
+    An object that displays a pop up list in a List column.
+
+    **This object should only be used in the *columnDescriptions*
+    argument during the construction of a List.**
+
+    **items** The items that should appear in the pop up list.
+    """
+    cell = NSPopUpButtonCell.alloc().init()
+    cell.setBordered_(False)
+    # add the basic items
+    titles = []
+    for title in items:
+        if isinstance(title, (NSString, NSAttributedString)):
+            title = title.string()
+        titles.append(title)
+    cell.addItemsWithTitles_(titles)
+    # add attributed titles
+    for index, title in enumerate(items):
+        if not isinstance(title, NSAttributedString):
+            continue
+        item = cell.itemAtIndex_(index)
+        item.setAttributedTitle_(title)
+    return cell
