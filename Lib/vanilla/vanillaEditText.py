@@ -131,6 +131,19 @@ class EditText(VanillaBaseControl):
         """
         self._nsObject.setObjectValue_(value)
 
+    def getPlaceholder(self):
+        """
+        Get the placeholder string displayed in the control.
+        """
+        return self._nsObject.cell().placeholderString()
+
+    def setPlaceholder(self, value):
+        """
+        Set **value** as the placeholder string to be displayed in the control.
+        **value** must be a string.
+        """
+        self._nsObject.cell().setPlaceholderString_(value)
+
     def selectAll(self):
         """
         Select all text in the text entry control.
