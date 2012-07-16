@@ -669,14 +669,14 @@ class List(VanillaBaseObject):
             column.headerCell().setTitle_(title)
             # set the data cell
             if cell is None:
-                dataCell = column.dataCell()
-                dataCell.setDrawsBackground_(False)
-                dataCell.setStringValue_("")  # cells have weird default values
+                cell = column.dataCell()
+                cell.setDrawsBackground_(False)
+                cell.setStringValue_("")  # cells have weird default values
             else:
                 column.setDataCell_(cell)
             # assign the formatter
             if formatter is not None:
-                dataCell.setFormatter_(formatter)
+                cell.setFormatter_(formatter)
             if self._arrayController is not None:
                 # assign the key to the binding
                 column.bind_toObject_withKeyPath_options_(binding, self._arrayController, keyPath, None)
