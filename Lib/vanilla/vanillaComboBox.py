@@ -1,5 +1,29 @@
-from AppKit import NSComboBox
+from AppKit import NSObject, NSComboBox
 from vanillaBase import VanillaBaseControl
+
+
+class VanillaComboBoxDelegate(NSObject):
+
+    _continuous = True
+
+    def _callVanillaCallback(self, notification):
+        obj = notification.object()
+        target = obj.target()
+        if target is not None:
+            target.action_(obj)
+
+    def controlTextDidChange_(self, notification):
+        if self._continuous:
+            self._callVanillaCallback(notification)
+
+    def controlTextDidEndEditing_(self, notification):
+        if not self._continuous:
+            self._callVanillaCallback(notification)
+
+    def comboBoxSelectionDidChange_(self, notification):
+        obj = notification.object()
+        obj.setObjectValue_(obj.objectValueOfSelectedItem())
+        self._callVanillaCallback(notification)
 
 
 class ComboBox(VanillaBaseControl):
@@ -40,6 +64,9 @@ class ComboBox(VanillaBaseControl):
 
     **completes** Boolean representing if the combo box auto completes entered text.
 
+    **continuous** If True, the callback (if any) will be called upon each keystroke, if False, only call the callback when
+    editing finishes or after item selection. Default is False.
+
     **callback** The method to be called when the user enters text.
 
     **formatter** An `NSFormatter <http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html>`_
@@ -64,14 +91,26 @@ class ComboBox(VanillaBaseControl):
         "regular": (0, -3, 3, 5),
     }
 
-    def __init__(self, posSize, items, completes=True, callback=None,
-            formatter=None, sizeStyle="regular"):
+    def __init__(self, posSize, items, completes=True, continuous=False,
+            callback=None, formatter=None, sizeStyle="regular"):
+        self._continuous = continuous
         self._setupView(self.nsComboBoxClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.addItemsWithObjectValues_(items)
         self._nsObject.setCompletes_(completes)
         if formatter is not None:
             self._nsObject.cell().setFormatter_(formatter)
+
+    def _breakCycles(self):
+        super(ComboBox, self)._breakCycles()
+        self._delegate = None
+
+    def _setCallback(self, callback):
+        super(ComboBox, self)._setCallback(callback)
+        if callback is not None:
+            self._delegate = VanillaComboBoxDelegate.alloc().init()
+            self._delegate._continuous = self._continuous
+            self._nsObject.setDelegate_(self._delegate)
 
     def getNSComboBox(self):
         """
