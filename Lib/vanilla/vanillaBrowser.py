@@ -3,24 +3,26 @@ This is adapted from the PyObjC PythonBrowser demo.
 I beleive that demo was written by Just van Rossum.
 """
 
-
-from Foundation import NSObject
-from AppKit import *
+import AppKit
 from operator import getitem, setitem
-from types import NoneType
-import sys
-from vanillaBase import VanillaBaseObject
-from nsSubclasses import getNSSubclass
 
+import inspect
+
+from vanilla.vanillaBase import VanillaBaseObject
+from vanilla.nsSubclasses import getNSSubclass
+
+import warnings
+warnings.filterwarnings("ignore",category=UserWarning)
 
 TYPE_COLUMN_MAP = {
-    "list" : "",
-    "dict" : "",
+    "list" : "List",
+    "dict" : "Dict",
     "NoneType" : "None",
     "instance" : "",
     "int" : "Integer",
     "float" : "Float",
     "str" : "String",
+    "instancemethod" : "Method"
 }
 
 class ObjectBrowser(VanillaBaseObject):
@@ -43,23 +45,25 @@ class ObjectBrowser(VanillaBaseObject):
         self._nsObject.setAutohidesScrollers_(True)
         self._nsObject.setHasHorizontalScroller_(True)
         self._nsObject.setHasVerticalScroller_(True)
-        self._nsObject.setBorderType_(NSBezelBorder)
+        self._nsObject.setBorderType_(AppKit.NSBezelBorder)
         self._nsObject.setDrawsBackground_(True)
 
         self._outlineView = getNSSubclass("NSOutlineView")(self)
         self._outlineView.setFrame_(((0, 0), (100, 100)))
         self._outlineView.setUsesAlternatingRowBackgroundColors_(True)
+        self._outlineView.setAllowsColumnResizing_(True)
         self._outlineView.setRowHeight_(17.0)
 
-        self._outlineView.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+        self._outlineView.setColumnAutoresizingStyle_(AppKit.NSTableViewUniformColumnAutoresizingStyle)
         columns = [
             ("name", "Name"),
             ("type", "Type"),
-            ("value", "Value")
+            ("value", "Value"),
+            ("arguments", "Arguments")
         ]
         for key, title in columns:
-            column = NSTableColumn.alloc().initWithIdentifier_(key)
-            column.setResizingMask_(NSTableColumnAutoresizingMask)
+            column = AppKit.NSTableColumn.alloc().initWithIdentifier_(key)
+            column.setResizingMask_(AppKit.NSTableColumnAutoresizingMask | AppKit.NSTableColumnUserResizingMask )
             column.headerCell().setTitle_(title)
             dataCell = column.dataCell()
             dataCell.setDrawsBackground_(False)
@@ -82,7 +86,7 @@ class ObjectBrowser(VanillaBaseObject):
         return self._outlineView
 
 
-class PythonBrowserModel(NSObject):
+class PythonBrowserModel(AppKit.NSObject):
 
     """This is a delegate as well as a data source for NSOutlineViews."""
 
@@ -123,53 +127,47 @@ class PythonBrowserModel(NSObject):
 
     def outlineView_shouldEditTableColumn_item_(self, view, col, item):
         return False
-
+    
+    def outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation_(self, view, cell, rect, col, item, location):
+        ## addig a tooltip, use the __doc__ from the object
+        return item.getDoc(), rect
 
 # objects of these types are not eligable for expansion in the outline view
 SIMPLE_TYPES = (str, unicode, int, long, float, complex)
 
+def getChilderen(root):
+    childeren = []
+    
+    for name, obj in inspect.getmembers(root):
+        ## ignore private methods and attributes
+        if name.startswith("_"):
+            continue
+        ## ignore imported modules
+        #elif inspect.ismodule(obj):
+        #    continue
+        ## ignore methods and attributed usind in pyobjc
+        elif name.startswith("pyobjc_"):
+            continue
+        ## ignore methods and attributed usind in pyobjc
+        elif type(obj).__name__ in ["native_selector"]:
+            continue            
+        childeren.append(name)
 
-def getInstanceVarNames(obj):
-    """Return a list the names of all (potential) instance variables."""
-    # Recipe from Guido
-    slots = {}
-    if hasattr(obj, "__dict__"):
-        slots.update(obj.__dict__)
-    if hasattr(obj, "__class__"):
-        slots["__class__"] = 1
-    cls = getattr(obj, "__class__", type(obj))
-    if hasattr(cls, "__mro__"):
-        for base in cls.__mro__:
-            for name, value in base.__dict__.items():
-                # XXX using callable() is a heuristic which isn"t 100%
-                # foolproof.
-                if hasattr(value, "__get__") and not callable(value) and \
-                        hasattr(obj, name):
-                    slots[name] = 1
-    if "__dict__" in slots:
-        del slots["__dict__"]
-    slots = slots.keys()
-    slots = [i for i in slots if not i.startswith("_")]
-    slots.sort()
-    return slots
+    return childeren
 
 
-class NiceError:
+def getArguments(obj):
+    """
+    Return all arguments for a method of function
+    and leave 'self' out.
+    """
+    try:
+        arguments = apply(inspect.formatargspec, inspect.getargspec(obj))
+    except TypeError:
+        arguments = ""
+    return arguments.replace("self, ", "").replace("self", "")
 
-    """Wrapper for an exception so we can display it nicely in the browser."""
-
-    def __init__(self, exc_info):
-        self.exc_info = exc_info
-
-    def __repr__(self):
-        from traceback import format_exception_only
-        lines = format_exception_only(*self.exc_info[:2])
-        assert len(lines) == 1
-        error = lines[0].strip()
-        return "*** error *** %s" %error
-
-
-class PythonItem(NSObject):
+class PythonItem(AppKit.NSObject):
 
     """Wrapper class for items to be displayed in the outline view."""
 
@@ -184,11 +182,11 @@ class PythonItem(NSObject):
         # "Pythonic" constructor
         return cls.alloc().init()
 
-    def __init__(self, name, obj, parent, setvalue):
+    def __init__(self, name, obj, parent, setvalue, ignoreAppKit=True):
         self.realName = name
         self.name = str(name)
         self.parent = parent
-        self._setValue = setvalue
+        self.arguments = ""
         self.type = type(obj).__name__
         if obj is None:
             self.value = "None"
@@ -196,55 +194,114 @@ class PythonItem(NSObject):
             self.value = ""
         else:
             self.value = obj
+        
+        ## in pyOjbc a python_selector should have an attr callable with is actually the method or function
+        if self.type == "python_selector" and hasattr(obj, "callable"):
+            obj = obj.callable
+        
         self.object = obj
-        self.childrenEditable = 0
+        self.children = []
+        
+        self.getters = dict()
+        self.setters = dict()
         if isinstance(obj, dict):
             self.children = obj.keys()
             self.children.sort()
-            self._getChild = getitem
-            self._setChild = setitem
-            self.childrenEditable = 1
+            self._setGetters(self.children, getitem)
+            self._setSetters(self.children, setitem)
         elif obj is None or isinstance(obj, SIMPLE_TYPES):
-            self._getChild = None
-            self._setChild = None
-        elif isinstance(obj, (list, tuple)):
+            pass
+        elif isinstance(obj, (list, tuple, set)):
             self.children = range(len(obj))
-            self._getChild = getitem
-            self._setChild = setitem
-            if isinstance(obj, list):
-                self.childrenEditable = 1
+            self._setGetters(self.children, getitem)
+            self._setSetters(self.children, setitem)
+        elif isinstance(obj, property):
+            pass
+        elif inspect.ismethod(obj):
+            self.arguments = getArguments(obj)
+        elif inspect.isfunction(obj):
+            self.arguments = getArguments(obj)
         else:
-            self.children = getInstanceVarNames(obj)
-            self._getChild = getattr
-            self._setChild = setattr
-            self.childrenEditable = 1  # XXX we don"t know that...
+            try:
+                l = list(obj)
+                self.children = range(len(l))
+                self._setGetters(self.children, getitem)
+                self._setSetters(self.children, setitem)
+            except:
+                pass
+            
+            try:
+                d = dict(obj)
+                self.children = d.keys()
+                self.children.sort()
+                self._setGetters(self.children, getitem)
+                self._setSetters(self.children, setitem)
+            except:
+                pass
+            children = getChilderen(obj)
+            self._setGetters(children, getattr)
+            self._setSetters(children, setattr)
+            self.children += children    
+            
+            if inspect.isclass(obj) and hasattr(obj, "__init__"):
+                self.arguments = getArguments(getattr(obj, "__init__"))
+        
+        if ignoreAppKit:                
+            self.children = [child for child in self.children if not (isinstance(child, (str, unicode)) and hasattr(AppKit, child))]
+
         self._childRefs = {}
-
-    def setValue(self, value):
-        self._setValue(self.parent, self.realName, value)
-        self.__init__(self.realName, value, self.parent, self._setValue)
-
-    def isEditable(self):
-        return self._setValue is not None
-
+    
+    def _setSetters(self, names, callback):
+        for name in names:
+            self.setters[name] = callback
+    
+    def _setGetters(self, names, callback):
+        for name in names:
+            self.getters[name] = callback
+            
     def isExpandable(self):
-        return self._getChild is not None
+        return bool(self.children)
 
     def getChild(self, child):
         if self._childRefs.has_key(child):
             return self._childRefs[child]
 
         name = self.children[child]
-        try:
-            obj = self._getChild(self.object, name)
-        except:
-            obj = NiceError(sys.exc_info())
-        if self.childrenEditable:
-            childObj = PythonItem(name, obj, self.object, self._setChild)
-        else:
-            childObj = PythonItem(name, obj, None, None)
+        getter = self.getters.get(name)
+        setter = self.setters.get(name)
+        obj = getter(self.object, name)
+        
+        childObj = self.__class__(name, obj, self.object, setter)
         self._childRefs[child] = childObj
         return childObj
-
+    
+    def getDoc(self):
+        doc = inspect.getdoc(self.object)
+        if doc:
+            return doc
+        return None
+    
     def __len__(self):
         return len(self.children)
+
+
+if __name__ == "__main__":
+    import vanilla
+    testObject = vanilla
+    
+    class TestWindow():
+        def __init__(self):
+            self.w = vanilla.Window((400, 400), "inspect object browser %s" %testObject, minSize=(100, 100))
+            self.w.b = ObjectBrowser((0, 0, -0, -0), testObject)
+            self.w.open()
+            
+    
+    from vanilla.test.testTools import executeVanillaTest
+    executeVanillaTest(TestWindow)
+    
+    
+    
+    
+    
+
+

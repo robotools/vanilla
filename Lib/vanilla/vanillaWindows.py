@@ -439,7 +439,19 @@ class Window(NSObject):
 
     def windowDidResize_(self, notification):
         self._alertBindings("resize")
-
+    
+    def windowDidEnterFullScreen_(self, notification):
+        self._alertBindings("enter full screen")
+    
+    def windowWillEnterFullScreen_(self, notification):
+        self._alertBindings("will enter full screen")
+    
+    def windowDidExitFullScreen_(self, notification):
+        self._alertBindings("exit full screen")
+    
+    def windowWillExitFullScreen_(self, notification):
+        self._alertBindings("will exit full screen")
+    
     def windowShouldClose_(self, notification):
         shouldClose = self._alertBindings("should close")
         if shouldClose is None:
