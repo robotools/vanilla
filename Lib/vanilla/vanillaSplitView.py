@@ -1,39 +1,312 @@
+from warnings import warn
+
 from AppKit import *
-from vanilla import VanillaBaseObject, VanillaError, Group
-from vanilla.externalFrameworks.RBSplitView import RBSplitView, RBSplitSubview
+from vanilla import *
+
+import objc
+objc.setVerbose(True)
 
 
-class VanillaRBSplitView(RBSplitView):
+_dividerStyleMap = {
+    "splitter": NSSplitViewDividerStylePaneSplitter,
+    "thin": NSSplitViewDividerStyleThin,
+    "thick": NSSplitViewDividerStyleThick
+}
 
-    def init(self):
-        self = super(VanillaRBSplitView, self).initWithFrame_(((0, 0), (0, 0)))
-        image = NSImage.imageNamed_("RBSplitViewThumb8")
-        if image is not None:
-            image.setFlipped_(True)
-            self.setDivider_(image)
-        return self
 
-    def viewDidMoveToSuperview(self):
-        pass
+class VanillaSplitViewSubclass(NSSplitView):
 
-    def _recurseThroughSubviews(self, view):
-        if hasattr(view, "vanillaWrapper"):
-            vanillaWrapper = view.vanillaWrapper()
-            if vanillaWrapper is not None:
-                posSize = vanillaWrapper.getPosSize()
-                vanillaWrapper.setPosSize(posSize)
-                for subview in view.subviews():
-                    self._recurseThroughSubviews(subview)
+    _dividerThickness = None
 
     def viewDidMoveToWindow(self):
-        vanillaWrapper = self.vanillaWrapper()
-        if vanillaWrapper is not None and self.superview() is not None:
-            vanillaWrapper._setupPanes()
-        
-        for subview in self.subviews():
-            if isinstance(subview, RBSplitSubview):
-                for subsubview in subview.subviews():
-                    self._recurseThroughSubviews(subsubview)
+        self.delegate().splitViewInitialSizing_(self)
+
+    # Divider
+
+    def dividerThickness(self):
+        if self._dividerThickness is None:
+            return super(VanillaSplitViewSubclass, self).dividerThickness()
+        return self._dividerThickness
+
+    def setDividerThickness_(self, value):
+        self._dividerThickness = value
+
+    # def drawDividerInRect_(self, rect):
+
+    # Pane Visibility
+
+    def getStateForPane_(self, identifier):
+        wrapper = self.vanillaWrapper()
+        paneDescription = wrapper._identifierToPane[identifier]
+        view = paneDescription["nsView"]
+        return view.isHidden()
+
+    def setState_forPane_(self, onOff, identifier):
+        # already have the desired state
+        isVisible = self.getStateForPane_(identifier)
+        if isVisible == onOff:
+            return
+        # get the subview
+        wrapper = self.vanillaWrapper()
+        paneDescription = wrapper._identifierToPane[identifier]
+        view = paneDescription["nsView"]
+        # set its visibility
+        view.setHidden_(onOff)
+        # adjust the other views
+        self.adjustSubviews()
+
+
+class VanillaSplitViewDelegate(NSObject):
+
+#    def splitView_subviewChangedVisibility_(self, splitView, subview):
+#        
+
+    # Initial Sizing
+
+    def splitViewInitialSizing_(self, splitView):
+        # NSSplitView is pretty dumb at first. It's going to ignore pane widths
+        # and adjust things willy-nilly to make everything flush in the view.
+        # So, we need to loop through the views and try to flush them out
+        # before NSSplitView clumsily resizes everything.
+        # 
+        # This doesn't catch all edge cases, but we'll let NSView handle those.
+        # Plus, at that point, it's the responsibility of the entity that set the
+        # pane sizes to make sure that they aren't doing anything crazy.
+        wrapper = splitView.vanillaWrapper()
+        paneDescriptions = wrapper._paneDescriptions
+        identifierToPane = wrapper._identifierToPane
+        # make a storage location for all view sizes
+        viewSizes = {}
+        # figure out the desired size, gather views into groups
+        # depending on their size settings
+        if splitView.isVertical():
+            splitViewSize = splitView.frame().size[0]
+        else:
+            splitViewSize = splitView.frame().size[1]
+        hiddenViews = []
+        fixedSizeViews = []
+        desiredSizeViews = []
+        minMaxViews = []
+        flexibleViews = []
+        for paneDescription in paneDescriptions:
+            identifier = paneDescription["identifier"]
+            size = paneDescription["size"]
+            if size == 0:
+                hiddenViews.append(identifier)
+                viewSizes[identifier] = size
+            elif paneDescription["fixedSize"]:
+                fixedSizeViews.append(identifier)
+                viewSizes[identifier] = size
+            elif size is not None:
+                fixedSizeViews.append(identifier)
+                viewSizes[identifier] = size
+            elif paneDescription["minSize"] or paneDescription["maxSize"]:
+                if paneDescription["minSize"]:
+                    viewSizes[identifier] = paneDescription["minSize"]
+                else:
+                    viewSizes[identifier] = 0
+                minMaxViews.append(identifier)
+            else:
+                flexibleViews.append(identifier)
+                viewSizes[identifier] = 0
+        # calculate the amount of space needed to balance everything out
+        dividerThickness = (len(paneDescriptions) - 1) * splitView.dividerThickness()
+        desiredSize = sum(viewSizes.values()) + dividerThickness
+        remainder = splitViewSize - desiredSize
+        viewAdjustment = int(round(remainder / (len(minMaxViews) + len(flexibleViews))))
+        # now apply the difference to minMaxViews respecting the min/max values
+        for identifier in minMaxViews:
+            for paneDescription in paneDescriptions:
+                if paneDescription["identifier"] == identifier:
+                    break
+            minSize = paneDescription["minSize"]
+            if minSize is None:
+                minSize = 0
+            maxSize = paneDescription["maxSize"]
+            size = viewSizes[identifier]
+            test = size + viewAdjustment
+            if test < minSize:
+                continue
+            elif maxSize is not None and test > maxSize:
+                continue
+            viewSizes[identifier] = test
+        # recalculate the remainder
+        remainder = splitViewSize - desiredSize
+        viewAdjustment = int(round(remainder / (len(minMaxViews) + len(flexibleViews))))
+        # apply to the flexible views
+        for identifier in flexibleViews:
+            viewSizes[identifier] += viewAdjustment
+        # now set the view sizes
+        isVertical = splitView.isVertical()
+        for identifier, size in viewSizes.items():
+            view = identifierToPane[identifier]["nsView"]
+            w, h = view.frame().size
+            if isVertical:
+                w = size
+            else:
+                h = size
+            view.setFrame_(((0, 0), (w, h)))
+        # tell NSSplitView to mess everything up
+        splitView.adjustSubviews()
+
+    # Pane Collapsing
+
+    def splitView_shouldCollapseSubview_forDoubleClickOnDividerAtIndex_(self, splitView, subview, dividerIndex):
+        paneIndex = splitView.subviews().indexOfObject_(subview)
+        wrapper = splitView.vanillaWrapper()
+        paneDescription = wrapper._paneDescriptions[paneIndex]
+        return paneDescription["canCollapse"]
+
+    def splitView_canCollapseSubview_(self, splitView, subview):
+        paneIndex = splitView.subviews().indexOfObject_(subview)
+        wrapper = splitView.vanillaWrapper()
+        paneDescription = wrapper._paneDescriptions[paneIndex]
+        return paneDescription["canCollapse"]
+
+    # Pane Size Constraints
+
+    def splitView_constrainMinCoordinate_ofSubviewAt_(self, splitView, proposedMin, dividerIndex):
+        newMinThis = newMinNext = proposedMin
+        coordIndex = self._splitViewCoordinateIndex_(splitView)
+        wrapper = splitView.vanillaWrapper()
+        paneDescriptions = wrapper._paneDescriptions
+        # if there is a min size set for the first pane,
+        # calculate where that would be
+        paneDescription = paneDescriptions[dividerIndex]
+        minSize = paneDescription["minSize"]
+        if minSize is not None:
+            view = paneDescription["nsView"]
+            newMinThis = view.frame().origin[coordIndex] + minSize
+        # if there is a max size for the next pane,
+        # calculate where that would be
+        paneDescription = paneDescriptions[dividerIndex + 1]
+        maxSize = paneDescription["maxSize"]
+        if maxSize is not None:
+            view = paneDescription["nsView"]
+            frame = view.frame()
+            newMinNext = frame.origin[coordIndex] + frame.size[coordIndex] - maxSize - splitView.dividerThickness()
+        # determine where the new min will be
+        newMin = max(newMinThis, newMinNext, proposedMin)
+        return newMin
+
+    def splitView_constrainMaxCoordinate_ofSubviewAt_(self, splitView, proposedMax, dividerIndex):
+        newMaxThis = newMaxNext = proposedMax
+        coordIndex = self._splitViewCoordinateIndex_(splitView)
+        wrapper = splitView.vanillaWrapper()
+        paneDescriptions = wrapper._paneDescriptions
+        # if there is a max size set for the first pane,
+        # calculate where that would be
+        paneDescription = paneDescriptions[dividerIndex]
+        maxSize = paneDescription["maxSize"]
+        if maxSize is not None:
+            view = paneDescription["nsView"]
+            newMaxThis = view.frame().origin[coordIndex] + maxSize
+        # if there is a min size for the next pane,
+        # calculate where that would be
+        paneDescription = paneDescriptions[dividerIndex + 1]
+        minSize = paneDescription["minSize"]
+        if minSize is not None:
+            view = paneDescription["nsView"]
+            frame = view.frame()
+            newMaxNext = frame.origin[coordIndex] + frame.size[coordIndex] - minSize - splitView.dividerThickness()
+        # determine where the new max will be
+        newMax = min(newMaxThis, newMaxNext, proposedMax)
+        return newMax
+
+    # Split View Resizing
+
+    def splitView_resizeSubviewsWithOldSize_(self, splitView, oldSize):
+        newFrame = splitView.frame()
+        newSize = newFrame.size
+        # don't bother if the view is invisible
+        if newSize.width == 0 or newSize.height == 0:
+            return
+        # gather the panes
+        wrapper = splitView.vanillaWrapper()
+        changablePanes = {}
+        unchangablePanes = {}
+        for paneDescription in wrapper._paneDescriptions:
+            identifier = paneDescription["identifier"]
+            if paneDescription["nsView"].isHidden() or not paneDescription["resizeFlexibility"]:
+                unchangablePanes[identifier] = paneDescription
+            else:
+                changablePanes[identifier] = paneDescription
+        # calculate the change difference
+        coordIndex = self._splitViewCoordinateIndex_(splitView)
+        difference = newSize[coordIndex] - oldSize[coordIndex]
+        evenChange = difference / len(changablePanes)
+        # determine tha pane size changes
+        paneSizeChanges = dict.fromkeys(unchangablePanes.keys(), 0)
+        ## handle min/max limited panes
+        for identifier, paneDescription in changablePanes.items():
+            currentSize = paneDescription["nsView"].frame().size[coordIndex]
+            paneChange = None
+            # shrinking
+            if difference < 0:
+                if paneDescription["minSize"] is not None:
+                    test = currentSize + evenChange
+                    if test == paneDescription["minSize"]:
+                        paneChange = 0
+                    elif test < paneDescription["minSize"]:
+                        paneChange =  paneDescription["minSize"] - currentSize
+                    else:
+                        paneChange = evenChange
+            # expanding
+            if difference > 0:
+                if paneDescription["maxSize"] is not None:
+                    test = currentSize + evenChange
+                    if test == paneDescription["maxSize"]:
+                        paneChange = 0
+                    elif test > paneDescription["maxSize"]:
+                        paneChange = paneDescription["maxSize"] - currentSize
+                    else:
+                        paneChange = evenChange
+            if paneChange is not None:
+                paneSizeChanges[identifier] = paneChange
+        # handle the remaining panes
+        evenChange = (difference - sum(paneSizeChanges.values())) / len(changablePanes)
+        for identifier, paneDescription in changablePanes.items():
+            if identifier in paneSizeChanges:
+                continue
+            paneSizeChanges[identifier] = evenChange
+        # apply the changes to the views
+        isVertical = coordIndex == 0
+        isVertical = splitView.isVertical()
+        paneDescriptions = changablePanes
+        paneDescriptions.update(unchangablePanes)
+        for identifier, paneDescription in paneDescriptions.items():
+            paneChange = paneSizeChanges[identifier]
+            view = paneDescription["nsView"]
+            frame = view.frame()
+            if isVertical:
+                frame.size.width += paneChange
+                frame.size.height = newSize.height
+            else:
+                frame.size.width = newSize.width
+                frame.size.height += paneChange
+            view.setFrame_(frame)
+        splitView.adjustSubviews()
+
+    def splitView_shouldAdjustSizeOfSubview_(self, splitView, subview):
+        paneIndex = splitView.subviews().indexOfObject_(subview)
+        wrapper = splitView.vanillaWrapper()
+        paneDescription = wrapper._paneDescriptions[paneIndex]
+        return paneDescription["resizeFlexibility"]
+
+    # Dividers
+
+    def splitView_shouldHideDividerAtIndex_(self, splitView, dividerIndex):
+        return True
+
+    # helpers
+
+    def _splitViewCoordinateIndex_(self, splitView):
+        isVertical = splitView.isVertical()
+        if isVertical:
+            coordIndex = 0
+        else:
+            coordIndex = 1
+        return coordIndex
 
 
 class SplitView(VanillaBaseObject):
@@ -58,103 +331,123 @@ class SplitView(VanillaBaseObject):
 
         SplitViewDemo()
 
-    The wrapped object is an `RBSplitView <http://www.brockerhoff.net/src/rbs.html>`_ object.
-
     **posSize** Tuple of form *(left, top, width, height)* representing
     the position and size of the split view.
 
     **paneDescriptions** An ordered list of dictionaries describing the
     subviews, or "panes". Those dictionaries can have the following keys:
 
-    +-----------------+-----------------------------------------------------------------------------+
-    | *view*          | A view, either a Vanilla object or a NSView. Required.                      |
-    +-----------------+-----------------------------------------------------------------------------+
-    | *"identifier"*  | A string identifying the pane. Required.                                    |
-    +-----------------+-----------------------------------------------------------------------------+
-    | *"size"*        | The initial size of the pane. Optional.                                     |
-    +-----------------+-----------------------------------------------------------------------------+
-    | *"minSize"*     | The minimum size of the pane. Optional. The default is 1.                   |
-    +-----------------+-----------------------------------------------------------------------------+
-    | *"maxSize"*     | The maximum size of the pane. Optional. The default is no maximum size.     |
-    +-----------------+-----------------------------------------------------------------------------+
-    | *"canCollapse"* | Boolean indicating if the pane can collapse. Optional. The default is True. |
-    +-----------------+-----------------------------------------------------------------------------+
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *view*                | A view, either a Vanilla object or a NSView. Required.                      |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"identifier"*        | A string identifying the pane. Required.                                    |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"size"*              | The initial size of the pane. Optional.                                     |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"minSize"*           | The minimum size of the pane. Optional. The default is 0.                   |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"maxSize"*           | The maximum size of the pane. Optional. The default is no maximum size.     |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"canCollapse"*       | Boolean indicating if the pane can collapse. Optional. The default is True. |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"resizeFlexibility"* | Boolean indicating if the pane can adjust its size automatically when the   |
+    |                       | SplitView size changes. Optional. The default is True unless the pane has a |
+    |                       | fixed size.                                                                 |
+    +-----------------------+-----------------------------------------------------------------------------+
 
     **isVertical** Boolean representing if the split view is vertical.
     Default is *True*.
     """
 
-    rbSplitViewClass = VanillaRBSplitView
+    """
+    support:
+    - visible
+    - show/hide/toggle
+    - autosavename
+    - custom divider drawing. maybe do this via a function(splitView, rect) and have 1+ predefined functions.
+    - review the docs and see what can be supported
+    - document the new arguments and stuff
 
-    def __init__(self, posSize, paneDescriptions, isVertical=True, dividerThickness=8, dividerImage="thumb"):
-        self._haveSetupSubviews = False
-        self._setupView(self.rbSplitViewClass, posSize)
-        if dividerImage != "thumb":
-            self._nsObject.setDivider_(dividerImage)
-        self._nsObject.setDividerThickness_(dividerThickness)
+    notes:
+    - to lock a size, make minSize == maxSize
+    """
+
+    nsSplitViewClass = VanillaSplitViewSubclass
+
+    def __init__(self, posSize, paneDescriptions, isVertical=True, dividerStyle="splitter", dividerThickness=None,
+        dividerImage=None # deprecated
+    ):
+        # RBSplitView phase out
+        if dividerImage is not None:
+            warn(DeprecationWarning("The dividerImage argument is deprecated and will be ignored. Use the dividerStyle attribute."))
+        # set up and basic attributes
+        self._setupView(self.nsSplitViewClass, posSize)
         self._nsObject.setVertical_(isVertical)
+        self._nsObject.setDividerThickness_(dividerThickness)
+        dividerStyle = _dividerStyleMap[dividerStyle]
+        self._nsObject.setDividerStyle_(dividerStyle)
+        # delegate
+        self._delegate = VanillaSplitViewDelegate.alloc().init()
+        self._nsObject.setDelegate_(self._delegate)
+        # panes
         self._paneDescriptions = paneDescriptions
+        self._setupPanes()
 
     def _breakCycles(self):
+        self._nsObject.setDelegate_(None)
+        self._delegate = None
         self._paneDescriptions = None
+        self._identifierToPane = None
         super(SplitView, self)._breakCycles()
 
     def _setupPanes(self):
-        if self._haveSetupSubviews:
-            return
-        self._haveSetupSubviews = True
-        rbSplitView = self._nsObject
-        splitViewFrame = rbSplitView.frame()
-        rbW, rbH = splitViewFrame.size
-        isHorizontal = rbSplitView.isHorizontal()
+        self._identifierToPane = {}
+        splitView = self.getNSSplitView()
+        splitViewFrame = splitView.frame()
         mask = NSViewWidthSizable | NSViewHeightSizable
-        self._identifierToSubview = {}
-        for paneDescription in self._paneDescriptions:
+        for index, paneDescription in enumerate(self._paneDescriptions):
             # get the pane data
             view = paneDescription["view"]
             identifier = paneDescription["identifier"]
             size = paneDescription.get("size")
-            minSize = paneDescription.get("minSize", 1)
-            maxSize = paneDescription.get("maxSize", 0)
+            minSize = paneDescription.get("minSize")
+            maxSize = paneDescription.get("maxSize")
             canCollapse = paneDescription.get("canCollapse", True)
+            resizeFlexibility = paneDescription.get("resizeFlexibility", True)
             # unwrap the view if necessary
             if isinstance(view, VanillaBaseObject):
                 l, t, w, h = view._posSize
                 view._setFrame(splitViewFrame)
                 view = view._nsObject
                 view.setAutoresizingMask_(mask)
-            # wrap the view in an RBSplitSubview
-            if not isinstance(view, RBSplitSubview):
-                rbSplitSubview = RBSplitSubview.alloc().initWithFrame_(((0, 0), view.frame().size))
-                rbSplitSubview.setAutoresizingMask_(mask)
-                rbSplitSubview.addSubview_(view)
-                view = rbSplitSubview
+            # push all of the items into the description
+            # so that we can reduce the get calls and
+            # centralize the default values here.
+            paneDescription["index"] = index
+            paneDescription["nsView"] = view
+            paneDescription["size"] = size
+            paneDescription["minSize"] = minSize
+            paneDescription["maxSize"] = maxSize
+            paneDescription["canCollapse"] = canCollapse
+            paneDescription["fixedSize"] = minSize is not None and minSize == maxSize
+            if resizeFlexibility and paneDescription["fixedSize"]:
+                resizeFlexibility = False
+            paneDescription["resizeFlexibility"] = resizeFlexibility
             # store the view
             assert identifier is not None
-            assert identifier not in self._identifierToSubview
-            self._identifierToSubview[identifier] = view
-            # set the min and max dimensions
-            if minSize is not None and maxSize is not None:
-                view.setMinDimension_andMaxDimension_(minSize, maxSize)
-            # set the collapse option
-            view.setCanCollapse_(canCollapse)
-            # set the identifier
-            view.setIdentifier_(identifier)
+            assert identifier not in self._identifierToPane
+            self._identifierToPane[identifier] = paneDescription
             # add the subview
-            rbSplitView.addSubview_(view)
-        # work back through the panes
-        for paneDescription in self._paneDescriptions:
-            size = paneDescription.get("size")
-            identifier = paneDescription["identifier"]
-            if size is not None:
-                view = self._nsObject.subviewWithIdentifier_(identifier)
-                view.setDimension_(size)
-        # tell the main view to adjust itself
-        rbSplitView.adjustSubviews()
+            splitView.addSubview_(view)
+
 
     def getRBSplitView(self):
+        warn("SplitView no longet wraps RBSplitView. Use getNSSplitView instead of getRBSplitView.")
+        return self.getNSSplitView()
+
+    def getNSSplitView(self):
         """
-        Return the *RBSplitView* that this object wraps.
+        Return the *NSSplitView* that this object wraps.
         """
         return self._nsObject
 
@@ -163,33 +456,20 @@ class SplitView(VanillaBaseObject):
         Returns a boolean indicating if the pane with **identifier**
         is visible or not.
         """
-        view = self._identifierToSubview[identifier]
-        return bool(not view.isCollapsed())
+        return self.getNSSplitView().getStateForPane_(identifier)
 
-    def showPane(self, identifier, onOff, animate=True):
+    def showPane(self, identifier, onOff, animate=False):
         """
         Set the visibility of the pane with **identifier**.
         **onOff* should be a boolean indicating the desired
         visibility of the pane. If **animate** is True,
         the pane will expand or collapse with and animation.
         """
-        currentState = self.isPaneVisible(identifier)
-        if currentState == onOff:
-            return
-        view = self._identifierToSubview[identifier]
-        if not onOff:
-            if animate:
-                view.collapseWithAnimation()
-            else:
-                view.collapse()
-        else:
-            if animate:
-                view.expandWithAnimation()
-            else:
-                view.expand()
-        self._nsObject.adjustSubviews()
+        if animate:
+            warn("Pane animation is not supported at this time.")
+        self.getNSSplitView().setState_forPane_(onOff, identifier)
 
-    def togglePane(self, identifier, animate=True):
+    def togglePane(self, identifier, animate=False):
         """
         Toggle the visibility of the pane with **identifier**.
         If **animate** is True, the pane will expand or collapse
@@ -197,3 +477,82 @@ class SplitView(VanillaBaseObject):
         """
         currentState = self.isPaneVisible(identifier)
         self.showPane(identifier, not currentState, animate)
+
+# ----
+# Test
+# ----
+
+from vanilla.test.testAll import BaseTest
+
+class _VanillaTestViewForSplitViewTEST(NSView):
+
+    def drawRect_(self, rect):
+        from AppKit import NSRectFill, NSBezierPath, NSColor
+        self.color.set()
+        NSRectFill(self.bounds())
+        NSColor.blackColor().set()
+        p = NSBezierPath.bezierPathWithRect_(self.bounds())
+        p.setLineWidth_(10)
+        p.stroke()
+
+
+class TestSplitSubview(VanillaBaseObject):
+
+    def __init__(self, posSize, color):
+        self._setupView(_VanillaTestViewForSplitViewTEST, posSize)
+        self._nsObject.color = color
+
+    def getNSView(self):
+        return self._nsObject
+
+
+class TestSplitView(BaseTest):
+
+    def __init__(self, drawGrid=False):
+        self.w = Window((600, 600), "", minSize=(300, 250))
+
+        # basic
+        #paneDescriptions = [
+        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.cyanColor()), identifier="pane1"),
+        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.magentaColor()), minSize=100, size=200, canCollapse=False, resizeFlexibility=False, identifier="pane2"),
+        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.yellowColor()), minSize=100, size=150, canCollapse=True, identifier="pane3"),
+        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.whiteColor()), minSize=100, maxSize=100, size=100, canCollapse=True, identifier="pane4"),
+        #]
+
+        ## basic nested
+        #nestedPaneDescriptions = [
+        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.cyanColor()), identifier="splitView1 pane1"),
+        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.magentaColor()), identifier="splitView1 pane2"),
+        #]
+        #self.nestedSplit = SplitView((0, 0, 0, 0), nestedPaneDescriptions, isVertical=True)
+        #paneDescriptions = [
+        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.yellowColor()), identifier="splitView1 pane1"),
+        #    dict(view=self.nestedSplit, identifier="splitView1 pane2"),
+        #]
+
+        # nested with controls
+        self.buttonGroup = Group((0, 0, 0, 0))
+        self.buttonGroup.button = Button((10, 10, -10, 20), "I'm a little button.", callback=self.test)
+        nestedPaneDescriptions = [
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.cyanColor()).getNSView(), identifier="splitView1 pane1"),
+            dict(view=self.buttonGroup.getNSView(), identifier="splitView1 pane2"),
+        ]
+        self.nestedSplit = SplitView((0, 0, 0, 0), nestedPaneDescriptions, isVertical=True)
+        paneDescriptions = [
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.yellowColor()), identifier="splitView1 pane1"),
+            dict(view=self.nestedSplit, identifier="splitView1 pane2"),
+        ]
+
+        self.w.splitView = SplitView((10, 10, -10, -10), paneDescriptions, isVertical=False)
+
+        self.w.open()
+
+    def test(self, sender):
+        identifier = "splitView1 pane1"
+        self.nestedSplit.togglePane(identifier)
+
+
+if __name__ == "__main__":
+    from vanilla.test.testTools import executeVanillaTest
+    executeVanillaTest(TestSplitView)
+
