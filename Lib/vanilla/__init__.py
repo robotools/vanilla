@@ -18,6 +18,7 @@ from vanillaScrollView import ScrollView
 from vanillaSearchBox import SearchBox
 from vanillaSegmentedButton import SegmentedButton
 from vanillaSlider import Slider
+from vanillaSplitView import SplitView
 from vanillaTabs import Tabs
 from vanillaTextBox import TextBox
 from vanillaTextEditor import TextEditor
@@ -70,16 +71,3 @@ try:
     __all__.append("PathControl")
 except (ImportError, NameError):
     pass
-
-# RBSplitView required for SplitView
-class _NoRBSplitView(object):
-
-    def __init__(self, *args, **kwargs):
-        raise VanillaError("SplitView is not available because the RBSplitView framework cannot be found. Refer to the Vanilla documentation for details.")
-
-try:
-    from vanillaSplitView import SplitView
-    from vanilla.externalFrameworks import RBSplitView
-except (ImportError, ValueError):
-    SplitView = _NoRBSplitView
-
