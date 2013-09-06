@@ -52,14 +52,24 @@ class VanillaSplitViewSubclass(NSSplitView):
         view = paneDescription["nsView"]
         # set its visibility
         view.setHidden_(onOff)
+        # apply the size adjustments
+        if self.isVertical():
+            sizeChange = view.frame().size.width
+        else:
+            sizeChange = view.frame().size.height
+        if not onOff:
+            sizeChange = -sizeChange
+        self.delegate().splitView_applyPaneSizeChange_wifthFrameSize_ignoreView_(
+            self,
+            sizeChange,
+            self.frame().size,
+            view
+        )
         # adjust the other views
         self.adjustSubviews()
 
 
 class VanillaSplitViewDelegate(NSObject):
-
-#    def splitView_subviewChangedVisibility_(self, splitView, subview):
-#        
 
     # Initial Sizing
 
@@ -213,13 +223,21 @@ class VanillaSplitViewDelegate(NSObject):
         newMax = min(newMaxThis, newMaxNext, proposedMax)
         return newMax
 
-    # Split View Resizing
+    # Pane Resizing
 
     def splitView_resizeSubviewsWithOldSize_(self, splitView, oldSize):
-        newFrame = splitView.frame()
-        newSize = newFrame.size
+        coordIndex = self._splitViewCoordinateIndex_(splitView)
+        newSize = splitView.frame().size
+        self.splitView_applyPaneSizeChange_wifthFrameSize_ignoreView_(
+            splitView,
+            newSize[coordIndex] - oldSize[coordIndex],
+            newSize,
+            None
+        )
+
+    def splitView_applyPaneSizeChange_wifthFrameSize_ignoreView_(self, splitView, sizeChange, frameSize, ignoreSubview):
         # don't bother if the view is invisible
-        if newSize.width == 0 or newSize.height == 0:
+        if frameSize.width == 0 or frameSize.height == 0:
             return
         # gather the panes
         wrapper = splitView.vanillaWrapper()
@@ -227,13 +245,17 @@ class VanillaSplitViewDelegate(NSObject):
         unchangablePanes = {}
         for paneDescription in wrapper._paneDescriptions:
             identifier = paneDescription["identifier"]
-            if paneDescription["nsView"].isHidden() or not paneDescription["resizeFlexibility"]:
+            if paneDescription["nsView"] == ignoreSubview:
+                unchangablePanes[identifier] = paneDescription
+            elif paneDescription["nsView"].isHidden():
+                unchangablePanes[identifier] = paneDescription
+            elif not paneDescription["resizeFlexibility"]:
                 unchangablePanes[identifier] = paneDescription
             else:
                 changablePanes[identifier] = paneDescription
         # calculate the change difference
         coordIndex = self._splitViewCoordinateIndex_(splitView)
-        difference = newSize[coordIndex] - oldSize[coordIndex]
+        difference = sizeChange
         evenChange = difference / len(changablePanes)
         # determine tha pane size changes
         paneSizeChanges = dict.fromkeys(unchangablePanes.keys(), 0)
@@ -280,9 +302,9 @@ class VanillaSplitViewDelegate(NSObject):
             frame = view.frame()
             if isVertical:
                 frame.size.width += paneChange
-                frame.size.height = newSize.height
+                frame.size.height = frameSize.height
             else:
-                frame.size.width = newSize.width
+                frame.size.width = frameSize.width
                 frame.size.height += paneChange
             view.setFrame_(frame)
         splitView.adjustSubviews()
@@ -312,6 +334,18 @@ class VanillaSplitViewDelegate(NSObject):
 class SplitView(VanillaBaseObject):
 
     """
+    TO DO:
+    - autosavename
+    - custom divider drawing. maybe do this via a function(splitView, rect) and have 1+ predefined functions.
+    - review the docs and see what can be supported
+    - document the new arguments and stuff
+
+    notes:
+    - to lock a size, make minSize == maxSize
+
+    ------------------------
+
+
     View that can be split into two or more subviews with dividers.::
 
         from vanilla import *
@@ -357,19 +391,6 @@ class SplitView(VanillaBaseObject):
 
     **isVertical** Boolean representing if the split view is vertical.
     Default is *True*.
-    """
-
-    """
-    support:
-    - visible
-    - show/hide/toggle
-    - autosavename
-    - custom divider drawing. maybe do this via a function(splitView, rect) and have 1+ predefined functions.
-    - review the docs and see what can be supported
-    - document the new arguments and stuff
-
-    notes:
-    - to lock a size, make minSize == maxSize
     """
 
     nsSplitViewClass = VanillaSplitViewSubclass
@@ -509,38 +530,22 @@ class TestSplitSubview(VanillaBaseObject):
 class TestSplitView(BaseTest):
 
     def __init__(self, drawGrid=False):
-        self.w = Window((600, 600), "", minSize=(300, 250))
+        self.w = Window((600, 700), "", minSize=(300, 600))
 
-        # basic
-        #paneDescriptions = [
-        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.cyanColor()), identifier="pane1"),
-        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.magentaColor()), minSize=100, size=200, canCollapse=False, resizeFlexibility=False, identifier="pane2"),
-        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.yellowColor()), minSize=100, size=150, canCollapse=True, identifier="pane3"),
-        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.whiteColor()), minSize=100, maxSize=100, size=100, canCollapse=True, identifier="pane4"),
-        #]
-
-        ## basic nested
-        #nestedPaneDescriptions = [
-        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.cyanColor()), identifier="splitView1 pane1"),
-        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.magentaColor()), identifier="splitView1 pane2"),
-        #]
-        #self.nestedSplit = SplitView((0, 0, 0, 0), nestedPaneDescriptions, isVertical=True)
-        #paneDescriptions = [
-        #    dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.yellowColor()), identifier="splitView1 pane1"),
-        #    dict(view=self.nestedSplit, identifier="splitView1 pane2"),
-        #]
-
-        # nested with controls
         self.buttonGroup = Group((0, 0, 0, 0))
         self.buttonGroup.button = Button((10, 10, -10, 20), "I'm a little button.", callback=self.test)
         nestedPaneDescriptions = [
             dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.cyanColor()).getNSView(), identifier="splitView1 pane1"),
-            dict(view=self.buttonGroup.getNSView(), identifier="splitView1 pane2"),
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.magentaColor()).getNSView(), identifier="splitView1 pane2"),
+            dict(view=self.buttonGroup.getNSView(), identifier="splitView1 pane3"),
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.yellowColor()).getNSView(), identifier="splitView1 pane4"),
         ]
         self.nestedSplit = SplitView((0, 0, 0, 0), nestedPaneDescriptions, isVertical=True)
         paneDescriptions = [
-            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.yellowColor()), identifier="splitView1 pane1"),
-            dict(view=self.nestedSplit, identifier="splitView1 pane2"),
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.redColor()), size=100, minSize=100, identifier="splitView2 pane1"),
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.greenColor()), size=50, minSize=50, maxSize=50, canCollapse=True, identifier="splitView2 pane2"),
+            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.blueColor()), canCollapse=False, identifier="splitView2 pane3"),
+            dict(view=self.nestedSplit, identifier="splitView2 pane4"),
         ]
 
         self.w.splitView = SplitView((10, 10, -10, -10), paneDescriptions, isVertical=False)
