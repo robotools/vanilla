@@ -50,6 +50,7 @@ Data Views
 
   objects/List
   objects/ImageView
+  objects/LevelIndicator
 
 Buttons
 ^^^^^^^
@@ -70,6 +71,7 @@ Inputs
 .. toctree::
   :maxdepth: 1
 
+  objects/TextEditor
   objects/TextBox
   objects/EditText
   objects/SecureEditText
