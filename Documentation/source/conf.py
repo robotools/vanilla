@@ -241,7 +241,7 @@ class Mock(object):
 
     
 MOCK_MODULES = [
-            'AppKit', 'objc',
+            'AppKit', 'objc', 'Foundation',
             'vanilla.externalFrameworks.RBSplitView'
             ]
         
