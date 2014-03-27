@@ -1,6 +1,6 @@
 import weakref
 from AppKit import *
-from vanillaBase import VanillaBaseObject, _setAttr, _delAttr
+from vanillaBase import VanillaBaseObject, _breakCycles
 from nsSubclasses import getNSSubclass
 
 _edgeMap = {
@@ -101,6 +101,10 @@ class Popover(VanillaBaseObject):
         self._delegate.vanillaWrapper = weakref.ref(self)
         self._popover.setDelegate_(self._delegate)
 
+    def __del__(self):
+        super(Popover, self).__del__()
+        self._breakCycles()
+
     def _breakCycles(self):
         super(Popover, self)._breakCycles()
         view = self._getContentView()
@@ -109,6 +113,7 @@ class Popover(VanillaBaseObject):
         self._contentViewController = None
         self._popover = None
         self._parentView = None
+        self._delegate = None
 
     def open(self, parentView=None, preferredEdge=None, relativeRect=None):
         """

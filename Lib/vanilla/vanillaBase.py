@@ -245,7 +245,7 @@ def _breakCycles(view):
 
 
 def _setAttr(cls, obj, attr, value):
-    if isinstance(value, VanillaBaseObject):
+    if isinstance(value, VanillaBaseObject) and hasattr(value, "_posSize"):
         assert not hasattr(obj, attr), "can't replace vanilla attribute"
         view = obj._getContentView()
         frame = view.frame()
