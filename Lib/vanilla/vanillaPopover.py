@@ -102,7 +102,6 @@ class Popover(VanillaBaseObject):
         self._popover.setDelegate_(self._delegate)
 
     def __del__(self):
-        super(Popover, self).__del__()
         self._breakCycles()
 
     def _breakCycles(self):
