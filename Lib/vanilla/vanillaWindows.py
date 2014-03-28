@@ -52,6 +52,15 @@ class Window(NSObject):
     **initiallyVisible** Boolean value representing if the window will be initially visible.
     Default is *True*. If *False*, you can show the window later by calling `window.show()`.
 
+    **fullScreenMode** An indication of the full screen mode. These are the options:
+    +---------------+---------------------------------------------------------------+
+    | *None*        | The window does not allow full screen.                        |
+    +---------------+---------------------------------------------------------------+
+    | *"primary"*   | Corresponds to NSWindowCollectionBehaviorFullScreenPrimary.   |
+    +---------------+---------------------------------------------------------------+
+    | *"auxiliary"* | Corresponds to NSWindowCollectionBehaviorFullScreenAuxiliary. |
+    +---------------+---------------------------------------------------------------+
+
     **screen** A `NSScreen <http://tinyurl.com/NSScreen>`_ object indicating the screen that
     the window should be drawn to. When None the window will be drawn to the main screen.
     """
@@ -69,7 +78,8 @@ class Window(NSObject):
     nsWindowLevel = NSNormalWindowLevel
 
     def __init__(self, posSize, title="", minSize=None, maxSize=None, textured=False,
-                autosaveName=None, closable=True, miniaturizable=True, initiallyVisible=True, screen=None):
+                autosaveName=None, closable=True, miniaturizable=True, initiallyVisible=True,
+                fullScreenMode=None, screen=None):
         mask = self.nsWindowStyleMask
         if closable:
             mask = mask | NSClosableWindowMask
@@ -99,6 +109,28 @@ class Window(NSObject):
             self._window.setFrameAutosaveName_(autosaveName)
         if cascade:
             self._cascade()
+        # set the full screen mode.
+        # this is only available 10.7+, so see if it is possible
+        # before going to far
+        try:
+            self._window.setCollectionBehavior_
+            # okay, we're >= 10.7
+            if fullScreenMode is None:
+                pass
+            elif fullScreenMode == "primary":
+                try:
+                    NSWindowCollectionBehaviorFullScreenPrimary
+                except NameError:
+                    NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7
+                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenPrimary)
+            elif fullScreenMode == "auxiliary":
+                try:
+                    NSWindowCollectionBehaviorFullScreenAuxiliary
+                except NameError:
+                    NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8
+                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenAuxiliary)
+        except AttributeError:
+            pass
         #
         if minSize is not None:
             self._window.setMinSize_(minSize)
