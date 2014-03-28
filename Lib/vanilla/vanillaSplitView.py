@@ -1,7 +1,6 @@
 from warnings import warn
-
 from AppKit import *
-from vanilla import *
+from vanillaBase import VanillaBaseObject
 
 import objc
 objc.setVerbose(True)
@@ -396,7 +395,9 @@ class SplitView(VanillaBaseObject):
     nsSplitViewClass = VanillaSplitViewSubclass
 
     def __init__(self, posSize, paneDescriptions, isVertical=True, dividerStyle="splitter", dividerThickness=None,
-        dividerImage=None # deprecated
+        autosaveName=None,
+        # deprecated
+        dividerImage=None
     ):
         # RBSplitView phase out
         if dividerImage is not None:
@@ -407,6 +408,8 @@ class SplitView(VanillaBaseObject):
         self._nsObject.setDividerThickness_(dividerThickness)
         dividerStyle = _dividerStyleMap[dividerStyle]
         self._nsObject.setDividerStyle_(dividerStyle)
+        if autosaveName is not None:
+            self._nsObject.setAutosaveName_(autosaveName)
         # delegate
         self._delegate = VanillaSplitViewDelegate.alloc().init()
         self._nsObject.setDelegate_(self._delegate)
@@ -498,66 +501,3 @@ class SplitView(VanillaBaseObject):
         """
         currentState = self.isPaneVisible(identifier)
         self.showPane(identifier, not currentState, animate)
-
-# ----
-# Test
-# ----
-
-from vanilla.test.testAll import BaseTest
-
-class _VanillaTestViewForSplitViewTEST(NSView):
-
-    def drawRect_(self, rect):
-        from AppKit import NSRectFill, NSBezierPath, NSColor
-        self.color.set()
-        NSRectFill(self.bounds())
-        NSColor.blackColor().set()
-        p = NSBezierPath.bezierPathWithRect_(self.bounds())
-        p.setLineWidth_(10)
-        p.stroke()
-
-
-class TestSplitSubview(VanillaBaseObject):
-
-    def __init__(self, posSize, color):
-        self._setupView(_VanillaTestViewForSplitViewTEST, posSize)
-        self._nsObject.color = color
-
-    def getNSView(self):
-        return self._nsObject
-
-
-class TestSplitView(BaseTest):
-
-    def __init__(self, drawGrid=False):
-        self.w = Window((600, 700), "", minSize=(300, 600))
-
-        self.buttonGroup = Group((0, 0, 0, 0))
-        self.buttonGroup.button = Button((10, 10, -10, 20), "I'm a little button.", callback=self.test)
-        nestedPaneDescriptions = [
-            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.cyanColor()).getNSView(), identifier="splitView1 pane1"),
-            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.magentaColor()).getNSView(), identifier="splitView1 pane2"),
-            dict(view=self.buttonGroup.getNSView(), identifier="splitView1 pane3"),
-            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.yellowColor()).getNSView(), identifier="splitView1 pane4"),
-        ]
-        self.nestedSplit = SplitView((0, 0, 0, 0), nestedPaneDescriptions, isVertical=True)
-        paneDescriptions = [
-            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.redColor()), size=100, minSize=100, identifier="splitView2 pane1"),
-            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.greenColor()), size=50, minSize=50, maxSize=50, canCollapse=True, identifier="splitView2 pane2"),
-            dict(view=TestSplitSubview((0, 0, 0, 0), NSColor.blueColor()), canCollapse=False, identifier="splitView2 pane3"),
-            dict(view=self.nestedSplit, identifier="splitView2 pane4"),
-        ]
-
-        self.w.splitView = SplitView((10, 10, -10, -10), paneDescriptions, isVertical=False)
-
-        self.w.open()
-
-    def test(self, sender):
-        identifier = "splitView1 pane1"
-        self.nestedSplit.togglePane(identifier)
-
-
-if __name__ == "__main__":
-    from vanilla.test.testTools import executeVanillaTest
-    executeVanillaTest(TestSplitView)
-
