@@ -330,7 +330,7 @@ class VanillaSplitViewDelegate(NSObject):
         return coordIndex
 
 
-class SplitView(VanillaBaseObject):
+class SplitView2(VanillaBaseObject):
 
     """
     View that can be split into two or more subviews with dividers.::
@@ -424,7 +424,7 @@ class SplitView(VanillaBaseObject):
         self._delegate = None
         self._paneDescriptions = None
         self._identifierToPane = None
-        super(SplitView, self)._breakCycles()
+        super(SplitView2, self)._breakCycles()
 
     def _setupPanes(self):
         self._identifierToPane = {}
