@@ -333,18 +333,6 @@ class VanillaSplitViewDelegate(NSObject):
 class SplitView(VanillaBaseObject):
 
     """
-    TO DO:
-    - autosavename
-    - custom divider drawing. maybe do this via a function(splitView, rect) and have 1+ predefined functions.
-    - review the docs and see what can be supported
-    - document the new arguments and stuff
-
-    notes:
-    - to lock a size, make minSize == maxSize
-
-    ------------------------
-
-
     View that can be split into two or more subviews with dividers.::
 
         from vanilla import *
@@ -390,6 +378,20 @@ class SplitView(VanillaBaseObject):
 
     **isVertical** Boolean representing if the split view is vertical.
     Default is *True*.
+
+    **dividerStyle** String representing teh style of the divider.
+    These are the options:
+    +----------+
+    | splitter |
+    +----------+
+    | thin     |
+    +----------+
+    | thick    |
+    +----------+
+
+    **dividerTickness** An integer representing the desired thickness of the divider.
+
+    **autosaveName** The autosave name for the SplitView.
     """
 
     nsSplitViewClass = VanillaSplitViewSubclass
