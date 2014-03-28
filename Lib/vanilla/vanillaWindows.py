@@ -632,34 +632,7 @@ class Window(NSObject):
         """
         Add a toolbar item to the windows toolbar.
 
-        **itemData** A dictionary containing the following items:
-
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *itemIdentifier*              | A unique string identifier for the item. This is only used internally.    |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *label* (optional)            | The text label for the item. Defaults to *None*.                          |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *paletteLabel* (optional)     | The text label shown in the customization palette. Defaults to *label*.   |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *toolTip* (optional)          | The tool tip for the item. Defaults to *label*.                           |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imagePath* (optional)        | A file path to an image. Defaults to *None*.                              |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imageNamed* (optional)       | The name of an image already loaded as a *NSImage* by the application.    |
-        |                               | Defaults to *None*.                                                       |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imageObject* (optional)      | A _NSImage_ object. Defaults to *None*.                                   |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *selectable* (optional)       | A boolean representing if the item is selectable or not. The default      |
-        |                               | value is _False_. For more information on selectable toolbar items, refer |
-        |                               | to Apple's `documentation <http://tinyurl.com/SelectableItems>`_          |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *view* (optional)             | A *NSView* object to be used instead of an image. Defaults to *None*.     |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *visibleByDefault* (optional) | If the item should be visible by default pass True to this argument.      |
-        |                               | If the item should be added to the toolbar only through the customization |
-        |                               | palette, use a value of _False_. Defaults to _True_. |                    |
-        +-------------------------------+---------------------------------------------------------------------------+
+        **itemData** item description with the same format as a toolbarItem description in `addToolbar`
 
         **index** An interger, specifying the place to insert the toolbar itemIdentifier.
         """
