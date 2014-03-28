@@ -82,7 +82,7 @@ class Popover(VanillaBaseObject):
     contentViewClass = VanillaPopoverContentView
     contentViewControllerClass = NSViewController
 
-    def __init__(self, size, parentView, preferredEdge="top", behavior="semitransient"):
+    def __init__(self, size, parentView=None, preferredEdge="top", behavior="semitransient"):
         if isinstance(parentView, VanillaBaseObject):
             parentView = parentView._getContentView()
         self._parentView = parentView
@@ -122,11 +122,14 @@ class Popover(VanillaBaseObject):
         where the popover shoulw pop out from. If not provided, the parent
         view's bounds will be used.
         """
+        if isinstance(parentView, VanillaBaseObject):
+            parentView = parentView._getContentView()
         if parentView is None:
             parentView = self._parentView
         if relativeRect is not None:
-            x, y, w, h = relativeRect
-            relativeRect = NSMakeRect(x, y, y, h)
+            if not isinstance(relativeRect, NSRect):
+                x, y, w, h = relativeRect
+                relativeRect = NSMakeRect(x, y, y, h)
         else:
             relativeRect = NSZeroRect
         if preferredEdge is None:
