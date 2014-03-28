@@ -5,7 +5,6 @@ from AppKit import *
 import vanilla
 reload(vanilla)
 from vanilla import *
-#from RBSplitView.vanillaRBSplitView import VRBSplitView as SplitView
 
 import objc
 objc.setVerbose(True)
