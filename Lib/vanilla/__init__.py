@@ -71,6 +71,13 @@ try:
 except (ImportError, NameError):
     pass
 
+# OS 10.7 objects
+try:
+    from vanillaPopover import Popover
+    __all__.append("Popover")
+except (ImportError, NameError):
+    pass
+
 # RBSplitView required for SplitView
 class _NoRBSplitView(object):
 
