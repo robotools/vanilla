@@ -129,7 +129,7 @@ class Popover(VanillaBaseObject):
         if relativeRect is not None:
             if not isinstance(relativeRect, NSRect):
                 x, y, w, h = relativeRect
-                relativeRect = NSMakeRect(x, y, y, h)
+                relativeRect = NSMakeRect(x, y, w, h)
         else:
             relativeRect = NSZeroRect
         if preferredEdge is None:
