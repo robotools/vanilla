@@ -1,5 +1,9 @@
+import platform
 from AppKit import *
 from nsSubclasses import getNSSubclass
+
+
+osVersion = platform.mac_ver()[0]
 
 
 class VanillaError(Exception): pass
