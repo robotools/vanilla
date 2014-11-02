@@ -100,6 +100,7 @@ class Popover(VanillaBaseObject):
         self._delegate = VanillaPopoverDelegate.alloc().init()
         self._delegate.vanillaWrapper = weakref.ref(self)
         self._popover.setDelegate_(self._delegate)
+        self._bindings = {}
 
     def __del__(self):
         self._breakCycles()
