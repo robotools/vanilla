@@ -175,7 +175,10 @@ class VanillaArrayController(NSArrayController):
         columnID = column.identifier()
         item = content[row]
         if isinstance(item, NSDictionary):
-            return item[columnID]
+            if columnID not in item:
+                return
+            else:
+                return item[columnID]
         else:
             return getattr(item, columnID)()
 
