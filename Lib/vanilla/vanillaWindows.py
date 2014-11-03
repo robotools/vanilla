@@ -849,7 +849,7 @@ class HUDFloatingWindow(FloatingWindow):
     the window should be drawn to. When None the window will be drawn to the main screen.
     """
 
-    nsWindowStyleMask = NSHUDFloatingWindowMask | NSUtilityWindowMask | NSTitledWindowMask | NSBorderlessWindowMask
+    nsWindowStyleMask = NSHUDWindowMask | NSUtilityWindowMask | NSTitledWindowMask | NSBorderlessWindowMask
 
 
 class Sheet(Window):

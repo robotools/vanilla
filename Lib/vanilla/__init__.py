@@ -22,7 +22,7 @@ from vanillaSplitView2 import SplitView2
 from vanillaTabs import Tabs
 from vanillaTextBox import TextBox
 from vanillaTextEditor import TextEditor
-from vanillaWindows import Window, FloatingWindow, Sheet
+from vanillaWindows import Window, FloatingWindow, HUDFloatingWindow, Sheet
 
 __all__ = [
     "VanillaBaseObject", "VanillaBaseControl", "VanillaError",
