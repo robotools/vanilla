@@ -51,7 +51,7 @@ __all__ = [
     "Tabs",
     "TextBox",
     "TextEditor",
-    "Window", "FloatingWindow", "Sheet"
+    "Window", "FloatingWindow", "HUDFloatingWindow", "Sheet"
     ]
 
 # OS 10.4+ objects

@@ -801,6 +801,57 @@ class FloatingWindow(Window):
         self._window.orderFront_(None)
 
 
+class HUDFloatingWindow(vanilla.FloatingWindow):
+
+    """
+    A window that floats above all other windows and has the HUD appearance.
+
+    To add a control to a window, simply set it as an attribute of the window.
+
+        from vanilla import *
+
+        class HUDFloatingWindowDemo(object):
+
+            def __init__(self):
+                self.w = HUDFloatingWindow((200, 70), "HUDFloatingWindow Demo")
+                self.w.myButton = Button((10, 10, -10, 20), "My Button")
+                self.w.myTextBox = TextBox((10, 40, -10, 17), "My Text Box")
+                self.w.open()
+
+        HUDFloatingWindowDemo()
+
+    No special naming is required for the attributes. However, each attribute
+    must have a unique name.
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position
+    and size of the window. It may also be a tuple of form *(width, height)*.
+    In this case, the window will be positioned on screen automatically.
+
+    **title** The title to be set in the title bar of the window.
+
+    **minSize** Tuple of the form *(width, height)* representing the minimum size
+    that the window can be resized to.
+
+    **maxSize** Tuple of the form *(width, height)* representing the maximum size
+    that the window can be resized to.
+
+    **textured** Boolean value representing if the window should have a textured
+    appearance or not.
+
+    **autosaveName** A string representing a unique name for the window. If given,
+    this name will be used to store the window position and size in the application
+    preferences.
+
+    **closable** Boolean value representing if the window should have a close button
+    in the title bar.
+
+    **screen** A `NSScreen <http://tinyurl.com/NSScreen>`_ object indicating the screen that
+    the window should be drawn to. When None the window will be drawn to the main screen.
+    """
+
+    nsWindowStyleMask = NSHUDFloatingWindowMask | NSUtilityWindowMask | NSTitledWindowMask | NSBorderlessWindowMask
+
+
 class Sheet(Window):
 
     """
