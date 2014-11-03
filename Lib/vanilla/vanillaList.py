@@ -319,6 +319,11 @@ class List(VanillaBaseObject):
     +--------------------------------+--------------------------------------------------------------------------------+
     | *"maxWidth"* (optional)        | The maximum width of the column. The fallback is `width`.                      |
     +--------------------------------+--------------------------------------------------------------------------------+
+    | *"allowsSorting"* (optional)   | A boolean representing that this column allows the user                        |
+    |                                | to sort the table by clicking the column's header.                             |
+    |                                | The fallback is `True`. If a List is set to disallow                           |
+    |                                | sorting the column level settings will be ignored                              |
+    +--------------------------------+--------------------------------------------------------------------------------+
     | *"typingSensitive"* (optional) | A boolean representing that this column                                        |
     |                                | should be the column that responds to user                                     |
     |                                | key input. Only one column can be flagged as                                   |
@@ -348,6 +353,8 @@ class List(VanillaBaseObject):
     **allowsMultipleSelection** A boolean representing if the list allows more than one item to be selected.
 
     **allowsEmptySelection** A boolean representing if the list allows zero items to be selected.
+
+    **allowsSorting** A boolean indicating if the list allows user sorting by clicking column headers.
 
     **drawVerticalLines** Boolean representing if vertical lines should be drawn in the list.
 
@@ -423,6 +430,7 @@ class List(VanillaBaseObject):
                 selectionCallback=None, doubleClickCallback=None, editCallback=None,
                 enableDelete=False, enableTypingSensitivity=False,
                 allowsMultipleSelection=True, allowsEmptySelection=True,
+                allowsSorting=True,
                 drawVerticalLines=False, drawHorizontalLines=False,
                 autohidesScrollers=True, drawFocusRing=True, rowHeight=17.0,
                 selfDropSettings=None,
@@ -442,6 +450,7 @@ class List(VanillaBaseObject):
         self._nsObject.setBorderType_(NSBezelBorder)
         self._nsObject.setDrawsBackground_(True)
         self._setAutosizingFromPosSize(posSize)
+        self._allowsSorting = allowsSorting
         # add a table view to the scroll view
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
         self._nsObject.setDocumentView_(self._tableView)
@@ -616,6 +625,7 @@ class List(VanillaBaseObject):
         # make sure that the column widths are in the correct format.
         self._handleColumnWidths(columnDescriptions)
         # create each column.
+        tableAllowsSorting = self._allowsSorting
         for columnIndex, data in enumerate(columnDescriptions):
             title = data["title"]
             key = data.get("key", title)
@@ -625,6 +635,7 @@ class List(VanillaBaseObject):
             formatter = data.get("formatter")
             cell = data.get("cell")
             editable = data.get("editable")
+            allowsSorting = data.get("allowsSorting", True)
             binding = data.get("binding", "value")
             keyPath = "arrangedObjects.%s" % key
             # check for typing sensitivity.
@@ -655,8 +666,11 @@ class List(VanillaBaseObject):
             if formatter is not None:
                 cell.setFormatter_(formatter)
             if self._arrayController is not None:
+                bindingOptions = None
+                if not tableAllowsSorting or not allowsSorting:
+                    bindingOptions = {NSCreatesSortDescriptorBindingOption : False}
                 # assign the key to the binding
-                column.bind_toObject_withKeyPath_options_(binding, self._arrayController, keyPath, None)
+                column.bind_toObject_withKeyPath_options_(binding, self._arrayController, keyPath, bindingOptions)
             # set the editability of the column.
             # if no value was defined in the column data,
             # base the editability on the presence of
