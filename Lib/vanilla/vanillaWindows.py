@@ -68,12 +68,7 @@ class Window(NSObject):
     def __new__(cls, *args, **kwargs):
         return cls.alloc().init()
 
-    nsWindowStyleMask = NSTitledWindowMask
-    # use the unified title and toolbar in 10.4+
-    try:
-        nsWindowStyleMask |= NSUnifiedTitleAndToolbarWindowMask
-    except NameError:
-        pass
+    nsWindowStyleMask = NSTitledWindowMask | NSUnifiedTitleAndToolbarWindowMask
     nsWindowClass = NSWindow
     nsWindowLevel = NSNormalWindowLevel
 

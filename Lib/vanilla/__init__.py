@@ -5,11 +5,15 @@ from vanillaButton import Button, SquareButton, ImageButton, HelpButton
 from vanillaCheckBox import CheckBox
 from vanillaColorWell import ColorWell
 from vanillaComboBox import ComboBox
+from vanillaDatePicker import DatePicker
 from vanillaDrawer import Drawer
 from vanillaEditText import EditText, SecureEditText
+from vanillaGradientButton import GradientButton
 from vanillaGroup import Group
 from vanillaImageView import ImageView
+from vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
 from vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell, ImageListCell, SegmentedButtonListCell
+from vanillaPathControl import PathControl
 from vanillaPopUpButton import PopUpButton
 from vanillaProgressBar import ProgressBar
 from vanillaProgressSpinner import ProgressSpinner
@@ -31,12 +35,16 @@ __all__ = [
     "CheckBox",
     "ColorWell",
     "ComboBox",
+    "DatePicker",
     "Drawer",
     "EditText",
+    "GradientButton",
     "Group",
     "ImageView",
+    "LevelIndicator", "LevelIndicatorListCell",
     "List", "CheckBoxListCell", "SliderListCell", "PopUpButtonListCell", "ImageListCell", "SegmentedButtonListCell",
     "ObjectBrowser",
+    "PathControl",
     "PopUpButton",
     "ProgressBar",
     "ProgressSpinner",
@@ -53,25 +61,6 @@ __all__ = [
     "TextEditor",
     "Window", "FloatingWindow", "HUDFloatingWindow", "Sheet"
     ]
-
-# OS 10.4+ objects
-try:
-    from vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
-    __all__.append("LevelIndicator")
-    __all__.append("LevelIndicatorListCell")
-    from vanillaDatePicker import DatePicker
-    __all__.append("DatePicker")
-except (ImportError, NameError):
-    pass
-
-# OS 10.5 objects
-try:
-    from vanillaGradientButton import GradientButton
-    __all__.append("GradientButton")
-    from vanillaPathControl import PathControl
-    __all__.append("PathControl")
-except (ImportError, NameError):
-    pass
 
 # OS 10.7 objects
 try:
