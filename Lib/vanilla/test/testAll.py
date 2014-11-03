@@ -305,16 +305,18 @@ class ListTest(BaseTest):
         multiList = List((0, 0, 0, 0), multiItems, columnDescriptions=columnDescriptions, enableTypingSensitivity=True)
 
         miscItems = [
-            {"slider": 50, "checkBox": False},
-            {"slider": 20, "checkBox": True},
-            {"slider": 70, "checkBox": False},
-            {"slider": 20, "checkBox": True},
-            {"slider": 10, "checkBox": True},
-            {"slider": 90, "checkBox": False},
+            {"slider": 50, "sliderWithTicks" : 50, "checkBox": False},
+            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True},
+            {"slider": 70, "sliderWithTicks" : 70, "checkBox": False},
+            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True},
+            {"slider": 10, "sliderWithTicks" : 10, "checkBox": True},
+            {"slider": 90, "sliderWithTicks" : 90, "checkBox": False},
         ]
         columnDescriptions = [
             {"title": "SliderListCell", "key": "slider",
             "cell": SliderListCell()},
+            {"title": "SliderListCell", "key": "sliderWithTicks",
+            "cell": SliderListCell(tickMarkCount=10, stopOnTickMarks=True)},
             {"title": "CheckBoxListCell", "key": "checkBox",
             "cell": CheckBoxListCell()},
         ]

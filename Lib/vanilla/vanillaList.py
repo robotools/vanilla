@@ -1063,7 +1063,7 @@ def CheckBoxListCell(title=None):
     return cell
 
 
-def SliderListCell(minValue=0, maxValue=100):
+def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks=False):
     """
     An object that displays a slider in a List column.
 
@@ -1073,11 +1073,21 @@ def SliderListCell(minValue=0, maxValue=100):
     **minValue** The minimum value for the slider.
 
     **maxValue** The maximum value for the slider.
+
+    **tickMarkCount** The number of tick marcks to be displayed on the slider.
+    If *None* is given, no tick marks will be displayed.
+
+    **stopOnTickMarks** Boolean representing if the slider knob should only
+    stop on the tick marks.
     """
     cell = NSSliderCell.alloc().init()
     cell.setControlSize_(NSSmallControlSize)
     cell.setMinValue_(minValue)
     cell.setMaxValue_(maxValue)
+    if tickMarkCount:
+        cell.setNumberOfTickMarks_(tickMarkCount)
+        if stopOnTickMarks:
+            cell.setAllowsTickMarkValuesOnly_(True)
     return cell
 
 
