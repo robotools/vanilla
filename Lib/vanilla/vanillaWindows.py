@@ -801,7 +801,7 @@ class FloatingWindow(Window):
         self._window.orderFront_(None)
 
 
-class HUDFloatingWindow(vanilla.FloatingWindow):
+class HUDFloatingWindow(FloatingWindow):
 
     """
     A window that floats above all other windows and has the HUD appearance.
