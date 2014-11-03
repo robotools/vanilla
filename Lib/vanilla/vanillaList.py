@@ -6,18 +6,6 @@ from nsSubclasses import getNSSubclass
 from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
 
 
-# first, determine which column autosizing method is needed.
-# in 10.4, NSTableView.setAutoresizesAllColumnsToFit was
-# deprecated. The new way for handling this is via masks.
-try:
-    NSTableViewUniformColumnAutoresizingStyle
-    NSTableColumn.setResizingMask_
-except (NameError, AttributeError):
-    _haveResizingMasks = False
-else:
-    _haveResizingMasks = True
-
-
 class VanillaTableViewSubclass(NSTableView):
 
     def keyDown_(self, event):
@@ -325,10 +313,7 @@ class List(VanillaBaseObject):
     |                                | nothing is given, it will follow the                                           |
     |                                | editability of the rest of the list.                                           |
     +--------------------------------+--------------------------------------------------------------------------------+
-    | *"width"* (optional)           | The width of the column. In OS 10.3 and                                        |
-    |                                | lower the width must be defined for *all*                                      |
-    |                                | columns if the width is defined for one                                        |
-    |                                | column.                                                                        |
+    | *"width"* (optional)           | The width of the column.                                                       |
     +--------------------------------+--------------------------------------------------------------------------------+
     | *"typingSensitive"* (optional) | A boolean representing that this column                                        |
     |                                | should be the column that responds to user                                     |
@@ -590,13 +575,6 @@ class List(VanillaBaseObject):
         self._otherApplicationDropSettings = None
 
     def _handleColumnWidths(self, columnDescriptions):
-        # if the width is set in one of the columns,
-        # it must be set in all columns if the OS < 10.4.
-        # raise an error if the width is not defined in all.
-        if not _haveResizingMasks:
-            columnDataWithWidths = [column for column in columnDescriptions if column.get("width") is not None]
-            if columnDataWithWidths and not len(columnDataWithWidths) == len(columnDescriptions):
-                raise VanillaError("The width of all columns must be set in this version of the operating system")
         # we also use this opportunity to determine if
         # autoresizing should be set for the table.
         autoResize = True
@@ -608,12 +586,7 @@ class List(VanillaBaseObject):
             self._setColumnAutoresizing()
 
     def _setColumnAutoresizing(self):
-        # set the resizing mask in OS > 10.3
-        if _haveResizingMasks:
-            self._tableView.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
-        # use the method in OS < 10.4
-        else:
-            self._tableView.setAutoresizesAllColumnsToFit_(True)
+        self._tableView.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
 
     def _makeColumnWithoutColumnDescriptions(self):
         column = NSTableColumn.alloc().initWithIdentifier_("item")
@@ -653,21 +626,11 @@ class List(VanillaBaseObject):
             self._orderedColumnIdentifiers.append(key)
             # set the width
             if width is not None:
-                # set the resizing mask in OS > 10.3
-                if _haveResizingMasks:
-                    mask = NSTableColumnAutoresizingMask
-                    column.setResizingMask_(mask)
-                # use the method in OS < 10.4
-                else:
-                    column.setResizable_(True)
+                mask = NSTableColumnAutoresizingMask
+                column.setResizingMask_(mask)
             else:
-                # set the resizing mask in OS > 10.3
-                if _haveResizingMasks:
-                    mask = NSTableColumnUserResizingMask | NSTableColumnAutoresizingMask
-                    column.setResizingMask_(mask)
-                # use the method in OS < 10.4
-                else:
-                    column.setResizable_(True)
+                mask = NSTableColumnUserResizingMask | NSTableColumnAutoresizingMask
+                column.setResizingMask_(mask)
             # set the header cell
             column.headerCell().setTitle_(title)
             # set the data cell
