@@ -1099,6 +1099,9 @@ def PopUpButtonListCell(items):
     argument during the construction of a List.**
 
     **items** The items that should appear in the pop up list.
+
+    Note: when using this cell in a List, the `binding` in the
+    column description must be set to `selectedValue`.
     """
     cell = NSPopUpButtonCell.alloc().init()
     cell.setBordered_(False)
@@ -1177,6 +1180,9 @@ def SegmentedButtonListCell(segmentDescriptions):
     +------------------------+--------------------------------------------------------------------------------------------------+
     | imageObject (optional) | A *NSImage* object to display in the segment.                                                    |
     +------------------------+--------------------------------------------------------------------------------------------------+
+
+    Note: when using this cell in a List, the `binding` in the
+    column description must be set to `selectedIndex`.
     """
     cell = NSSegmentedCell.alloc().init()
     cell.setControlSize_(NSMiniControlSize)
