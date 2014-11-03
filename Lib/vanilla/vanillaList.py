@@ -633,13 +633,15 @@ class List(VanillaBaseObject):
             # instantiate the column.
             column = NSTableColumn.alloc().initWithIdentifier_(key)
             self._orderedColumnIdentifiers.append(key)
-            # set the width
+            # set the width resizing mask
             if width is not None:
-                mask = NSTableColumnAutoresizingMask
-                column.setResizingMask_(mask)
+                if width == minWidth and width == maxWidth:
+                    mask = NSTableColumnNoResizing
+                else:
+                    mask = NSTableColumnUserResizingMask | NSTableColumnAutoresizingMask
             else:
                 mask = NSTableColumnUserResizingMask | NSTableColumnAutoresizingMask
-                column.setResizingMask_(mask)
+            column.setResizingMask_(mask)
             # set the header cell
             column.headerCell().setTitle_(title)
             # set the data cell
