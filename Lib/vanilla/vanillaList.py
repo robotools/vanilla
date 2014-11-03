@@ -588,7 +588,12 @@ class List(VanillaBaseObject):
     def _setColumnAutoresizing(self):
         self._tableView.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
 
+    def _adjustColumnWidths(self):
+        if self._tableView.columnAutoresizingStyle() == NSTableViewUniformColumnAutoresizingStyle:
+            self._tableView.sizeToFit()
+
     def _makeColumnWithoutColumnDescriptions(self):
+        self._setColumnAutoresizing()
         column = NSTableColumn.alloc().initWithIdentifier_("item")
         self._orderedColumnIdentifiers.append("item")
         # set the data cell
@@ -604,6 +609,8 @@ class List(VanillaBaseObject):
                 column.setEditable_(False)
         # finally, add the column to the table view
         self._tableView.addTableColumn_(column)
+        # force the columns to adjust their widths if possible. (needed in 10.10)
+        self._adjustColumnWidths()
 
     def _makeColumnsWithColumnDescriptions(self, columnDescriptions):
         # make sure that the column widths are in the correct format.
@@ -665,6 +672,8 @@ class List(VanillaBaseObject):
                 # do this *after* adding the column to the table, or the first column
                 # will have the wrong width (at least on 10.3)
                 column.setWidth_(width)
+        # force the columns to adjust their widths if possible. (needed in 10.10)
+        self._adjustColumnWidths()
 
     def _wrapItem(self, item):
         # if the item is an instance of NSObject, assume that
