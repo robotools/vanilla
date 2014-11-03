@@ -315,6 +315,10 @@ class List(VanillaBaseObject):
     +--------------------------------+--------------------------------------------------------------------------------+
     | *"width"* (optional)           | The width of the column.                                                       |
     +--------------------------------+--------------------------------------------------------------------------------+
+    | *"minWidth"* (optional)        | The minimum width of the column. The fallback is `width`.                      |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"maxWidth"* (optional)        | The maximum width of the column. The fallback is `width`.                      |
+    +--------------------------------+--------------------------------------------------------------------------------+
     | *"typingSensitive"* (optional) | A boolean representing that this column                                        |
     |                                | should be the column that responds to user                                     |
     |                                | key input. Only one column can be flagged as                                   |
@@ -588,10 +592,6 @@ class List(VanillaBaseObject):
     def _setColumnAutoresizing(self):
         self._tableView.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
 
-    def _adjustColumnWidths(self):
-        if self._tableView.columnAutoresizingStyle() == NSTableViewUniformColumnAutoresizingStyle:
-            self._tableView.sizeToFit()
-
     def _makeColumnWithoutColumnDescriptions(self):
         self._setColumnAutoresizing()
         column = NSTableColumn.alloc().initWithIdentifier_("item")
@@ -610,7 +610,7 @@ class List(VanillaBaseObject):
         # finally, add the column to the table view
         self._tableView.addTableColumn_(column)
         # force the columns to adjust their widths if possible. (needed in 10.10)
-        self._adjustColumnWidths()
+        self._tableView.sizeToFit()
 
     def _makeColumnsWithColumnDescriptions(self, columnDescriptions):
         # make sure that the column widths are in the correct format.
@@ -620,6 +620,8 @@ class List(VanillaBaseObject):
             title = data["title"]
             key = data.get("key", title)
             width = data.get("width")
+            minWidth = data.get("minWidth", width)
+            maxWidth = data.get("maxWidth", width)
             formatter = data.get("formatter")
             cell = data.get("cell")
             editable = data.get("editable")
@@ -672,8 +674,10 @@ class List(VanillaBaseObject):
                 # do this *after* adding the column to the table, or the first column
                 # will have the wrong width (at least on 10.3)
                 column.setWidth_(width)
+                column.setMinWidth_(minWidth)
+                column.setMaxWidth_(maxWidth)
         # force the columns to adjust their widths if possible. (needed in 10.10)
-        self._adjustColumnWidths()
+        self._tableView.sizeToFit()
 
     def _wrapItem(self, item):
         # if the item is an instance of NSObject, assume that
