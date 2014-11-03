@@ -1117,6 +1117,7 @@ def PopUpButtonListCell(items):
         item.setAttributedTitle_(title)
     return cell
 
+
 def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scale="proportional"):
     """
     **horizontalAlignment** A string representing the desired horizontal
@@ -1160,5 +1161,43 @@ def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scal
     cell.setImageAlignment_(align)
     scale = _imageScaleMap[scale]
     cell.setImageScaling_(scale)
+    return cell
+
+
+def SegmentedButtonListCell(segmentDescriptions):
+    """
+    **segmentDescriptions** An ordered list of dictionaries describing the segments.
+
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | title (optional)       | The title of the segment.                                                                        |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | imagePath (optional)   | A file path to an image to display in the segment.                                               |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | imageNamed (optional)  | The name of an image already loaded as a *NSImage* by the application to display in the segment. |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | imageObject (optional) | A *NSImage* object to display in the segment.                                                    |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    """
+    cell = NSSegmentedCell.alloc().init()
+    cell.setControlSize_(NSMiniControlSize)
+    cell.setSegmentCount_(len(segmentDescriptions))
+    cell.setTrackingMode_(NSSegmentSwitchTrackingSelectOne)
+    for segmentIndex, segmentDescription in enumerate(segmentDescriptions):
+        title = segmentDescription.get("title", "")
+        imagePath = segmentDescription.get("imagePath")
+        imageNamed = segmentDescription.get("imageNamed")
+        imageObject = segmentDescription.get("imageObject")
+        # create the NSImage if needed
+        if imagePath is not None:
+            image = NSImage.alloc().initWithContentsOfFile_(imagePath)
+        elif imageNamed is not None:
+            image = NSImage.imageNamed_(imageNamed)
+        elif imageObject is not None:
+            image = imageObject
+        else:
+            image = None
+        cell.setLabel_forSegment_(title, segmentIndex)
+        if image is not None:
+            cell.setImage_forSegment_(image, segmentIndex)
     return cell
 

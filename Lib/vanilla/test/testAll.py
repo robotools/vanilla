@@ -307,18 +307,19 @@ class ListTest(BaseTest):
         image = NSImage.alloc().initWithContentsOfFile_(iconPath)
 
         miscItems = [
-            {"slider": 50, "sliderWithTicks" : 50, "checkBox": False, "image" : image},
-            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True, "image" : image},
-            {"slider": 70, "sliderWithTicks" : 70, "checkBox": False, "image" : image},
-            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True, "image" : image},
-            {"slider": 10, "sliderWithTicks" : 10, "checkBox": True, "image" : image},
-            {"slider": 90, "sliderWithTicks" : 90, "checkBox": False, "image" : image},
+            {"slider": 50, "sliderWithTicks" : 50, "checkBox": False, "image" : image, "segment" : 0},
+            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True,  "image" : image, "segment" : 1},
+            {"slider": 70, "sliderWithTicks" : 70, "checkBox": False, "image" : image, "segment" : 2},
+            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True,  "image" : image, "segment" : 0},
+            {"slider": 10, "sliderWithTicks" : 10, "checkBox": True,  "image" : image, "segment" : 1},
+            {"slider": 90, "sliderWithTicks" : 90, "checkBox": False, "image" : image, "segment" : 2},
         ]
         columnDescriptions = [
             {"title": "SliderListCell", "key": "slider", "cell": SliderListCell()},
             {"title": "SliderListCell", "key": "sliderWithTicks", "cell": SliderListCell(tickMarkCount=10, stopOnTickMarks=True)},
             {"title": "CheckBoxListCell", "key": "checkBox", "cell": CheckBoxListCell()},
             {"title": "ImageListCell", "key": "image", "cell": ImageListCell()},
+            {"title": "SegmentedButtonListCell", "key": "segment", "cell": SegmentedButtonListCell([dict(title="0"), dict(title="1"), dict(title="2")]), "binding": "selectedIndex"},
         ]
         miscCellList = List((0, 0, 0, 0), items=miscItems, columnDescriptions=columnDescriptions)
 
