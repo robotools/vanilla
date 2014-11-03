@@ -1051,6 +1051,25 @@ def CheckBoxListCell(title=None):
     argument during the construction of a List.**
 
     **title** The title to be set in *all* items in the List column.
+
+    Example::
+
+        from vanilla import *
+
+        class CheckBoxListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                             [{"value": True}, {"value": False}],
+                             columnDescriptions=[{"title": "value", "cell": CheckBoxListCell()}],
+                             editCallback=self.editCallback)
+                self.w.open()
+
+            def editCallback(self, sender):
+                print sender.get()
+
+        CheckBoxListCellDemo()
     """
     cell = NSButtonCell.alloc().init()
     cell.setButtonType_(NSSwitchButton)
@@ -1079,6 +1098,28 @@ def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks
 
     **stopOnTickMarks** Boolean representing if the slider knob should only
     stop on the tick marks.
+
+    Example::
+
+        from vanilla import *
+
+        class SliderListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((200, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                            [{"value1": 30, "value2": 70}],
+                            columnDescriptions=[
+                                {"title": "value1", "cell": SliderListCell()},
+                                {"title": "value2", "cell": SliderListCell(tickMarkCount=10)},
+                            ],
+                            editCallback=self.editCallback)
+                self.w.open()
+
+            def editCallback(self, sender):
+                print sender.get()
+
+        SliderListCellDemo()
     """
     cell = NSSliderCell.alloc().init()
     cell.setControlSize_(NSSmallControlSize)
@@ -1102,6 +1143,27 @@ def PopUpButtonListCell(items):
 
     Note: when using this cell in a List, the `binding` in the
     column description must be set to `selectedValue`.
+
+    Example::
+
+        from vanilla import *
+
+        class PopUpButtonListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                            [{"value": "A"}, {"value": "B"}],
+                            columnDescriptions=[
+                                {"title": "value", "cell": PopUpButtonListCell(["A", "B", "C"]), "binding": "selectedValue"}
+                            ],
+                            editCallback=self.editCallback)
+                self.w.open()
+
+            def editCallback(self, sender):
+                print sender.get()
+
+        PopUpButtonListCellDemo()
     """
     cell = NSPopUpButtonCell.alloc().init()
     cell.setBordered_(False)
@@ -1157,6 +1219,27 @@ def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scal
     +----------------+----------------------------------------------+
     | "none"         | Do not scale the image.                      |
     +----------------+----------------------------------------------+
+
+    Example::
+
+        from AppKit import *
+        from vanilla import *
+
+        class ImageListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                            [
+                                {"image": NSImage.imageNamed_("NSActionTemplate")},
+                                {"image": NSImage.imageNamed_("NSRefreshTemplate")}
+                            ],
+                            columnDescriptions=[
+                                {"title": "image", "cell": ImageListCell()}
+                            ])
+                self.w.open()
+
+        ImageListCellDemo()
     """
     from vanillaImageView import _imageAlignmentMap, _imageScaleMap
     cell = NSImageCell.alloc().init()
@@ -1183,6 +1266,31 @@ def SegmentedButtonListCell(segmentDescriptions):
 
     Note: when using this cell in a List, the `binding` in the
     column description must be set to `selectedIndex`.
+
+    Example::
+
+        from vanilla import *
+
+        class SegmentedButtonListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                            [{"value": 0}, {"value": 1}],
+                            columnDescriptions=[
+                                {
+                                    "title": "value",
+                                    "cell": SegmentedButtonListCell([dict(title="0"), dict(title="1")]),
+                                    "binding": "selectedIndex"
+                                }
+                            ],
+                            editCallback=self.editCallback)
+                self.w.open()
+
+            def editCallback(self, sender):
+                print sender.get()
+
+        SegmentedButtonListCellDemo()
     """
     cell = NSSegmentedCell.alloc().init()
     cell.setControlSize_(NSMiniControlSize)
