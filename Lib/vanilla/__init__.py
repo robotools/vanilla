@@ -9,7 +9,7 @@ from vanillaDrawer import Drawer
 from vanillaEditText import EditText, SecureEditText
 from vanillaGroup import Group
 from vanillaImageView import ImageView
-from vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell
+from vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell, ImageListCell
 from vanillaPopUpButton import PopUpButton
 from vanillaProgressBar import ProgressBar
 from vanillaProgressSpinner import ProgressSpinner
@@ -35,7 +35,7 @@ __all__ = [
     "EditText",
     "Group",
     "ImageView",
-    "List", "CheckBoxListCell", "SliderListCell", "PopUpButtonListCell",
+    "List", "CheckBoxListCell", "SliderListCell", "PopUpButtonListCell", "ImageListCell",
     "ObjectBrowser",
     "PopUpButton",
     "ProgressBar",

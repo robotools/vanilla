@@ -1116,3 +1116,49 @@ def PopUpButtonListCell(items):
         item = cell.itemAtIndex_(index)
         item.setAttributedTitle_(title)
     return cell
+
+def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scale="proportional"):
+    """
+    **horizontalAlignment** A string representing the desired horizontal
+    alignment of the image in the view. The options are:
+
+    +-------------+-------------------------+
+    | "left"      | Image is aligned left.  |
+    +-------------+-------------------------+
+    | "right"     | Image is aligned right. |
+    +-------------+-------------------------+
+    | "center"    | Image is centered.      |
+    +-------------+-------------------------+
+
+    **verticalAlignment** A string representing the desired vertical alignment
+    of the image in the view. The options are:
+
+    +-------------+--------------------------+
+    | "top"       | Image is aligned top.    |
+    +-------------+--------------------------+
+    | "bottom"    | Image is aligned bottom. |
+    +-------------+--------------------------+
+    | "center"    | Image is centered.       |
+    +-------------+--------------------------+
+
+    **scale** A string representing the desired scale style of the image in the
+    view. The options are:
+
+    +----------------+----------------------------------------------+
+    | "porportional" | Proportionally scale the image to fit in the |
+    |                | view if it is larger than the view.          |
+    +----------------+----------------------------------------------+
+    | "fit"          | Distort the proportions of the image until   |
+    |                | it fits exactly in the view.                 |
+    +----------------+----------------------------------------------+
+    | "none"         | Do not scale the image.                      |
+    +----------------+----------------------------------------------+
+    """
+    from vanillaImageView import _imageAlignmentMap, _imageScaleMap
+    cell = NSImageCell.alloc().init()
+    align = _imageAlignmentMap[(horizontalAlignment, verticalAlignment)]
+    cell.setImageAlignment_(align)
+    scale = _imageScaleMap[scale]
+    cell.setImageScaling_(scale)
+    return cell
+

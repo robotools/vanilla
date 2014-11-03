@@ -290,7 +290,7 @@ class ButtonTest(BaseTest):
 class ListTest(BaseTest):
 
     def __init__(self, drawGrid=False):
-        self.w = Window((440, 500), "List Test", minSize=(400, 400))
+        self.w = Window((600, 500), "List Test", minSize=(400, 400))
 
         simpleList = List((0, 0, 0, 0), listOptions, enableTypingSensitivity=True)
 
@@ -304,21 +304,21 @@ class ListTest(BaseTest):
         ]
         multiList = List((0, 0, 0, 0), multiItems, columnDescriptions=columnDescriptions, enableTypingSensitivity=True)
 
+        image = NSImage.alloc().initWithContentsOfFile_(iconPath)
+
         miscItems = [
-            {"slider": 50, "sliderWithTicks" : 50, "checkBox": False},
-            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True},
-            {"slider": 70, "sliderWithTicks" : 70, "checkBox": False},
-            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True},
-            {"slider": 10, "sliderWithTicks" : 10, "checkBox": True},
-            {"slider": 90, "sliderWithTicks" : 90, "checkBox": False},
+            {"slider": 50, "sliderWithTicks" : 50, "checkBox": False, "image" : image},
+            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True, "image" : image},
+            {"slider": 70, "sliderWithTicks" : 70, "checkBox": False, "image" : image},
+            {"slider": 20, "sliderWithTicks" : 20, "checkBox": True, "image" : image},
+            {"slider": 10, "sliderWithTicks" : 10, "checkBox": True, "image" : image},
+            {"slider": 90, "sliderWithTicks" : 90, "checkBox": False, "image" : image},
         ]
         columnDescriptions = [
-            {"title": "SliderListCell", "key": "slider",
-            "cell": SliderListCell()},
-            {"title": "SliderListCell", "key": "sliderWithTicks",
-            "cell": SliderListCell(tickMarkCount=10, stopOnTickMarks=True)},
-            {"title": "CheckBoxListCell", "key": "checkBox",
-            "cell": CheckBoxListCell()},
+            {"title": "SliderListCell", "key": "slider", "cell": SliderListCell()},
+            {"title": "SliderListCell", "key": "sliderWithTicks", "cell": SliderListCell(tickMarkCount=10, stopOnTickMarks=True)},
+            {"title": "CheckBoxListCell", "key": "checkBox", "cell": CheckBoxListCell()},
+            {"title": "ImageListCell", "key": "image", "cell": ImageListCell()},
         ]
         miscCellList = List((0, 0, 0, 0), items=miscItems, columnDescriptions=columnDescriptions)
 
