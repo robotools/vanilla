@@ -82,6 +82,11 @@ class Window(NSObject):
     | *"auxiliary"* | Corresponds to NSWindowCollectionBehaviorFullScreenAuxiliary. |
     +---------------+---------------------------------------------------------------+
 
+    **titleVisible** Boolean value indicating if the window title should be displayed.
+
+    **fullSizeContentView** Boolean value indicating if the content view should be the
+    full size of the window, including the area underneath the titlebar and toolbar.
+
     **screen** A `NSScreen <http://tinyurl.com/NSScreen>`_ object indicating the screen that
     the window should be drawn to. When None the window will be drawn to the main screen.
     """
