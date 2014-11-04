@@ -286,10 +286,6 @@ class List(VanillaBaseObject):
     **items** The items to be displayed in the list. In the case of multiple
     column lists, this should be a list of dictionaries with the data for
     each column keyed by the column key as defined in columnDescriptions.
-    If you intend to use a dataSource, *items* must be *None*.
-
-    **dataSource** A Cocoa object supporting the *NSTableDataSource*
-    protocol. If *dataSource* is given, *items* must be *None*.
 
     **columnDescriptions** An ordered list of dictionaries describing the
     columns. This is only necessary for multiple column lists.
@@ -426,7 +422,7 @@ class List(VanillaBaseObject):
     nsArrayControllerClass = VanillaArrayController
     nsArrayControllerObserverClass = VanillaArrayControllerObserver
 
-    def __init__(self, posSize, items, dataSource=None, columnDescriptions=None, showColumnTitles=True,
+    def __init__(self, posSize, items, columnDescriptions=None, showColumnTitles=True,
                 selectionCallback=None, doubleClickCallback=None, editCallback=None,
                 enableDelete=False, enableTypingSensitivity=False,
                 allowsMultipleSelection=True, allowsEmptySelection=True,
@@ -439,8 +435,6 @@ class List(VanillaBaseObject):
                 selfApplicationDropSettings=None,
                 otherApplicationDropSettings=None,
                 dragSettings=None):
-        if items is not None and dataSource is not None:
-            raise VanillaError("can't pass both items and dataSource arguments")
         self._posSize = posSize
         self._enableDelete = enableDelete
         self._nsObject = getNSSubclass(self.nsScrollViewClass)(self)
@@ -459,18 +453,14 @@ class List(VanillaBaseObject):
         self._editObserver = self.nsArrayControllerObserverClass.alloc().init()
         if editCallback is not None:
             self._editObserver._targetMethod = self._edit # circular reference to be killed in _breakCycles
-        if items is not None:
-            # wrap all the items
-            items = [self._wrapItem(item) for item in items]
-            items = NSMutableArray.arrayWithArray_(items)
-            # set up an array controller
-            self._arrayController = self.nsArrayControllerClass.alloc().initWithContent_(items)
-            self._arrayController.setSelectsInsertedObjects_(False)
-            self._arrayController.setAvoidsEmptySelection_(not allowsEmptySelection)
-            self._tableView.setDataSource_(self._arrayController)
-        else:
-            self._tableView.setDataSource_(dataSource)
-            self._arrayController = None
+        # wrap all the items
+        items = [self._wrapItem(item) for item in items]
+        items = NSMutableArray.arrayWithArray_(items)
+        # set up an array controller
+        self._arrayController = self.nsArrayControllerClass.alloc().initWithContent_(items)
+        self._arrayController.setSelectsInsertedObjects_(False)
+        self._arrayController.setAvoidsEmptySelection_(not allowsEmptySelection)
+        self._tableView.setDataSource_(self._arrayController)
         # hide the header
         if not showColumnTitles or not columnDescriptions:
             self._tableView.setHeaderView_(None)
