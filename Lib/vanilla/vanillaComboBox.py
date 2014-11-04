@@ -99,7 +99,7 @@ class ComboBox(VanillaBaseControl):
         self._nsObject.addItemsWithObjectValues_(items)
         self._nsObject.setCompletes_(completes)
         if formatter is not None:
-            self._nsObject.cell().setFormatter_(formatter)
+            self._nsObject.setFormatter_(formatter)
 
     def _breakCycles(self):
         super(ComboBox, self)._breakCycles()

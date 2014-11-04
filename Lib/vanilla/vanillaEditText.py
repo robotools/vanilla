@@ -85,11 +85,9 @@ class EditText(VanillaBaseControl):
         self._nsObject.setBezeled_(True)
         self._nsObject.setEditable_(not readOnly)
         self._nsObject.setSelectable_(True)
-        cell = self._nsObject.cell()
-        if formatter is not None:
-            cell.setFormatter_(formatter)
+        self._nsObject.setFormatter_(formatter)
         if placeholder:
-            cell.setPlaceholderString_(placeholder)
+            self._nsObject.cell().setPlaceholderString_(placeholder)
 
     def _testForDeprecatedAttributes(self):
         super(EditText, self)._testForDeprecatedAttributes()

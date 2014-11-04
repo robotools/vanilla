@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseObject, _breakCycles
+from vanillaBase import VanillaBaseObject, _breakCycles, osVersion
 
 
 class Box(VanillaBaseObject):
@@ -42,7 +42,8 @@ class Box(VanillaBaseObject):
         self._setupView(self.nsBoxClass, posSize)
         if title:
             self._nsObject.setTitle_(title)
-            self._nsObject.titleCell().setTextColor_(NSColor.blackColor())
+            if osVersion < "10.10":
+                self._nsObject.titleCell().setTextColor_(NSColor.blackColor())
             font = NSFont.systemFontOfSize_(NSFont.systemFontSizeForControlSize_(NSSmallControlSize))
             self._nsObject.setTitleFont_(font)
         else:

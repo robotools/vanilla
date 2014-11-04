@@ -134,7 +134,7 @@ class LevelIndicator(VanillaBaseControl):
         if majorTickMarkCount is not None:
             self._nsObject.setNumberOfMajorTickMarks_(majorTickMarkCount)
         if callback is None:
-            self._nsObject.cell().setEnabled_(False)
+            self._nsObject.setEnabled_(False)
 
     def getNSLevelIndicator(self):
         """
