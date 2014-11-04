@@ -1,6 +1,27 @@
 from AppKit import *
 from vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
-        VanillaCallbackWrapper, VanillaError, VanillaBaseControl
+        VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersion
+
+# PyObjC may not have these constants wrapped,
+# so test and fallback if needed.
+try:
+    NSWindowCollectionBehaviorFullScreenPrimary
+    NSWindowCollectionBehaviorFullScreenAuxiliary
+except NameError:
+    NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7
+    NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8
+
+try:
+    NSWindowTitleVisible
+    NSWindowTitleHidden
+except NameError:
+    NSWindowTitleVisible  = 0
+    NSWindowTitleHidden = 1
+
+try:
+    NSFullSizeContentViewWindowMask
+except NameError:
+    NSFullSizeContentViewWindowMask = 1 << 15
 
 
 class Window(NSObject):
@@ -74,7 +95,7 @@ class Window(NSObject):
 
     def __init__(self, posSize, title="", minSize=None, maxSize=None, textured=False,
                 autosaveName=None, closable=True, miniaturizable=True, initiallyVisible=True,
-                fullScreenMode=None, screen=None):
+                fullScreenMode=None, titleVisible=True, fullSizeContentView=False, screen=None):
         mask = self.nsWindowStyleMask
         if closable:
             mask = mask | NSClosableWindowMask
@@ -84,6 +105,8 @@ class Window(NSObject):
             mask = mask | NSResizableWindowMask
         if textured:
             mask = mask | NSTexturedBackgroundWindowMask
+        if fullSizeContentView and osVersion >= "10.10":
+            mask = mask | NSFullSizeContentViewWindowMask
         # start the window
         ## too magical?
         if len(posSize) == 2:
@@ -104,29 +127,6 @@ class Window(NSObject):
             self._window.setFrameAutosaveName_(autosaveName)
         if cascade:
             self._cascade()
-        # set the full screen mode.
-        # this is only available 10.7+, so see if it is possible
-        # before going to far
-        try:
-            self._window.setCollectionBehavior_
-            # okay, we're >= 10.7
-            if fullScreenMode is None:
-                pass
-            elif fullScreenMode == "primary":
-                try:
-                    NSWindowCollectionBehaviorFullScreenPrimary
-                except NameError:
-                    NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7
-                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenPrimary)
-            elif fullScreenMode == "auxiliary":
-                try:
-                    NSWindowCollectionBehaviorFullScreenAuxiliary
-                except NameError:
-                    NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8
-                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenAuxiliary)
-        except AttributeError:
-            pass
-        #
         if minSize is not None:
             self._window.setMinSize_(minSize)
         if maxSize is not None:
@@ -137,6 +137,23 @@ class Window(NSObject):
         self._window.setDelegate_(self)
         self._bindings = {}
         self._initiallyVisible = initiallyVisible
+        # full screen mode
+        if osVersion >= "10.7":
+            if fullScreenMode is None:
+                pass
+            elif fullScreenMode == "primary":
+                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenPrimary)
+            elif fullScreenMode == "auxiliary":
+                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenAuxiliary)
+        # titlebar visibility
+        if osVersion >= "10.10":
+            if not titleVisible:
+                self._window.setTitleVisibility_(NSWindowTitleHidden)
+            else:
+                self._window.setTitleVisibility_(NSWindowTitleVisible)
+        # full size content view
+        if fullSizeContentView and osVersion >= "10.10":
+            self._window.setTitlebarAppearsTransparent_(True)
 
     def _testForDeprecatedAttributes(self):
         from warnings import warn
