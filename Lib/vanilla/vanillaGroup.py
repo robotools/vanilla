@@ -86,8 +86,6 @@ class Group(VanillaBaseObject):
             super(Group, self).__setattr__(attr, value)
         # adding a vanilla subview: add to the visual effect view
         elif hasattr(self, "_visualEffectGroup") and isinstance(value, VanillaBaseObject) and hasattr(value, "_posSize"):
-            value._nsObject.setAllowsVibrancy_(True)
-            print value._nsObject.effectiveAppearance()
             setattr(self._visualEffectGroup, attr, value)
         # fallback: add to the main view
         else:
