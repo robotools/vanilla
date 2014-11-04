@@ -31,26 +31,12 @@ class VanillaTableViewSubclass(NSTableView):
         else:
             super(VanillaTableViewSubclass, self).textDidEndEditing_(notification)
 
-class _VanillaTableViewSubclass(VanillaTableViewSubclass):
-
-    def init(self):
-        from warnings import warn
-        warn(DeprecationWarning("_VanillaTableViewSubclass is deprecated. Use VanillaTableViewSubclass"))
-        return super(_VanillaTableViewSubclass, self).init()
-
 
 class VanillaArrayControllerObserver(NSObject):
     
     def observeValueForKeyPath_ofObject_change_context_(self, keyPath, obj, change, context):
         if hasattr(self, "_targetMethod") and self._targetMethod is not None:
             self._targetMethod()
-
-class _VanillaArrayControllerObserver(VanillaArrayControllerObserver):
-
-    def init(self):
-        from warnings import warn
-        warn(DeprecationWarning("_VanillaArrayControllerObserver is deprecated. Use VanillaArrayControllerObserver"))
-        return super(_VanillaArrayControllerObserver, self).init()
 
 
 class VanillaArrayController(NSArrayController):
@@ -172,14 +158,6 @@ class VanillaArrayController(NSArrayController):
 
     def numberOfRowsInTableView_(self, view):
         return len(self.content())
-
-
-class _VanillaArrayController(VanillaArrayController):
-
-    def init(self):
-        from warnings import warn
-        warn(DeprecationWarning("_VanillaArrayController is deprecated. Use VanillaArrayController"))
-        return super(_VanillaArrayController, self).init()
 
 
 class List(VanillaBaseObject):
@@ -534,22 +512,6 @@ class List(VanillaBaseObject):
         self._tableView.setDraggingSourceOperationMask_forLocal_(local, True)
         # set the drag data
         self._dragSettings = dragSettings
-
-    def _testForDeprecatedAttributes(self):
-        super(List, self)._testForDeprecatedAttributes()
-        from warnings import warn
-        if hasattr(self, "_scrollViewClass"):
-            warn(DeprecationWarning("The _scrollViewClass attribute is deprecated. Use the nsScrollViewClass attribute."))
-            self.nsScrollViewClass = self._scrollViewClass
-        if hasattr(self, "_tableViewClass"):
-            warn(DeprecationWarning("The _tableViewClass attribute is deprecated. Use the nsTableViewClass attribute."))
-            self.nsTableViewClass = self._tableViewClass
-        if hasattr(self, "_arrayControllerClass"):
-            warn(DeprecationWarning("The _arrayControllerClass attribute is deprecated. Use the nsArrayControllerClass attribute."))
-            self.nsArrayControllerClass = self._arrayControllerClass
-        if hasattr(self, "_arrayControllerObserverClass"):
-            warn(DeprecationWarning("The _arrayControllerObserverClass attribute is deprecated. Use the nsArrayControllerObserverClass attribute."))
-            self.nsArrayControllerObserverClass = self._arrayControllerObserverClass
 
     def getNSScrollView(self):
         """
