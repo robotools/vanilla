@@ -3,7 +3,7 @@ import objc
 from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
 from nsSubclasses import getNSSubclass
-from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
+from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper, osVersion
 
 
 class VanillaTableViewSubclass(NSTableView):
@@ -33,13 +33,30 @@ class VanillaTableViewSubclass(NSTableView):
 
 
 class VanillaArrayControllerObserver(NSObject):
-    
+
     def observeValueForKeyPath_ofObject_change_context_(self, keyPath, obj, change, context):
         if hasattr(self, "_targetMethod") and self._targetMethod is not None:
             self._targetMethod()
 
 
 class VanillaArrayController(NSArrayController):
+
+    def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
+        content = self.content()
+        columnID = column.identifier()
+        item = content[row]
+        if isinstance(item, NSDictionary):
+            if columnID not in item:
+                return
+            else:
+                return item[columnID]
+        else:
+            return getattr(item, columnID)()
+
+    def numberOfRowsInTableView_(self, view):
+        return len(self.content())
+
+    # drag and drop
 
     def tableView_writeRowsWithIndexes_toPasteboard_(self,
         tableView, indexes, pboard):
@@ -141,23 +158,16 @@ class VanillaArrayController(NSArrayController):
         tableView, draggingInfo, row, dropOperation):
         return self._handleDrop(False, tableView, draggingInfo, row, dropOperation)
 
-    # 10.6
 
-    def tableView_objectValueForTableColumn_row_(self,
-        tableView, column, row):
-        content = self.content()
-        columnID = column.identifier()
-        item = content[row]
-        if isinstance(item, NSDictionary):
-            if columnID not in item:
-                return
-            else:
-                return item[columnID]
-        else:
-            return getattr(item, columnID)()
+class VanillaTableViewDelegate(NSObject):
 
-    def numberOfRowsInTableView_(self, view):
-        return len(self.content())
+    def tableView_viewForTableColumn_row_(self, tableView, column, row):
+        identifier = column.identifier()
+        view = tableView.makeViewWithIdentifier_owner_(identifier, self)
+        if view is None:
+            wrapper = tableView.vanillaWrapper()
+            view = wrapper._makeCellViewForIdentifier(identifier)
+        return view
 
 
 class List(VanillaBaseObject):
@@ -399,6 +409,7 @@ class List(VanillaBaseObject):
     nsTableViewClass = VanillaTableViewSubclass
     nsArrayControllerClass = VanillaArrayController
     nsArrayControllerObserverClass = VanillaArrayControllerObserver
+    nsTableViewDelegateClass = VanillaTableViewDelegate
 
     def __init__(self, posSize, items, columnDescriptions=None, showColumnTitles=True,
                 selectionCallback=None, doubleClickCallback=None, editCallback=None,
@@ -413,6 +424,29 @@ class List(VanillaBaseObject):
                 selfApplicationDropSettings=None,
                 otherApplicationDropSettings=None,
                 dragSettings=None):
+        # deduce the table view mode. default to cell mode < OS 10.10.
+        cells = 0
+        views = 0
+        if columnDescriptions:
+            for item in columnDescriptions:
+                cell = item.get("cell")
+                if cell is not None:
+                    if isinstance(cell, NSCell):
+                        cells += 1
+                    else:
+                        views += 1
+        if cells and views:
+            raise VanillaError("The column descriptions contain a mixture of cells and views. This is not allowed.")
+        if views and osVersion < "10.10":
+            raise VanillaError("The column descriptions contain views. This is not supported by vanilla in OS %s." % osVersion)
+        if cells:
+            self._mode = "cell"
+        elif osVersion < "10.10":
+            self._mode = "cell"
+        else:
+            self._mode = "view"
+            self._cellViewFactories = {}
+        # basic construction
         self._posSize = posSize
         self._enableDelete = enableDelete
         self._nsObject = getNSSubclass(self.nsScrollViewClass)(self)
@@ -426,6 +460,10 @@ class List(VanillaBaseObject):
         # add a table view to the scroll view
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
         self._nsObject.setDocumentView_(self._tableView)
+        # set up the delegate
+        if self._mode == "view":
+            self._delegate = VanillaTableViewDelegate.alloc().init()
+            self._tableView.setDelegate_(self._delegate)
         # set up an observer that will be called by the bindings when a cell is edited
         self._editCallback = editCallback
         self._editObserver = self.nsArrayControllerObserverClass.alloc().init()
@@ -553,12 +591,20 @@ class List(VanillaBaseObject):
     def _setColumnAutoresizing(self):
         self._tableView.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
 
+    def _makeCellViewForIdentifier(self, identifier):
+        factory, kwargs = self._cellViewFactories[identifier]
+        view = factory(**kwargs)
+        view.setIdentifier_(identifier)
+        return view
+
     def _makeColumnWithoutColumnDescriptions(self):
         self._setColumnAutoresizing()
         column = NSTableColumn.alloc().initWithIdentifier_("item")
         self._orderedColumnIdentifiers.append("item")
-        # set the data cell
-        column.dataCell().setDrawsBackground_(False)
+        if self._mode == "cell":
+            column.dataCell().setDrawsBackground_(False)
+        else:
+            self._cellViewFactories["item"] = (TextFieldCellView, {})
         if self._arrayController is not None:
             # assign the key to the binding
             keyPath = "arrangedObjects.item"
@@ -608,15 +654,26 @@ class List(VanillaBaseObject):
             # set the header cell
             column.headerCell().setTitle_(title)
             # set the data cell
-            if cell is None:
-                cell = column.dataCell()
-                cell.setDrawsBackground_(False)
-                cell.setStringValue_("")  # cells have weird default values
+            if self._mode == "cell":
+                if cell is None:
+                    cell = column.dataCell()
+                    cell.setDrawsBackground_(False)
+                    cell.setStringValue_("")  # cells have weird default values
+                else:
+                    column.setDataCell_(cell)
+                if formatter is not None:
+                    cell.setFormatter_(formatter)
             else:
-                column.setDataCell_(cell)
-            # assign the formatter
-            if formatter is not None:
-                cell.setFormatter_(formatter)
+                if cell is None:
+                    view = TextFieldCellView
+                    kwargs = {}
+                else:
+                    view = cell["view"]
+                    kwargs = cell.get("settings", {})
+                if formatter is not None:
+                    kwargs["formatter"] = formatter
+                cell = (view, kwargs)
+                self._cellViewFactories[key] = cell
             if self._arrayController is not None:
                 bindingOptions = None
                 if not tableAllowsSorting or not allowsSorting:
@@ -995,6 +1052,19 @@ class List(VanillaBaseObject):
         return sortedIndexes
 
 
+# -------------------
+# Cell View Factories
+# -------------------
+
+def TextFieldCellView(formatter=None):
+    view = NSTextField.alloc().init()
+    view.setBordered_(False)
+    view.setDrawsBackground_(False)
+    view.setEditable_(True)
+    if formatter is not None:
+        view.setFormatter_(formatter)
+    return view
+
 def CheckBoxListCell(title=None):
     """
     An object that displays a check box in a List column.
@@ -1032,6 +1102,17 @@ def CheckBoxListCell(title=None):
         title = ""
     cell.setTitle_(title)
     return cell
+
+def SliderListCellView(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks=False):
+    slider = NSSlider.alloc().init()
+    slider.setControlSize_(NSSmallControlSize)
+    slider.setMinValue_(minValue)
+    slider.setMaxValue_(maxValue)
+    if tickMarkCount:
+        slider.setNumberOfTickMarks_(tickMarkCount)
+        if stopOnTickMarks:
+            slider.setAllowsTickMarkValuesOnly_(True)
+    return slider
 
 
 def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks=False):
