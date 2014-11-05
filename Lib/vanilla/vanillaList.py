@@ -8,11 +8,6 @@ from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper,
 
 class VanillaTableViewSubclass(NSTableView):
 
-    def keyDown_(self, event):
-        didSomething = self.vanillaWrapper()._keyDown(event)
-        if not didSomething:
-            super(VanillaTableViewSubclass, self).keyDown_(event)
-
     def textDidEndEditing_(self, notification):
         info = notification.userInfo()
         if info["NSTextMovement"] in [NSReturnTextMovement, NSTabTextMovement, NSBacktabTextMovement]:
@@ -308,12 +303,6 @@ class List(VanillaBaseObject):
     |                                | The fallback is `True`. If a List is set to disallow                           |
     |                                | sorting the column level settings will be ignored                              |
     +--------------------------------+--------------------------------------------------------------------------------+
-    | *"typingSensitive"* (optional) | A boolean representing that this column                                        |
-    |                                | should be the column that responds to user                                     |
-    |                                | key input. Only one column can be flagged as                                   |
-    |                                | True. If no column is flagged, the first                                       |
-    |                                | column will automatically be flagged.                                          |
-    +--------------------------------+--------------------------------------------------------------------------------+
     | *binding* (optional)           | A string indicating which `binding object <http://tinyurl.com/CocoaBindings>`_ |
     |                                | the column's cell should be bound to. By                                       |
     |                                | default, this is "value." You should only                                      |
@@ -330,9 +319,6 @@ class List(VanillaBaseObject):
     **editCallback** Callback to be called after an item has been edited.
 
     **enableDelete** A boolean representing if items in the list can be deleted via the interface.
-
-    **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
-    closest match as the entered keystrokes. *Available only in single column lists.*
 
     **allowsMultipleSelection** A boolean representing if the list allows more than one item to be selected.
 
@@ -413,7 +399,7 @@ class List(VanillaBaseObject):
 
     def __init__(self, posSize, items, columnDescriptions=None, showColumnTitles=True,
                 selectionCallback=None, doubleClickCallback=None, editCallback=None,
-                enableDelete=False, enableTypingSensitivity=False,
+                enableDelete=False,
                 allowsMultipleSelection=True, allowsEmptySelection=True,
                 allowsSorting=True,
                 drawVerticalLines=False, drawHorizontalLines=False,
@@ -423,7 +409,11 @@ class List(VanillaBaseObject):
                 selfDocumentDropSettings=None,
                 selfApplicationDropSettings=None,
                 otherApplicationDropSettings=None,
-                dragSettings=None):
+                dragSettings=None,
+                # deprecated kwargs
+                enableTypingSensitivity=False
+                ):
+
         # deduce the table view mode. default to cell mode < OS 10.10.
         cells = 0
         views = 0
@@ -499,18 +489,12 @@ class List(VanillaBaseObject):
         # set up the columns. also make a flag that will be used
         # when unwrapping items.
         self._orderedColumnIdentifiers = []
-        self._typingSensitiveColumn = 0
         if not columnDescriptions:
             self._makeColumnWithoutColumnDescriptions()
             self._itemsWereDict = False
         else:
             self._makeColumnsWithColumnDescriptions(columnDescriptions)
             self._itemsWereDict = True
-        # set some typing sensitivity data
-        self._typingSensitive = enableTypingSensitivity
-        if enableTypingSensitivity:
-            self._lastInputTime = None
-            self._typingInput = []
         # set up an observer that will be called by the bindings when the selection changes.
         # this needs to be done ater the items have been added to the table. otherwise,
         # the selection method will be called when the items are added to the table view.
@@ -636,9 +620,6 @@ class List(VanillaBaseObject):
             allowsSorting = data.get("allowsSorting", True)
             binding = data.get("binding", "value")
             keyPath = "arrangedObjects.%s" % key
-            # check for typing sensitivity.
-            if data.get("typingSensitive"):
-                self._typingSensitiveColumn = columnIndex
             # instantiate the column.
             column = NSTableColumn.alloc().initWithIdentifier_(key)
             self._orderedColumnIdentifiers.append(key)
@@ -734,120 +715,6 @@ class List(VanillaBaseObject):
     def _selection(self):
         if self._selectionCallback is not None: 
             self._selectionCallback(self)
-
-    def _keyDown(self, event):
-        # this method is called by the NSTableView subclass after a key down
-        # has occurred. the subclass expects that a boolean will be returned
-        # that indicates if this method has done something (delete an item or
-        # select an item). if False is returned, the delegate calls the super
-        # method to insure standard key down behavior.
-        #
-        # get the characters
-        characters = event.characters()
-        # get the field editor
-        fieldEditor = self._tableView.window().fieldEditor_forObject_(True, self._tableView)
-        #
-        deleteCharacters = [
-            NSBackspaceCharacter,
-            NSDeleteFunctionKey,
-            NSDeleteCharacter,
-            unichr(0x007F),
-        ]
-        nonCharacters = [
-            NSUpArrowFunctionKey,
-            NSDownArrowFunctionKey,
-            NSLeftArrowFunctionKey,
-            NSRightArrowFunctionKey,
-            NSPageUpFunctionKey,
-            NSPageDownFunctionKey,
-            unichr(0x0003),
-            u"\r",
-            u"\t",
-        ]
-        if characters in deleteCharacters:
-            if self._enableDelete:
-                self._removeSelection()
-                return True
-        # arrow key. reset the typing entry if necessary.
-        elif characters in nonCharacters:
-            if self._typingSensitive:
-                self._lastInputTime = None
-                fieldEditor.setString_(u"")
-            return False
-        elif self._typingSensitive:
-            # get the current time
-            rightNow = time.time()
-            # no time defined. define it.
-            if self._lastInputTime is None:
-                self._lastInputTime = rightNow
-            # if the last input was too long ago,
-            # clear away the old input
-            if rightNow - self._lastInputTime > 0.75:
-                fieldEditor.setString_(u"")
-            # reset the clock
-            self._lastInputTime = rightNow
-            # add the characters to the fied editor
-            fieldEditor.interpretKeyEvents_([event])
-            # get the input string
-            inputString = fieldEditor.string()
-            # if the list has multiple columns, we'll use the items in the first column
-            tableColumns = self._tableView.tableColumns()
-            columnID = tableColumns[self._typingSensitiveColumn].identifier()
-            #
-            match = None
-            matchIndex = None
-            lastResort = None
-            lastResortIndex = None
-            inputLength = len(inputString)
-            for index in xrange(len(self)):
-                item = self._arrayController.content()[index]
-                # the item could be a dictionary or
-                # a NSObject. safely handle each.
-                if isinstance(item, NSDictionary):
-                    item = item[columnID]
-                else:
-                    item = getattr(item, columnID)()
-                # only test strings
-                if not isinstance(item, basestring):
-                    continue
-                # if the item starts with the input string, it is considered a match
-                if item.startswith(inputString):
-                    if match is None:
-                        match = item
-                        matchIndex = index
-                        continue
-                    # only if the item is less than the previous match is it a more relevant match
-                    # example:
-                    # given this order: sys, signal
-                    # and this input string: s
-                    # sys will be the first match, but signal is the more accurate match
-                    if item < match:
-                        match = item
-                        matchIndex = index
-                        continue
-                # if the item is greater than the input string,it can be used as a last resort
-                # example:
-                # given this order: vanilla, zipimport
-                # and this input string: x
-                # zipimport will be used as the last resort
-                if item > inputString:
-                    if lastResort is None:
-                        lastResort = item
-                        lastResortIndex = index
-                        continue
-                    # if existing the last resort is greater than the item
-                    # the item is a closer match to the input string 
-                    if lastResort > item:
-                        lastResort = item
-                        lastResortIndex = index
-                        continue
-            if matchIndex is not None:
-                self.setSelection([matchIndex])
-                return True
-            elif lastResortIndex is not None:
-                self.setSelection([lastResortIndex])
-                return True
-        return False
 
     # -------------
     # list behavior
