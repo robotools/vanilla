@@ -154,9 +154,22 @@ class VanillaSplitViewDelegate(NSObject):
                 w = size
             else:
                 h = size
-            view.setFrame_(((0, 0), (w, h)))
+            f = ((0, 0), (w, h))
+            view.setFrame_(f)
+            self._recursivelyResizeSubviews(view)
         # tell NSSplitView to mess everything up
         splitView.adjustSubviews()
+
+    def _recursivelyResizeSubviews(self, view):
+        for subview in view.subviews():
+            if hasattr(subview, "vanillaWrapper"):
+                vX, vY, vW, vH = subview.vanillaWrapper().getPosSize()
+                if vW < 0:
+                    pW = view.frame().size[0]
+                    (sX, sY), (sW, sH) = subview.frame()
+                    w = pW + vW - vX
+                    subview.setFrame_(((sX, sY), (w, sH)))
+            self._recursivelyResizeSubviews(subview)
 
     # Pane Collapsing
 
@@ -379,7 +392,7 @@ class SplitView2(VanillaBaseObject):
     **isVertical** Boolean representing if the split view is vertical.
     Default is *True*.
 
-    **dividerStyle** String representing teh style of the divider.
+    **dividerStyle** String representing the style of the divider.
     These are the options:
     +----------+
     | splitter |
@@ -389,7 +402,7 @@ class SplitView2(VanillaBaseObject):
     | thick    |
     +----------+
 
-    **dividerTickness** An integer representing the desired thickness of the divider.
+    **dividerThickness** An integer representing the desired thickness of the divider.
 
     **autosaveName** The autosave name for the SplitView.
     """
