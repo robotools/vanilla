@@ -15,12 +15,21 @@ _dividerStyleMap = {
 
 class VanillaSplitViewSubclass(NSSplitView):
 
+    _dividerColor = None
     _dividerThickness = None
 
     def viewDidMoveToWindow(self):
         self.delegate().splitViewInitialSizing_(self)
 
     # Divider
+
+    def dividerColor(self):
+        if self._dividerColor is None:
+            return super(VanillaSplitViewSubclass, self).dividerColor()
+        return self._dividerColor
+
+    def setDividerColor_(self, color):
+        self._dividerColor = color
 
     def dividerThickness(self):
         if self._dividerThickness is None:
@@ -404,12 +413,15 @@ class SplitView2(VanillaBaseObject):
 
     **dividerThickness** An integer representing the desired thickness of the divider.
 
+    **dividerColor** A NSColor that should be used to paint the divider.
+
     **autosaveName** The autosave name for the SplitView.
     """
 
     nsSplitViewClass = VanillaSplitViewSubclass
 
-    def __init__(self, posSize, paneDescriptions, isVertical=True, dividerStyle="splitter", dividerThickness=None,
+    def __init__(self, posSize, paneDescriptions, isVertical=True,
+        dividerStyle="splitter", dividerThickness=None, dividerColor=None,
         autosaveName=None,
         # deprecated
         dividerImage=None
@@ -420,6 +432,7 @@ class SplitView2(VanillaBaseObject):
         # set up and basic attributes
         self._setupView(self.nsSplitViewClass, posSize)
         self._nsObject.setVertical_(isVertical)
+        self._nsObject.setDividerColor_(dividerColor)
         self._nsObject.setDividerThickness_(dividerThickness)
         dividerStyle = _dividerStyleMap[dividerStyle]
         self._nsObject.setDividerStyle_(dividerStyle)
