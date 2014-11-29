@@ -504,7 +504,7 @@ class SplitView2(VanillaBaseObject):
 
 
     def getRBSplitView(self):
-        warn("SplitView no longet wraps RBSplitView. Use getNSSplitView instead of getRBSplitView.")
+        warn("SplitView no longer wraps RBSplitView. Use getNSSplitView instead of getRBSplitView.")
         return self.getNSSplitView()
 
     def getNSSplitView(self):
