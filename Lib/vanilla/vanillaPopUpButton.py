@@ -105,3 +105,9 @@ class PopUpButton(VanillaBaseControl):
         Get the list of items that appear in the pop up list.
         """
         return self._nsObject.itemTitles()
+
+    def getSelectedItem(self):
+        """
+        Get the selected item in the pop up list.
+        """
+        return self.getItems()[self.get()]
