@@ -17,6 +17,7 @@ class VanillaSplitViewSubclass(NSSplitView):
 
     _dividerColor = None
     _dividerThickness = None
+    _dividerDrawingFunction = None
 
     def viewDidMoveToWindow(self):
         self.delegate().splitViewInitialSizing_(self)
@@ -30,6 +31,7 @@ class VanillaSplitViewSubclass(NSSplitView):
 
     def setDividerColor_(self, color):
         self._dividerColor = color
+        self.setNeedsDisplay_(True)
 
     def dividerThickness(self):
         if self._dividerThickness is None:
@@ -39,7 +41,15 @@ class VanillaSplitViewSubclass(NSSplitView):
     def setDividerThickness_(self, value):
         self._dividerThickness = value
 
-    # def drawDividerInRect_(self, rect):
+    def setDividerDrawingFunction_(self, function):
+        self._dividerDrawingFunction = function
+        self.setNeedsDisplay_(True)
+
+    def drawDividerInRect_(self, rect):
+        if self._dividerDrawingFunction is None:
+            super(VanillaSplitViewSubclass, self).drawDividerInRect_(rect)
+        else:
+            self._dividerDrawingFunction(splitView=self.vanillaWrapper(), rect=rect)
 
     # Pane Visibility
 
@@ -502,6 +512,22 @@ class SplitView2(VanillaBaseObject):
         Return the *NSSplitView* that this object wraps.
         """
         return self._nsObject
+
+    def setDividerDrawingFunction(self, function):
+        """
+        Set a function that will draw the contents of
+        the divider. This can be **None** or a function
+        that accepts the following arguments:
+
+        +-----------+---------------------------------------+
+        | splitView | The SplitView calling the function.   |
+        +-----------+---------------------------------------+
+        | rect      | The rectangle containing the divider. |
+        +-----------+---------------------------------------+
+
+        The function must use the Cocoa drawing API.
+        """
+        self._nsObject.setDividerDrawingFunction_(function)
 
     def isPaneVisible(self, identifier):
         """
