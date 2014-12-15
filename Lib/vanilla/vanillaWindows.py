@@ -1,6 +1,6 @@
 from AppKit import *
 from vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
-        VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersion
+        VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersionCurrent, osVersion10_7, osVersion10_10
 
 # PyObjC may not have these constants wrapped,
 # so test and fallback if needed.
@@ -110,7 +110,7 @@ class Window(NSObject):
             mask = mask | NSResizableWindowMask
         if textured:
             mask = mask | NSTexturedBackgroundWindowMask
-        if fullSizeContentView and osVersion >= "10.10":
+        if fullSizeContentView and osVersionCurrent >= osVersion10_10:
             mask = mask | NSFullSizeContentViewWindowMask
         # start the window
         ## too magical?
@@ -143,7 +143,7 @@ class Window(NSObject):
         self._bindings = {}
         self._initiallyVisible = initiallyVisible
         # full screen mode
-        if osVersion >= "10.7":
+        if osVersionCurrent >= osVersion10_7:
             if fullScreenMode is None:
                 pass
             elif fullScreenMode == "primary":
@@ -151,13 +151,13 @@ class Window(NSObject):
             elif fullScreenMode == "auxiliary":
                 self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenAuxiliary)
         # titlebar visibility
-        if osVersion >= "10.10":
+        if osVersionCurrent >= osVersion10_10:
             if not titleVisible:
                 self._window.setTitleVisibility_(NSWindowTitleHidden)
             else:
                 self._window.setTitleVisibility_(NSWindowTitleVisible)
         # full size content view
-        if fullSizeContentView and osVersion >= "10.10":
+        if fullSizeContentView and osVersionCurrent >= osVersion10_10:
             self._window.setTitlebarAppearsTransparent_(True)
 
     def _testForDeprecatedAttributes(self):
