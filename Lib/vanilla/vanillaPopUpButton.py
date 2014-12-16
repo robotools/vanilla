@@ -88,6 +88,18 @@ class PopUpButton(VanillaBaseControl):
         """
         self._nsObject.selectItemAtIndex_(value)
 
+    def getItem(self):
+        """
+        Get the selected item title in the pop up list.
+        """
+        return self._nsObject.titleOfSelectedItem()
+        
+    def setItem(self, item):
+        """
+        Set the selected item title in the pop up list.
+        """
+        self._nsObject.selectItemWithTitle_(item)
+
     def setItems(self, items):
         """
         Set the items to appear in the pop up list.
