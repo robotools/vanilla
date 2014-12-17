@@ -122,7 +122,7 @@ class ActionButton(PopUpButton):
     
     """
     An Action Button with a menu.
-    
+
         from vanilla import *
 
         class ActionPopUpButtonDemo(object):
@@ -135,10 +135,10 @@ class ActionButton(PopUpButton):
                         dict(title="second", callback=self.secondCallback),
                         dict(title="third", items=[
                                 dict(title="sub first", callback=self.subFirstCallback)
-                            ]
+                            ])
                     ]
                 
-                self.w.actionPopUpButton = ActionButton((10, 10, -10, 20),
+                self.w.actionPopUpButton = ActionButton((10, 10, 30, 20),
                                       items,
                                       )
                 self.w.open()
