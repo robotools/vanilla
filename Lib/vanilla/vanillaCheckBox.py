@@ -1,6 +1,6 @@
 from AppKit import *
 from vanillaButton import Button
-from vanillaBase import osVersion, VanillaBaseObject
+from vanillaBase import osVersionCurrent, osVersion10_10, VanillaBaseObject
 
 
 # In OS 10.0-10.X (tested up to OS 10.4) the small and mini check box
@@ -250,7 +250,7 @@ class _CheckBoxManualBuild(VanillaBaseObject):
         self._checkBox.toggle()
 
 
-if osVersion >= "10.10":
+if osVersionCurrent >= osVersion10_10:
     class CheckBox(_CheckBoxStandardBuild): pass
 else:
     class CheckBox(_CheckBoxManualBuild): pass

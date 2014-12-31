@@ -1,5 +1,5 @@
 from AppKit import NSView
-from vanillaBase import VanillaBaseObject, osVersion
+from vanillaBase import VanillaBaseObject, osVersionCurrent, osVersion10_10
 
 try:
     NSVisualEffectMaterialAppearanceBased
@@ -16,7 +16,7 @@ except NameError:
     NSVisualEffectBlendingModeBehindWindow = 0
     NSVisualEffectBlendingModeWithinWindow = 1
 
-if osVersion >= "10.10":
+if osVersionCurrent >= osVersion10_10:
     from AppKit import NSVisualEffectView, CALayer
     _blendingModeMap = {
         "behindWindow" : NSVisualEffectBlendingModeBehindWindow,
@@ -66,7 +66,7 @@ class Group(VanillaBaseObject):
 
     def __init__(self, posSize, blendingMode=None):
         self._setupView(self.nsViewClass, posSize)
-        if blendingMode is not None and osVersion >= "10.10":
+        if blendingMode is not None and osVersionCurrent >= osVersion10_10:
             # the visual effect view is defined as a subview
             # of the basic NSView. this is necessary because
             # within window blending requires a CA layer and
