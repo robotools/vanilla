@@ -1,10 +1,14 @@
 import platform
 from AppKit import *
+from distutils.version import StrictVersion
 from nsSubclasses import getNSSubclass
 
-
-osVersion = platform.mac_ver()[0]
-
+osVersionCurrent = StrictVersion(platform.mac_ver()[0])
+osVersion10_10 = StrictVersion("10.10")
+osVersion10_9 = StrictVersion("10.9")
+osVersion10_8 = StrictVersion("10.8")
+osVersion10_7 = StrictVersion("10.7")
+osVersion10_6 = StrictVersion("10.6")
 
 class VanillaError(Exception): pass
 

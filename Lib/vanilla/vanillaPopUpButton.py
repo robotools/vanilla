@@ -1,5 +1,5 @@
-from AppKit import NSPopUpButton, NSPopUpButtonCell, NSMenuItem
-from vanillaBase import VanillaBaseControl
+from AppKit import NSPopUpButton, NSPopUpButtonCell, NSMenuItem, NSImageNameActionTemplate, NSImage, NSMenu
+from vanillaBase import VanillaBaseControl, VanillaCallbackWrapper
 
 
 class PopUpButton(VanillaBaseControl):
@@ -88,6 +88,18 @@ class PopUpButton(VanillaBaseControl):
         """
         self._nsObject.selectItemAtIndex_(value)
 
+    def getItem(self):
+        """
+        Get the selected item title in the pop up list.
+        """
+        return self._nsObject.titleOfSelectedItem()
+        
+    def setItem(self, item):
+        """
+        Set the selected item title in the pop up list.
+        """
+        self._nsObject.selectItemWithTitle_(item)
+
     def setItems(self, items):
         """
         Set the items to appear in the pop up list.
@@ -106,8 +118,127 @@ class PopUpButton(VanillaBaseControl):
         """
         return self._nsObject.itemTitles()
 
-    def getSelectedItem(self):
+class ActionButton(PopUpButton):
+    
+    """
+    An Action Button with a menu.
+
+        from vanilla import *
+
+        class ActionPopUpButtonDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 40))
+                
+                items = [
+                        dict(title="first", callback=self.firstCallback),
+                        dict(title="second", callback=self.secondCallback),
+                        dict(title="third", items=[
+                                dict(title="sub first", callback=self.subFirstCallback)
+                            ])
+                    ]
+                
+                self.w.actionPopUpButton = ActionButton((10, 10, 30, 20),
+                                      items,
+                                      )
+                self.w.open()
+
+            def firstCallback(self, sender):
+                print "first"
+            
+            def secondCallback(self, sender):
+                print "second"
+            
+            def subFirstCallback(self, sender):
+                print "sub first"
+
+        ActionPopUpButtonDemo()
+    
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    size of the pop up button. The size of the button sould match the appropriate value
+    for the given *sizeStyle*.
+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +---------+---+-----------+
+    | Regular | H | 20        |
+    +---------+---+-----------+
+    | Small   | H | 17        |
+    +---------+---+-----------+
+    | Mini    | H | 15        |
+    +---------+---+-----------+
+
+    **items** A list of items to appear in the pop up list as dictionaries. Optionally an item could be a NSMenuItem. 
+    when an item is set to "----" will be a menu item separator.
+    
+    +------------+--------------------------------------------------------------------------------+
+    | "title"*   | The title of the item.                                                         |
+    +------------+--------------------------------------------------------------------------------+
+    | "callback" | The callback fo the item.                                                      |
+    +------------+--------------------------------------------------------------------------------+
+    | "items"    | Each item could have sub menu's, as list of dictionaries with the same format. |
+    +------------+--------------------------------------------------------------------------------+
+    
+    **sizeStyle** A string representing the desired size style of the pop up button. The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
+    """
+        
+    def __init__(self, posSize, items, sizeStyle="regular"):
+        super(self.__class__, self).__init__(posSize, items, sizeStyle=sizeStyle)
+        self._nsObject.setPullsDown_(True)
+        self._nsObject.setBordered_(False)
+        
+    def _breakCycles(self):
+        self._callbackWrappers = None
+        super(self.__class__, self)._breakCycles()
+        
+    def _buildMenu(self, items, menu):
+        for item in items:
+            if isinstance(item, NSMenuItem):
+                menu.addItem_(item)
+            elif item == "----":
+                item = NSMenuItem.separatorItem()
+                menu.addItem_(item)
+            else:
+                title = item["title"]
+                callback = item.get("callback")
+                subItems = item.get("items")
+                
+                menuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(title, "", "")
+                if callback:
+                    wrapper = VanillaCallbackWrapper(callback)
+                    self._callbackWrappers.append(wrapper)
+                    menuItem.setTarget_(wrapper)
+                    menuItem.setAction_("action:")
+                if subItems:
+                    subMenu = NSMenu.alloc().init()
+                    self._buildMenu(subItems, subMenu)
+                    menuItem.setSubmenu_(subMenu)
+                menu.addItem_(menuItem)
+    
+    def getFirstItem(self):
+        actionImage = NSImage.imageNamed_(NSImageNameActionTemplate).copy()
+        actionImage.setSize_((10, 10))
+
+        firstActionItem = NSMenuItem.alloc().init()
+        firstActionItem.setImage_(actionImage)
+        firstActionItem.setTitle_("")
+        return firstActionItem
+    
+    def setItems(self, items):
         """
-        Get the selected item in the pop up list.
+        Set the items to appear in the pop up list.
         """
-        return self.getItems()[self.get()]
+        self._callbackWrappers = []
+        self._nsObject.removeAllItems()
+        menu = NSMenu.alloc().init()
+        menu.addItem_(self.getFirstItem())
+        self._buildMenu(items, menu)
+        self._nsObject.setMenu_(menu)
