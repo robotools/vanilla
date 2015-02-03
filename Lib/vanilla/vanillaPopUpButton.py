@@ -191,13 +191,13 @@ class ActionButton(PopUpButton):
     """
         
     def __init__(self, posSize, items, sizeStyle="regular"):
-        super(self.__class__, self).__init__(posSize, items, sizeStyle=sizeStyle)
+        super(ActionButton, self).__init__(posSize, items, sizeStyle=sizeStyle)
         self._nsObject.setPullsDown_(True)
         self._nsObject.setBordered_(False)
         
     def _breakCycles(self):
         self._callbackWrappers = None
-        super(self.__class__, self)._breakCycles()
+        super(ActionButton, self)._breakCycles()
         
     def _buildMenu(self, items, menu):
         for item in items:
