@@ -3,10 +3,15 @@ import objc
 from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
 from nsSubclasses import getNSSubclass
-from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper, osVersion
+from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
 
 
 class VanillaTableViewSubclass(NSTableView):
+
+    def keyDown_(self, event):
+        didSomething = self.vanillaWrapper()._keyDown(event)
+        if not didSomething:
+            super(VanillaTableViewSubclass, self).keyDown_(event)
 
     def textDidEndEditing_(self, notification):
         info = notification.userInfo()
@@ -26,32 +31,29 @@ class VanillaTableViewSubclass(NSTableView):
         else:
             super(VanillaTableViewSubclass, self).textDidEndEditing_(notification)
 
+class _VanillaTableViewSubclass(VanillaTableViewSubclass):
+
+    def init(self):
+        from warnings import warn
+        warn(DeprecationWarning("_VanillaTableViewSubclass is deprecated. Use VanillaTableViewSubclass"))
+        return super(_VanillaTableViewSubclass, self).init()
+
 
 class VanillaArrayControllerObserver(NSObject):
-
+    
     def observeValueForKeyPath_ofObject_change_context_(self, keyPath, obj, change, context):
         if hasattr(self, "_targetMethod") and self._targetMethod is not None:
             self._targetMethod()
 
+class _VanillaArrayControllerObserver(VanillaArrayControllerObserver):
+
+    def init(self):
+        from warnings import warn
+        warn(DeprecationWarning("_VanillaArrayControllerObserver is deprecated. Use VanillaArrayControllerObserver"))
+        return super(_VanillaArrayControllerObserver, self).init()
+
 
 class VanillaArrayController(NSArrayController):
-
-    def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
-        content = self.content()
-        columnID = column.identifier()
-        item = content[row]
-        if isinstance(item, NSDictionary):
-            if columnID not in item:
-                return
-            else:
-                return item[columnID]
-        else:
-            return getattr(item, columnID)()
-
-    def numberOfRowsInTableView_(self, view):
-        return len(self.content())
-
-    # drag and drop
 
     def tableView_writeRowsWithIndexes_toPasteboard_(self,
         tableView, indexes, pboard):
@@ -153,16 +155,31 @@ class VanillaArrayController(NSArrayController):
         tableView, draggingInfo, row, dropOperation):
         return self._handleDrop(False, tableView, draggingInfo, row, dropOperation)
 
+    # 10.6
 
-class VanillaTableViewDelegate(NSObject):
+    def tableView_objectValueForTableColumn_row_(self,
+        tableView, column, row):
+        content = self.content()
+        columnID = column.identifier()
+        item = content[row]
+        if isinstance(item, NSDictionary):
+            if columnID not in item:
+                return
+            else:
+                return item[columnID]
+        else:
+            return getattr(item, columnID)()
 
-    def tableView_viewForTableColumn_row_(self, tableView, column, row):
-        identifier = column.identifier()
-        view = tableView.makeViewWithIdentifier_owner_(identifier, self)
-        if view is None:
-            wrapper = tableView.vanillaWrapper()
-            view = wrapper._makeCellViewForIdentifier(identifier)
-        return view
+    def numberOfRowsInTableView_(self, view):
+        return len(self.content())
+
+
+class _VanillaArrayController(VanillaArrayController):
+
+    def init(self):
+        from warnings import warn
+        warn(DeprecationWarning("_VanillaArrayController is deprecated. Use VanillaArrayController"))
+        return super(_VanillaArrayController, self).init()
 
 
 class List(VanillaBaseObject):
@@ -269,6 +286,10 @@ class List(VanillaBaseObject):
     **items** The items to be displayed in the list. In the case of multiple
     column lists, this should be a list of dictionaries with the data for
     each column keyed by the column key as defined in columnDescriptions.
+    If you intend to use a dataSource, *items* must be *None*.
+
+    **dataSource** A Cocoa object supporting the *NSTableDataSource*
+    protocol. If *dataSource* is given, *items* must be *None*.
 
     **columnDescriptions** An ordered list of dictionaries describing the
     columns. This is only necessary for multiple column lists.
@@ -303,6 +324,12 @@ class List(VanillaBaseObject):
     |                                | The fallback is `True`. If a List is set to disallow                           |
     |                                | sorting the column level settings will be ignored                              |
     +--------------------------------+--------------------------------------------------------------------------------+
+    | *"typingSensitive"* (optional) | A boolean representing that this column                                        |
+    |                                | should be the column that responds to user                                     |
+    |                                | key input. Only one column can be flagged as                                   |
+    |                                | True. If no column is flagged, the first                                       |
+    |                                | column will automatically be flagged.                                          |
+    +--------------------------------+--------------------------------------------------------------------------------+
     | *binding* (optional)           | A string indicating which `binding object <http://tinyurl.com/CocoaBindings>`_ |
     |                                | the column's cell should be bound to. By                                       |
     |                                | default, this is "value." You should only                                      |
@@ -319,6 +346,9 @@ class List(VanillaBaseObject):
     **editCallback** Callback to be called after an item has been edited.
 
     **enableDelete** A boolean representing if items in the list can be deleted via the interface.
+
+    **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
+    closest match as the entered keystrokes. *Available only in single column lists.*
 
     **allowsMultipleSelection** A boolean representing if the list allows more than one item to be selected.
 
@@ -395,11 +425,10 @@ class List(VanillaBaseObject):
     nsTableViewClass = VanillaTableViewSubclass
     nsArrayControllerClass = VanillaArrayController
     nsArrayControllerObserverClass = VanillaArrayControllerObserver
-    nsTableViewDelegateClass = VanillaTableViewDelegate
 
-    def __init__(self, posSize, items, columnDescriptions=None, showColumnTitles=True,
+    def __init__(self, posSize, items, dataSource=None, columnDescriptions=None, showColumnTitles=True,
                 selectionCallback=None, doubleClickCallback=None, editCallback=None,
-                enableDelete=False,
+                enableDelete=False, enableTypingSensitivity=False,
                 allowsMultipleSelection=True, allowsEmptySelection=True,
                 allowsSorting=True,
                 drawVerticalLines=False, drawHorizontalLines=False,
@@ -409,34 +438,9 @@ class List(VanillaBaseObject):
                 selfDocumentDropSettings=None,
                 selfApplicationDropSettings=None,
                 otherApplicationDropSettings=None,
-                dragSettings=None,
-                # deprecated kwargs
-                enableTypingSensitivity=False
-                ):
-
-        # deduce the table view mode. default to cell mode < OS 10.10.
-        cells = 0
-        views = 0
-        if columnDescriptions:
-            for item in columnDescriptions:
-                cell = item.get("cell")
-                if cell is not None:
-                    if isinstance(cell, NSCell):
-                        cells += 1
-                    else:
-                        views += 1
-        if cells and views:
-            raise VanillaError("The column descriptions contain a mixture of cells and views. This is not allowed.")
-        if views and osVersion < "10.10":
-            raise VanillaError("The column descriptions contain views. This is not supported by vanilla in OS %s." % osVersion)
-        if cells:
-            self._mode = "cell"
-        elif osVersion < "10.10":
-            self._mode = "cell"
-        else:
-            self._mode = "view"
-            self._cellViewFactories = {}
-        # basic construction
+                dragSettings=None):
+        if items is not None and dataSource is not None:
+            raise VanillaError("can't pass both items and dataSource arguments")
         self._posSize = posSize
         self._enableDelete = enableDelete
         self._nsObject = getNSSubclass(self.nsScrollViewClass)(self)
@@ -450,23 +454,23 @@ class List(VanillaBaseObject):
         # add a table view to the scroll view
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
         self._nsObject.setDocumentView_(self._tableView)
-        # set up the delegate
-        if self._mode == "view":
-            self._delegate = VanillaTableViewDelegate.alloc().init()
-            self._tableView.setDelegate_(self._delegate)
         # set up an observer that will be called by the bindings when a cell is edited
         self._editCallback = editCallback
         self._editObserver = self.nsArrayControllerObserverClass.alloc().init()
         if editCallback is not None:
             self._editObserver._targetMethod = self._edit # circular reference to be killed in _breakCycles
-        # wrap all the items
-        items = [self._wrapItem(item) for item in items]
-        items = NSMutableArray.arrayWithArray_(items)
-        # set up an array controller
-        self._arrayController = self.nsArrayControllerClass.alloc().initWithContent_(items)
-        self._arrayController.setSelectsInsertedObjects_(False)
-        self._arrayController.setAvoidsEmptySelection_(not allowsEmptySelection)
-        self._tableView.setDataSource_(self._arrayController)
+        if items is not None:
+            # wrap all the items
+            items = [self._wrapItem(item) for item in items]
+            items = NSMutableArray.arrayWithArray_(items)
+            # set up an array controller
+            self._arrayController = self.nsArrayControllerClass.alloc().initWithContent_(items)
+            self._arrayController.setSelectsInsertedObjects_(False)
+            self._arrayController.setAvoidsEmptySelection_(not allowsEmptySelection)
+            self._tableView.setDataSource_(self._arrayController)
+        else:
+            self._tableView.setDataSource_(dataSource)
+            self._arrayController = None
         # hide the header
         if not showColumnTitles or not columnDescriptions:
             self._tableView.setHeaderView_(None)
@@ -489,12 +493,18 @@ class List(VanillaBaseObject):
         # set up the columns. also make a flag that will be used
         # when unwrapping items.
         self._orderedColumnIdentifiers = []
+        self._typingSensitiveColumn = 0
         if not columnDescriptions:
             self._makeColumnWithoutColumnDescriptions()
             self._itemsWereDict = False
         else:
             self._makeColumnsWithColumnDescriptions(columnDescriptions)
             self._itemsWereDict = True
+        # set some typing sensitivity data
+        self._typingSensitive = enableTypingSensitivity
+        if enableTypingSensitivity:
+            self._lastInputTime = None
+            self._typingInput = []
         # set up an observer that will be called by the bindings when the selection changes.
         # this needs to be done ater the items have been added to the table. otherwise,
         # the selection method will be called when the items are added to the table view.
@@ -534,6 +544,22 @@ class List(VanillaBaseObject):
         self._tableView.setDraggingSourceOperationMask_forLocal_(local, True)
         # set the drag data
         self._dragSettings = dragSettings
+
+    def _testForDeprecatedAttributes(self):
+        super(List, self)._testForDeprecatedAttributes()
+        from warnings import warn
+        if hasattr(self, "_scrollViewClass"):
+            warn(DeprecationWarning("The _scrollViewClass attribute is deprecated. Use the nsScrollViewClass attribute."))
+            self.nsScrollViewClass = self._scrollViewClass
+        if hasattr(self, "_tableViewClass"):
+            warn(DeprecationWarning("The _tableViewClass attribute is deprecated. Use the nsTableViewClass attribute."))
+            self.nsTableViewClass = self._tableViewClass
+        if hasattr(self, "_arrayControllerClass"):
+            warn(DeprecationWarning("The _arrayControllerClass attribute is deprecated. Use the nsArrayControllerClass attribute."))
+            self.nsArrayControllerClass = self._arrayControllerClass
+        if hasattr(self, "_arrayControllerObserverClass"):
+            warn(DeprecationWarning("The _arrayControllerObserverClass attribute is deprecated. Use the nsArrayControllerObserverClass attribute."))
+            self.nsArrayControllerObserverClass = self._arrayControllerObserverClass
 
     def getNSScrollView(self):
         """
@@ -575,20 +601,12 @@ class List(VanillaBaseObject):
     def _setColumnAutoresizing(self):
         self._tableView.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
 
-    def _makeCellViewForIdentifier(self, identifier):
-        factory, kwargs = self._cellViewFactories[identifier]
-        view = factory(**kwargs)
-        view.setIdentifier_(identifier)
-        return view
-
     def _makeColumnWithoutColumnDescriptions(self):
         self._setColumnAutoresizing()
         column = NSTableColumn.alloc().initWithIdentifier_("item")
         self._orderedColumnIdentifiers.append("item")
-        if self._mode == "cell":
-            column.dataCell().setDrawsBackground_(False)
-        else:
-            self._cellViewFactories["item"] = (TextFieldCellView, {})
+        # set the data cell
+        column.dataCell().setDrawsBackground_(False)
         if self._arrayController is not None:
             # assign the key to the binding
             keyPath = "arrangedObjects.item"
@@ -620,6 +638,9 @@ class List(VanillaBaseObject):
             allowsSorting = data.get("allowsSorting", True)
             binding = data.get("binding", "value")
             keyPath = "arrangedObjects.%s" % key
+            # check for typing sensitivity.
+            if data.get("typingSensitive"):
+                self._typingSensitiveColumn = columnIndex
             # instantiate the column.
             column = NSTableColumn.alloc().initWithIdentifier_(key)
             self._orderedColumnIdentifiers.append(key)
@@ -635,26 +656,15 @@ class List(VanillaBaseObject):
             # set the header cell
             column.headerCell().setTitle_(title)
             # set the data cell
-            if self._mode == "cell":
-                if cell is None:
-                    cell = column.dataCell()
-                    cell.setDrawsBackground_(False)
-                    cell.setStringValue_("")  # cells have weird default values
-                else:
-                    column.setDataCell_(cell)
-                if formatter is not None:
-                    cell.setFormatter_(formatter)
+            if cell is None:
+                cell = column.dataCell()
+                cell.setDrawsBackground_(False)
+                cell.setStringValue_("")  # cells have weird default values
             else:
-                if cell is None:
-                    view = TextFieldCellView
-                    kwargs = {}
-                else:
-                    view = cell["view"]
-                    kwargs = cell.get("settings", {})
-                if formatter is not None:
-                    kwargs["formatter"] = formatter
-                cell = (view, kwargs)
-                self._cellViewFactories[key] = cell
+                column.setDataCell_(cell)
+            # assign the formatter
+            if formatter is not None:
+                cell.setFormatter_(formatter)
             if self._arrayController is not None:
                 bindingOptions = None
                 if not tableAllowsSorting or not allowsSorting:
@@ -715,6 +725,120 @@ class List(VanillaBaseObject):
     def _selection(self):
         if self._selectionCallback is not None: 
             self._selectionCallback(self)
+
+    def _keyDown(self, event):
+        # this method is called by the NSTableView subclass after a key down
+        # has occurred. the subclass expects that a boolean will be returned
+        # that indicates if this method has done something (delete an item or
+        # select an item). if False is returned, the delegate calls the super
+        # method to insure standard key down behavior.
+        #
+        # get the characters
+        characters = event.characters()
+        # get the field editor
+        fieldEditor = self._tableView.window().fieldEditor_forObject_(True, self._tableView)
+        #
+        deleteCharacters = [
+            NSBackspaceCharacter,
+            NSDeleteFunctionKey,
+            NSDeleteCharacter,
+            unichr(0x007F),
+        ]
+        nonCharacters = [
+            NSUpArrowFunctionKey,
+            NSDownArrowFunctionKey,
+            NSLeftArrowFunctionKey,
+            NSRightArrowFunctionKey,
+            NSPageUpFunctionKey,
+            NSPageDownFunctionKey,
+            unichr(0x0003),
+            u"\r",
+            u"\t",
+        ]
+        if characters in deleteCharacters:
+            if self._enableDelete:
+                self._removeSelection()
+                return True
+        # arrow key. reset the typing entry if necessary.
+        elif characters in nonCharacters:
+            if self._typingSensitive:
+                self._lastInputTime = None
+                fieldEditor.setString_(u"")
+            return False
+        elif self._typingSensitive:
+            # get the current time
+            rightNow = time.time()
+            # no time defined. define it.
+            if self._lastInputTime is None:
+                self._lastInputTime = rightNow
+            # if the last input was too long ago,
+            # clear away the old input
+            if rightNow - self._lastInputTime > 0.75:
+                fieldEditor.setString_(u"")
+            # reset the clock
+            self._lastInputTime = rightNow
+            # add the characters to the fied editor
+            fieldEditor.interpretKeyEvents_([event])
+            # get the input string
+            inputString = fieldEditor.string()
+            # if the list has multiple columns, we'll use the items in the first column
+            tableColumns = self._tableView.tableColumns()
+            columnID = tableColumns[self._typingSensitiveColumn].identifier()
+            #
+            match = None
+            matchIndex = None
+            lastResort = None
+            lastResortIndex = None
+            inputLength = len(inputString)
+            for index in xrange(len(self)):
+                item = self._arrayController.content()[index]
+                # the item could be a dictionary or
+                # a NSObject. safely handle each.
+                if isinstance(item, NSDictionary):
+                    item = item[columnID]
+                else:
+                    item = getattr(item, columnID)()
+                # only test strings
+                if not isinstance(item, basestring):
+                    continue
+                # if the item starts with the input string, it is considered a match
+                if item.startswith(inputString):
+                    if match is None:
+                        match = item
+                        matchIndex = index
+                        continue
+                    # only if the item is less than the previous match is it a more relevant match
+                    # example:
+                    # given this order: sys, signal
+                    # and this input string: s
+                    # sys will be the first match, but signal is the more accurate match
+                    if item < match:
+                        match = item
+                        matchIndex = index
+                        continue
+                # if the item is greater than the input string,it can be used as a last resort
+                # example:
+                # given this order: vanilla, zipimport
+                # and this input string: x
+                # zipimport will be used as the last resort
+                if item > inputString:
+                    if lastResort is None:
+                        lastResort = item
+                        lastResortIndex = index
+                        continue
+                    # if existing the last resort is greater than the item
+                    # the item is a closer match to the input string 
+                    if lastResort > item:
+                        lastResort = item
+                        lastResortIndex = index
+                        continue
+            if matchIndex is not None:
+                self.setSelection([matchIndex])
+                return True
+            elif lastResortIndex is not None:
+                self.setSelection([lastResortIndex])
+                return True
+        return False
 
     # -------------
     # list behavior
@@ -919,19 +1043,6 @@ class List(VanillaBaseObject):
         return sortedIndexes
 
 
-# -------------------
-# Cell View Factories
-# -------------------
-
-def TextFieldCellView(formatter=None):
-    view = NSTextField.alloc().init()
-    view.setBordered_(False)
-    view.setDrawsBackground_(False)
-    view.setEditable_(True)
-    if formatter is not None:
-        view.setFormatter_(formatter)
-    return view
-
 def CheckBoxListCell(title=None):
     """
     An object that displays a check box in a List column.
@@ -969,17 +1080,6 @@ def CheckBoxListCell(title=None):
         title = ""
     cell.setTitle_(title)
     return cell
-
-def SliderListCellView(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks=False):
-    slider = NSSlider.alloc().init()
-    slider.setControlSize_(NSSmallControlSize)
-    slider.setMinValue_(minValue)
-    slider.setMaxValue_(maxValue)
-    if tickMarkCount:
-        slider.setNumberOfTickMarks_(tickMarkCount)
-        if stopOnTickMarks:
-            slider.setAllowsTickMarkValuesOnly_(True)
-    return slider
 
 
 def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks=False):
