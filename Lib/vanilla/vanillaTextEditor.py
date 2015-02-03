@@ -98,7 +98,7 @@ class TextEditor(VanillaBaseObject):
         """
         Get the contents of the text entry control.
         """
-        return self._textView.string()
+        return unicode(self._textView.string())
 
     def set(self, value):
         """
