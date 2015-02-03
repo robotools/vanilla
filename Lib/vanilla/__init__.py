@@ -14,7 +14,7 @@ from vanillaImageView import ImageView
 from vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
 from vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell, ImageListCell, SegmentedButtonListCell
 from vanillaPathControl import PathControl
-from vanillaPopUpButton import PopUpButton
+from vanillaPopUpButton import PopUpButton, ActionButton
 from vanillaProgressBar import ProgressBar
 from vanillaProgressSpinner import ProgressSpinner
 from vanillaRadioGroup import RadioGroup
@@ -45,7 +45,7 @@ __all__ = [
     "List", "CheckBoxListCell", "SliderListCell", "PopUpButtonListCell", "ImageListCell", "SegmentedButtonListCell",
     "ObjectBrowser",
     "PathControl",
-    "PopUpButton",
+    "PopUpButton", "ActionButton",
     "ProgressBar",
     "ProgressSpinner",
     "RadioGroup",
