@@ -20,7 +20,9 @@ class VanillaSplitViewSubclass(NSSplitView):
     _dividerDrawingFunction = None
 
     def viewDidMoveToWindow(self):
-        self.delegate().splitViewInitialSizing_(self)
+        delegate = self.delegate()
+        if delegate is not None:
+            self.delegate().splitViewInitialSizing_(self)
 
     # Divider
 
@@ -420,6 +422,8 @@ class SplitView2(VanillaBaseObject):
     +----------+
     | thick    |
     +----------+
+    | None     |
+    +----------+
 
     **dividerThickness** An integer representing the desired thickness of the divider.
 
@@ -444,6 +448,9 @@ class SplitView2(VanillaBaseObject):
         self._nsObject.setVertical_(isVertical)
         self._nsObject.setDividerColor_(dividerColor)
         self._nsObject.setDividerThickness_(dividerThickness)
+        if dividerStyle is None:
+            self.setDividerDrawingFunction(_dummySplitViewDrawingFunction)
+            dividerStyle = "thick"
         dividerStyle = _dividerStyleMap[dividerStyle]
         self._nsObject.setDividerStyle_(dividerStyle)
         if autosaveName is not None:
@@ -555,3 +562,7 @@ class SplitView2(VanillaBaseObject):
         """
         currentState = self.isPaneVisible(identifier)
         self.showPane(identifier, not currentState, animate)
+
+
+def _dummySplitViewDrawingFunction(splitView, rect):
+    return
