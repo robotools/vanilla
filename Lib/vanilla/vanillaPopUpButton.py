@@ -1,5 +1,5 @@
-from AppKit import NSPopUpButton, NSPopUpButtonCell, NSMenuItem, NSImageNameActionTemplate, NSImage, NSMenu
-from vanillaBase import VanillaBaseControl, VanillaCallbackWrapper
+from AppKit import NSPopUpButton, NSPopUpButtonCell, NSMenuItem, NSImageNameActionTemplate, NSImage, NSMenu, NSTexturedRoundedBezelStyle
+from vanillaBase import VanillaBaseControl, VanillaCallbackWrapper, _reverseSizeStyleMap
 
 
 class PopUpButton(VanillaBaseControl):
@@ -188,12 +188,15 @@ class ActionButton(PopUpButton):
     +-----------+
     | "mini"    |
     +-----------+
+
+    **bordered** Boolean representing if the button should be bordered.
     """
         
-    def __init__(self, posSize, items, sizeStyle="regular"):
+    def __init__(self, posSize, items, sizeStyle="regular", bordered=True):
         super(ActionButton, self).__init__(posSize, items, sizeStyle=sizeStyle)
         self._nsObject.setPullsDown_(True)
-        self._nsObject.setBordered_(False)
+        self._nsObject.setBezelStyle_(NSTexturedRoundedBezelStyle)
+        self._nsObject.setBordered_(bordered)
         
     def _breakCycles(self):
         self._callbackWrappers = None
@@ -225,8 +228,11 @@ class ActionButton(PopUpButton):
     
     def getFirstItem(self):
         actionImage = NSImage.imageNamed_(NSImageNameActionTemplate).copy()
-        actionImage.setSize_((10, 10))
-
+        sizeStyle = _reverseSizeStyleMap[self._nsObject.cell().controlSize()]
+        if sizeStyle == "small":
+            actionImage.setSize_((10, 10))
+        elif sizeStyle == "mini":
+            actionImage.setSize_((10, 10))
         firstActionItem = NSMenuItem.alloc().init()
         firstActionItem.setImage_(actionImage)
         firstActionItem.setTitle_("")
