@@ -107,7 +107,7 @@ class VanillaBaseObject(object):
 
     def isVisible(self):
         """
-        Return a bool indicting if the object is visible or not.
+        Return a bool indicating if the object is visible or not.
         """
         return not self._nsObject.isHidden()
 
@@ -176,6 +176,12 @@ class VanillaBaseControl(VanillaBaseObject):
         Get the control title.
         """
         return self._nsObject.title()
+
+    def isEnable(self):
+        """
+        Return a bool indicating if the object is enable or not.
+        """
+        return self._nsObject.isEnabled()
 
     def set(self, value):
         raise NotImplementedError
