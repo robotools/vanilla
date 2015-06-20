@@ -74,6 +74,7 @@ class Window(NSObject):
     Default is *True*. If *False*, you can show the window later by calling `window.show()`.
 
     **fullScreenMode** An indication of the full screen mode. These are the options:
+
     +---------------+---------------------------------------------------------------+
     | *None*        | The window does not allow full screen.                        |
     +---------------+---------------------------------------------------------------+
@@ -277,7 +278,7 @@ class Window(NSObject):
         """
         Set the title in the window's title bar.
 
-        **title** shoud be a string.
+        **title** should be a string.
         """
         self._window.setTitle_(title)
 
@@ -339,7 +340,7 @@ class Window(NSObject):
             # value that is not zero. this will cause
             # an error if (and only if) a window is
             # being positioned at the top of the screen.
-            # so, asjust it.
+            # so, adjust it.
             (sL, sB), (sW, sH) = screenFrame
             screenFrame = ((sL, 0), (sW, sH + sB))
         frame = _calcFrame(screenFrame, ((l, t), (w, h)), absolutePositioning=True)
@@ -392,7 +393,7 @@ class Window(NSObject):
         +-------------------+----------------------------------------------------------------------+
         | *"move"*          | Called immediately after the window is moved.                        |
         +-------------------+----------------------------------------------------------------------+
-        | *"resize"*        | Caled immediately after the window is resized.                       |
+        | *"resize"*        | Called immediately after the window is resized.                      |
         +-------------------+----------------------------------------------------------------------+
         | *"became main"*   | Called immediately after the window has become the main window.      |
         +-------------------+----------------------------------------------------------------------+
@@ -409,6 +410,8 @@ class Window(NSObject):
 
         **callback** The callback that will be called when the event occurs. It should accept a *sender* argument which will
         be the Window that called the callback.::
+
+            from vanilla import Window
 
             class WindowBindDemo(object):
 
@@ -651,7 +654,7 @@ class Window(NSObject):
 
         **itemData** item description with the same format as a toolbarItem description in `addToolbar`
 
-        **index** An interger, specifying the place to insert the toolbar itemIdentifier.
+        **index** An integer, specifying the place to insert the toolbar itemIdentifier.
         """
         if not hasattr(self, "_toolbarItems"):
             raise VanillaError("window has not toolbar")
