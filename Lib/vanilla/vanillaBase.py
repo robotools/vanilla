@@ -177,7 +177,7 @@ class VanillaBaseControl(VanillaBaseObject):
         """
         return self._nsObject.title()
 
-    def isEnable(self):
+    def isEnabled(self):
         """
         Return a bool indicating if the object is enable or not.
         """
