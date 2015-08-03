@@ -1,9 +1,6 @@
 from AppKit import NSDocument
-from PyObjCTools import NibClassBuilder, AppHelper
+from PyObjCTools import AppHelper
 from tinyTextEditorDocumentWindow import TinyTextEditorDocumentWindow
-
-
-NibClassBuilder.extractClasses("MainMenu")
 
 
 class TinyTextEditorDocument(NSDocument):
