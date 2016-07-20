@@ -74,6 +74,7 @@ class EditText(VanillaBaseControl):
     """
 
     nsTextFieldClass = NSTextField
+    delegateClass = VanillaEditTextDelegate
 
     def __init__(self, posSize, text="", callback=None, continuous=True, readOnly=False, formatter=None, placeholder=None, sizeStyle="regular"):
         self._continuous = continuous
@@ -106,7 +107,7 @@ class EditText(VanillaBaseControl):
 
     def _setCallback(self, callback):
         if callback is not None:
-            self._target = VanillaEditTextDelegate(callback)
+            self._target = self.delegateClass(callback)
             self._target._continuous = self._continuous
             self._nsObject.setDelegate_(self._target)
 
