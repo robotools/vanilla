@@ -105,3 +105,15 @@ class PopUpButton(VanillaBaseControl):
         Get the list of items that appear in the pop up list.
         """
         return self._nsObject.itemTitles()
+
+    def setAccessibilityTitle(self, title):
+        """
+        Set AccessibilityTitle for the popUpButton.
+        """
+        self._nsObject.setAccessibilityTitle_(title)
+
+    def accessibilityTitle(self):
+        """
+        Get AccessibilityTitle for the popUpButton.
+        """
+        return self._nsObject.accessibilityTitle()
