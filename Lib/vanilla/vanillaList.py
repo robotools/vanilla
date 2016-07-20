@@ -616,6 +616,7 @@ class List(VanillaBaseObject):
             self._tableView.setAutoresizesAllColumnsToFit_(True)
 
     def _makeColumnWithoutColumnDescriptions(self):
+        self._setColumnAutoresizing()
         column = NSTableColumn.alloc().initWithIdentifier_("item")
         self._orderedColumnIdentifiers.append("item")
         # set the data cell
