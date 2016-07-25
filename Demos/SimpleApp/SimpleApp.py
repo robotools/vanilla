@@ -1,8 +1,6 @@
 from AppKit import NSObject
-from PyObjCTools import NibClassBuilder, AppHelper
+from PyObjCTools import AppHelper
 import vanilla
-
-NibClassBuilder.extractClasses("MainMenu")
 
 
 class SimpleAppAppDelegate(NSObject):

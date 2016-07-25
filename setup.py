@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from distutils.core import setup
+from setuptools import setup
 
 if "sdist" in sys.argv:
     import os
@@ -25,7 +25,7 @@ setup(name="vanilla",
     description="A Pythonic wrapper around Cocoa.",
     author="Tal Leming",
     author_email="tal@typesupply.com",
-    url="http://code.typesupply.com",
+    url="https://github.com/typesupply/vanilla",
     license="MIT",
     packages=["vanilla"],
     package_dir={"":"Lib"}

@@ -15,7 +15,26 @@ def executeVanillaTest(cls, **kwargs):
     app = NSApplication.sharedApplication()
     delegate = _VanillaMiniAppDelegate.alloc().init()
     app.setDelegate_(delegate)
+
+    mainMenu = NSMenu.alloc().initWithTitle_("Vanilla Test")
+
+    fileMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("File", None, "")
+    fileMenu = NSMenu.alloc().initWithTitle_("File")
+    fileMenuItem.setSubmenu_(fileMenu)
+    mainMenu.addItem_(fileMenuItem)
+
+    editMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Edit", None, "")
+    editMenu = NSMenu.alloc().initWithTitle_("Edit")
+    editMenuItem.setSubmenu_(editMenu)
+    mainMenu.addItem_(editMenuItem)
+
+    helpMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Help", None, "")
+    helpMenu = NSMenu.alloc().initWithTitle_("Help")
+    helpMenuItem.setSubmenu_(helpMenu)
+    mainMenu.addItem_(helpMenuItem)
+
+    app.setMainMenu_(mainMenu)
+
     cls(**kwargs)
     app.activateIgnoringOtherApps_(True)
     AppHelper.runEventLoop()
-
