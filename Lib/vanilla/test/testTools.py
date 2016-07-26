@@ -8,7 +8,7 @@ class _VanillaMiniAppDelegate(NSObject):
         return True
 
 
-def executeVanillaTest(cls, **kwargs):
+def executeVanillaTest(cls, calls=None, **kwargs):
     """
     Execute a Vanilla UI class in a mini application.
     """
@@ -35,6 +35,12 @@ def executeVanillaTest(cls, **kwargs):
 
     app.setMainMenu_(mainMenu)
 
-    cls(**kwargs)
+    if cls is not None:
+        cls(**kwargs)
+
+    if calls is not None:
+        for call, kwargs in calls:
+            call(**kwargs)
+
     app.activateIgnoringOtherApps_(True)
     AppHelper.runEventLoop()
