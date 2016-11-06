@@ -8,7 +8,7 @@ class _VanillaMiniAppDelegate(NSObject):
         return True
 
 
-def executeVanillaTest(cls, calls=None, **kwargs):
+def executeVanillaTest(cls, nibPath=None, calls=None, **kwargs):
     """
     Execute a Vanilla UI class in a mini application.
     """
@@ -16,24 +16,27 @@ def executeVanillaTest(cls, calls=None, **kwargs):
     delegate = _VanillaMiniAppDelegate.alloc().init()
     app.setDelegate_(delegate)
 
-    mainMenu = NSMenu.alloc().initWithTitle_("Vanilla Test")
+    if nibPath:
+        NSBundle.loadNibFile_externalNameTable_withZone_(nibPath, {}, None)
+    else:
+        mainMenu = NSMenu.alloc().initWithTitle_("Vanilla Test")
 
-    fileMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("File", None, "")
-    fileMenu = NSMenu.alloc().initWithTitle_("File")
-    fileMenuItem.setSubmenu_(fileMenu)
-    mainMenu.addItem_(fileMenuItem)
+        fileMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("File", None, "")
+        fileMenu = NSMenu.alloc().initWithTitle_("File")
+        fileMenuItem.setSubmenu_(fileMenu)
+        mainMenu.addItem_(fileMenuItem)
 
-    editMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Edit", None, "")
-    editMenu = NSMenu.alloc().initWithTitle_("Edit")
-    editMenuItem.setSubmenu_(editMenu)
-    mainMenu.addItem_(editMenuItem)
+        editMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Edit", None, "")
+        editMenu = NSMenu.alloc().initWithTitle_("Edit")
+        editMenuItem.setSubmenu_(editMenu)
+        mainMenu.addItem_(editMenuItem)
 
-    helpMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Help", None, "")
-    helpMenu = NSMenu.alloc().initWithTitle_("Help")
-    helpMenuItem.setSubmenu_(helpMenu)
-    mainMenu.addItem_(helpMenuItem)
+        helpMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Help", None, "")
+        helpMenu = NSMenu.alloc().initWithTitle_("Help")
+        helpMenuItem.setSubmenu_(helpMenu)
+        mainMenu.addItem_(helpMenuItem)
 
-    app.setMainMenu_(mainMenu)
+        app.setMainMenu_(mainMenu)
 
     if cls is not None:
         cls(**kwargs)
