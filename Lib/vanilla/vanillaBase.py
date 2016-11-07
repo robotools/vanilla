@@ -4,6 +4,8 @@ from distutils.version import StrictVersion
 from nsSubclasses import getNSSubclass
 
 osVersionCurrent = StrictVersion(platform.mac_ver()[0])
+osVersion10_12 = StrictVersion("10.12")
+osVersion10_11 = StrictVersion("10.11")
 osVersion10_10 = StrictVersion("10.10")
 osVersion10_9 = StrictVersion("10.9")
 osVersion10_8 = StrictVersion("10.8")
