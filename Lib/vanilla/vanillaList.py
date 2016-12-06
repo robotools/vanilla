@@ -374,10 +374,10 @@ class List(VanillaBaseObject):
     is this list. The dictionary form is described below.
 
     **selfWindowDropSettings** A dictionary defining the drop settings when the source of the drop
-    is contained the same document as this list. The dictionary form is described below.
+    is contained the same window as this list. The dictionary form is described below.
 
     **selfDocumentDropSettings** A dictionary defining the drop settings when the source of the drop
-    is contained the same window as this list. The dictionary form is described below.
+    is contained the same document as this list. The dictionary form is described below.
 
     **selfApplicationDropSettings** A dictionary defining the drop settings when the source of the drop
     is contained the same application as this list. The dictionary form is described below.
