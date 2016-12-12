@@ -1,3 +1,4 @@
+from __future__ import print_function
 import time
 import os
 import sys
@@ -42,13 +43,13 @@ class BaseTest(object):
             setattr(self.w, attrName, line)
 
     def basicCallback(self, sender):
-        print sender
+        print(sender)
 
     def titleCallback(self, sender):
-        print sender, sender.getTitle()
+        print(sender, sender.getTitle())
 
     def getCallback(self, sender):
-        print sender, sender.get()
+        print(sender, sender.get())
 
 
 class WindowTest(BaseTest):

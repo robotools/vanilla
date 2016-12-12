@@ -27,7 +27,7 @@ class Slider(VanillaBaseControl):
                  self.w.open()
 
              def sliderCallback(self, sender):
-                 print "slider edit!", sender.get()
+                 print("slider edit!", sender.get())
 
         SliderDemo()
 

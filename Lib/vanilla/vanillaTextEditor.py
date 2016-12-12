@@ -28,7 +28,7 @@ class TextEditor(VanillaBaseObject):
                 self.w.open()
 
             def textEditorCallback(self, sender):
-                print "text entry!", sender.get()
+                print("text entry!", sender.get())
 
         TextEditorDemo()
 

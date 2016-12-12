@@ -156,7 +156,7 @@ Window
                 self.w.open()
 
             def windowMoved(self, sender):
-                print "window moved!", sender
+                print("window moved!", sender)
 
         WindowBindDemo()
 

@@ -18,7 +18,7 @@ class SearchBox(VanillaBaseControl):
                 self.w.open()
 
             def searchBoxCallback(self, sender):
-                print "search box entry!", sender.get()
+                print("search box entry!", sender.get())
 
         SearchBoxDemo()
 

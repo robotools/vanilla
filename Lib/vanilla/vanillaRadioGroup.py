@@ -19,7 +19,7 @@ class RadioGroup(VanillaBaseControl):
                 self.w.open()
 
             def radioGroupCallback(self, sender):
-                print "radio group edit!", sender.get()
+                print("radio group edit!", sender.get())
 
         RadioGroupDemo()
 

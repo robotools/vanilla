@@ -40,7 +40,7 @@ class Button(VanillaBaseControl):
                  self.w.open()
 
              def buttonCallback(self, sender):
-                 print "button hit!"
+                 print("button hit!")
 
         ButtonDemo()
 
@@ -170,7 +170,7 @@ class SquareButton(Button):
                  self.w.open()
 
              def buttonCallback(self, sender):
-                 print "button hit!"
+                 print("button hit!")
 
         SquareButtonDemo()
 
@@ -222,7 +222,7 @@ class ImageButton(SquareButton):
                  self.w.open()
 
              def buttonCallback(self, sender):
-                 print "button hit!"
+                 print("button hit!")
 
         ImageButtonDemo()
 
@@ -332,7 +332,7 @@ class HelpButton(Button):
                  self.w.open()
 
              def buttonCallback(self, sender):
-                 print "help button hit!"
+                 print("help button hit!")
 
         HelpButtonDemo()
 

@@ -26,7 +26,7 @@ class SegmentedButton(VanillaBaseControl):
                  self.w.open()
 
              def buttonCallback(self, sender):
-                 print "button hit!"
+                 print("button hit!")
 
         SegmentedButtonDemo()
 

@@ -38,7 +38,7 @@ class LevelIndicator(VanillaBaseControl):
                  self.w.open()
 
              def levelIndicatorCallback(self, sender):
-                 print "level indicator edit!", sender.get()
+                 print("level indicator edit!", sender.get())
 
         LevelIndicatorDemo()
 

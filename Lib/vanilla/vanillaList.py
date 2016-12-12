@@ -205,7 +205,7 @@ class List(VanillaBaseObject):
                 self.w.open()
 
             def selectionCallback(self, sender):
-                print sender.getSelection()
+                print(sender.getSelection())
 
         ListDemo()
 
@@ -224,7 +224,7 @@ class List(VanillaBaseObject):
                 self.w.open()
 
             def selectionCallback(self, sender):
-                print sender.getSelection()
+                print(sender.getSelection())
 
         ListDemo()
 
@@ -1072,7 +1072,7 @@ def CheckBoxListCell(title=None):
                 self.w.open()
 
             def editCallback(self, sender):
-                print sender.get()
+                print(sender.get())
 
         CheckBoxListCellDemo()
     """
@@ -1122,7 +1122,7 @@ def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks
                 self.w.open()
 
             def editCallback(self, sender):
-                print sender.get()
+                print(sender.get())
 
         SliderListCellDemo()
     """
@@ -1166,7 +1166,7 @@ def PopUpButtonListCell(items):
                 self.w.open()
 
             def editCallback(self, sender):
-                print sender.get()
+                print(sender.get())
 
         PopUpButtonListCellDemo()
     """
@@ -1293,7 +1293,7 @@ def SegmentedButtonListCell(segmentDescriptions):
                 self.w.open()
 
             def editCallback(self, sender):
-                print sender.get()
+                print(sender.get())
 
         SegmentedButtonListCellDemo()
     """

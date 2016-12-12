@@ -45,7 +45,7 @@ class ComboBox(VanillaBaseControl):
                 self.w.open()
 
             def comboBoxCallback(self, sender):
-                print "combo box entry!", sender.get()
+                print("combo box entry!", sender.get())
 
         ComboBoxDemo()
 

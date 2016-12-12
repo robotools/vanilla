@@ -24,7 +24,7 @@ A standard check box.::
             self.w.open()
 
         def checkBoxCallback(self, sender):
-            print "check box state change!", sender.get()
+            print("check box state change!", sender.get())
 
     CheckBoxDemo()
 

@@ -31,7 +31,7 @@ class EditText(VanillaBaseControl):
                 self.w.open()
 
             def editTextCallback(self, sender):
-                print "text entry!", sender.get()
+                print("text entry!", sender.get())
 
         EditTextDemo()
 
@@ -166,7 +166,7 @@ class SecureEditText(EditText):
                 self.w.open()
 
             def secureEditTextCallback(self, sender):
-                print "text entry!", sender.get()
+                print("text entry!", sender.get())
 
         SecureEditTextDemo()
 
