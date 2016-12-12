@@ -3,6 +3,7 @@ This is adapted from the PyObjC PythonBrowser demo.
 I beleive that demo was written by Just van Rossum.
 """
 
+import objc
 import AppKit
 from operator import getitem, setitem
 
@@ -251,11 +252,13 @@ class PythonItem(AppKit.NSObject):
             self.children = [child for child in self.children if not (isinstance(child, (str, unicode)) and hasattr(AppKit, child))]
 
         self._childRefs = {}
-    
+
+    @objc.python_method
     def _setSetters(self, names, callback):
         for name in names:
             self.setters[name] = callback
-    
+
+    @objc.python_method
     def _setGetters(self, names, callback):
         for name in names:
             self.getters[name] = callback
@@ -263,6 +266,7 @@ class PythonItem(AppKit.NSObject):
     def isExpandable(self):
         return bool(self.children)
 
+    @objc.python_method
     def getChild(self, child):
         if self._childRefs.has_key(child):
             return self._childRefs[child]

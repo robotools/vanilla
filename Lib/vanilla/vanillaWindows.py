@@ -1,3 +1,4 @@
+import objc
 from AppKit import *
 from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersionCurrent, osVersion10_7, osVersion10_10
@@ -202,6 +203,7 @@ class Window(NSObject):
     def __delattr__(self, attr):
         _delAttr(Window, self, attr)
 
+    @objc.python_method
     def assignToDocument(self, document):
         """
         Add this window to the list of windows associated with a document.
@@ -274,6 +276,7 @@ class Window(NSObject):
         """
         self._window.makeMainWindow()
 
+    @objc.python_method
     def setTitle(self, title):
         """
         Set the title in the window's title bar.
@@ -320,6 +323,7 @@ class Window(NSObject):
         h -= titlebarHeight
         return (l, t, w, h)
 
+    @objc.python_method
     def setPosSize(self, posSize, animate=True):
         """
         Set the position and size of the window.
@@ -352,6 +356,7 @@ class Window(NSObject):
         """
         self._window.center()
 
+    @objc.python_method
     def move(self, x, y, animate=True):
         """
         Move the window by **x** units and **y** units.
@@ -361,6 +366,7 @@ class Window(NSObject):
         b = b - y
         self._window.setFrame_display_animate_(((l, b), (w, h)), True, animate)
 
+    @objc.python_method
     def resize(self, width, height, animate=True):
         """
         Change the size of the window to **width** and **height**.
@@ -368,6 +374,7 @@ class Window(NSObject):
         l, t, w, h = self.getPosSize()
         self.setPosSize((l, t, width, height), animate)
 
+    @objc.python_method
     def setDefaultButton(self, button):
         """
         Set the default button in the window.
@@ -379,6 +386,7 @@ class Window(NSObject):
         cell = button._nsObject.cell()
         self._window.setDefaultButtonCell_(cell)
 
+    @objc.python_method
     def bind(self, event, callback):
         """
         Bind a callback to an event.
@@ -429,6 +437,7 @@ class Window(NSObject):
             self._bindings[event] = []
         self._bindings[event].append(callback)
 
+    @objc.python_method
     def unbind(self, event, callback):
         """
         Unbind a callback from an event.
@@ -440,6 +449,7 @@ class Window(NSObject):
         """
         self._bindings[event].remove(callback)
 
+    @objc.python_method
     def _alertBindings(self, key):
         # test to see if the attr exists.
         # this is necessary because NSWindow
@@ -517,6 +527,7 @@ class Window(NSObject):
     # credit where credit is due: much of this was learned
     # from the PyObjC demo: WSTConnectionWindowControllerClass
 
+    @objc.python_method
     def addToolbar(self, toolbarIdentifier, toolbarItems, addStandardItems=True, displayMode="default", sizeStyle="default"):
         """
         Add a toolbar to the window.
@@ -648,6 +659,7 @@ class Window(NSObject):
             return self._toolbarItems
         return {}
 
+    @objc.python_method
     def addToolbarItem(self, itemData, index=None):
         """
         Add a toolbar item to the windows toolbar.
@@ -667,6 +679,7 @@ class Window(NSObject):
             index = self._toolbarDefaultItemIdentifiers.index(itemIdentifier)
             self._window.toolbar().insertItemWithItemIdentifier_atIndex_(itemIdentifier, index)
 
+    @objc.python_method
     def removeToolbarItem(self, itemIdentifier):
         """
         Remove a toolbar item by his identifier.
@@ -687,6 +700,7 @@ class Window(NSObject):
         self._toolbarDefaultItemIdentifiers.remove(itemIdentifier)
         del self._toolbarItems[itemIdentifier]
 
+    @objc.python_method
     def _createToolbarItem(self, itemData):
         itemIdentifier = itemData.get("itemIdentifier")
         if itemIdentifier is None:

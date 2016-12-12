@@ -16,6 +16,7 @@ class VanillaRBSplitView(RBSplitView):
     def viewDidMoveToSuperview(self):
         pass
 
+    @objc.python_method
     def _recurseThroughSubviews(self, view):
         if hasattr(view, "vanillaWrapper"):
             vanillaWrapper = view.vanillaWrapper()
