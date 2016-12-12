@@ -312,7 +312,7 @@ class ImageButton(SquareButton):
         elif imageObject is not None:
             image = imageObject
         else:
-            raise ValueError, "no image source defined"
+            raise ValueError("no image source defined")
         self._nsObject.setImage_(image)
 
 
