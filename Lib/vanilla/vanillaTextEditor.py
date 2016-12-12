@@ -1,6 +1,7 @@
 from AppKit import *
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaCallbackWrapper
+from vanilla.py23 import unicode
 
 
 class VanillaTextEditorDelegate(NSObject):

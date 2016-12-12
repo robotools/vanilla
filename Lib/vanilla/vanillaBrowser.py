@@ -8,6 +8,7 @@ from operator import getitem, setitem
 
 import inspect
 
+from vanilla.py23 import unicode, long
 from vanilla.vanillaBase import VanillaBaseObject
 from vanilla.nsSubclasses import getNSSubclass
 
