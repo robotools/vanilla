@@ -21,9 +21,9 @@ iconPath = os.path.join(vanillaPath, "Data", "testIcon.tif")
 
 sizeStyles = ["regular", "small", "mini"]
 
-listOptions = sys.modules.keys()
-sortedListOptions = list(listOptions)
-sortedListOptions.sort()
+listOptions = list(sys.modules.keys())
+sortedListOptions = sorted(listOptions)
+
 
 class BaseTest(object):
 

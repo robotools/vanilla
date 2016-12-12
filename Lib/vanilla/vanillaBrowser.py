@@ -207,8 +207,7 @@ class PythonItem(AppKit.NSObject):
         self.getters = dict()
         self.setters = dict()
         if isinstance(obj, dict):
-            self.children = obj.keys()
-            self.children.sort()
+            self.children = sorted(obj.keys())
             self._setGetters(self.children, getitem)
             self._setSetters(self.children, setitem)
         elif obj is None or isinstance(obj, SIMPLE_TYPES):
@@ -234,8 +233,7 @@ class PythonItem(AppKit.NSObject):
             
             try:
                 d = dict(obj)
-                self.children = d.keys()
-                self.children.sort()
+                self.children = sorted(d.keys())
                 self._setGetters(self.children, getitem)
                 self._setSetters(self.children, setitem)
             except:
