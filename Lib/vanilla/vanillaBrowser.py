@@ -266,7 +266,7 @@ class PythonItem(AppKit.NSObject):
 
     @objc.python_method
     def getChild(self, child):
-        if self._childRefs.has_key(child):
+        if child in self._childRefs:
             return self._childRefs[child]
 
         name = self.children[child]
