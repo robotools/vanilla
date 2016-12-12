@@ -19,7 +19,7 @@ class SimpleAppWindow(object):
         self.w.open()
 
     def buttonCallback(self, sender):
-        print("You pressed the button!")
+        print("You pressed the button!", flush=True)
 
 
 if __name__ == "__main__":
