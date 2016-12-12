@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseControl, VanillaError
+from vanilla.vanillaBase import VanillaBaseControl, VanillaError
 
 _tickPositionMap = {
     "left": NSTickMarkLeft,

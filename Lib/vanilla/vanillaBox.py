@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseObject, _breakCycles, osVersionCurrent, osVersion10_10
+from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, osVersionCurrent, osVersion10_10
 
 
 class Box(VanillaBaseObject):

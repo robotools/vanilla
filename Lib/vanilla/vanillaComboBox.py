@@ -1,5 +1,5 @@
 from AppKit import NSObject, NSComboBox
-from vanillaBase import VanillaBaseControl
+from vanilla.vanillaBase import VanillaBaseControl
 
 
 class VanillaComboBoxDelegate(NSObject):

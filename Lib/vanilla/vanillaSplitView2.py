@@ -1,6 +1,6 @@
 from warnings import warn
 from AppKit import *
-from vanillaBase import VanillaBaseObject
+from vanilla.vanillaBase import VanillaBaseObject
 
 import objc
 objc.setVerbose(True)

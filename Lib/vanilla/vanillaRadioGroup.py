@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseControl, _sizeStyleMap
+from vanilla.vanillaBase import VanillaBaseControl, _sizeStyleMap
 
 
 class RadioGroup(VanillaBaseControl):

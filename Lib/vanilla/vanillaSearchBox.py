@@ -1,5 +1,5 @@
 from AppKit import NSSearchField
-from vanillaBase import VanillaBaseControl
+from vanilla.vanillaBase import VanillaBaseControl
 
 
 class SearchBox(VanillaBaseControl):

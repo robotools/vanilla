@@ -1,6 +1,6 @@
 from AppKit import *
-from nsSubclasses import getNSSubclass
-from vanillaBase import VanillaBaseObject, VanillaCallbackWrapper
+from vanilla.nsSubclasses import getNSSubclass
+from vanilla.vanillaBase import VanillaBaseObject, VanillaCallbackWrapper
 
 
 class VanillaTextEditorDelegate(NSObject):

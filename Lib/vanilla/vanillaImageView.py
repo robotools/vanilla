@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseObject
+from vanilla.vanillaBase import VanillaBaseObject
 
 _imageAlignmentMap = {
     ("center", "center") : NSImageAlignCenter,

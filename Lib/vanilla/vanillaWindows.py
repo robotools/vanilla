@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
+from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersionCurrent, osVersion10_7, osVersion10_10
 
 # PyObjC may not have these constants wrapped,

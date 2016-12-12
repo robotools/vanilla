@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseObject, _breakCycles, _sizeStyleMap, VanillaCallbackWrapper, \
+from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, _sizeStyleMap, VanillaCallbackWrapper, \
         _reverseSizeStyleMap
 
 

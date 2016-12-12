@@ -1,5 +1,5 @@
 from AppKit import NSPopUpButton, NSPopUpButtonCell, NSMenuItem, NSImageNameActionTemplate, NSImage, NSMenu, NSTexturedRoundedBezelStyle
-from vanillaBase import VanillaBaseControl, VanillaCallbackWrapper, _reverseSizeStyleMap
+from vanilla.vanillaBase import VanillaBaseControl, VanillaCallbackWrapper, _reverseSizeStyleMap
 
 
 class PopUpButton(VanillaBaseControl):

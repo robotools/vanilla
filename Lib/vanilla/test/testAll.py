@@ -3,7 +3,12 @@ import os
 import sys
 from AppKit import *
 import vanilla
-reload(vanilla)
+try:
+    reload(vanilla)
+except NameError:
+    # the built-in 'reload' was moved to importlib with Python 3.4
+    from importlib import reload
+    reload(vanilla)
 from vanilla import *
 
 import objc

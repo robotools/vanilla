@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaButton import ImageButton
+from vanilla.vanillaButton import ImageButton
 
 
 class GradientButton(ImageButton):

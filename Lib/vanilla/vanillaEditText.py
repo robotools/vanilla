@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseControl, VanillaCallbackWrapper
+from vanilla.vanillaBase import VanillaBaseControl, VanillaCallbackWrapper
 
 
 class VanillaEditTextDelegate(VanillaCallbackWrapper):

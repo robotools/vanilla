@@ -2,8 +2,8 @@ import time
 import objc
 from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
-from nsSubclasses import getNSSubclass
-from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
+from vanilla.nsSubclasses import getNSSubclass
+from vanilla.vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
 
 
 class VanillaTableViewSubclass(NSTableView):
@@ -1241,7 +1241,7 @@ def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scal
 
         ImageListCellDemo()
     """
-    from vanillaImageView import _imageAlignmentMap, _imageScaleMap
+    from vanilla.vanillaImageView import _imageAlignmentMap, _imageScaleMap
     cell = NSImageCell.alloc().init()
     align = _imageAlignmentMap[(horizontalAlignment, verticalAlignment)]
     cell.setImageAlignment_(align)

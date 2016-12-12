@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseObject, _sizeStyleMap, osVersion10_11, osVersionCurrent
+from vanilla.vanillaBase import VanillaBaseObject, _sizeStyleMap, osVersion10_11, osVersionCurrent
 
 class ProgressBar(VanillaBaseObject):
 

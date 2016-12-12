@@ -1,6 +1,6 @@
 from AppKit import *
-from vanillaButton import Button
-from vanillaBase import osVersionCurrent, osVersion10_10, VanillaBaseObject
+from vanilla.vanillaButton import Button
+from vanilla.vanillaBase import osVersionCurrent, osVersion10_10, VanillaBaseObject
 
 
 # In OS 10.0-10.X (tested up to OS 10.4) the small and mini check box
