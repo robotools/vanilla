@@ -1,6 +1,8 @@
 import objc
 import weakref
 
+from vanilla.py23 import basestring
+
 
 class _VanillaMethods:
 

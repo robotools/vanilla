@@ -1,10 +1,15 @@
-__all__ = ['unicode', 'long']
+__all__ = ['basestring', 'unicode', 'long']
 
-# In Python 3, unicode == str, and long == int
+try:
+    basestring = basestring
+except NameError:
+    basestring = str
+
 try:
     unicode = unicode
 except NameError:
     unicode = str
+
 try:
     long = long
 except NameError:
