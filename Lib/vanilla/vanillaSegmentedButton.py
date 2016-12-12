@@ -1,4 +1,5 @@
 from AppKit import *
+from vanilla.py23 import range
 from vanilla.vanillaBase import VanillaBaseControl
 
 
@@ -134,7 +135,7 @@ class SegmentedButton(VanillaBaseControl):
         """
         Enable or disable the object. **onOff** should be a boolean.
         """
-        for index in xrange(self._nsObject.segmentCount()):
+        for index in range(self._nsObject.segmentCount()):
             self._nsObject.setEnabled_forSegment_(onOff, index)
 
     def set(self, value):
@@ -146,7 +147,7 @@ class SegmentedButton(VanillaBaseControl):
         # value should be an int unless we are in "any" mode
         if self._nsObject.cell().trackingMode() != _trackingModeMap["any"]:
             value = [value]
-        for index in xrange(self._nsObject.segmentCount()):
+        for index in range(self._nsObject.segmentCount()):
             state = index in value
             self._nsObject.setSelected_forSegment_(state, index)
 
@@ -157,7 +158,7 @@ class SegmentedButton(VanillaBaseControl):
         Otherwise the returned value will be a single integer.
         """
         states = []
-        for index in xrange(self._nsObject.segmentCount()):
+        for index in range(self._nsObject.segmentCount()):
             state = self._nsObject.isSelectedForSegment_(index)
             if state:
                 states.append(index)

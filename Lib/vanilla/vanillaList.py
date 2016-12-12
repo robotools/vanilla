@@ -2,7 +2,7 @@ import time
 import objc
 from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
-from vanilla.py23 import basestring
+from vanilla.py23 import basestring, range
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
 
@@ -795,7 +795,7 @@ class List(VanillaBaseObject):
             lastResort = None
             lastResortIndex = None
             inputLength = len(inputString)
-            for index in xrange(len(self)):
+            for index in range(len(self)):
                 item = self._arrayController.content()[index]
                 # the item could be a dictionary or
                 # a NSObject. safely handle each.
@@ -1011,8 +1011,7 @@ class List(VanillaBaseObject):
         # find the indexes of the ubsorted objects matching
         # the sorted objects
         unsortedIndexes = []
-        for index in xrange(len(unsortedArray)):
-            obj = unsortedArray[index]
+        for index, obj in enumerate(unsortedArray):
             test = (id(obj), obj)
             if test in sortedObjects:
                 unsortedIndexes.append(index)
@@ -1037,8 +1036,7 @@ class List(VanillaBaseObject):
         # find the indexes of the sorted objects matching
         # the unsorted objects
         sortedIndexes = []
-        for index in xrange(len(sortedArray)):
-            obj = sortedArray[index]
+        for index, obj in enumerate(sortedArray):
             test = (id(obj), obj)
             if test in unsortedObjects:
                 sortedIndexes.append(index)

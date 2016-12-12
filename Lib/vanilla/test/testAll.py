@@ -10,6 +10,7 @@ except NameError:
     # the built-in 'reload' was moved to importlib with Python 3.4
     from importlib import reload
     reload(vanilla)
+from vanilla.py23 import range
 from vanilla import *
 
 import objc
@@ -29,13 +30,13 @@ class BaseTest(object):
     def drawGrid(self):
         w, h = self.w.getPosSize()[2:]
         increment = 10
-        for i in xrange(int(w/increment)):
+        for i in range(int(w/increment)):
             if i == 0:
                 continue
             attrName = "vline%d" % i
             line = VerticalLine((increment*i, 0, 1, h))
             setattr(self.w, attrName, line)
-        for i in xrange(int(h/increment)):
+        for i in range(int(h/increment)):
             if i == 0:
                 continue
             attrName = "hline%d" % i
@@ -401,8 +402,8 @@ class TestCustomNSView(NSView):
         width, height = self.frame()[1]
         w = width / 5
         h = height / 5
-        for xI in xrange(5):
-            for yI in xrange(5):
+        for xI in range(5):
+            for yI in range(5):
                 x = xI * w
                 y = height - (yI * h) - h
                 r = ((x, y), (w, h))
@@ -504,7 +505,7 @@ class MiscTest(BaseTest):
         self.w.spinner1.start()
         self.w.spinner2.start()
         self.w.bar2.start()
-        for i in xrange(10):
+        for i in range(10):
             self.w.bar1.increment(10)
             time.sleep(.1)
         time.sleep(.5)

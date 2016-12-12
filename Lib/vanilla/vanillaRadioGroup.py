@@ -1,4 +1,5 @@
 from AppKit import *
+from vanilla.py23 import range
 from vanilla.vanillaBase import VanillaBaseControl, _sizeStyleMap
 
 
@@ -72,7 +73,7 @@ class RadioGroup(VanillaBaseControl):
             matrix.setCellSize_((posSize[2], 12))
         else:
             raise ValueError("sizeStyle must be 'regular', 'small' or 'mini'")
-        for x in range(len(titles)):
+        for _ in range(len(titles)):
             if isVertical:
                 matrix.addRow()
             else:

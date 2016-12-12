@@ -9,7 +9,7 @@ from operator import getitem, setitem
 
 import inspect
 
-from vanilla.py23 import unicode, long
+from vanilla.py23 import unicode, long, range
 from vanilla.vanillaBase import VanillaBaseObject
 from vanilla.nsSubclasses import getNSSubclass
 
@@ -214,7 +214,7 @@ class PythonItem(AppKit.NSObject):
         elif obj is None or isinstance(obj, SIMPLE_TYPES):
             pass
         elif isinstance(obj, (list, tuple, set)):
-            self.children = range(len(obj))
+            self.children = list(range(len(obj)))
             self._setGetters(self.children, getitem)
             self._setSetters(self.children, setitem)
         elif isinstance(obj, property):
@@ -226,7 +226,7 @@ class PythonItem(AppKit.NSObject):
         else:
             try:
                 l = list(obj)
-                self.children = range(len(l))
+                self.children = list(range(len(l)))
                 self._setGetters(self.children, getitem)
                 self._setSetters(self.children, setitem)
             except:

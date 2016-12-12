@@ -14,3 +14,8 @@ try:
     long = long
 except NameError:
     long = int
+
+try:
+    range = xrange
+except NameError:
+    range = range
