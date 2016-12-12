@@ -19,3 +19,8 @@ try:
     range = xrange
 except NameError:
     range = range
+
+try:
+    unichr = unichr
+except NameError:
+    unichr = chr

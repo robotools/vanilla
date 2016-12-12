@@ -2,7 +2,7 @@ import time
 import objc
 from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
-from vanilla.py23 import basestring, range
+from vanilla.py23 import basestring, range, unichr
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
 
