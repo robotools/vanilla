@@ -120,7 +120,7 @@ class _CheckBoxManualBuild(VanillaBaseObject):
         textBoxPosSize = {
                 # left, top, height
                 "mini": (12, 5, 12),
-                "small": (14, 4, 14),
+                "small": (14, 6, 14),
                 "regular": (16, 3, 17)
                 }
         textBoxLeft, textBoxTop, textBoxHeight = textBoxPosSize[sizeStyle]
