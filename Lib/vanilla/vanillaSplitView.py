@@ -6,7 +6,7 @@ from vanilla.externalFrameworks.RBSplitView import RBSplitView, RBSplitSubview
 class VanillaRBSplitView(RBSplitView):
 
     def init(self):
-        self = super(VanillaRBSplitView, self).initWithFrame_(((0, 0), (0, 0)))
+        self = objc.super(VanillaRBSplitView, self).initWithFrame_(((0, 0), (0, 0)))
         image = NSImage.imageNamed_("RBSplitViewThumb8")
         if image is not None:
             image.setFlipped_(True)
