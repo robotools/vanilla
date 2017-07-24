@@ -1,5 +1,5 @@
 from AppKit import NSSearchField
-from vanillaBase import VanillaBaseControl
+from vanilla.vanillaBase import VanillaBaseControl
 
 
 class SearchBox(VanillaBaseControl):
@@ -18,7 +18,7 @@ class SearchBox(VanillaBaseControl):
                 self.w.open()
 
             def searchBoxCallback(self, sender):
-                print "search box entry!", sender.get()
+                print("search box entry!", sender.get())
 
         SearchBoxDemo()
 

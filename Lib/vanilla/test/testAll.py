@@ -1,9 +1,16 @@
+from __future__ import print_function
 import time
 import os
 import sys
 from AppKit import *
 import vanilla
-reload(vanilla)
+try:
+    reload(vanilla)
+except NameError:
+    # the built-in 'reload' was moved to importlib with Python 3.4
+    from importlib import reload
+    reload(vanilla)
+from vanilla.py23 import range
 from vanilla import *
 
 import objc
@@ -14,22 +21,22 @@ iconPath = os.path.join(vanillaPath, "Data", "testIcon.tif")
 
 sizeStyles = ["regular", "small", "mini"]
 
-listOptions = sys.modules.keys()
-sortedListOptions = list(listOptions)
-sortedListOptions.sort()
+listOptions = list(sys.modules.keys())
+sortedListOptions = sorted(listOptions)
+
 
 class BaseTest(object):
 
     def drawGrid(self):
         w, h = self.w.getPosSize()[2:]
         increment = 10
-        for i in xrange(int(w/increment)):
+        for i in range(int(w/increment)):
             if i == 0:
                 continue
             attrName = "vline%d" % i
             line = VerticalLine((increment*i, 0, 1, h))
             setattr(self.w, attrName, line)
-        for i in xrange(int(h/increment)):
+        for i in range(int(h/increment)):
             if i == 0:
                 continue
             attrName = "hline%d" % i
@@ -37,13 +44,13 @@ class BaseTest(object):
             setattr(self.w, attrName, line)
 
     def basicCallback(self, sender):
-        print sender
+        print(sender)
 
     def titleCallback(self, sender):
-        print sender, sender.getTitle()
+        print(sender, sender.getTitle())
 
     def getCallback(self, sender):
-        print sender, sender.get()
+        print(sender, sender.get())
 
 
 class WindowTest(BaseTest):
@@ -395,8 +402,8 @@ class TestCustomNSView(NSView):
         width, height = self.frame()[1]
         w = width / 5
         h = height / 5
-        for xI in xrange(5):
-            for yI in xrange(5):
+        for xI in range(5):
+            for yI in range(5):
                 x = xI * w
                 y = height - (yI * h) - h
                 r = ((x, y), (w, h))
@@ -498,7 +505,7 @@ class MiscTest(BaseTest):
         self.w.spinner1.start()
         self.w.spinner2.start()
         self.w.bar2.start()
-        for i in xrange(10):
+        for i in range(10):
             self.w.bar1.increment(10)
             time.sleep(.1)
         time.sleep(.5)

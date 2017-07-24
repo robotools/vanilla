@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseControl, VanillaError
+from vanilla.vanillaBase import VanillaBaseControl, VanillaError
 
 _tickPositionMap = {
     "left": NSTickMarkLeft,
@@ -27,7 +27,7 @@ class Slider(VanillaBaseControl):
                  self.w.open()
 
              def sliderCallback(self, sender):
-                 print "slider edit!", sender.get()
+                 print("slider edit!", sender.get())
 
         SliderDemo()
 

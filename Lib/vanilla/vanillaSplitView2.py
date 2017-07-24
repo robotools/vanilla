@@ -1,6 +1,6 @@
 from warnings import warn
 from AppKit import *
-from vanillaBase import VanillaBaseObject
+from vanilla.vanillaBase import VanillaBaseObject
 
 import objc
 objc.setVerbose(True)
@@ -181,6 +181,7 @@ class VanillaSplitViewDelegate(NSObject):
         # tell NSSplitView to mess everything up
         splitView.adjustSubviews()
 
+    @objc.python_method
     def _recursivelyResizeSubviews(self, view):
         for subview in view.subviews():
             if hasattr(subview, "vanillaWrapper"):

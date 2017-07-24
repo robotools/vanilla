@@ -1,5 +1,5 @@
 from AppKit import NSView
-from vanillaBase import VanillaBaseObject, osVersionCurrent, osVersion10_10
+from vanilla.vanillaBase import VanillaBaseObject, osVersionCurrent, osVersion10_10
 
 try:
     NSVisualEffectMaterialAppearanceBased

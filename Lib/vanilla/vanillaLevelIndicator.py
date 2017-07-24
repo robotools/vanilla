@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseControl
+from vanilla.vanillaBase import VanillaBaseControl
 
 # This control is available in OS 10.4+.
 # Cause a NameError if in an earlier OS.
@@ -38,7 +38,7 @@ class LevelIndicator(VanillaBaseControl):
                  self.w.open()
 
              def levelIndicatorCallback(self, sender):
-                 print "level indicator edit!", sender.get()
+                 print("level indicator edit!", sender.get())
 
         LevelIndicatorDemo()
 

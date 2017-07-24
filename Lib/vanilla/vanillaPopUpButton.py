@@ -1,5 +1,5 @@
 from AppKit import NSPopUpButton, NSPopUpButtonCell, NSMenuItem, NSImageNameActionTemplate, NSImage, NSMenu, NSTexturedRoundedBezelStyle
-from vanillaBase import VanillaBaseControl, VanillaCallbackWrapper, _reverseSizeStyleMap
+from vanilla.vanillaBase import VanillaBaseControl, VanillaCallbackWrapper, _reverseSizeStyleMap
 
 
 class PopUpButton(VanillaBaseControl):
@@ -19,7 +19,7 @@ class PopUpButton(VanillaBaseControl):
                 self.w.open()
 
             def popUpButtonCallback(self, sender):
-                print "pop up button selection!", sender.get()
+                print("pop up button selection!", sender.get())
 
         PopUpButtonDemo()
 
@@ -144,13 +144,13 @@ class ActionButton(PopUpButton):
                 self.w.open()
 
             def firstCallback(self, sender):
-                print "first"
+                print("first")
             
             def secondCallback(self, sender):
-                print "second"
+                print("second")
             
             def subFirstCallback(self, sender):
-                print "sub first"
+                print("sub first")
 
         ActionPopUpButtonDemo()
     

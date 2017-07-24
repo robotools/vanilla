@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseObject
+from vanilla.vanillaBase import VanillaBaseObject
 
 _imageAlignmentMap = {
     ("center", "center") : NSImageAlignCenter,
@@ -99,5 +99,5 @@ class ImageView(VanillaBaseObject):
         elif imageObject is not None:
             image = imageObject
         else:
-            raise ValueError, "no image source defined"
+            raise ValueError("no image source defined")
         self._nsObject.setImage_(image)

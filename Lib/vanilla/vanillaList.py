@@ -2,8 +2,9 @@ import time
 import objc
 from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
-from nsSubclasses import getNSSubclass
-from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
+from vanilla.py23 import basestring, range, unichr
+from vanilla.nsSubclasses import getNSSubclass
+from vanilla.vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
 
 
 class VanillaTableViewSubclass(NSTableView):
@@ -78,6 +79,7 @@ class VanillaArrayController(NSArrayController):
         pboard.setPropertyList_forType_(objects.description(), dragType)
         return True
 
+    @objc.python_method
     def _handleDrop(self, isProposal, tableView, draggingInfo, row, dropOperation):
         vanillaWrapper = tableView.vanillaWrapper()
         draggingSource = draggingInfo.draggingSource()
@@ -120,6 +122,7 @@ class VanillaArrayController(NSArrayController):
         settings = vanillaWrapper._otherApplicationDropSettings
         return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
 
+    @objc.python_method
     def _handleDropBasedOnSettings(self, settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation):
         # handle drop position
         validDropPosition = self._validateDropPosition(settings, dropOnRow)
@@ -133,6 +136,7 @@ class VanillaArrayController(NSArrayController):
             return settings.get("operation", NSDragOperationCopy)
         return NSDragOperationNone
 
+    @objc.python_method
     def _validateDropPosition(self, settings, dropOnRow):
         if dropOnRow and not settings.get("allowsDropOnRows", False):
             return False
@@ -140,6 +144,7 @@ class VanillaArrayController(NSArrayController):
             return False
         return True
 
+    @objc.python_method
     def _unpackPboard(self, settings, draggingInfo):
         pboard = draggingInfo.draggingPasteboard()
         data = pboard.propertyListForType_(settings["type"])
@@ -200,7 +205,7 @@ class List(VanillaBaseObject):
                 self.w.open()
 
             def selectionCallback(self, sender):
-                print sender.getSelection()
+                print(sender.getSelection())
 
         ListDemo()
 
@@ -219,7 +224,7 @@ class List(VanillaBaseObject):
                 self.w.open()
 
             def selectionCallback(self, sender):
-                print sender.getSelection()
+                print(sender.getSelection())
 
         ListDemo()
 
@@ -790,7 +795,7 @@ class List(VanillaBaseObject):
             lastResort = None
             lastResortIndex = None
             inputLength = len(inputString)
-            for index in xrange(len(self)):
+            for index in range(len(self)):
                 item = self._arrayController.content()[index]
                 # the item could be a dictionary or
                 # a NSObject. safely handle each.
@@ -1006,8 +1011,7 @@ class List(VanillaBaseObject):
         # find the indexes of the ubsorted objects matching
         # the sorted objects
         unsortedIndexes = []
-        for index in xrange(len(unsortedArray)):
-            obj = unsortedArray[index]
+        for index, obj in enumerate(unsortedArray):
             test = (id(obj), obj)
             if test in sortedObjects:
                 unsortedIndexes.append(index)
@@ -1032,8 +1036,7 @@ class List(VanillaBaseObject):
         # find the indexes of the sorted objects matching
         # the unsorted objects
         sortedIndexes = []
-        for index in xrange(len(sortedArray)):
-            obj = sortedArray[index]
+        for index, obj in enumerate(sortedArray):
             test = (id(obj), obj)
             if test in unsortedObjects:
                 sortedIndexes.append(index)
@@ -1067,7 +1070,7 @@ def CheckBoxListCell(title=None):
                 self.w.open()
 
             def editCallback(self, sender):
-                print sender.get()
+                print(sender.get())
 
         CheckBoxListCellDemo()
     """
@@ -1117,7 +1120,7 @@ def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks
                 self.w.open()
 
             def editCallback(self, sender):
-                print sender.get()
+                print(sender.get())
 
         SliderListCellDemo()
     """
@@ -1161,7 +1164,7 @@ def PopUpButtonListCell(items):
                 self.w.open()
 
             def editCallback(self, sender):
-                print sender.get()
+                print(sender.get())
 
         PopUpButtonListCellDemo()
     """
@@ -1241,7 +1244,7 @@ def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scal
 
         ImageListCellDemo()
     """
-    from vanillaImageView import _imageAlignmentMap, _imageScaleMap
+    from vanilla.vanillaImageView import _imageAlignmentMap, _imageScaleMap
     cell = NSImageCell.alloc().init()
     align = _imageAlignmentMap[(horizontalAlignment, verticalAlignment)]
     cell.setImageAlignment_(align)
@@ -1288,7 +1291,7 @@ def SegmentedButtonListCell(segmentDescriptions):
                 self.w.open()
 
             def editCallback(self, sender):
-                print sender.get()
+                print(sender.get())
 
         SegmentedButtonListCellDemo()
     """

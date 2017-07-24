@@ -31,6 +31,7 @@ class BaseMessageDialog(NSObject):
             alert.beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_(parentWindow, self, "alertDidEnd:returnCode:contextInfo:", 0)
         return self
 
+    @objc.python_method
     def _translateValue(self, code):
         if code == NSAlertFirstButtonReturn:
             value = 1

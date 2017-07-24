@@ -1,7 +1,7 @@
 import platform
 from AppKit import *
 from distutils.version import StrictVersion
-from nsSubclasses import getNSSubclass
+from vanilla.nsSubclasses import getNSSubclass
 
 osVersionCurrent = StrictVersion(platform.mac_ver()[0])
 osVersion10_12 = StrictVersion("10.12")
