@@ -1,4 +1,4 @@
-__all__ = ['basestring', 'unicode', 'long']
+__all__ = ['basestring', 'unicode', 'long', 'python_method']
 
 try:
     basestring = basestring
@@ -24,3 +24,9 @@ try:
     unichr = unichr
 except NameError:
     unichr = chr
+
+try:
+    from objc import python_method
+except ImportError:
+    def python_method(arg):
+        return arg

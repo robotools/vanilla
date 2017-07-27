@@ -9,7 +9,7 @@ from operator import getitem, setitem
 
 import inspect
 
-from vanilla.py23 import unicode, long, range
+from vanilla.py23 import unicode, long, range, python_method
 from vanilla.vanillaBase import VanillaBaseObject
 from vanilla.nsSubclasses import getNSSubclass
 
@@ -251,12 +251,12 @@ class PythonItem(AppKit.NSObject):
 
         self._childRefs = {}
 
-    @objc.python_method
+    @python_method
     def _setSetters(self, names, callback):
         for name in names:
             self.setters[name] = callback
 
-    @objc.python_method
+    @python_method
     def _setGetters(self, names, callback):
         for name in names:
             self.getters[name] = callback
@@ -264,7 +264,7 @@ class PythonItem(AppKit.NSObject):
     def isExpandable(self):
         return bool(self.children)
 
-    @objc.python_method
+    @python_method
     def getChild(self, child):
         if child in self._childRefs:
             return self._childRefs[child]

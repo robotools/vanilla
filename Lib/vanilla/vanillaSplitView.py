@@ -1,6 +1,7 @@
 from AppKit import *
 from vanilla import VanillaBaseObject, VanillaError, Group
 from vanilla.externalFrameworks.RBSplitView import RBSplitView, RBSplitSubview
+from vanilla.py23 import python_method
 
 
 class VanillaRBSplitView(RBSplitView):
@@ -16,7 +17,7 @@ class VanillaRBSplitView(RBSplitView):
     def viewDidMoveToSuperview(self):
         pass
 
-    @objc.python_method
+    @python_method
     def _recurseThroughSubviews(self, view):
         if hasattr(view, "vanillaWrapper"):
             vanillaWrapper = view.vanillaWrapper()
