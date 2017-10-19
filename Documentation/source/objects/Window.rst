@@ -61,7 +61,7 @@ Window
 
     Set the title in the window's title bar.
 
-    **title** shoud be a string.
+    **title** should be a string.
 
 
 .. method:: Window.getTitle()
@@ -128,7 +128,7 @@ Window
     +-------------------+----------------------------------------------------------------------+
     | *"move"*          | Called immediately after the window is moved.                        |
     +-------------------+----------------------------------------------------------------------+
-    | *"resize"*        | Caled immediately after the window is resized.                       |
+    | *"resize"*        | Called immediately after the window is resized.                      |
     +-------------------+----------------------------------------------------------------------+
     | *"became main"*   | Called immediately after the window has become the main window.      |
     +-------------------+----------------------------------------------------------------------+
@@ -146,15 +146,17 @@ Window
     **callback** The callback that will be called when the event occurs. It should accept a *sender* argument which will
     be the Window that called the callback.::
 
+        from vanilla import Window
+
         class WindowBindDemo(object):
 
-            def __init__():
+            def __init__(self):
                 self.w = Window((200, 200))
                 self.w.bind("move", self.windowMoved)
                 self.w.open()
 
-            def windowMoved(sender):
-                print "window moved!", sender
+            def windowMoved(self, sender):
+                print("window moved!", sender)
 
         WindowBindDemo()
 

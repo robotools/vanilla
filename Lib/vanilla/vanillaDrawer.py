@@ -1,6 +1,6 @@
 from Foundation import NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge
 from AppKit import *
-from vanillaBase import VanillaBaseObject, _breakCycles
+from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
 
 
 _drawerEdgeMap = {
@@ -71,7 +71,7 @@ class Drawer(VanillaBaseObject):
 
     def __init__(self, size, parentWindow, minSize=None, maxSize=None,
             preferredEdge="left", forceEdge=False, leadingOffset=20, trailingOffset=20):
-        from vanillaWindows import Window
+        from vanilla.vanillaWindows import Window
         self._preferredEdge = preferredEdge
         self._forceEdge = forceEdge
         drawer = self._nsObject = self.nsDrawerClass.alloc().initWithContentSize_preferredEdge_(

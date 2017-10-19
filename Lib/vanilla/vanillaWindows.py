@@ -1,6 +1,29 @@
+import objc
 from AppKit import *
-from vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
-        VanillaCallbackWrapper, VanillaError, VanillaBaseControl
+from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
+        VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersionCurrent, osVersion10_7, osVersion10_10
+from vanilla.py23 import python_method
+
+# PyObjC may not have these constants wrapped,
+# so test and fallback if needed.
+try:
+    NSWindowCollectionBehaviorFullScreenPrimary
+    NSWindowCollectionBehaviorFullScreenAuxiliary
+except NameError:
+    NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7
+    NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8
+
+try:
+    NSWindowTitleVisible
+    NSWindowTitleHidden
+except NameError:
+    NSWindowTitleVisible  = 0
+    NSWindowTitleHidden = 1
+
+try:
+    NSFullSizeContentViewWindowMask
+except NameError:
+    NSFullSizeContentViewWindowMask = 1 << 15
 
 
 class Window(NSObject):
@@ -53,6 +76,7 @@ class Window(NSObject):
     Default is *True*. If *False*, you can show the window later by calling `window.show()`.
 
     **fullScreenMode** An indication of the full screen mode. These are the options:
+
     +---------------+---------------------------------------------------------------+
     | *None*        | The window does not allow full screen.                        |
     +---------------+---------------------------------------------------------------+
@@ -61,6 +85,11 @@ class Window(NSObject):
     | *"auxiliary"* | Corresponds to NSWindowCollectionBehaviorFullScreenAuxiliary. |
     +---------------+---------------------------------------------------------------+
 
+    **titleVisible** Boolean value indicating if the window title should be displayed.
+
+    **fullSizeContentView** Boolean value indicating if the content view should be the
+    full size of the window, including the area underneath the titlebar and toolbar.
+
     **screen** A `NSScreen <http://tinyurl.com/NSScreen>`_ object indicating the screen that
     the window should be drawn to. When None the window will be drawn to the main screen.
     """
@@ -68,18 +97,13 @@ class Window(NSObject):
     def __new__(cls, *args, **kwargs):
         return cls.alloc().init()
 
-    nsWindowStyleMask = NSTitledWindowMask
-    # use the unified title and toolbar in 10.4+
-    try:
-        nsWindowStyleMask |= NSUnifiedTitleAndToolbarWindowMask
-    except NameError:
-        pass
+    nsWindowStyleMask = NSTitledWindowMask | NSUnifiedTitleAndToolbarWindowMask
     nsWindowClass = NSWindow
     nsWindowLevel = NSNormalWindowLevel
 
     def __init__(self, posSize, title="", minSize=None, maxSize=None, textured=False,
                 autosaveName=None, closable=True, miniaturizable=True, initiallyVisible=True,
-                fullScreenMode=None, screen=None):
+                fullScreenMode=None, titleVisible=True, fullSizeContentView=False, screen=None):
         mask = self.nsWindowStyleMask
         if closable:
             mask = mask | NSClosableWindowMask
@@ -89,6 +113,8 @@ class Window(NSObject):
             mask = mask | NSResizableWindowMask
         if textured:
             mask = mask | NSTexturedBackgroundWindowMask
+        if fullSizeContentView and osVersionCurrent >= osVersion10_10:
+            mask = mask | NSFullSizeContentViewWindowMask
         # start the window
         ## too magical?
         if len(posSize) == 2:
@@ -109,29 +135,6 @@ class Window(NSObject):
             self._window.setFrameAutosaveName_(autosaveName)
         if cascade:
             self._cascade()
-        # set the full screen mode.
-        # this is only available 10.7+, so see if it is possible
-        # before going to far
-        try:
-            self._window.setCollectionBehavior_
-            # okay, we're >= 10.7
-            if fullScreenMode is None:
-                pass
-            elif fullScreenMode == "primary":
-                try:
-                    NSWindowCollectionBehaviorFullScreenPrimary
-                except NameError:
-                    NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7
-                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenPrimary)
-            elif fullScreenMode == "auxiliary":
-                try:
-                    NSWindowCollectionBehaviorFullScreenAuxiliary
-                except NameError:
-                    NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8
-                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenAuxiliary)
-        except AttributeError:
-            pass
-        #
         if minSize is not None:
             self._window.setMinSize_(minSize)
         if maxSize is not None:
@@ -142,6 +145,23 @@ class Window(NSObject):
         self._window.setDelegate_(self)
         self._bindings = {}
         self._initiallyVisible = initiallyVisible
+        # full screen mode
+        if osVersionCurrent >= osVersion10_7:
+            if fullScreenMode is None:
+                pass
+            elif fullScreenMode == "primary":
+                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenPrimary)
+            elif fullScreenMode == "auxiliary":
+                self._window.setCollectionBehavior_(NSWindowCollectionBehaviorFullScreenAuxiliary)
+        # titlebar visibility
+        if osVersionCurrent >= osVersion10_10:
+            if not titleVisible:
+                self._window.setTitleVisibility_(NSWindowTitleHidden)
+            else:
+                self._window.setTitleVisibility_(NSWindowTitleVisible)
+        # full size content view
+        if fullSizeContentView and osVersionCurrent >= osVersion10_10:
+            self._window.setTitlebarAppearsTransparent_(True)
 
     def _testForDeprecatedAttributes(self):
         from warnings import warn
@@ -184,6 +204,7 @@ class Window(NSObject):
     def __delattr__(self, attr):
         _delAttr(Window, self, attr)
 
+    @python_method
     def assignToDocument(self, document):
         """
         Add this window to the list of windows associated with a document.
@@ -256,11 +277,12 @@ class Window(NSObject):
         """
         self._window.makeMainWindow()
 
+    @python_method
     def setTitle(self, title):
         """
         Set the title in the window's title bar.
 
-        **title** shoud be a string.
+        **title** should be a string.
         """
         self._window.setTitle_(title)
 
@@ -302,6 +324,7 @@ class Window(NSObject):
         h -= titlebarHeight
         return (l, t, w, h)
 
+    @python_method
     def setPosSize(self, posSize, animate=True):
         """
         Set the position and size of the window.
@@ -322,7 +345,7 @@ class Window(NSObject):
             # value that is not zero. this will cause
             # an error if (and only if) a window is
             # being positioned at the top of the screen.
-            # so, asjust it.
+            # so, adjust it.
             (sL, sB), (sW, sH) = screenFrame
             screenFrame = ((sL, 0), (sW, sH + sB))
         frame = _calcFrame(screenFrame, ((l, t), (w, h)), absolutePositioning=True)
@@ -334,6 +357,7 @@ class Window(NSObject):
         """
         self._window.center()
 
+    @python_method
     def move(self, x, y, animate=True):
         """
         Move the window by **x** units and **y** units.
@@ -343,6 +367,7 @@ class Window(NSObject):
         b = b - y
         self._window.setFrame_display_animate_(((l, b), (w, h)), True, animate)
 
+    @python_method
     def resize(self, width, height, animate=True):
         """
         Change the size of the window to **width** and **height**.
@@ -350,6 +375,7 @@ class Window(NSObject):
         l, t, w, h = self.getPosSize()
         self.setPosSize((l, t, width, height), animate)
 
+    @python_method
     def setDefaultButton(self, button):
         """
         Set the default button in the window.
@@ -361,6 +387,7 @@ class Window(NSObject):
         cell = button._nsObject.cell()
         self._window.setDefaultButtonCell_(cell)
 
+    @python_method
     def bind(self, event, callback):
         """
         Bind a callback to an event.
@@ -375,7 +402,7 @@ class Window(NSObject):
         +-------------------+----------------------------------------------------------------------+
         | *"move"*          | Called immediately after the window is moved.                        |
         +-------------------+----------------------------------------------------------------------+
-        | *"resize"*        | Caled immediately after the window is resized.                       |
+        | *"resize"*        | Called immediately after the window is resized.                      |
         +-------------------+----------------------------------------------------------------------+
         | *"became main"*   | Called immediately after the window has become the main window.      |
         +-------------------+----------------------------------------------------------------------+
@@ -393,6 +420,8 @@ class Window(NSObject):
         **callback** The callback that will be called when the event occurs. It should accept a *sender* argument which will
         be the Window that called the callback.::
 
+            from vanilla import Window
+
             class WindowBindDemo(object):
 
                 def __init__(self):
@@ -401,7 +430,7 @@ class Window(NSObject):
                     self.w.open()
 
                 def windowMoved(self, sender):
-                    print "window moved!", sender
+                    print("window moved!", sender)
 
             WindowBindDemo()
         """
@@ -409,6 +438,7 @@ class Window(NSObject):
             self._bindings[event] = []
         self._bindings[event].append(callback)
 
+    @python_method
     def unbind(self, event, callback):
         """
         Unbind a callback from an event.
@@ -420,6 +450,7 @@ class Window(NSObject):
         """
         self._bindings[event].remove(callback)
 
+    @python_method
     def _alertBindings(self, key):
         # test to see if the attr exists.
         # this is necessary because NSWindow
@@ -497,6 +528,7 @@ class Window(NSObject):
     # credit where credit is due: much of this was learned
     # from the PyObjC demo: WSTConnectionWindowControllerClass
 
+    @python_method
     def addToolbar(self, toolbarIdentifier, toolbarItems, addStandardItems=True, displayMode="default", sizeStyle="default"):
         """
         Add a toolbar to the window.
@@ -628,13 +660,14 @@ class Window(NSObject):
             return self._toolbarItems
         return {}
 
+    @python_method
     def addToolbarItem(self, itemData, index=None):
         """
         Add a toolbar item to the windows toolbar.
 
         **itemData** item description with the same format as a toolbarItem description in `addToolbar`
 
-        **index** An interger, specifying the place to insert the toolbar itemIdentifier.
+        **index** An integer, specifying the place to insert the toolbar itemIdentifier.
         """
         if not hasattr(self, "_toolbarItems"):
             raise VanillaError("window has not toolbar")
@@ -647,6 +680,7 @@ class Window(NSObject):
             index = self._toolbarDefaultItemIdentifiers.index(itemIdentifier)
             self._window.toolbar().insertItemWithItemIdentifier_atIndex_(itemIdentifier, index)
 
+    @python_method
     def removeToolbarItem(self, itemIdentifier):
         """
         Remove a toolbar item by his identifier.
@@ -667,6 +701,7 @@ class Window(NSObject):
         self._toolbarDefaultItemIdentifiers.remove(itemIdentifier)
         del self._toolbarItems[itemIdentifier]
 
+    @python_method
     def _createToolbarItem(self, itemData):
         itemIdentifier = itemData.get("itemIdentifier")
         if itemIdentifier is None:
@@ -799,6 +834,57 @@ class FloatingWindow(Window):
         """
         # don't make key!
         self._window.orderFront_(None)
+
+
+class HUDFloatingWindow(FloatingWindow):
+
+    """
+    A window that floats above all other windows and has the HUD appearance.
+
+    To add a control to a window, simply set it as an attribute of the window.
+
+        from vanilla import *
+
+        class HUDFloatingWindowDemo(object):
+
+            def __init__(self):
+                self.w = HUDFloatingWindow((200, 70), "HUDFloatingWindow Demo")
+                self.w.myButton = Button((10, 10, -10, 20), "My Button")
+                self.w.myTextBox = TextBox((10, 40, -10, 17), "My Text Box")
+                self.w.open()
+
+        HUDFloatingWindowDemo()
+
+    No special naming is required for the attributes. However, each attribute
+    must have a unique name.
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position
+    and size of the window. It may also be a tuple of form *(width, height)*.
+    In this case, the window will be positioned on screen automatically.
+
+    **title** The title to be set in the title bar of the window.
+
+    **minSize** Tuple of the form *(width, height)* representing the minimum size
+    that the window can be resized to.
+
+    **maxSize** Tuple of the form *(width, height)* representing the maximum size
+    that the window can be resized to.
+
+    **textured** Boolean value representing if the window should have a textured
+    appearance or not.
+
+    **autosaveName** A string representing a unique name for the window. If given,
+    this name will be used to store the window position and size in the application
+    preferences.
+
+    **closable** Boolean value representing if the window should have a close button
+    in the title bar.
+
+    **screen** A `NSScreen <http://tinyurl.com/NSScreen>`_ object indicating the screen that
+    the window should be drawn to. When None the window will be drawn to the main screen.
+    """
+
+    nsWindowStyleMask = NSHUDWindowMask | NSUtilityWindowMask | NSTitledWindowMask | NSBorderlessWindowMask
 
 
 class Sheet(Window):

@@ -1,7 +1,7 @@
 import weakref
 from AppKit import *
-from vanillaBase import VanillaBaseObject, _breakCycles
-from nsSubclasses import getNSSubclass
+from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
+from vanilla.nsSubclasses import getNSSubclass
 
 _edgeMap = {
     "left" : NSMinXEdge,

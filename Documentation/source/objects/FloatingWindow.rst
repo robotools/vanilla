@@ -154,7 +154,7 @@ FloatingWindow
                 self.w.open()
 
             def windowMoved(sender):
-                print "window moved!", sender
+                print("window moved!", sender)
 
         WindowBindDemo()
 

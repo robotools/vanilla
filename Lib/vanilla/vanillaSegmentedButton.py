@@ -1,5 +1,6 @@
 from AppKit import *
-from vanillaBase import VanillaBaseControl
+from vanilla.py23 import range
+from vanilla.vanillaBase import VanillaBaseControl
 
 
 _trackingModeMap = {
@@ -10,6 +11,78 @@ _trackingModeMap = {
 
 
 class SegmentedButton(VanillaBaseControl):
+
+    """
+    A standard segmented button.::
+
+        from vanilla import *
+
+        class SegmentedButtonDemo(object):
+
+             def __init__(self):
+                 self.w = Window((100, 40))
+                 self.w.button = SegmentedButton((10, 10, -10, 20),
+                     [dict(title="A"), dict(title="B"), dict(title="C")],
+                    callback=self.buttonCallback)
+                 self.w.open()
+
+             def buttonCallback(self, sender):
+                 print("button hit!")
+
+        SegmentedButtonDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* representing the position
+    and size of the segmented button. The size of the segmented button sould match
+    the appropriate value for the given *sizeStyle*.
+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +=========+===+===========+
+    | Regular | H | 21        |
+    +---------+---+-----------+
+    | Small   | H | 18        |
+    +---------+---+-----------+
+    | Mini    | H | 15        |
+    +---------+---+-----------+
+
+    **segmentDescriptions** An ordered list of dictionaries describing the segments.
+
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | width (optional)       | The desired width of the segment.                                                                |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | title (optional)       | The title of the segment.                                                                        |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | enabled (optional)     | The enabled state of the segment. The default is `True`.                                         |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | imagePath (optional)   | A file path to an image to display in the segment.                                               |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | imageNamed (optional)  | The name of an image already loaded as a *NSImage* by the application to display in the segment. |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | imageObject (optional) | A *NSImage* object to display in the segment.                                                    |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+
+    **callback** The method to be called when the user presses the segmented button.
+
+    **selectionStyle** The selection style in the segmented button.
+
+    +-----------+---------------------------------------------+
+    | one       | Only one segment may be selected.           |
+    +-----------+---------------------------------------------+
+    | any       | Any number of segments may be selected.     |
+    +-----------+---------------------------------------------+
+    | momentary | A segmented is only selected when tracking. |
+    +-----------+---------------------------------------------+
+
+    **sizeStyle** A string representing the desired size style of the segmented button. The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
+    """
 
     nsSegmentedControlClass = NSSegmentedControl
     nsSegmentedCellClass = NSSegmentedCell
@@ -53,26 +126,43 @@ class SegmentedButton(VanillaBaseControl):
                 nsObject.setImage_forSegment_(image, segmentIndex)
 
     def getNSSegmentedButton(self):
+        """
+        Return the *NSSegmentedButton* that this object wraps.
+        """
         return self._nsObject
 
-    def enable(self, value):
-        for index in xrange(self._nsObject.segmentCount()):
-            self._nsObject.setEnabled_forSegment_(value, index)
+    def enable(self, onOff):
+        """
+        Enable or disable the object. **onOff** should be a boolean.
+        """
+        for index in range(self._nsObject.segmentCount()):
+            self._nsObject.setEnabled_forSegment_(onOff, index)
 
     def set(self, value):
+        """
+        Set the selected segement. If this control is set to
+        `any` mode, `value` should be a list of integers.
+        Otherwise `value` should be a single integer.
+        """
         # value should be an int unless we are in "any" mode
         if self._nsObject.cell().trackingMode() != _trackingModeMap["any"]:
             value = [value]
-        for index in xrange(self._nsObject.segmentCount()):
+        for index in range(self._nsObject.segmentCount()):
             state = index in value
             self._nsObject.setSelected_forSegment_(state, index)
 
     def get(self):
+        """
+        Get the selected segement. If this control is set to
+        `any` mode, the returned value will be a list of integers.
+        Otherwise the returned value will be a single integer.
+        """
         states = []
-        for index in xrange(self._nsObject.segmentCount()):
+        for index in range(self._nsObject.segmentCount()):
             state = self._nsObject.isSelectedForSegment_(index)
             if state:
                 states.append(index)
         if self._nsObject.cell().trackingMode() != _trackingModeMap["any"]:
             return states[0]
         return states
+

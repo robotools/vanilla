@@ -1,6 +1,7 @@
 from AppKit import *
-from nsSubclasses import getNSSubclass
-from vanillaBase import VanillaBaseObject, VanillaCallbackWrapper
+from vanilla.nsSubclasses import getNSSubclass
+from vanilla.vanillaBase import VanillaBaseObject, VanillaCallbackWrapper
+from vanilla.py23 import unicode
 
 
 class VanillaTextEditorDelegate(NSObject):
@@ -27,7 +28,7 @@ class TextEditor(VanillaBaseObject):
                 self.w.open()
 
             def textEditorCallback(self, sender):
-                print "text entry!", sender.get()
+                print("text entry!", sender.get())
 
         TextEditorDemo()
 
@@ -98,7 +99,7 @@ class TextEditor(VanillaBaseObject):
         """
         Get the contents of the text entry control.
         """
-        return self._textView.string()
+        return unicode(self._textView.string())
 
     def set(self, value):
         """

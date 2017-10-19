@@ -2,6 +2,7 @@ import objc
 from objc import selector
 from Foundation import NSObject
 from AppKit import *
+from vanilla.py23 import python_method
 
 
 __all__ = ["message", "askYesNoCancel", "askYesNo", "getFile", "getFolder", "getFileOrFolder", "putFile"]
@@ -31,6 +32,7 @@ class BaseMessageDialog(NSObject):
             alert.beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_(parentWindow, self, "alertDidEnd:returnCode:contextInfo:", 0)
         return self
 
+    @python_method
     def _translateValue(self, code):
         if code == NSAlertFirstButtonReturn:
             value = 1

@@ -2,20 +2,9 @@ import time
 import objc
 from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
-from nsSubclasses import getNSSubclass
-from vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
-
-
-# first, determine which column autosizing method is needed.
-# in 10.4, NSTableView.setAutoresizesAllColumnsToFit was
-# deprecated. The new way for handling this is via masks.
-try:
-    NSTableViewUniformColumnAutoresizingStyle
-    NSTableColumn.setResizingMask_
-except (NameError, AttributeError):
-    _haveResizingMasks = False
-else:
-    _haveResizingMasks = True
+from vanilla.py23 import basestring, range, unichr, python_method
+from vanilla.nsSubclasses import getNSSubclass
+from vanilla.vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
 
 
 class VanillaTableViewSubclass(NSTableView):
@@ -90,6 +79,7 @@ class VanillaArrayController(NSArrayController):
         pboard.setPropertyList_forType_(objects.description(), dragType)
         return True
 
+    @python_method
     def _handleDrop(self, isProposal, tableView, draggingInfo, row, dropOperation):
         vanillaWrapper = tableView.vanillaWrapper()
         draggingSource = draggingInfo.draggingSource()
@@ -132,6 +122,7 @@ class VanillaArrayController(NSArrayController):
         settings = vanillaWrapper._otherApplicationDropSettings
         return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
 
+    @python_method
     def _handleDropBasedOnSettings(self, settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation):
         # handle drop position
         validDropPosition = self._validateDropPosition(settings, dropOnRow)
@@ -145,6 +136,7 @@ class VanillaArrayController(NSArrayController):
             return settings.get("operation", NSDragOperationCopy)
         return NSDragOperationNone
 
+    @python_method
     def _validateDropPosition(self, settings, dropOnRow):
         if dropOnRow and not settings.get("allowsDropOnRows", False):
             return False
@@ -152,6 +144,7 @@ class VanillaArrayController(NSArrayController):
             return False
         return True
 
+    @python_method
     def _unpackPboard(self, settings, draggingInfo):
         pboard = draggingInfo.draggingPasteboard()
         data = pboard.propertyListForType_(settings["type"])
@@ -212,7 +205,7 @@ class List(VanillaBaseObject):
                 self.w.open()
 
             def selectionCallback(self, sender):
-                print sender.getSelection()
+                print(sender.getSelection())
 
         ListDemo()
 
@@ -231,7 +224,7 @@ class List(VanillaBaseObject):
                 self.w.open()
 
             def selectionCallback(self, sender):
-                print sender.getSelection()
+                print(sender.getSelection())
 
         ListDemo()
 
@@ -325,10 +318,16 @@ class List(VanillaBaseObject):
     |                                | nothing is given, it will follow the                                           |
     |                                | editability of the rest of the list.                                           |
     +--------------------------------+--------------------------------------------------------------------------------+
-    | *"width"* (optional)           | The width of the column. In OS 10.3 and                                        |
-    |                                | lower the width must be defined for *all*                                      |
-    |                                | columns if the width is defined for one                                        |
-    |                                | column.                                                                        |
+    | *"width"* (optional)           | The width of the column.                                                       |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"minWidth"* (optional)        | The minimum width of the column. The fallback is `width`.                      |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"maxWidth"* (optional)        | The maximum width of the column. The fallback is `width`.                      |
+    +--------------------------------+--------------------------------------------------------------------------------+
+    | *"allowsSorting"* (optional)   | A boolean representing that this column allows the user                        |
+    |                                | to sort the table by clicking the column's header.                             |
+    |                                | The fallback is `True`. If a List is set to disallow                           |
+    |                                | sorting the column level settings will be ignored                              |
     +--------------------------------+--------------------------------------------------------------------------------+
     | *"typingSensitive"* (optional) | A boolean representing that this column                                        |
     |                                | should be the column that responds to user                                     |
@@ -359,6 +358,8 @@ class List(VanillaBaseObject):
     **allowsMultipleSelection** A boolean representing if the list allows more than one item to be selected.
 
     **allowsEmptySelection** A boolean representing if the list allows zero items to be selected.
+
+    **allowsSorting** A boolean indicating if the list allows user sorting by clicking column headers.
 
     **drawVerticalLines** Boolean representing if vertical lines should be drawn in the list.
 
@@ -434,6 +435,7 @@ class List(VanillaBaseObject):
                 selectionCallback=None, doubleClickCallback=None, editCallback=None,
                 enableDelete=False, enableTypingSensitivity=False,
                 allowsMultipleSelection=True, allowsEmptySelection=True,
+                allowsSorting=True,
                 drawVerticalLines=False, drawHorizontalLines=False,
                 autohidesScrollers=True, drawFocusRing=True, rowHeight=17.0,
                 selfDropSettings=None,
@@ -453,6 +455,7 @@ class List(VanillaBaseObject):
         self._nsObject.setBorderType_(NSBezelBorder)
         self._nsObject.setDrawsBackground_(True)
         self._setAutosizingFromPosSize(posSize)
+        self._allowsSorting = allowsSorting
         # add a table view to the scroll view
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
         self._nsObject.setDocumentView_(self._tableView)
@@ -590,13 +593,6 @@ class List(VanillaBaseObject):
         self._otherApplicationDropSettings = None
 
     def _handleColumnWidths(self, columnDescriptions):
-        # if the width is set in one of the columns,
-        # it must be set in all columns if the OS < 10.4.
-        # raise an error if the width is not defined in all.
-        if not _haveResizingMasks:
-            columnDataWithWidths = [column for column in columnDescriptions if column.get("width") is not None]
-            if columnDataWithWidths and not len(columnDataWithWidths) == len(columnDescriptions):
-                raise VanillaError("The width of all columns must be set in this version of the operating system")
         # we also use this opportunity to determine if
         # autoresizing should be set for the table.
         autoResize = True
@@ -608,12 +604,7 @@ class List(VanillaBaseObject):
             self._setColumnAutoresizing()
 
     def _setColumnAutoresizing(self):
-        # set the resizing mask in OS > 10.3
-        if _haveResizingMasks:
-            self._tableView.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
-        # use the method in OS < 10.4
-        else:
-            self._tableView.setAutoresizesAllColumnsToFit_(True)
+        self._tableView.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
 
     def _makeColumnWithoutColumnDescriptions(self):
         self._setColumnAutoresizing()
@@ -632,18 +623,24 @@ class List(VanillaBaseObject):
                 column.setEditable_(False)
         # finally, add the column to the table view
         self._tableView.addTableColumn_(column)
+        # force the columns to adjust their widths if possible. (needed in 10.10)
+        self._tableView.sizeToFit()
 
     def _makeColumnsWithColumnDescriptions(self, columnDescriptions):
         # make sure that the column widths are in the correct format.
         self._handleColumnWidths(columnDescriptions)
         # create each column.
+        tableAllowsSorting = self._allowsSorting
         for columnIndex, data in enumerate(columnDescriptions):
             title = data["title"]
             key = data.get("key", title)
             width = data.get("width")
+            minWidth = data.get("minWidth", width)
+            maxWidth = data.get("maxWidth", width)
             formatter = data.get("formatter")
             cell = data.get("cell")
             editable = data.get("editable")
+            allowsSorting = data.get("allowsSorting", True)
             binding = data.get("binding", "value")
             keyPath = "arrangedObjects.%s" % key
             # check for typing sensitivity.
@@ -652,23 +649,15 @@ class List(VanillaBaseObject):
             # instantiate the column.
             column = NSTableColumn.alloc().initWithIdentifier_(key)
             self._orderedColumnIdentifiers.append(key)
-            # set the width
+            # set the width resizing mask
             if width is not None:
-                # set the resizing mask in OS > 10.3
-                if _haveResizingMasks:
-                    mask = NSTableColumnAutoresizingMask
-                    column.setResizingMask_(mask)
-                # use the method in OS < 10.4
+                if width == minWidth and width == maxWidth:
+                    mask = NSTableColumnNoResizing
                 else:
-                    column.setResizable_(True)
-            else:
-                # set the resizing mask in OS > 10.3
-                if _haveResizingMasks:
                     mask = NSTableColumnUserResizingMask | NSTableColumnAutoresizingMask
-                    column.setResizingMask_(mask)
-                # use the method in OS < 10.4
-                else:
-                    column.setResizable_(True)
+            else:
+                mask = NSTableColumnUserResizingMask | NSTableColumnAutoresizingMask
+            column.setResizingMask_(mask)
             # set the header cell
             column.headerCell().setTitle_(title)
             # set the data cell
@@ -682,8 +671,11 @@ class List(VanillaBaseObject):
             if formatter is not None:
                 cell.setFormatter_(formatter)
             if self._arrayController is not None:
+                bindingOptions = None
+                if not tableAllowsSorting or not allowsSorting:
+                    bindingOptions = {NSCreatesSortDescriptorBindingOption : False}
                 # assign the key to the binding
-                column.bind_toObject_withKeyPath_options_(binding, self._arrayController, keyPath, None)
+                column.bind_toObject_withKeyPath_options_(binding, self._arrayController, keyPath, bindingOptions)
             # set the editability of the column.
             # if no value was defined in the column data,
             # base the editability on the presence of
@@ -703,6 +695,10 @@ class List(VanillaBaseObject):
                 # do this *after* adding the column to the table, or the first column
                 # will have the wrong width (at least on 10.3)
                 column.setWidth_(width)
+                column.setMinWidth_(minWidth)
+                column.setMaxWidth_(maxWidth)
+        # force the columns to adjust their widths if possible. (needed in 10.10)
+        self._tableView.sizeToFit()
 
     def _wrapItem(self, item):
         # if the item is an instance of NSObject, assume that
@@ -799,7 +795,7 @@ class List(VanillaBaseObject):
             lastResort = None
             lastResortIndex = None
             inputLength = len(inputString)
-            for index in xrange(len(self)):
+            for index in range(len(self)):
                 item = self._arrayController.content()[index]
                 # the item could be a dictionary or
                 # a NSObject. safely handle each.
@@ -1015,8 +1011,7 @@ class List(VanillaBaseObject):
         # find the indexes of the ubsorted objects matching
         # the sorted objects
         unsortedIndexes = []
-        for index in xrange(len(unsortedArray)):
-            obj = unsortedArray[index]
+        for index, obj in enumerate(unsortedArray):
             test = (id(obj), obj)
             if test in sortedObjects:
                 unsortedIndexes.append(index)
@@ -1041,8 +1036,7 @@ class List(VanillaBaseObject):
         # find the indexes of the sorted objects matching
         # the unsorted objects
         sortedIndexes = []
-        for index in xrange(len(sortedArray)):
-            obj = sortedArray[index]
+        for index, obj in enumerate(sortedArray):
             test = (id(obj), obj)
             if test in unsortedObjects:
                 sortedIndexes.append(index)
@@ -1060,6 +1054,25 @@ def CheckBoxListCell(title=None):
     argument during the construction of a List.**
 
     **title** The title to be set in *all* items in the List column.
+
+    Example::
+
+        from vanilla import *
+
+        class CheckBoxListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                             [{"value": True}, {"value": False}],
+                             columnDescriptions=[{"title": "value", "cell": CheckBoxListCell()}],
+                             editCallback=self.editCallback)
+                self.w.open()
+
+            def editCallback(self, sender):
+                print(sender.get())
+
+        CheckBoxListCellDemo()
     """
     cell = NSButtonCell.alloc().init()
     cell.setButtonType_(NSSwitchButton)
@@ -1072,7 +1085,7 @@ def CheckBoxListCell(title=None):
     return cell
 
 
-def SliderListCell(minValue=0, maxValue=100):
+def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks=False):
     """
     An object that displays a slider in a List column.
 
@@ -1082,11 +1095,43 @@ def SliderListCell(minValue=0, maxValue=100):
     **minValue** The minimum value for the slider.
 
     **maxValue** The maximum value for the slider.
+
+    **tickMarkCount** The number of tick marcks to be displayed on the slider.
+    If *None* is given, no tick marks will be displayed.
+
+    **stopOnTickMarks** Boolean representing if the slider knob should only
+    stop on the tick marks.
+
+    Example::
+
+        from vanilla import *
+
+        class SliderListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((200, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                            [{"value1": 30, "value2": 70}],
+                            columnDescriptions=[
+                                {"title": "value1", "cell": SliderListCell()},
+                                {"title": "value2", "cell": SliderListCell(tickMarkCount=10)},
+                            ],
+                            editCallback=self.editCallback)
+                self.w.open()
+
+            def editCallback(self, sender):
+                print(sender.get())
+
+        SliderListCellDemo()
     """
     cell = NSSliderCell.alloc().init()
     cell.setControlSize_(NSSmallControlSize)
     cell.setMinValue_(minValue)
     cell.setMaxValue_(maxValue)
+    if tickMarkCount:
+        cell.setNumberOfTickMarks_(tickMarkCount)
+        if stopOnTickMarks:
+            cell.setAllowsTickMarkValuesOnly_(True)
     return cell
 
 
@@ -1098,6 +1143,30 @@ def PopUpButtonListCell(items):
     argument during the construction of a List.**
 
     **items** The items that should appear in the pop up list.
+
+    Note: when using this cell in a List, the `binding` in the
+    column description must be set to `selectedValue`.
+
+    Example::
+
+        from vanilla import *
+
+        class PopUpButtonListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                            [{"value": "A"}, {"value": "B"}],
+                            columnDescriptions=[
+                                {"title": "value", "cell": PopUpButtonListCell(["A", "B", "C"]), "binding": "selectedValue"}
+                            ],
+                            editCallback=self.editCallback)
+                self.w.open()
+
+            def editCallback(self, sender):
+                print(sender.get())
+
+        PopUpButtonListCellDemo()
     """
     cell = NSPopUpButtonCell.alloc().init()
     cell.setBordered_(False)
@@ -1115,3 +1184,137 @@ def PopUpButtonListCell(items):
         item = cell.itemAtIndex_(index)
         item.setAttributedTitle_(title)
     return cell
+
+
+def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scale="proportional"):
+    """
+    **horizontalAlignment** A string representing the desired horizontal
+    alignment of the image in the view. The options are:
+
+    +-------------+-------------------------+
+    | "left"      | Image is aligned left.  |
+    +-------------+-------------------------+
+    | "right"     | Image is aligned right. |
+    +-------------+-------------------------+
+    | "center"    | Image is centered.      |
+    +-------------+-------------------------+
+
+    **verticalAlignment** A string representing the desired vertical alignment
+    of the image in the view. The options are:
+
+    +-------------+--------------------------+
+    | "top"       | Image is aligned top.    |
+    +-------------+--------------------------+
+    | "bottom"    | Image is aligned bottom. |
+    +-------------+--------------------------+
+    | "center"    | Image is centered.       |
+    +-------------+--------------------------+
+
+    **scale** A string representing the desired scale style of the image in the
+    view. The options are:
+
+    +----------------+----------------------------------------------+
+    | "porportional" | Proportionally scale the image to fit in the |
+    |                | view if it is larger than the view.          |
+    +----------------+----------------------------------------------+
+    | "fit"          | Distort the proportions of the image until   |
+    |                | it fits exactly in the view.                 |
+    +----------------+----------------------------------------------+
+    | "none"         | Do not scale the image.                      |
+    +----------------+----------------------------------------------+
+
+    Example::
+
+        from AppKit import *
+        from vanilla import *
+
+        class ImageListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                            [
+                                {"image": NSImage.imageNamed_("NSActionTemplate")},
+                                {"image": NSImage.imageNamed_("NSRefreshTemplate")}
+                            ],
+                            columnDescriptions=[
+                                {"title": "image", "cell": ImageListCell()}
+                            ])
+                self.w.open()
+
+        ImageListCellDemo()
+    """
+    from vanilla.vanillaImageView import _imageAlignmentMap, _imageScaleMap
+    cell = NSImageCell.alloc().init()
+    align = _imageAlignmentMap[(horizontalAlignment, verticalAlignment)]
+    cell.setImageAlignment_(align)
+    scale = _imageScaleMap[scale]
+    cell.setImageScaling_(scale)
+    return cell
+
+
+def SegmentedButtonListCell(segmentDescriptions):
+    """
+    **segmentDescriptions** An ordered list of dictionaries describing the segments.
+
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | title (optional)       | The title of the segment.                                                                        |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | imagePath (optional)   | A file path to an image to display in the segment.                                               |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | imageNamed (optional)  | The name of an image already loaded as a *NSImage* by the application to display in the segment. |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+    | imageObject (optional) | A *NSImage* object to display in the segment.                                                    |
+    +------------------------+--------------------------------------------------------------------------------------------------+
+
+    Note: when using this cell in a List, the `binding` in the
+    column description must be set to `selectedIndex`.
+
+    Example::
+
+        from vanilla import *
+
+        class SegmentedButtonListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                            [{"value": 0}, {"value": 1}],
+                            columnDescriptions=[
+                                {
+                                    "title": "value",
+                                    "cell": SegmentedButtonListCell([dict(title="0"), dict(title="1")]),
+                                    "binding": "selectedIndex"
+                                }
+                            ],
+                            editCallback=self.editCallback)
+                self.w.open()
+
+            def editCallback(self, sender):
+                print(sender.get())
+
+        SegmentedButtonListCellDemo()
+    """
+    cell = NSSegmentedCell.alloc().init()
+    cell.setControlSize_(NSMiniControlSize)
+    cell.setSegmentCount_(len(segmentDescriptions))
+    cell.setTrackingMode_(NSSegmentSwitchTrackingSelectOne)
+    for segmentIndex, segmentDescription in enumerate(segmentDescriptions):
+        title = segmentDescription.get("title", "")
+        imagePath = segmentDescription.get("imagePath")
+        imageNamed = segmentDescription.get("imageNamed")
+        imageObject = segmentDescription.get("imageObject")
+        # create the NSImage if needed
+        if imagePath is not None:
+            image = NSImage.alloc().initWithContentsOfFile_(imagePath)
+        elif imageNamed is not None:
+            image = NSImage.imageNamed_(imageNamed)
+        elif imageObject is not None:
+            image = imageObject
+        else:
+            image = None
+        cell.setLabel_forSegment_(title, segmentIndex)
+        if image is not None:
+            cell.setImage_forSegment_(image, segmentIndex)
+    return cell
+

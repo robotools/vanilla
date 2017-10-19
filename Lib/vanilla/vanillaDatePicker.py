@@ -1,6 +1,6 @@
 from Foundation import *
 from AppKit import *
-from vanillaBase import VanillaBaseControl
+from vanilla.vanillaBase import VanillaBaseControl
 
 
 _modeMap = {

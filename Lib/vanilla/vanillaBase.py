@@ -1,6 +1,16 @@
+import platform
 from AppKit import *
-from nsSubclasses import getNSSubclass
+from distutils.version import StrictVersion
+from vanilla.nsSubclasses import getNSSubclass
 
+osVersionCurrent = StrictVersion(platform.mac_ver()[0])
+osVersion10_12 = StrictVersion("10.12")
+osVersion10_11 = StrictVersion("10.11")
+osVersion10_10 = StrictVersion("10.10")
+osVersion10_9 = StrictVersion("10.9")
+osVersion10_8 = StrictVersion("10.8")
+osVersion10_7 = StrictVersion("10.7")
+osVersion10_6 = StrictVersion("10.6")
 
 class VanillaError(Exception): pass
 
@@ -99,7 +109,7 @@ class VanillaBaseObject(object):
 
     def isVisible(self):
         """
-        Return a bool indicting if the object is visible or not.
+        Return a bool indicating if the object is visible or not.
         """
         return not self._nsObject.isHidden()
 
@@ -168,6 +178,12 @@ class VanillaBaseControl(VanillaBaseObject):
         Get the control title.
         """
         return self._nsObject.title()
+
+    def isEnabled(self):
+        """
+        Return a bool indicating if the object is enable or not.
+        """
+        return self._nsObject.isEnabled()
 
     def set(self, value):
         raise NotImplementedError

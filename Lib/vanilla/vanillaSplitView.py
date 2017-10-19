@@ -1,12 +1,13 @@
 from AppKit import *
 from vanilla import VanillaBaseObject, VanillaError, Group
 from vanilla.externalFrameworks.RBSplitView import RBSplitView, RBSplitSubview
+from vanilla.py23 import python_method
 
 
 class VanillaRBSplitView(RBSplitView):
 
     def init(self):
-        self = super(VanillaRBSplitView, self).initWithFrame_(((0, 0), (0, 0)))
+        self = objc.super(VanillaRBSplitView, self).initWithFrame_(((0, 0), (0, 0)))
         image = NSImage.imageNamed_("RBSplitViewThumb8")
         if image is not None:
             image.setFlipped_(True)
@@ -16,6 +17,7 @@ class VanillaRBSplitView(RBSplitView):
     def viewDidMoveToSuperview(self):
         pass
 
+    @python_method
     def _recurseThroughSubviews(self, view):
         if hasattr(view, "vanillaWrapper"):
             vanillaWrapper = view.vanillaWrapper()

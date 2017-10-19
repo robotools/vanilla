@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseObject, _sizeStyleMap
+from vanilla.vanillaBase import VanillaBaseObject, _sizeStyleMap
 
 
 class ProgressSpinner(VanillaBaseObject):

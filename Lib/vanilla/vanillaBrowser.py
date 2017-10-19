@@ -3,11 +3,13 @@ This is adapted from the PyObjC PythonBrowser demo.
 I beleive that demo was written by Just van Rossum.
 """
 
+import objc
 import AppKit
 from operator import getitem, setitem
 
 import inspect
 
+from vanilla.py23 import unicode, long, range, python_method
 from vanilla.vanillaBase import VanillaBaseObject
 from vanilla.nsSubclasses import getNSSubclass
 
@@ -162,7 +164,7 @@ def getArguments(obj):
     and leave 'self' out.
     """
     try:
-        arguments = apply(inspect.formatargspec, inspect.getargspec(obj))
+        arguments = inspect.formatargspec(*inspect.getargspec(obj))
     except TypeError:
         arguments = ""
     return arguments.replace("self, ", "").replace("self", "")
@@ -205,14 +207,13 @@ class PythonItem(AppKit.NSObject):
         self.getters = dict()
         self.setters = dict()
         if isinstance(obj, dict):
-            self.children = obj.keys()
-            self.children.sort()
+            self.children = sorted(obj.keys())
             self._setGetters(self.children, getitem)
             self._setSetters(self.children, setitem)
         elif obj is None or isinstance(obj, SIMPLE_TYPES):
             pass
         elif isinstance(obj, (list, tuple, set)):
-            self.children = range(len(obj))
+            self.children = list(range(len(obj)))
             self._setGetters(self.children, getitem)
             self._setSetters(self.children, setitem)
         elif isinstance(obj, property):
@@ -224,7 +225,7 @@ class PythonItem(AppKit.NSObject):
         else:
             try:
                 l = list(obj)
-                self.children = range(len(l))
+                self.children = list(range(len(l)))
                 self._setGetters(self.children, getitem)
                 self._setSetters(self.children, setitem)
             except:
@@ -232,8 +233,7 @@ class PythonItem(AppKit.NSObject):
             
             try:
                 d = dict(obj)
-                self.children = d.keys()
-                self.children.sort()
+                self.children = sorted(d.keys())
                 self._setGetters(self.children, getitem)
                 self._setSetters(self.children, setitem)
             except:
@@ -250,11 +250,13 @@ class PythonItem(AppKit.NSObject):
             self.children = [child for child in self.children if not (isinstance(child, (str, unicode)) and hasattr(AppKit, child))]
 
         self._childRefs = {}
-    
+
+    @python_method
     def _setSetters(self, names, callback):
         for name in names:
             self.setters[name] = callback
-    
+
+    @python_method
     def _setGetters(self, names, callback):
         for name in names:
             self.getters[name] = callback
@@ -262,8 +264,9 @@ class PythonItem(AppKit.NSObject):
     def isExpandable(self):
         return bool(self.children)
 
+    @python_method
     def getChild(self, child):
-        if self._childRefs.has_key(child):
+        if child in self._childRefs:
             return self._childRefs[child]
 
         name = self.children[child]

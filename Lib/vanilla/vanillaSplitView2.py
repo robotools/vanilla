@@ -1,6 +1,7 @@
 from warnings import warn
 from AppKit import *
-from vanillaBase import VanillaBaseObject
+from vanilla.vanillaBase import VanillaBaseObject
+from vanilla.py23 import python_method
 
 import objc
 objc.setVerbose(True)
@@ -15,12 +16,25 @@ _dividerStyleMap = {
 
 class VanillaSplitViewSubclass(NSSplitView):
 
+    _dividerColor = None
     _dividerThickness = None
+    _dividerDrawingFunction = None
 
     def viewDidMoveToWindow(self):
-        self.delegate().splitViewInitialSizing_(self)
+        delegate = self.delegate()
+        if delegate is not None:
+            self.delegate().splitViewInitialSizing_(self)
 
     # Divider
+
+    def dividerColor(self):
+        if self._dividerColor is None:
+            return super(VanillaSplitViewSubclass, self).dividerColor()
+        return self._dividerColor
+
+    def setDividerColor_(self, color):
+        self._dividerColor = color
+        self.setNeedsDisplay_(True)
 
     def dividerThickness(self):
         if self._dividerThickness is None:
@@ -30,7 +44,15 @@ class VanillaSplitViewSubclass(NSSplitView):
     def setDividerThickness_(self, value):
         self._dividerThickness = value
 
-    # def drawDividerInRect_(self, rect):
+    def setDividerDrawingFunction_(self, function):
+        self._dividerDrawingFunction = function
+        self.setNeedsDisplay_(True)
+
+    def drawDividerInRect_(self, rect):
+        if self._dividerDrawingFunction is None:
+            super(VanillaSplitViewSubclass, self).drawDividerInRect_(rect)
+        else:
+            self._dividerDrawingFunction(splitView=self.vanillaWrapper(), rect=rect)
 
     # Pane Visibility
 
@@ -154,9 +176,23 @@ class VanillaSplitViewDelegate(NSObject):
                 w = size
             else:
                 h = size
-            view.setFrame_(((0, 0), (w, h)))
+            f = ((0, 0), (w, h))
+            view.setFrame_(f)
+            self._recursivelyResizeSubviews(view)
         # tell NSSplitView to mess everything up
         splitView.adjustSubviews()
+
+    @python_method
+    def _recursivelyResizeSubviews(self, view):
+        for subview in view.subviews():
+            if hasattr(subview, "vanillaWrapper"):
+                vX, vY, vW, vH = subview.vanillaWrapper().getPosSize()
+                if vW < 0:
+                    pW = view.frame().size[0]
+                    (sX, sY), (sW, sH) = subview.frame()
+                    w = pW + vW - vX
+                    subview.setFrame_(((sX, sY), (w, sH)))
+            self._recursivelyResizeSubviews(subview)
 
     # Pane Collapsing
 
@@ -379,7 +415,7 @@ class SplitView2(VanillaBaseObject):
     **isVertical** Boolean representing if the split view is vertical.
     Default is *True*.
 
-    **dividerStyle** String representing teh style of the divider.
+    **dividerStyle** String representing the style of the divider.
     These are the options:
     +----------+
     | splitter |
@@ -388,15 +424,20 @@ class SplitView2(VanillaBaseObject):
     +----------+
     | thick    |
     +----------+
+    | None     |
+    +----------+
 
-    **dividerTickness** An integer representing the desired thickness of the divider.
+    **dividerThickness** An integer representing the desired thickness of the divider.
+
+    **dividerColor** A NSColor that should be used to paint the divider.
 
     **autosaveName** The autosave name for the SplitView.
     """
 
     nsSplitViewClass = VanillaSplitViewSubclass
 
-    def __init__(self, posSize, paneDescriptions, isVertical=True, dividerStyle="splitter", dividerThickness=None,
+    def __init__(self, posSize, paneDescriptions, isVertical=True,
+        dividerStyle="splitter", dividerThickness=None, dividerColor=None,
         autosaveName=None,
         # deprecated
         dividerImage=None
@@ -407,7 +448,11 @@ class SplitView2(VanillaBaseObject):
         # set up and basic attributes
         self._setupView(self.nsSplitViewClass, posSize)
         self._nsObject.setVertical_(isVertical)
+        self._nsObject.setDividerColor_(dividerColor)
         self._nsObject.setDividerThickness_(dividerThickness)
+        if dividerStyle is None:
+            self.setDividerDrawingFunction(_dummySplitViewDrawingFunction)
+            dividerStyle = "thick"
         dividerStyle = _dividerStyleMap[dividerStyle]
         self._nsObject.setDividerStyle_(dividerStyle)
         if autosaveName is not None:
@@ -468,7 +513,7 @@ class SplitView2(VanillaBaseObject):
 
 
     def getRBSplitView(self):
-        warn("SplitView no longet wraps RBSplitView. Use getNSSplitView instead of getRBSplitView.")
+        warn("SplitView no longer wraps RBSplitView. Use getNSSplitView instead of getRBSplitView.")
         return self.getNSSplitView()
 
     def getNSSplitView(self):
@@ -476,6 +521,22 @@ class SplitView2(VanillaBaseObject):
         Return the *NSSplitView* that this object wraps.
         """
         return self._nsObject
+
+    def setDividerDrawingFunction(self, function):
+        """
+        Set a function that will draw the contents of
+        the divider. This can be **None** or a function
+        that accepts the following arguments:
+
+        +-----------+---------------------------------------+
+        | splitView | The SplitView calling the function.   |
+        +-----------+---------------------------------------+
+        | rect      | The rectangle containing the divider. |
+        +-----------+---------------------------------------+
+
+        The function must use the Cocoa drawing API.
+        """
+        self._nsObject.setDividerDrawingFunction_(function)
 
     def isPaneVisible(self, identifier):
         """
@@ -503,3 +564,7 @@ class SplitView2(VanillaBaseObject):
         """
         currentState = self.isPaneVisible(identifier)
         self.showPane(identifier, not currentState, animate)
+
+
+def _dummySplitViewDrawingFunction(splitView, rect):
+    return

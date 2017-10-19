@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseControl, VanillaCallbackWrapper
+from vanilla.vanillaBase import VanillaBaseControl, VanillaCallbackWrapper
 
 
 class VanillaEditTextDelegate(VanillaCallbackWrapper):
@@ -31,7 +31,7 @@ class EditText(VanillaBaseControl):
                 self.w.open()
 
             def editTextCallback(self, sender):
-                print "text entry!", sender.get()
+                print("text entry!", sender.get())
 
         EditTextDemo()
 
@@ -74,7 +74,7 @@ class EditText(VanillaBaseControl):
     """
 
     nsTextFieldClass = NSTextField
-    delegateClass = VanillaEditTextDelegate
+    nsTextFieldDelegateClass = VanillaEditTextDelegate
 
     def __init__(self, posSize, text="", callback=None, continuous=True, readOnly=False, formatter=None, placeholder=None, sizeStyle="regular"):
         self._continuous = continuous
@@ -86,11 +86,9 @@ class EditText(VanillaBaseControl):
         self._nsObject.setBezeled_(True)
         self._nsObject.setEditable_(not readOnly)
         self._nsObject.setSelectable_(True)
-        cell = self._nsObject.cell()
-        if formatter is not None:
-            cell.setFormatter_(formatter)
+        self._nsObject.setFormatter_(formatter)
         if placeholder:
-            cell.setPlaceholderString_(placeholder)
+            self._nsObject.cell().setPlaceholderString_(placeholder)
 
     def _testForDeprecatedAttributes(self):
         super(EditText, self)._testForDeprecatedAttributes()
@@ -107,7 +105,7 @@ class EditText(VanillaBaseControl):
 
     def _setCallback(self, callback):
         if callback is not None:
-            self._target = self.delegateClass(callback)
+            self._target = self.nsTextFieldDelegateClass(callback)
             self._target._continuous = self._continuous
             self._nsObject.setDelegate_(self._target)
 
@@ -168,7 +166,7 @@ class SecureEditText(EditText):
                 self.w.open()
 
             def secureEditTextCallback(self, sender):
-                print "text entry!", sender.get()
+                print("text entry!", sender.get())
 
         SecureEditTextDemo()
 

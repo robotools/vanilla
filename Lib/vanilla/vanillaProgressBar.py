@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseObject, _sizeStyleMap
+from vanilla.vanillaBase import VanillaBaseObject, _sizeStyleMap, osVersion10_11, osVersionCurrent
 
 class ProgressBar(VanillaBaseObject):
 
@@ -71,6 +71,9 @@ class ProgressBar(VanillaBaseObject):
         self._nsObject.setMaxValue_(maxValue)
         self._nsObject.setIndeterminate_(isIndeterminate)
         if isIndeterminate:
+            self._nsObject.setUsesThreadedAnimation_(True)
+        if osVersionCurrent >= osVersion10_11:
+            self._nsObject.setIndeterminate_(True)
             self._nsObject.setUsesThreadedAnimation_(True)
 
     def getNSProgressIndicator(self):

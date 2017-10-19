@@ -1,3 +1,5 @@
+from __future__ import print_function
+import sys
 from AppKit import NSObject
 from PyObjCTools import AppHelper
 import vanilla
@@ -18,7 +20,8 @@ class SimpleAppWindow(object):
         self.w.open()
 
     def buttonCallback(self, sender):
-        print "You pressed the button!"
+        print("You pressed the button!")
+        sys.stdout.flush()
 
 
 if __name__ == "__main__":

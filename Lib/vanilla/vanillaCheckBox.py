@@ -1,5 +1,6 @@
 from AppKit import *
-from vanilla import Button, VanillaBaseObject
+from vanilla.vanillaButton import Button
+from vanilla.vanillaBase import osVersionCurrent, osVersion10_10, VanillaBaseObject
 
 
 # In OS 10.0-10.X (tested up to OS 10.4) the small and mini check box
@@ -9,8 +10,58 @@ from vanilla import Button, VanillaBaseObject
 # fixes this problem, we can revert back to the standard method for
 # creating the control.
 
+_doc =     """
+A standard check box.::
+
+    from vanilla import *
+
+    class CheckBoxDemo(object):
+
+        def __init__(self):
+            self.w = Window((100, 40))
+            self.w.checkBox = CheckBox((10, 10, -10, 20), "A CheckBox",
+                               callback=self.checkBoxCallback, value=True)
+            self.w.open()
+
+        def checkBoxCallback(self, sender):
+            print("check box state change!", sender.get())
+
+    CheckBoxDemo()
+
+**posSize** Tuple of form (left, top, width, height) representing the position and size of
+the check box. The size of the check box should match the appropriate value for the given *sizeStyle*.
+
++-------------------------+
+| **Standard Dimensions** |
++---------+---+-----------+
+| Regular | H | 22        |
++---------+---+-----------+
+| Small   | H | 18        |
++---------+---+-----------+
+| Mini    | H | 10        |
++---------+---+-----------+
+
+**title** The text to be displayed next to the check box. Pass *None* is no title is desired.
+
+**callback** The method to be called when the user changes the state of the check box.
+
+**value** A boolean representing the state of the check box.
+
+**sizeStyle** A string representing the desired size style of the check box. The options are:
+
++-----------+
+| "regular" |
++-----------+
+| "small"   |
++-----------+
+| "mini"    |
++-----------+
+"""
+
 
 class _CheckBoxStandardBuild(Button):
+
+    __doc__ = _doc
 
     nsButtonType = NSSwitchButton
     frameAdjustments = {
@@ -81,6 +132,8 @@ class _CheckBoxManualBuildTextButton(Button):
 
 
 class _CheckBoxManualBuild(VanillaBaseObject):
+
+    __doc__ = _doc
 
     # both the container view and the check box will be adjusted.
     # this is necessary to create the appropriate buffer
@@ -197,56 +250,8 @@ class _CheckBoxManualBuild(VanillaBaseObject):
         self._checkBox.toggle()
 
 
-class CheckBox(_CheckBoxManualBuild):
-
-    """
-    A standard check box.::
-
-        from vanilla import *
-
-        class CheckBoxDemo(object):
-
-            def __init__(self):
-                self.w = Window((100, 40))
-                self.w.checkBox = CheckBox((10, 10, -10, 20), "A CheckBox",
-                                   callback=self.checkBoxCallback, value=True)
-                self.w.open()
-
-            def checkBoxCallback(self, sender):
-                print "check box state change!", sender.get()
-
-        CheckBoxDemo()
-
-    **posSize** Tuple of form (left, top, width, height) representing the position and size of
-    the check box. The size of the check box should match the appropriate value for the given *sizeStyle*.
-
-    +-------------------------+
-    | **Standard Dimensions** |
-    +---------+---+-----------+
-    | Regular | H | 22        |
-    +---------+---+-----------+
-    | Small   | H | 18        |
-    +---------+---+-----------+
-    | Mini    | H | 10        |
-    +---------+---+-----------+
-
-    **title** The text to be displayed next to the check box. Pass *None* is no title is desired.
-
-    **callback** The method to be called when the user changes the state of the check box.
-
-    **value** A boolean representing the state of the check box.
-
-    **sizeStyle** A string representing the desired size style of the check box. The options are:
-
-    +-----------+
-    | "regular" |
-    +-----------+
-    | "small"   |
-    +-----------+
-    | "mini"    |
-    +-----------+
-    """
-
-    def __init__(self, posSize, title, callback=None, value=False, sizeStyle="regular"):
-        super(CheckBox, self).__init__(posSize=posSize, title=title, callback=callback, value=value, sizeStyle=sizeStyle)
+if osVersionCurrent >= osVersion10_10:
+    class CheckBox(_CheckBoxStandardBuild): pass
+else:
+    class CheckBox(_CheckBoxManualBuild): pass
 

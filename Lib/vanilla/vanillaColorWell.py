@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseObject
+from vanilla.vanillaBase import VanillaBaseObject
 
 
 class ColorWell(VanillaBaseObject):
@@ -23,7 +23,7 @@ class ColorWell(VanillaBaseObject):
                 self.w.open()
 
             def colorWellEdit(self, sender):
-                print "color well edit!", sender.get()
+                print("color well edit!", sender.get())
 
         ColorWellDemo()
 

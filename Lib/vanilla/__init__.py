@@ -1,28 +1,32 @@
-from vanillaBase import VanillaBaseObject, VanillaBaseControl, VanillaError
-from vanillaBox import Box, HorizontalLine, VerticalLine
-from vanillaBrowser import ObjectBrowser
-from vanillaButton import Button, SquareButton, ImageButton, HelpButton
-from vanillaCheckBox import CheckBox
-from vanillaColorWell import ColorWell
-from vanillaComboBox import ComboBox
-from vanillaDrawer import Drawer
-from vanillaEditText import EditText, SecureEditText
-from vanillaGroup import Group
-from vanillaImageView import ImageView
-from vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell
-from vanillaPopUpButton import PopUpButton
-from vanillaProgressBar import ProgressBar
-from vanillaProgressSpinner import ProgressSpinner
-from vanillaRadioGroup import RadioGroup
-from vanillaScrollView import ScrollView
-from vanillaSearchBox import SearchBox
-from vanillaSegmentedButton import SegmentedButton
-from vanillaSlider import Slider
-from vanillaSplitView2 import SplitView2
-from vanillaTabs import Tabs
-from vanillaTextBox import TextBox
-from vanillaTextEditor import TextEditor
-from vanillaWindows import Window, FloatingWindow, Sheet
+from vanilla.vanillaBase import VanillaBaseObject, VanillaBaseControl, VanillaError
+from vanilla.vanillaBox import Box, HorizontalLine, VerticalLine
+from vanilla.vanillaBrowser import ObjectBrowser
+from vanilla.vanillaButton import Button, SquareButton, ImageButton, HelpButton
+from vanilla.vanillaCheckBox import CheckBox
+from vanilla.vanillaColorWell import ColorWell
+from vanilla.vanillaComboBox import ComboBox
+from vanilla.vanillaDatePicker import DatePicker
+from vanilla.vanillaDrawer import Drawer
+from vanilla.vanillaEditText import EditText, SecureEditText
+from vanilla.vanillaGradientButton import GradientButton
+from vanilla.vanillaGroup import Group
+from vanilla.vanillaImageView import ImageView
+from vanilla.vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
+from vanilla.vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell, ImageListCell, SegmentedButtonListCell
+from vanilla.vanillaPathControl import PathControl
+from vanilla.vanillaPopUpButton import PopUpButton, ActionButton
+from vanilla.vanillaProgressBar import ProgressBar
+from vanilla.vanillaProgressSpinner import ProgressSpinner
+from vanilla.vanillaRadioGroup import RadioGroup
+from vanilla.vanillaScrollView import ScrollView
+from vanilla.vanillaSearchBox import SearchBox
+from vanilla.vanillaSegmentedButton import SegmentedButton
+from vanilla.vanillaSlider import Slider
+from vanilla.vanillaSplitView2 import SplitView2
+from vanilla.vanillaTabs import Tabs
+from vanilla.vanillaTextBox import TextBox
+from vanilla.vanillaTextEditor import TextEditor
+from vanilla.vanillaWindows import Window, FloatingWindow, HUDFloatingWindow, Sheet
 
 __all__ = [
     "VanillaBaseObject", "VanillaBaseControl", "VanillaError",
@@ -31,13 +35,17 @@ __all__ = [
     "CheckBox",
     "ColorWell",
     "ComboBox",
+    "DatePicker",
     "Drawer",
     "EditText",
+    "GradientButton",
     "Group",
     "ImageView",
-    "List", "CheckBoxListCell", "SliderListCell", "PopUpButtonListCell",
+    "LevelIndicator", "LevelIndicatorListCell",
+    "List", "CheckBoxListCell", "SliderListCell", "PopUpButtonListCell", "ImageListCell", "SegmentedButtonListCell",
     "ObjectBrowser",
-    "PopUpButton",
+    "PathControl",
+    "PopUpButton", "ActionButton",
     "ProgressBar",
     "ProgressSpinner",
     "RadioGroup",
@@ -51,31 +59,12 @@ __all__ = [
     "Tabs",
     "TextBox",
     "TextEditor",
-    "Window", "FloatingWindow", "Sheet"
+    "Window", "FloatingWindow", "HUDFloatingWindow", "Sheet"
     ]
-
-# OS 10.4+ objects
-try:
-    from vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
-    __all__.append("LevelIndicator")
-    __all__.append("LevelIndicatorListCell")
-    from vanillaDatePicker import DatePicker
-    __all__.append("DatePicker")
-except (ImportError, NameError):
-    pass
-
-# OS 10.5 objects
-try:
-    from vanillaGradientButton import GradientButton
-    __all__.append("GradientButton")
-    from vanillaPathControl import PathControl
-    __all__.append("PathControl")
-except (ImportError, NameError):
-    pass
 
 # OS 10.7 objects
 try:
-    from vanillaPopover import Popover
+    from vanilla.vanillaPopover import Popover
     __all__.append("Popover")
 except (ImportError, NameError):
     pass
@@ -87,7 +76,7 @@ class _NoRBSplitView(object):
         raise VanillaError("SplitView is not available because the RBSplitView framework cannot be found. Refer to the Vanilla documentation for details.")
 
 try:
-    from vanillaSplitView import SplitView
+    from vanilla.vanillaSplitView import SplitView
     from vanilla.externalFrameworks import RBSplitView
 except (ImportError, ValueError):
     SplitView = _NoRBSplitView

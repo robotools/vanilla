@@ -1,5 +1,5 @@
 from AppKit import NSSearchField
-from vanillaBase import VanillaBaseControl
+from vanilla.vanillaBase import VanillaBaseControl
 
 
 class SearchBox(VanillaBaseControl):
@@ -18,7 +18,7 @@ class SearchBox(VanillaBaseControl):
                 self.w.open()
 
             def searchBoxCallback(self, sender):
-                print "search box entry!", sender.get()
+                print("search box entry!", sender.get())
 
         SearchBoxDemo()
 
@@ -63,10 +63,10 @@ class SearchBox(VanillaBaseControl):
         self._setupView(self.nsSearchFieldClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setStringValue_(text)
+        if formatter is not None:
+            self._nsObject.setFormatter_(formatter)
         cell = self._nsObject.cell()
         cell.setScrollable_(True)
-        if formatter is not None:
-            cell.setFormatter_(formatter)
         if placeholder:
             cell.setPlaceholderString_(placeholder)
 

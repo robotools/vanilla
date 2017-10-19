@@ -1,11 +1,14 @@
+import objc
 from AppKit import NSObject, NSComboBox
-from vanillaBase import VanillaBaseControl
+from vanilla.vanillaBase import VanillaBaseControl
+from vanilla.py23 import python_method
 
 
 class VanillaComboBoxDelegate(NSObject):
 
     _continuous = True
 
+    @python_method
     def _callVanillaCallback(self, notification):
         obj = notification.object()
         target = obj.target()
@@ -43,7 +46,7 @@ class ComboBox(VanillaBaseControl):
                 self.w.open()
 
             def comboBoxCallback(self, sender):
-                print "combo box entry!", sender.get()
+                print("combo box entry!", sender.get())
 
         ComboBoxDemo()
 
@@ -99,7 +102,7 @@ class ComboBox(VanillaBaseControl):
         self._nsObject.addItemsWithObjectValues_(items)
         self._nsObject.setCompletes_(completes)
         if formatter is not None:
-            self._nsObject.cell().setFormatter_(formatter)
+            self._nsObject.setFormatter_(formatter)
 
     def _breakCycles(self):
         super(ComboBox, self)._breakCycles()

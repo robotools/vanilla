@@ -1,5 +1,5 @@
 from AppKit import *
-from vanillaBase import VanillaBaseControl
+from vanilla.vanillaBase import VanillaBaseControl
 
 
 _modifierMap = {
@@ -40,7 +40,7 @@ class Button(VanillaBaseControl):
                  self.w.open()
 
              def buttonCallback(self, sender):
-                 print "button hit!"
+                 print("button hit!")
 
         ButtonDemo()
 
@@ -170,7 +170,7 @@ class SquareButton(Button):
                  self.w.open()
 
              def buttonCallback(self, sender):
-                 print "button hit!"
+                 print("button hit!")
 
         SquareButtonDemo()
 
@@ -222,7 +222,7 @@ class ImageButton(SquareButton):
                  self.w.open()
 
              def buttonCallback(self, sender):
-                 print "button hit!"
+                 print("button hit!")
 
         ImageButtonDemo()
 
@@ -312,7 +312,7 @@ class ImageButton(SquareButton):
         elif imageObject is not None:
             image = imageObject
         else:
-            raise ValueError, "no image source defined"
+            raise ValueError("no image source defined")
         self._nsObject.setImage_(image)
 
 
@@ -332,7 +332,7 @@ class HelpButton(Button):
                  self.w.open()
 
              def buttonCallback(self, sender):
-                 print "help button hit!"
+                 print("help button hit!")
 
         HelpButtonDemo()
 
