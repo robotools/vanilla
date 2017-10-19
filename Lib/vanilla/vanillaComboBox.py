@@ -1,13 +1,14 @@
 import objc
 from AppKit import NSObject, NSComboBox
 from vanilla.vanillaBase import VanillaBaseControl
+from vanilla.py23 import python_method
 
 
 class VanillaComboBoxDelegate(NSObject):
 
     _continuous = True
 
-    @objc.python_method
+    @python_method
     def _callVanillaCallback(self, notification):
         obj = notification.object()
         target = obj.target()

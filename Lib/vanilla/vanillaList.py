@@ -2,7 +2,7 @@ import time
 import objc
 from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import *
-from vanilla.py23 import basestring, range, unichr
+from vanilla.py23 import basestring, range, unichr, python_method
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
 
@@ -79,7 +79,7 @@ class VanillaArrayController(NSArrayController):
         pboard.setPropertyList_forType_(objects.description(), dragType)
         return True
 
-    @objc.python_method
+    @python_method
     def _handleDrop(self, isProposal, tableView, draggingInfo, row, dropOperation):
         vanillaWrapper = tableView.vanillaWrapper()
         draggingSource = draggingInfo.draggingSource()
@@ -122,7 +122,7 @@ class VanillaArrayController(NSArrayController):
         settings = vanillaWrapper._otherApplicationDropSettings
         return self._handleDropBasedOnSettings(settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation)
 
-    @objc.python_method
+    @python_method
     def _handleDropBasedOnSettings(self, settings, vanillaWrapper, dropOnRow, draggingInfo, dropInformation):
         # handle drop position
         validDropPosition = self._validateDropPosition(settings, dropOnRow)
@@ -136,7 +136,7 @@ class VanillaArrayController(NSArrayController):
             return settings.get("operation", NSDragOperationCopy)
         return NSDragOperationNone
 
-    @objc.python_method
+    @python_method
     def _validateDropPosition(self, settings, dropOnRow):
         if dropOnRow and not settings.get("allowsDropOnRows", False):
             return False
@@ -144,7 +144,7 @@ class VanillaArrayController(NSArrayController):
             return False
         return True
 
-    @objc.python_method
+    @python_method
     def _unpackPboard(self, settings, draggingInfo):
         pboard = draggingInfo.draggingPasteboard()
         data = pboard.propertyListForType_(settings["type"])
