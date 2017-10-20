@@ -41,7 +41,7 @@ class _VanillaTableViewSubclass(VanillaTableViewSubclass):
 
 
 class VanillaArrayControllerObserver(NSObject):
-    
+
     def observeValueForKeyPath_ofObject_change_context_(self, keyPath, obj, change, context):
         if hasattr(self, "_targetMethod") and self._targetMethod is not None:
             self._targetMethod()
@@ -472,10 +472,9 @@ class List(VanillaBaseObject):
             self._arrayController = self.nsArrayControllerClass.alloc().initWithContent_(items)
             self._arrayController.setSelectsInsertedObjects_(False)
             self._arrayController.setAvoidsEmptySelection_(not allowsEmptySelection)
-            self._tableView.setDataSource_(self._arrayController)
         else:
-            self._tableView.setDataSource_(dataSource)
-            self._arrayController = None
+            self._arrayController = dataSource
+        self._tableView.setDataSource_(self._arrayController)
         # hide the header
         if not showColumnTitles or not columnDescriptions:
             self._tableView.setHeaderView_(None)
@@ -728,7 +727,7 @@ class List(VanillaBaseObject):
             self._editCallback(self)
 
     def _selection(self):
-        if self._selectionCallback is not None: 
+        if self._selectionCallback is not None:
             self._selectionCallback(self)
 
     def _keyDown(self, event):
@@ -832,7 +831,7 @@ class List(VanillaBaseObject):
                         lastResortIndex = index
                         continue
                     # if existing the last resort is greater than the item
-                    # the item is a closer match to the input string 
+                    # the item is a closer match to the input string
                     if lastResort > item:
                         lastResort = item
                         lastResortIndex = index
