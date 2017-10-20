@@ -63,17 +63,20 @@ class ProgressBar(VanillaBaseObject):
         "regular": (-2, -0, 4, 0),
     }
 
-    def __init__(self, posSize, minValue=0, maxValue=100, isIndeterminate=False, sizeStyle="regular"):
+    progressStyleMap = {
+        "bar" : NSProgressIndicatorBarStyle,
+        "spinning" : NSProgressIndicatorSpinningStyle
+    }
+
+    def __init__(self, posSize, minValue=0, maxValue=100, isIndeterminate=False, sizeStyle="regular", progressStyle="bar"):
         self._setupView(self.nsProgressIndicatorClass, posSize)
         self.frameAdjustments = self.allFrameAdjustments[sizeStyle]
         self._nsObject.setControlSize_(_sizeStyleMap[sizeStyle])
+        self._nsObject.setStyle_(self.progressStyleMap[progressStyle])
         self._nsObject.setMinValue_(minValue)
         self._nsObject.setMaxValue_(maxValue)
         self._nsObject.setIndeterminate_(isIndeterminate)
         if isIndeterminate:
-            self._nsObject.setUsesThreadedAnimation_(True)
-        if osVersionCurrent >= osVersion10_11:
-            self._nsObject.setIndeterminate_(True)
             self._nsObject.setUsesThreadedAnimation_(True)
 
     def getNSProgressIndicator(self):
@@ -95,6 +98,8 @@ class ProgressBar(VanillaBaseObject):
         """
         self._nsObject.setDoubleValue_(value)
         self._nsObject.display()
+        if osVersionCurrent >= osVersion10_11:
+            NSRunLoop.mainRunLoop().runUntilDate_(NSDate.dateWithTimeIntervalSinceNow_(0.0001))
 
     def get(self):
         """
@@ -112,6 +117,8 @@ class ProgressBar(VanillaBaseObject):
         """
         self._nsObject.incrementBy_(value)
         self._nsObject.display()
+        if osVersionCurrent >= osVersion10_11:
+            NSRunLoop.mainRunLoop().runUntilDate_(NSDate.dateWithTimeIntervalSinceNow_(0.0001))
 
     def start(self):
         """
