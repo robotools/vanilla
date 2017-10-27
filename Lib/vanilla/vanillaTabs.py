@@ -9,6 +9,7 @@ class VanillaTabItem(VanillaBaseObject):
 
     def __init__(self, title):
         self._tabItem = self.nsTabViewItemClass.alloc().initWithIdentifier_(title)
+        self._tabItem.view().setFrame_(((0, 0), (10000, 10000)))
         self._tabItem.setLabel_(title)
 
     def _getContentView(self):

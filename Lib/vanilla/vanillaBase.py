@@ -30,6 +30,7 @@ class VanillaBaseObject(object):
         self._testForDeprecatedAttributes()
         cls = getNSSubclass(classOrName)
         self._nsObject = cls(self)
+        self._nsObject.setFrame_(((0, 0), (10000, 10000)))
         self._posSize = posSize
         self._setCallback(callback)
         self._setAutosizingFromPosSize(posSize)
