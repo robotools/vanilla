@@ -9,6 +9,9 @@ class VanillaTabItem(VanillaBaseObject):
 
     def __init__(self, title):
         self._tabItem = self.nsTabViewItemClass.alloc().initWithIdentifier_(title)
+        # Set the frame to something non-zero, so the autosizing machinery works
+        # well for nested views, even when there's no parent view yet. That is
+        # the case for the tabs that are not visible upon creation.
         self._tabItem.view().setFrame_(((0, 0), (10000, 10000)))
         self._tabItem.setLabel_(title)
 
