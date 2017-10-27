@@ -117,3 +117,6 @@ class RadioGroup(VanillaBaseControl):
             row = 0
             column = index
         self._nsObject.selectCellAtRow_column_(row, column)
+
+    def enableCell(self, cell_index, onOff=True):
+        self._nsObject.cells()[cell_index].setCellAttribute_to_(NSCellDisabled, not onOff)
