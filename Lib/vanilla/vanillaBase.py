@@ -30,6 +30,9 @@ class VanillaBaseObject(object):
         self._testForDeprecatedAttributes()
         cls = getNSSubclass(classOrName)
         self._nsObject = cls(self)
+        # Set the frame to something non-zero, so the autosizing machinery works
+        # well for nested views, even when there's no parent view yet.
+        self._nsObject.setFrame_(((0, 0), (10000, 10000)))
         self._posSize = posSize
         self._setCallback(callback)
         self._setAutosizingFromPosSize(posSize)
