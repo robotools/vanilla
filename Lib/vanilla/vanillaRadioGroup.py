@@ -108,7 +108,7 @@ class RadioGroup(VanillaBaseControl):
 
     def set(self, index):
         """
-        Set the index of the seleced radio button.
+        Set the index of the selected radio button.
         """
         if self._isVertical:
             row = index
