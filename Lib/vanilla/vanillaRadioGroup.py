@@ -108,7 +108,7 @@ class RadioGroup(VanillaBaseControl):
 
     def set(self, index):
         """
-        Set the index of the seleced radio button.
+        Set the index of the selected radio button.
         """
         if self._isVertical:
             row = index
@@ -117,3 +117,9 @@ class RadioGroup(VanillaBaseControl):
             row = 0
             column = index
         self._nsObject.selectCellAtRow_column_(row, column)
+
+    def enableRadioButton(self, index, onOff=True):
+        """
+        Enable or disable a RadioGroup button specified by its index.
+        """
+        self._nsObject.cells()[index].setCellAttribute_to_(NSCellDisabled, not onOff)
