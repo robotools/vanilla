@@ -118,5 +118,8 @@ class RadioGroup(VanillaBaseControl):
             column = index
         self._nsObject.selectCellAtRow_column_(row, column)
 
-    def enableCell(self, cell_index, onOff=True):
-        self._nsObject.cells()[cell_index].setCellAttribute_to_(NSCellDisabled, not onOff)
+    def enableCell(self, index, onOff=True):
+        """
+        Enable or disable a radio button cell specified by its index.
+        """
+        self._nsObject.cells()[index].setCellAttribute_to_(NSCellDisabled, not onOff)
