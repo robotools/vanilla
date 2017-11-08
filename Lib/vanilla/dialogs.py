@@ -50,7 +50,7 @@ class BaseMessageDialog(NSObject):
         if self._resultCallback is not None:
             self._resultCallback(self._value)
 
-    alertDidEnd_returnCode_contextInfo_ = selector(alertDidEnd_returnCode_contextInfo_, signature="v@:@i@")
+    alertDidEnd_returnCode_contextInfo_ = selector(alertDidEnd_returnCode_contextInfo_, signature=b"v@:@i@")
 
     def windowWillClose_(self, notification):
         self.autorelease()
@@ -111,7 +111,7 @@ class PutFilePanel(BasePutGetPanel):
             if self._resultCallback is not None:
                 self._resultCallback(self._result)
 
-    savePanelDidEnd_returnCode_contextInfo_ = objc.selector(savePanelDidEnd_returnCode_contextInfo_, signature="v@:@ii")
+    savePanelDidEnd_returnCode_contextInfo_ = objc.selector(savePanelDidEnd_returnCode_contextInfo_, signature=b"v@:@ii")
 
 
 class GetFileOrFolderPanel(BasePutGetPanel):
@@ -159,7 +159,7 @@ class GetFileOrFolderPanel(BasePutGetPanel):
             if self._resultCallback is not None:
                 self._resultCallback(self._result)
 
-    openPanelDidEnd_returnCode_contextInfo_ = objc.selector(openPanelDidEnd_returnCode_contextInfo_, signature="v@:@ii")
+    openPanelDidEnd_returnCode_contextInfo_ = objc.selector(openPanelDidEnd_returnCode_contextInfo_, signature=b"v@:@ii")
 
 
 def _unwrapWindow(window):
