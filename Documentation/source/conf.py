@@ -229,8 +229,6 @@ class Mock(object):
             return Mock
     
     __all__ = [
-            # ignore RBSplitView imports
-    		'RBSplitView', 'RBSplitSubview',
             # ignore objc imports
             'selector',
             # ignore all import from Foundation
@@ -242,7 +240,6 @@ class Mock(object):
     
 MOCK_MODULES = [
             'AppKit', 'objc', 'Foundation',
-            'vanilla.externalFrameworks.RBSplitView'
             ]
         
 for mod_name in MOCK_MODULES:
