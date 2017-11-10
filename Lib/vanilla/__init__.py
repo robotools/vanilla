@@ -22,7 +22,7 @@ from vanilla.vanillaScrollView import ScrollView
 from vanilla.vanillaSearchBox import SearchBox
 from vanilla.vanillaSegmentedButton import SegmentedButton
 from vanilla.vanillaSlider import Slider
-from vanilla.vanillaSplitView2 import SplitView2
+from vanilla.vanillaSplitView import SplitView, SplitView2
 from vanilla.vanillaTabs import Tabs
 from vanilla.vanillaTextBox import TextBox
 from vanilla.vanillaTextEditor import TextEditor
@@ -68,16 +68,3 @@ try:
     __all__.append("Popover")
 except (ImportError, NameError):
     pass
-
-# RBSplitView required for SplitView
-class _NoRBSplitView(object):
-
-    def __init__(self, *args, **kwargs):
-        raise VanillaError("SplitView is not available because the RBSplitView framework cannot be found. Refer to the Vanilla documentation for details.")
-
-try:
-    from vanilla.vanillaSplitView import SplitView
-    from vanilla.externalFrameworks import RBSplitView
-except (ImportError, ValueError):
-    SplitView = _NoRBSplitView
-
