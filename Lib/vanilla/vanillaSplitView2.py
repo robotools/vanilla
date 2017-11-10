@@ -466,7 +466,7 @@ class SplitView2(VanillaBaseObject):
 
     def _breakCycles(self):
         splitView = self.getNSSplitView()
-        for view in splitView.subviews():
+        for view in list(splitView.subviews()):
             view.removeFromSuperview()
         self._nsObject.setDelegate_(None)
         self._delegate = None
