@@ -143,3 +143,9 @@ class ComboBox(VanillaBaseControl):
         """
         self._nsObject.removeAllItems()
         self._nsObject.addItemsWithObjectValues_(items)
+
+    def getItems(self):
+        """
+        Get the items in the combo box as a list.
+        """
+        return list(self._nsObject.objectValues())
