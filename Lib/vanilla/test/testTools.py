@@ -1,4 +1,5 @@
-from AppKit import *
+from Foundation import NSObject
+from AppKit import NSApplication, NSMenu, NSMenuItem
 from PyObjCTools import AppHelper
 
 

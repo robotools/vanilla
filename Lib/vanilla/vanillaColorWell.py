@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSColorWell, NSColorPanel
 from vanilla.vanillaBase import VanillaBaseObject
 
 

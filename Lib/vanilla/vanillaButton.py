@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSButton, NSImage, NSBundle, NSRoundedBezelStyle, NSShadowlessSquareBezelStyle, NSHelpButtonBezelStyle, NSMomentaryPushInButton, NSCommandKeyMask, NSAlternateKeyMask, NSAlternateKeyMask, NSShiftKeyMask, NSAlphaShiftKeyMask, NSHelpFunctionKey, NSHomeFunctionKey, NSEndFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSDeleteFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSImageLeft, NSImageRight, NSImageAbove, NSImageBelow, NSImageOnly, NSRightTextAlignment, NSLeftTextAlignment, NSNoCellMask
 from vanilla.vanillaBase import VanillaBaseControl
 
 

@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSImageView, NSImage, NSImageAlignCenter, NSImageAlignLeft, NSImageAlignRight, NSImageAlignTop, NSImageAlignTopLeft, NSImageAlignTopRight, NSImageAlignBottom, NSImageAlignBottomLeft, NSImageAlignBottomRight, NSScaleProportionally, NSScaleNone, NSScaleToFit
 from vanilla.vanillaBase import VanillaBaseObject
 
 _imageAlignmentMap = {

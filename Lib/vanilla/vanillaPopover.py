@@ -1,5 +1,7 @@
 import weakref
-from AppKit import *
+from Foundation import NSObject, NSRect, NSMakeRect, NSZeroRect
+from AppKit import NSView, NSViewController, NSPopover, NSMinXEdgem, NSMaxXEdge, NSMinYEdge, NSMaxYEdge, NSPopoverBehaviorApplicationDefined, NSPopoverBehaviorTransient, NSPopoverBehaviorSemitransient
+
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
 from vanilla.nsSubclasses import getNSSubclass
 

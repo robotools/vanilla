@@ -1,4 +1,5 @@
-from AppKit import *
+from Foundation import NSObject
+from AppKit import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaCallbackWrapper
 from vanilla.py23 import unicode

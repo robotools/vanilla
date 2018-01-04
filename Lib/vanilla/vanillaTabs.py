@@ -1,4 +1,5 @@
-from AppKit import *
+from Foundation import NSObject
+from AppKit import NSTabView, NSTabViewItem, NSNoTabsNoBorder, NSFont
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, _sizeStyleMap, VanillaCallbackWrapper, \
         _reverseSizeStyleMap
 

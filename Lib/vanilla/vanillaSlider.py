@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSSlider, NSTickMarkLeft, NSTickMarkRight, NSTickMarkAbove, NSTickMarkBelow
 from vanilla.vanillaBase import VanillaBaseControl, VanillaError
 
 _tickPositionMap = {

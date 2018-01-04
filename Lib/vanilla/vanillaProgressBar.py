@@ -1,4 +1,5 @@
-from AppKit import *
+from Foundation import NSDate
+from AppKit import NSRunLoop, NSProgressIndicator, NSProgressIndicatorBarStyle, NSProgressIndicatorSpinningStyle
 from vanilla.vanillaBase import VanillaBaseObject, _sizeStyleMap, osVersion10_11, osVersionCurrent
 
 class ProgressBar(VanillaBaseObject):

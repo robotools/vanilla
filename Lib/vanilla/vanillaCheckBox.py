@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSSwitchButton, NSShadowlessSquareBezelStyle, NSLeftTextAlignment, NSNoCellMask
 from vanilla.vanillaButton import Button
 from vanilla.vanillaBase import osVersionCurrent, osVersion10_10, VanillaBaseObject
 
