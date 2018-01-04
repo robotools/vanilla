@@ -15,7 +15,7 @@ from vanilla import *
 
 import objc
 objc.setVerbose(True)
-vanillaPath = NSString.stringWithString_(vanilla.__file__).stringByResolvingSymlinksInPath()
+vanillaPath = os.path.realpath(vanilla.__file__)
 vanillaPath = os.path.dirname(os.path.dirname(os.path.dirname(vanillaPath)))
 iconPath = os.path.join(vanillaPath, "Data", "testIcon.tif")
 
