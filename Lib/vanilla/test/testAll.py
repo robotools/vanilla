@@ -15,8 +15,8 @@ from vanilla import *
 
 import objc
 objc.setVerbose(True)
-
-vanillaPath = os.path.dirname(os.path.dirname(os.path.dirname(vanilla.__file__)))
+vanillaPath = NSString.stringWithString_(vanilla.__file__).stringByResolvingSymlinksInPath()
+vanillaPath = os.path.dirname(os.path.dirname(os.path.dirname(vanillaPath)))
 iconPath = os.path.join(vanillaPath, "Data", "testIcon.tif")
 
 sizeStyles = ["regular", "small", "mini"]
