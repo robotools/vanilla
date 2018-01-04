@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSMatrix, NSRadioButton, NSButtonCell, NSRadioModeMatrix, NSFont, NSCellDisabled
 from vanilla.py23 import range
 from vanilla.vanillaBase import VanillaBaseControl, _sizeStyleMap
 

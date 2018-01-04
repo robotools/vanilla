@@ -1,5 +1,7 @@
 from warnings import warn
-from AppKit import *
+from Foundation import NSObject
+from AppKit import NSSplitView, NSSplitViewDividerStylePaneSplitter, NSSplitViewDividerStyleThin, NSSplitViewDividerStyleThick, NSViewWidthSizable, NSViewHeightSizable
+
 from vanilla.vanillaBase import VanillaBaseObject
 from vanilla.py23 import python_method
 

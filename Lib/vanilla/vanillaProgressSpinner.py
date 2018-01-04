@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSProgressIndicator, NSProgressIndicatorSpinningStyle
 from vanilla.vanillaBase import VanillaBaseObject, _sizeStyleMap
 
 

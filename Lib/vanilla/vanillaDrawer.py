@@ -1,5 +1,5 @@
 from Foundation import NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge
-from AppKit import *
+from AppKit import NSDrawer
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
 
 

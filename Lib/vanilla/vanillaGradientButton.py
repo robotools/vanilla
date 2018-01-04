@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSSmallSquareBezelStyle
 from vanilla.vanillaButton import ImageButton
 
 

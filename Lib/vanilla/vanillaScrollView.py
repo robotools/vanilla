@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSScrollView, NSBezelBorder
 from vanilla.vanillaBase import VanillaBaseObject
 
 

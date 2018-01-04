@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSTextField, NSAttributedString, NSLeftTextAlignment, NSRightTextAlignment, NSCenterTextAlignment, NSJustifiedTextAlignment, NSNaturalTextAlignment
 from vanilla.vanillaBase import VanillaBaseControl
 
 

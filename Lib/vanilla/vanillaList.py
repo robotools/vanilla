@@ -1,7 +1,8 @@
 import time
 import objc
-from Foundation import NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
-from AppKit import *
+from Foundation import NSObject, NSArray, NSMutableArray, NSDictionary, NSMutableDictionary, NSMutableIndexSet, NSString, NSAttributedString, NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
+from AppKit import NSApp, NSTableView, NSTableColumn, NSArrayController, NSScrollView, NSSwitchButton, NSButtonCell, NSSliderCell, NSPopUpButtonCell, NSImageCell, NSSegmentedCell, NSFont, NSImage, NSReturnTextMovement, NSTabTextMovement, NSBacktabTextMovement, NSIllegalTextMovement, NSNotification, NSDragOperationNone, NSTableViewDropOn, NSDragOperationCopy, NSBezelBorder, NSFocusRingTypeNone, NSTableViewSolidVerticalGridLineMask, NSTableViewSolidHorizontalGridLineMask, NSTableViewUniformColumnAutoresizingStyle, NSTableColumnNoResizing, NSTableColumnUserResizingMask, NSTableColumnAutoresizingMask, NSCreatesSortDescriptorBindingOption, NSBackspaceCharacter, NSDeleteFunctionKey, NSDeleteCharacter, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSSmallControlSize, NSMiniControlSize, NSSegmentSwitchTrackingSelectOne
+
 from vanilla.py23 import basestring, range, unichr, python_method
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper

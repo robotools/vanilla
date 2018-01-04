@@ -1,5 +1,5 @@
-from Foundation import *
-from AppKit import *
+# from Foundation import *
+from AppKit import NSDatePicker, NSClockAndCalendarDatePickerStyle, NSTextFieldAndStepperDatePickerStyle, NSHourMinuteDatePickerElementFlag, NSHourMinuteSecondDatePickerElementFlag, NSYearMonthDatePickerElementFlag, NSYearMonthDayDatePickerElementFlag
 from vanilla.vanillaBase import VanillaBaseControl
 
 

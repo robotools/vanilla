@@ -2,7 +2,8 @@ from __future__ import print_function
 import time
 import os
 import sys
-from AppKit import *
+from Foundation import NSObject, NSURL, NSString
+from AppKit import NSApplication, NSView, NSColor, NSImage, NSCursor, NSSegmentedControl, NSSegmentSwitchTrackingSelectOne, NSRectFill, NSToolbarPrintItemIdentifier, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier
 import vanilla
 try:
     reload(vanilla)

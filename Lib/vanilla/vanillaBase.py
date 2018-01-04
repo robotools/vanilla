@@ -1,5 +1,6 @@
 import platform
-from AppKit import *
+from Foundation import NSObject
+from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin
 from distutils.version import StrictVersion
 from vanilla.nsSubclasses import getNSSubclass
 

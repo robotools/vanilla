@@ -1,7 +1,7 @@
 import objc
 from objc import selector
 from Foundation import NSObject
-from AppKit import *
+from AppKit import NSAlert, NSSavePanel, NSOpenPanel, NSInformationalAlertStyle, NSAlertFirstButtonReturn, NSAlertSecondButtonReturn, NSAlertThirdButtonReturn, NSOKButton
 from vanilla.py23 import python_method
 
 

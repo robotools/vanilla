@@ -1,5 +1,8 @@
 import objc
-from AppKit import *
+from Foundation import NSObject
+from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToolbar, NSToolbarItem, NSImage, NSNormalWindowLevel, NSFloatingWindowLevel, NSClosableWindowMask, NSMiniaturizableWindowMask, NSResizableWindowMask, NSTexturedBackgroundWindowMask, NSUnifiedTitleAndToolbarWindowMask, NSHUDWindowMask, NSUtilityWindowMask, NSTitledWindowMask, NSBorderlessWindowMask, NSBackingStoreBuffered, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSToolbarPrintItemIdentifier, NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarDisplayModeDefault, NSToolbarDisplayModeIconAndLabel, NSToolbarDisplayModeIconOnly, NSToolbarDisplayModeLabelOnly, NSToolbarSizeModeDefault, NSToolbarSizeModeRegular, NSToolbarSizeModeSmall
+
+
 from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersionCurrent, osVersion10_7, osVersion10_10
 from vanilla.py23 import python_method
@@ -7,22 +10,20 @@ from vanilla.py23 import python_method
 # PyObjC may not have these constants wrapped,
 # so test and fallback if needed.
 try:
-    NSWindowCollectionBehaviorFullScreenPrimary
-    NSWindowCollectionBehaviorFullScreenAuxiliary
-except NameError:
+    from AppKit import NSWindowCollectionBehaviorFullScreenPrimary, NSWindowCollectionBehaviorFullScreenAuxiliary
+except ImportError:
     NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7
     NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8
 
 try:
-    NSWindowTitleVisible
-    NSWindowTitleHidden
-except NameError:
+    from AppKit import NSWindowTitleVisible, NSWindowTitleHidden
+except ImportError:
     NSWindowTitleVisible  = 0
     NSWindowTitleHidden = 1
 
 try:
-    NSFullSizeContentViewWindowMask
-except NameError:
+    from AppKit import NSFullSizeContentViewWindowMask
+except ImportError:
     NSFullSizeContentViewWindowMask = 1 << 15
 
 

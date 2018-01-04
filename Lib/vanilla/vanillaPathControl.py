@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSPathControl, NSPathStyleStandard, NSColor, NSFocusRingTypeNone
 from vanilla.vanillaBase import VanillaBaseControl
 
 class PathControl(VanillaBaseControl):

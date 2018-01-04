@@ -1,4 +1,4 @@
-from AppKit import *
+from AppKit import NSTextField, NSSecureTextField
 from vanilla.vanillaBase import VanillaBaseControl, VanillaCallbackWrapper
 
 
