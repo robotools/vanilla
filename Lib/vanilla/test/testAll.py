@@ -15,8 +15,8 @@ from vanilla import *
 
 import objc
 objc.setVerbose(True)
-
-vanillaPath = os.path.dirname(os.path.dirname(os.path.dirname(vanilla.__file__)))
+vanillaPath = os.path.realpath(vanilla.__file__)
+vanillaPath = os.path.dirname(os.path.dirname(os.path.dirname(vanillaPath)))
 iconPath = os.path.join(vanillaPath, "Data", "testIcon.tif")
 
 sizeStyles = ["regular", "small", "mini"]
@@ -582,28 +582,31 @@ class Test(object):
 
     def openTestCallback(self, sender):
         title = sender.getTitle()
-        if title == "Windows":
-            WindowTest()
-        elif title == "Geometry":
-            from vanilla.test.testGeometry import TestGeometry
-            TestGeometry()
-        elif title == "Text":
-            TextTest(self.w.drawGrid.get())
-        elif title == "Buttons":
-            ButtonTest(self.w.drawGrid.get())
-        elif title == "List":
-            ListTest(self.w.drawGrid.get())
-        elif title == "Browser":
-            BrowserTest(self.w.drawGrid.get())
-        elif title == "Views":
-            ViewTest(self.w.drawGrid.get())
-        elif title == "Toolbar":
-            ToolbarTest(self.w.drawGrid.get())
-        elif title == "Misc.":
-            MiscTest(self.w.drawGrid.get())
-        elif title == "SplitView":
-            TestSplitView(self.w.drawGrid.get())
-
+        try:
+            if title == "Windows":
+                WindowTest()
+            elif title == "Geometry":
+                from vanilla.test.testGeometry import TestGeometry
+                TestGeometry()
+            elif title == "Text":
+                TextTest(self.w.drawGrid.get())
+            elif title == "Buttons":
+                ButtonTest(self.w.drawGrid.get())
+            elif title == "List":
+                ListTest(self.w.drawGrid.get())
+            elif title == "Browser":
+                BrowserTest(self.w.drawGrid.get())
+            elif title == "Views":
+                ViewTest(self.w.drawGrid.get())
+            elif title == "Toolbar":
+                ToolbarTest(self.w.drawGrid.get())
+            elif title == "Misc.":
+                MiscTest(self.w.drawGrid.get())
+            elif title == "SplitView":
+                TestSplitView(self.w.drawGrid.get())
+        except:
+            import traceback
+            print(traceback.format_exc())
 
 if __name__ == "__main__":
     from vanilla.test.testTools import executeVanillaTest

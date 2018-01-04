@@ -41,7 +41,7 @@ class BaseMessageDialog(NSObject):
         elif code == NSAlertThirdButtonReturn:
             value = 3
         else:
-            value = code - NSThirdButtonReturn + 3
+            value = code - NSAlertThirdButtonReturn + 3
         self._value = self._buttonTitlesValues[value-1][1]
 
     def alertDidEnd_returnCode_contextInfo_(self, alert, code, context):
