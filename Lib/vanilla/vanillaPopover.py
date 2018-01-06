@@ -1,15 +1,17 @@
 import weakref
 from Foundation import NSObject, NSRect, NSMakeRect, NSZeroRect
-from AppKit import NSView, NSViewController, NSPopover, NSMinXEdgem, NSMaxXEdge, NSMinYEdge, NSMaxYEdge, NSPopoverBehaviorApplicationDefined, NSPopoverBehaviorTransient, NSPopoverBehaviorSemitransient
+from AppKit import NSView, NSViewController, NSPopover, NSMinXEdge, NSMaxXEdge, \
+    NSMinYEdge, NSMaxYEdge, NSPopoverBehaviorApplicationDefined, NSPopoverBehaviorTransient, \
+    NSPopoverBehaviorSemitransient
 
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
 from vanilla.nsSubclasses import getNSSubclass
 
 _edgeMap = {
-    "left" : NSMinXEdge,
-    "right" : NSMaxXEdge,
-    "top" : NSMinYEdge,
-    "bottom" : NSMaxYEdge
+    "left": NSMinXEdge,
+    "right": NSMaxXEdge,
+    "top": NSMinYEdge,
+    "bottom": NSMaxYEdge
 }
 
 try:
@@ -20,9 +22,9 @@ except NameError:
     NSPopoverBehaviorSemitransient = 2
 
 _behaviorMap = {
-    "applicationDefined" : NSPopoverBehaviorApplicationDefined,
-    "transient" : NSPopoverBehaviorTransient,
-    "semitransient" : NSPopoverBehaviorSemitransient
+    "applicationDefined": NSPopoverBehaviorApplicationDefined,
+    "transient": NSPopoverBehaviorTransient,
+    "semitransient": NSPopoverBehaviorSemitransient
 }
 
 
