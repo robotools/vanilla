@@ -470,6 +470,11 @@ class SplitView(VanillaBaseObject):
         splitView = self.getNSSplitView()
         for view in list(splitView.subviews()):
             view.removeFromSuperview()
+        for paneDescription in self._paneDescriptions:
+            view = paneDescription["view"]
+            if isinstance(view, VanillaBaseObject):
+                # only send when it is a vanilla object
+                view._breakCycles()
         self._nsObject.setDelegate_(None)
         self._delegate = None
         self._paneDescriptions = None
