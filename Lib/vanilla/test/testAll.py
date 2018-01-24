@@ -3,7 +3,7 @@ import time
 import os
 import sys
 from Foundation import NSObject, NSURL, NSString
-from AppKit import NSApplication, NSView, NSColor, NSImage, NSCursor, NSSegmentedControl, NSSegmentSwitchTrackingSelectOne, NSRectFill, NSToolbarPrintItemIdentifier, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier
+from AppKit import NSApplication, NSView, NSColor, NSImage, NSCursor, NSSegmentedControl, NSSegmentSwitchTrackingSelectOne, NSRectFill, NSToolbarPrintItemIdentifier, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSImageNameInfo
 import vanilla
 try:
     reload(vanilla)
@@ -19,6 +19,10 @@ objc.setVerbose(True)
 vanillaPath = os.path.realpath(vanilla.__file__)
 vanillaPath = os.path.dirname(os.path.dirname(os.path.dirname(vanillaPath)))
 iconPath = os.path.join(vanillaPath, "Data", "testIcon.tif")
+iconName = None
+if not os.path.exists(iconPath):
+    iconPath = None
+    iconName = NSImageNameInfo
 
 sizeStyles = ["regular", "small", "mini"]
 
@@ -168,7 +172,7 @@ class ButtonTest(BaseTest):
                     ("bop", True, "right"),]
         for title, bordered, imagePosition in settings:
             attrName = "ImageButton_%s_%s_%s" % (title, bordered, imagePosition)
-            button = ImageButton((10, top, 150, 50), title=title, imagePath=iconPath, bordered=bordered, imagePosition=imagePosition, callback=self.basicCallback)
+            button = ImageButton((10, top, 150, 50), title=title, imagePath=iconPath, imageNamed=iconName, bordered=bordered, imagePosition=imagePosition, callback=self.basicCallback)
             setattr(self.w, attrName, button)
             top += 60
 
@@ -312,7 +316,10 @@ class ListTest(BaseTest):
         ]
         multiList = List((0, 0, 0, 0), multiItems, columnDescriptions=columnDescriptions, enableTypingSensitivity=True)
 
-        image = NSImage.alloc().initWithContentsOfFile_(iconPath)
+        if iconPath:
+            image = NSImage.alloc().initWithContentsOfFile_(iconPath)
+        else:
+            image = NSImage.imageNamed_(iconName)
 
         miscItems = [
             {"slider": 50, "sliderWithTicks" : 50, "checkBox": False, "image" : image, "segment" : 0},
@@ -350,7 +357,7 @@ class ListTest(BaseTest):
             columnDescriptions = [
                 {"title": "discrete",
                 "cell": LevelIndicatorListCell(style="discrete", warningValue=7, criticalValue=9)},
-                {"title": "continuous", 
+                {"title": "continuous",
                 "cell": LevelIndicatorListCell(style="continuous", warningValue=7, criticalValue=9)},
                 {"title": "rating",
                 "cell": LevelIndicatorListCell(style="rating", maxValue=6)},
@@ -460,13 +467,16 @@ class ToolbarTest(BaseTest):
             {"itemIdentifier": "Test Item One",
              "label": "Test One",
              "imagePath": iconPath,
+             "imageNamed": iconName,
              "callback": self.basicCallback},
             {"itemIdentifier": "Test Item Two",
              "label": "Test Two",
              "imagePath": iconPath,
+             "imageNamed": iconName,
              "callback": self.basicCallback},
             {"itemIdentifier": "Test Item Three",
              "imagePath": iconPath,
+             "imageNamed": iconName,
              "callback": self.basicCallback},
             {"itemIdentifier": "Test Item Four",
              "label": "Test Four",
