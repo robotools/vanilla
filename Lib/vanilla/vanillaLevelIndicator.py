@@ -1,6 +1,6 @@
 from AppKit import NSLevelIndicator, NSLevelIndicatorCell, NSTickMarkAbove, NSTickMarkBelow, \
         NSDiscreteCapacityLevelIndicatorStyle, NSContinuousCapacityLevelIndicatorStyle, \
-        NSRatingLevelIndicatorStyle, NSRelevancyLevelIndicatorStyle
+        NSRatingLevelIndicatorStyle, NSRelevancyLevelIndicatorStyle, NSImage
 from vanilla.vanillaBase import VanillaBaseControl
 
 # This control is available in OS 10.4+.
@@ -232,7 +232,7 @@ def LevelIndicatorListCell(style="discrete",
                  columnDescriptions = [
                      {"title": "discrete",
                      "cell": LevelIndicatorListCell(style="discrete", warningValue=7, criticalValue=9)},
-                     {"title": "continuous", 
+                     {"title": "continuous",
                      "cell": LevelIndicatorListCell(style="continuous", warningValue=7, criticalValue=9)},
                      {"title": "rating",
                      "cell": LevelIndicatorListCell(style="rating", maxValue=6)},
