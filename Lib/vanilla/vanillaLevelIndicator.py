@@ -1,4 +1,6 @@
-from AppKit import NSLevelIndicator, NSTickMarkAbove, NSTickMarkBelow, NSDiscreteCapacityLevelIndicatorStyle, NSContinuousCapacityLevelIndicatorStyle, NSRatingLevelIndicatorStyle, NSRelevancyLevelIndicatorStyle
+from AppKit import NSLevelIndicator, NSLevelIndicatorCell, NSTickMarkAbove, NSTickMarkBelow, \
+        NSDiscreteCapacityLevelIndicatorStyle, NSContinuousCapacityLevelIndicatorStyle, \
+        NSRatingLevelIndicatorStyle, NSRelevancyLevelIndicatorStyle
 from vanilla.vanillaBase import VanillaBaseControl
 
 # This control is available in OS 10.4+.
