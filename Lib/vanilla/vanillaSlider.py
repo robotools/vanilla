@@ -1,5 +1,5 @@
 from AppKit import NSSlider, NSTickMarkLeft, NSTickMarkRight, NSTickMarkAbove, NSTickMarkBelow
-from vanilla.vanillaBase import VanillaBaseControl, VanillaError
+from vanilla.vanillaBase import VanillaBaseControl, VanillaError, osVersionCurrent, osVersion10_13
 
 _tickPositionMap = {
     "left": NSTickMarkLeft,
@@ -136,6 +136,8 @@ class Slider(VanillaBaseControl):
             self._nsObject.setContinuous_(True)
         else:
             self._nsObject.setContinuous_(False)
+        if osVersionCurrent >= osVersion10_13:
+            self._nsObject.setVertical_(self._isVertical())
 
     def getNSSlider(self):
         """
@@ -143,15 +145,18 @@ class Slider(VanillaBaseControl):
         """
         return self._nsObject
 
-    def _adjustPosSize(self, frame):
-        # temporarily store the some data for positioning reference
+    def _isVertical(self):
+        # based on the pos size return if the slider is vertical or not.
         w, h = self._posSize[2:]
-        if w > h:
-            prefix = "H-"
-            isVertical = False
-        else:
+        return w < h
+
+    def _adjustPosSize(self, frame):
+        if self._isVertical():
             isVertical = True
             prefix = "V-"
+        else:
+            prefix = "H-"
+            isVertical = False
         tickPos = "None"
         tickMarkCount = self._nsObject.numberOfTickMarks()
         if tickMarkCount:
