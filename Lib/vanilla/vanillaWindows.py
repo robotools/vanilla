@@ -775,7 +775,7 @@ class FloatingWindow(Window):
     """
     A window that floats above all other windows.
 
-    To add a control to a window, simply set it as an attribute of the window.
+    To add a control to a window, simply set it as an attribute of the window.::
 
         from vanilla import *
 
@@ -842,7 +842,7 @@ class HUDFloatingWindow(FloatingWindow):
     """
     A window that floats above all other windows and has the HUD appearance.
 
-    To add a control to a window, simply set it as an attribute of the window.
+    To add a control to a window, simply set it as an attribute of the window.::
 
         from vanilla import *
 
