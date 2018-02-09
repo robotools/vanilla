@@ -148,7 +148,7 @@ class Slider(VanillaBaseControl):
     def _isVertical(self):
         # based on the pos size return if the slider is vertical or not.
         w, h = self._posSize[2:]
-        return w < h
+        return w > h
 
     def _adjustPosSize(self, frame):
         if self._isVertical():
@@ -237,11 +237,10 @@ class Slider(VanillaBaseControl):
         # because if this is called before the object
         # has been added to an open window, the isVertical
         # method is unable to determine horizontal or vertical
-        w, h = self._posSize[2:]
-        if w > h:
-            isVertical = False
-        else:
+        if self._isVertical():
             isVertical = True
+        else:
+            isVertical = False
         if isVertical:
             if value == "top" or value == "bottom":
                 raise VanillaError("vertical sliders can only position tick marks at 'left' or 'right'")
