@@ -137,6 +137,7 @@ class VanillaBaseObject(object):
         Set the postion and size of the object.
 
         **posSize** A tuple of form *(left, top, width, height)*.
+        **animate** A boolean flag telling to animate the transition. Off by default.
         """
         self._posSize = posSize
         self._setAutosizingFromPosSize(posSize)
