@@ -74,11 +74,14 @@ class VanillaBaseObject(object):
 
         self._nsObject.setAutoresizingMask_(mask)
 
-    def _setFrame(self, parentFrame):
+    def _setFrame(self, parentFrame, animate=False):
         l, t, w, h = self._posSize
         frame  = _calcFrame(parentFrame, ((l, t), (w, h)))
         frame = self._adjustPosSize(frame)
-        self._nsObject.setFrame_(frame)
+        if animate:
+            self._nsObject.animator().setFrame_(frame)
+        else:
+            self._nsObject.setFrame_(frame)
 
     def _adjustPosSize(self, frame):
         if hasattr(self._nsObject, "cell") and self._nsObject.cell() is not None:
@@ -129,17 +132,18 @@ class VanillaBaseObject(object):
         """
         return self._posSize
 
-    def setPosSize(self, posSize):
+    def setPosSize(self, posSize, animate=False):
         """
         Set the postion and size of the object.
 
         **posSize** A tuple of form *(left, top, width, height)*.
+        **animate** A boolean flag telling to animate the transition. Off by default.
         """
         self._posSize = posSize
         self._setAutosizingFromPosSize(posSize)
         superview = self._nsObject.superview()
         if superview is not None:
-            self._setFrame(superview.frame())
+            self._setFrame(superview.frame(), animate)
             superview.setNeedsDisplay_(True)
 
     def move(self, x, y):
