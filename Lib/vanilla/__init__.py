@@ -62,6 +62,8 @@ __all__ = [
     "Window", "FloatingWindow", "HUDFloatingWindow", "Sheet"
     ]
 
+__version__ = "0.1"
+
 # OS 10.7 objects
 try:
     from vanilla.vanillaPopover import Popover
