@@ -149,7 +149,8 @@ class VanillaSplitViewDelegate(NSObject):
         totalNonFixedViews = len(minMaxViews) + len(flexibleViews)
         if totalNonFixedViews:
             viewAdjustment = int(round(remainder / (len(minMaxViews) + len(flexibleViews))))
-        else: viewAdjustment = 0
+        else:
+            viewAdjustment = 0
         # now apply the difference to minMaxViews respecting the min/max values
         for identifier in minMaxViews:
             for paneDescription in paneDescriptions:
@@ -170,7 +171,8 @@ class VanillaSplitViewDelegate(NSObject):
         remainder = splitViewSize - desiredSize
         if totalNonFixedViews:
             viewAdjustment = int(round(remainder / (len(minMaxViews) + len(flexibleViews))))
-        else: viewAdjustment = 0
+        else:
+            viewAdjustment = 0
         # apply to the flexible views
         for identifier in flexibleViews:
             viewSizes[identifier] += viewAdjustment
