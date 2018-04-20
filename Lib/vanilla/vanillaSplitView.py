@@ -2,6 +2,7 @@ from warnings import warn
 from Foundation import NSObject
 from AppKit import NSSplitView, NSSplitViewDividerStylePaneSplitter, NSSplitViewDividerStyleThin, NSSplitViewDividerStyleThick, NSViewWidthSizable, NSViewHeightSizable
 
+import vanilla
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
 from vanilla.py23 import python_method
 
@@ -499,6 +500,10 @@ class SplitView(VanillaBaseObject):
             # unwrap the view if necessary
             if isinstance(view, VanillaBaseObject):
                 l, t, w, h = view._posSize
+                if (l, t, w, h) != (0, 0, 0, 0):
+                    group = vanilla.Group((0, 0, -0, -0))
+                    group.splitViewContentView = view
+                    view = group
                 view._setFrame(splitViewFrame)
                 view = view._nsObject
                 view.setAutoresizingMask_(mask)
