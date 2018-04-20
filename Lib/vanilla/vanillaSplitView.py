@@ -301,7 +301,7 @@ class VanillaSplitViewDelegate(NSObject):
         evenChange = difference / len(changablePanes)
         # determine tha pane size changes
         paneSizeChanges = dict.fromkeys(unchangablePanes.keys(), 0)
-        ## handle min/max limited panes
+        # handle min/max limited panes
         for identifier, paneDescription in changablePanes.items():
             currentSize = paneDescription["nsView"].frame().size[coordIndex]
             paneChange = None
@@ -312,7 +312,7 @@ class VanillaSplitViewDelegate(NSObject):
                     if test == paneDescription["minSize"]:
                         paneChange = 0
                     elif test < paneDescription["minSize"]:
-                        paneChange =  paneDescription["minSize"] - currentSize
+                        paneChange = paneDescription["minSize"] - currentSize
                     else:
                         paneChange = evenChange
             # expanding
