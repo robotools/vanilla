@@ -119,7 +119,6 @@ class VanillaSplitViewDelegate(NSObject):
             splitViewSize = splitView.frame().size[1]
         hiddenViews = []
         fixedSizeViews = []
-        desiredSizeViews = []
         minMaxViews = []
         flexibleViews = []
         for paneDescription in paneDescriptions:
@@ -445,11 +444,10 @@ class SplitView(VanillaBaseObject):
     nsSplitViewClass = VanillaSplitViewSubclass
 
     def __init__(self, posSize, paneDescriptions, isVertical=True,
-        dividerStyle="splitter", dividerThickness=None, dividerColor=None,
-        autosaveName=None,
-        # deprecated
-        dividerImage=None
-    ):
+            dividerStyle="splitter", dividerThickness=None, dividerColor=None,
+            autosaveName=None,
+            # deprecated
+            dividerImage=None):
         # RBSplitView phase out
         if dividerImage is not None:
             warn(DeprecationWarning("The dividerImage argument is deprecated and will be ignored. Use the dividerStyle attribute."))
@@ -526,7 +524,6 @@ class SplitView(VanillaBaseObject):
             self._identifierToPane[identifier] = paneDescription
             # add the subview
             splitView.addSubview_(view)
-
 
     def getRBSplitView(self):
         warn("SplitView no longer wraps RBSplitView. Use getNSSplitView instead of getRBSplitView.")
