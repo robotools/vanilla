@@ -195,12 +195,10 @@ class VanillaSplitViewDelegate(NSObject):
     def _recursivelyResizeSubviews(self, view):
         for subview in view.subviews():
             if hasattr(subview, "vanillaWrapper"):
-                vX, vY, vW, vH = subview.vanillaWrapper().getPosSize()
-                if vW < 0:
-                    pW = view.frame().size[0]
-                    (sX, sY), (sW, sH) = subview.frame()
-                    w = pW + vW - vX
-                    subview.setFrame_(((sX, sY), (w, sH)))
+                vanillawrapper = subview.vanillaWrapper()
+                vX, vY, vW, vH = vanillawrapper.getPosSize()
+                if vW < 0 or vH < 0:
+                    vanillawrapper._setFrame(view.frame())
             self._recursivelyResizeSubviews(subview)
 
     # Pane Collapsing
