@@ -1,6 +1,6 @@
 import platform
 from Foundation import NSObject
-from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin
+from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin, NSSplitView
 from distutils.version import StrictVersion
 from vanilla.nsSubclasses import getNSSubclass
 
@@ -267,12 +267,17 @@ def _breakCycles(view):
 
 
 def _recursiveSetFrame(view):
+    if isinstance(view, NSSplitView):
+        return
     for subview in view.subviews():
+        if isinstance(view, NSSplitView):
+            continue
         if hasattr(subview, "vanillaWrapper"):
             obj = subview.vanillaWrapper()
             if obj is not None:
                 obj.setPosSize(obj.getPosSize())
         _recursiveSetFrame(subview)
+
 
 def _setAttr(cls, obj, attr, value):
     if isinstance(value, VanillaBaseObject) and hasattr(value, "_posSize"):
@@ -287,6 +292,7 @@ def _setAttr(cls, obj, attr, value):
     #    view = obj._getContentView()
     #    view.addSubview_(value)
     super(cls, obj).__setattr__(attr, value)
+
 
 def _delAttr(cls, obj, attr):
     value = getattr(obj, attr)
