@@ -270,7 +270,7 @@ def _recursiveSetFrame(view):
     for subview in view.subviews():
         if hasattr(subview, "vanillaWrapper"):
             obj = subview.vanillaWrapper()
-            if obj is not None:
+            if obj is not None and hasattr(obj, "_posSize"):
                 obj.setPosSize(obj.getPosSize())
         _recursiveSetFrame(subview)
 
