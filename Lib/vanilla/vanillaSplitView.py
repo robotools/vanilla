@@ -83,7 +83,7 @@ class VanillaSplitViewSubclass(NSSplitView):
             sizeChange = view.frame().size.height
         if not onOff:
             sizeChange = -sizeChange
-        self.delegate().splitView_applyPaneSizeChange_wifthFrameSize_ignoreView_(
+        self.delegate().splitView_applyPaneSizeChange_withFrameSize_ignoreView_(
             self,
             sizeChange,
             self.frame().size,
@@ -273,14 +273,14 @@ class VanillaSplitViewDelegate(NSObject):
     def splitView_resizeSubviewsWithOldSize_(self, splitView, oldSize):
         coordIndex = self._splitViewCoordinateIndex_(splitView)
         newSize = splitView.frame().size
-        self.splitView_applyPaneSizeChange_wifthFrameSize_ignoreView_(
+        self.splitView_applyPaneSizeChange_withFrameSize_ignoreView_(
             splitView,
             newSize[coordIndex] - oldSize[coordIndex],
             newSize,
             None
         )
 
-    def splitView_applyPaneSizeChange_wifthFrameSize_ignoreView_(self, splitView, sizeChange, frameSize, ignoreSubview):
+    def splitView_applyPaneSizeChange_withFrameSize_ignoreView_(self, splitView, sizeChange, frameSize, ignoreSubview):
         # don't bother if the view is invisible
         if frameSize.width == 0 or frameSize.height == 0:
             return
