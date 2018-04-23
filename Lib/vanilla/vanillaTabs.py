@@ -10,10 +10,6 @@ class VanillaTabItem(VanillaBaseObject):
 
     def __init__(self, title):
         self._tabItem = self.nsTabViewItemClass.alloc().initWithIdentifier_(title)
-        # Set the frame to something non-zero, so the autosizing machinery works
-        # well for nested views, even when there's no parent view yet. That is
-        # the case for the tabs that are not visible upon creation.
-        self._tabItem.view().setFrame_(((0, 0), (10000, 10000)))
         self._tabItem.setLabel_(title)
 
     def _getContentView(self):
@@ -112,12 +108,6 @@ class Tabs(VanillaBaseObject):
         Return the *NSTabView* that this object wraps.
         """
         return self._nsObject
-
-    def _setupView(self, classOrName, posSize, callback=None):
-        super(Tabs, self)._setupView(classOrName, posSize, callback=None)
-        # Set the frame to something non-zero, so the autosizing machinery works
-        # well for nested views, even when there's no parent view yet.
-        self._nsObject.setFrame_(((0, 0), (10000, 10000)))
 
     def _adjustPosSize(self, frame):
         if self._nsObject.tabViewType() == NSNoTabsNoBorder:
