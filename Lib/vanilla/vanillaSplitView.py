@@ -304,7 +304,7 @@ class VanillaSplitViewDelegate(NSObject):
         evenChange = difference / len(changablePanes)
         # determine tha pane size changes
         paneSizeChanges = dict.fromkeys(unchangablePanes.keys(), 0)
-        ## handle min/max limited panes
+        # handle min/max limited panes
         for identifier, paneDescription in changablePanes.items():
             currentSize = paneDescription["nsView"].frame().size[coordIndex]
             paneChange = None
@@ -315,7 +315,7 @@ class VanillaSplitViewDelegate(NSObject):
                     if test == paneDescription["minSize"]:
                         paneChange = 0
                     elif test < paneDescription["minSize"]:
-                        paneChange =  paneDescription["minSize"] - currentSize
+                        paneChange = paneDescription["minSize"] - currentSize
                     else:
                         paneChange = evenChange
             # expanding
@@ -447,11 +447,10 @@ class SplitView(VanillaBaseObject):
     nsSplitViewClass = VanillaSplitViewSubclass
 
     def __init__(self, posSize, paneDescriptions, isVertical=True,
-        dividerStyle="splitter", dividerThickness=None, dividerColor=None,
-        autosaveName=None,
-        # deprecated
-        dividerImage=None
-    ):
+            dividerStyle="splitter", dividerThickness=None, dividerColor=None,
+            autosaveName=None,
+            # deprecated
+            dividerImage=None):
         # RBSplitView phase out
         if dividerImage is not None:
             warn(DeprecationWarning("The dividerImage argument is deprecated and will be ignored. Use the dividerStyle attribute."))
@@ -528,7 +527,6 @@ class SplitView(VanillaBaseObject):
             self._identifierToPane[identifier] = paneDescription
             # add the subview
             splitView.addSubview_(view)
-
 
     def getRBSplitView(self):
         warn("SplitView no longer wraps RBSplitView. Use getNSSplitView instead of getRBSplitView.")
