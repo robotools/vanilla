@@ -199,7 +199,7 @@ class VanillaSplitViewDelegate(NSObject):
                 vanillawrapper = subview.vanillaWrapper()
                 if vanillawrapper is not None:
                     vX, vY, vW, vH = vanillawrapper.getPosSize()
-                    if vW < 0 or vH < 0:
+                    if vW <= 0 or vH <= 0:
                         vanillawrapper._setFrame(parentFrame)
             self._recursivelyResizeSubviews(subview)
 
