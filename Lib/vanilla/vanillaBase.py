@@ -1,6 +1,6 @@
 import platform
 from Foundation import NSObject
-from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin, NSSplitView
+from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin
 from distutils.version import StrictVersion
 from vanilla.nsSubclasses import getNSSubclass
 
@@ -267,11 +267,7 @@ def _breakCycles(view):
 
 
 def _recursiveSetFrame(view):
-    if isinstance(view, NSSplitView):
-        return
     for subview in view.subviews():
-        if isinstance(view, NSSplitView):
-            continue
         if hasattr(subview, "vanillaWrapper"):
             obj = subview.vanillaWrapper()
             if obj is not None:
