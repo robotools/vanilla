@@ -119,7 +119,6 @@ class VanillaSplitViewDelegate(NSObject):
             splitViewSize = splitView.frame().size[1]
         hiddenViews = []
         fixedSizeViews = []
-        desiredSizeViews = []
         minMaxViews = []
         flexibleViews = []
         for paneDescription in paneDescriptions:
@@ -149,7 +148,7 @@ class VanillaSplitViewDelegate(NSObject):
         remainder = splitViewSize - desiredSize
         totalNonFixedViews = len(minMaxViews) + len(flexibleViews)
         if totalNonFixedViews:
-            viewAdjustment = int(round(remainder / (len(minMaxViews) + len(flexibleViews))))
+            viewAdjustment = int(round(remainder / totalNonFixedViews))
         else:
             viewAdjustment = 0
         # now apply the difference to minMaxViews respecting the min/max values
@@ -171,7 +170,7 @@ class VanillaSplitViewDelegate(NSObject):
         # recalculate the remainder
         remainder = splitViewSize - desiredSize
         if totalNonFixedViews:
-            viewAdjustment = int(round(remainder / (len(minMaxViews) + len(flexibleViews))))
+            viewAdjustment = int(round(remainder / totalNonFixedViews))
         else:
             viewAdjustment = 0
         # apply to the flexible views
@@ -188,21 +187,24 @@ class VanillaSplitViewDelegate(NSObject):
                 h = size
             f = ((0, 0), (w, h))
             view.setFrame_(f)
-            # self._recursivelyResizeSubviews(view)
+            self._recursivelyResizeSubviews(view)
         # tell NSSplitView to mess everything up
         splitView.adjustSubviews()
 
-    # @python_method
-    # def _recursivelyResizeSubviews(self, view):
-    #     for subview in view.subviews():
-    #         if hasattr(subview, "vanillaWrapper"):
-    #             vX, vY, vW, vH = subview.vanillaWrapper().getPosSize()
-    #             if vW < 0:
-    #                 pW = view.frame().size[0]
-    #                 (sX, sY), (sW, sH) = subview.frame()
-    #                 w = pW + vW - vX
-    #                 subview.setFrame_(((sX, sY), (w, sH)))
-    #         self._recursivelyResizeSubviews(subview)
+    @python_method
+    def _recursivelyResizeSubviews(self, view):
+        if isinstance(view, NSSplitView):
+            return
+        for subview in view.subviews():
+            if isinstance(subview, NSSplitView):
+                continue
+            if hasattr(subview, "vanillaWrapper"):
+                vanillawrapper = subview.vanillaWrapper()
+                if vanillawrapper is not None:
+                    vX, vY, vW, vH = vanillawrapper.getPosSize()
+                    if vW <= 0 or vH <= 0:
+                        vanillawrapper.setPosSize((vX, vY, vW, vH))
+            self._recursivelyResizeSubviews(subview)
 
     # Pane Collapsing
 
