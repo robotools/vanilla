@@ -445,7 +445,7 @@ class SplitView(VanillaBaseObject):
     nsSplitViewClass = VanillaSplitViewSubclass
 
     def __init__(self, posSize, paneDescriptions, isVertical=True,
-            dividerStyle="splitter", dividerThickness=None, dividerColor=None,
+            dividerStyle="thick", dividerThickness=None, dividerColor=None,
             autosaveName=None,
             # deprecated
             dividerImage=None):
