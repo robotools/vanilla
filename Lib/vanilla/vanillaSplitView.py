@@ -188,21 +188,21 @@ class VanillaSplitViewDelegate(NSObject):
                 h = size
             f = ((0, 0), (w, h))
             view.setFrame_(f)
-            self._recursivelyResizeSubviews(view)
+            # self._recursivelyResizeSubviews(view)
         # tell NSSplitView to mess everything up
         splitView.adjustSubviews()
 
-    @python_method
-    def _recursivelyResizeSubviews(self, view):
-        for subview in view.subviews():
-            if hasattr(subview, "vanillaWrapper"):
-                vX, vY, vW, vH = subview.vanillaWrapper().getPosSize()
-                if vW < 0:
-                    pW = view.frame().size[0]
-                    (sX, sY), (sW, sH) = subview.frame()
-                    w = pW + vW - vX
-                    subview.setFrame_(((sX, sY), (w, sH)))
-            self._recursivelyResizeSubviews(subview)
+    # @python_method
+    # def _recursivelyResizeSubviews(self, view):
+    #     for subview in view.subviews():
+    #         if hasattr(subview, "vanillaWrapper"):
+    #             vX, vY, vW, vH = subview.vanillaWrapper().getPosSize()
+    #             if vW < 0:
+    #                 pW = view.frame().size[0]
+    #                 (sX, sY), (sW, sH) = subview.frame()
+    #                 w = pW + vW - vX
+    #                 subview.setFrame_(((sX, sY), (w, sH)))
+    #         self._recursivelyResizeSubviews(subview)
 
     # Pane Collapsing
 
