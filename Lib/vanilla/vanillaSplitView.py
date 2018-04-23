@@ -502,11 +502,9 @@ class SplitView(VanillaBaseObject):
             resizeFlexibility = paneDescription.get("resizeFlexibility", True)
             # unwrap the view if necessary
             if isinstance(view, VanillaBaseObject):
-                l, t, w, h = view._posSize
-                if (l, t, w, h) != (0, 0, 0, 0):
-                    group = vanilla.Group((0, 0, -0, -0))
-                    group.splitViewContentView = view
-                    view = group
+                group = vanilla.Group((0, 0, -0, -0))
+                group.splitViewContentView = view
+                view = group
                 view._setFrame(splitViewFrame)
                 view = view._nsObject
                 view.setAutoresizingMask_(mask)
