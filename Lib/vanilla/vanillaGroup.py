@@ -80,12 +80,6 @@ class Group(VanillaBaseObject):
             blendingMode = _blendingModeMap[blendingMode]
             self._visualEffectGroup.getNSVisualEffectView().setBlendingMode_(blendingMode)
 
-    def _setupView(self, classOrName, posSize, callback=None):
-        super(Group, self)._setupView(classOrName, posSize, callback=None)
-        # Set the frame to something non-zero, so the autosizing machinery works
-        # well for nested views, even when there's no parent view yet.
-        self._nsObject.setFrame_(((0, 0), (10000, 10000)))
-
     def __setattr__(self, attr, value):
         # __init__
         if not hasattr(self, "_visualEffectGroup") or attr == "_visualEffectGroup":

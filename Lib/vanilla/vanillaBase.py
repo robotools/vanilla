@@ -266,6 +266,15 @@ def _breakCycles(view):
         _breakCycles(view)
 
 
+def _recursiveSetFrame(view):
+    for subview in view.subviews():
+        if hasattr(subview, "vanillaWrapper"):
+            obj = subview.vanillaWrapper()
+            if obj is not None and hasattr(obj, "_posSize"):
+                obj.setPosSize(obj.getPosSize())
+        _recursiveSetFrame(subview)
+
+
 def _setAttr(cls, obj, attr, value):
     if isinstance(value, VanillaBaseObject) and hasattr(value, "_posSize"):
         assert not hasattr(obj, attr), "can't replace vanilla attribute"
@@ -273,11 +282,13 @@ def _setAttr(cls, obj, attr, value):
         frame = view.frame()
         value._setFrame(frame)
         view.addSubview_(value._nsObject)
+        _recursiveSetFrame(value._nsObject)
     #elif isinstance(value, NSView) and not attr.startswith("_"):
     #    assert not hasattr(obj, attr), "can't replace vanilla attribute"
     #    view = obj._getContentView()
     #    view.addSubview_(value)
     super(cls, obj).__setattr__(attr, value)
+
 
 def _delAttr(cls, obj, attr):
     value = getattr(obj, attr)

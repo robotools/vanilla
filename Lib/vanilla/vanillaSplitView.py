@@ -2,6 +2,7 @@ from warnings import warn
 from Foundation import NSObject
 from AppKit import NSSplitView, NSSplitViewDividerStylePaneSplitter, NSSplitViewDividerStyleThin, NSSplitViewDividerStyleThick, NSViewWidthSizable, NSViewHeightSizable
 
+import vanilla
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
 from vanilla.py23 import python_method
 
@@ -82,7 +83,7 @@ class VanillaSplitViewSubclass(NSSplitView):
             sizeChange = view.frame().size.height
         if not onOff:
             sizeChange = -sizeChange
-        self.delegate().splitView_applyPaneSizeChange_wifthFrameSize_ignoreView_(
+        self.delegate().splitView_applyPaneSizeChange_withFrameSize_ignoreView_(
             self,
             sizeChange,
             self.frame().size,
@@ -118,7 +119,6 @@ class VanillaSplitViewDelegate(NSObject):
             splitViewSize = splitView.frame().size[1]
         hiddenViews = []
         fixedSizeViews = []
-        desiredSizeViews = []
         minMaxViews = []
         flexibleViews = []
         for paneDescription in paneDescriptions:
@@ -148,7 +148,7 @@ class VanillaSplitViewDelegate(NSObject):
         remainder = splitViewSize - desiredSize
         totalNonFixedViews = len(minMaxViews) + len(flexibleViews)
         if totalNonFixedViews:
-            viewAdjustment = int(round(remainder / (len(minMaxViews) + len(flexibleViews))))
+            viewAdjustment = int(round(remainder / totalNonFixedViews))
         else:
             viewAdjustment = 0
         # now apply the difference to minMaxViews respecting the min/max values
@@ -170,7 +170,7 @@ class VanillaSplitViewDelegate(NSObject):
         # recalculate the remainder
         remainder = splitViewSize - desiredSize
         if totalNonFixedViews:
-            viewAdjustment = int(round(remainder / (len(minMaxViews) + len(flexibleViews))))
+            viewAdjustment = int(round(remainder / totalNonFixedViews))
         else:
             viewAdjustment = 0
         # apply to the flexible views
@@ -193,14 +193,17 @@ class VanillaSplitViewDelegate(NSObject):
 
     @python_method
     def _recursivelyResizeSubviews(self, view):
+        if isinstance(view, NSSplitView):
+            return
         for subview in view.subviews():
+            if isinstance(subview, NSSplitView):
+                continue
             if hasattr(subview, "vanillaWrapper"):
-                vX, vY, vW, vH = subview.vanillaWrapper().getPosSize()
-                if vW < 0:
-                    pW = view.frame().size[0]
-                    (sX, sY), (sW, sH) = subview.frame()
-                    w = pW + vW - vX
-                    subview.setFrame_(((sX, sY), (w, sH)))
+                vanillawrapper = subview.vanillaWrapper()
+                if vanillawrapper is not None and hasattr(vanillawrapper, "_posSize"):
+                    vX, vY, vW, vH = vanillawrapper.getPosSize()
+                    if vW <= 0 or vH <= 0:
+                        vanillawrapper.setPosSize((vX, vY, vW, vH))
             self._recursivelyResizeSubviews(subview)
 
     # Pane Collapsing
@@ -272,14 +275,14 @@ class VanillaSplitViewDelegate(NSObject):
     def splitView_resizeSubviewsWithOldSize_(self, splitView, oldSize):
         coordIndex = self._splitViewCoordinateIndex_(splitView)
         newSize = splitView.frame().size
-        self.splitView_applyPaneSizeChange_wifthFrameSize_ignoreView_(
+        self.splitView_applyPaneSizeChange_withFrameSize_ignoreView_(
             splitView,
             newSize[coordIndex] - oldSize[coordIndex],
             newSize,
             None
         )
 
-    def splitView_applyPaneSizeChange_wifthFrameSize_ignoreView_(self, splitView, sizeChange, frameSize, ignoreSubview):
+    def splitView_applyPaneSizeChange_withFrameSize_ignoreView_(self, splitView, sizeChange, frameSize, ignoreSubview):
         # don't bother if the view is invisible
         if frameSize.width == 0 or frameSize.height == 0:
             return
@@ -303,7 +306,7 @@ class VanillaSplitViewDelegate(NSObject):
         evenChange = difference / len(changablePanes)
         # determine tha pane size changes
         paneSizeChanges = dict.fromkeys(unchangablePanes.keys(), 0)
-        ## handle min/max limited panes
+        # handle min/max limited panes
         for identifier, paneDescription in changablePanes.items():
             currentSize = paneDescription["nsView"].frame().size[coordIndex]
             paneChange = None
@@ -314,7 +317,7 @@ class VanillaSplitViewDelegate(NSObject):
                     if test == paneDescription["minSize"]:
                         paneChange = 0
                     elif test < paneDescription["minSize"]:
-                        paneChange =  paneDescription["minSize"] - currentSize
+                        paneChange = paneDescription["minSize"] - currentSize
                     else:
                         paneChange = evenChange
             # expanding
@@ -446,11 +449,10 @@ class SplitView(VanillaBaseObject):
     nsSplitViewClass = VanillaSplitViewSubclass
 
     def __init__(self, posSize, paneDescriptions, isVertical=True,
-        dividerStyle="splitter", dividerThickness=None, dividerColor=None,
-        autosaveName=None,
-        # deprecated
-        dividerImage=None
-    ):
+            dividerStyle="splitter", dividerThickness=None, dividerColor=None,
+            autosaveName=None,
+            # deprecated
+            dividerImage=None):
         # RBSplitView phase out
         if dividerImage is not None:
             warn(DeprecationWarning("The dividerImage argument is deprecated and will be ignored. Use the dividerStyle attribute."))
@@ -500,7 +502,9 @@ class SplitView(VanillaBaseObject):
             resizeFlexibility = paneDescription.get("resizeFlexibility", True)
             # unwrap the view if necessary
             if isinstance(view, VanillaBaseObject):
-                l, t, w, h = view._posSize
+                group = vanilla.Group((0, 0, -0, -0))
+                group.splitViewContentView = view
+                view = group
                 view._setFrame(splitViewFrame)
                 view = view._nsObject
                 view.setAutoresizingMask_(mask)
@@ -523,7 +527,6 @@ class SplitView(VanillaBaseObject):
             self._identifierToPane[identifier] = paneDescription
             # add the subview
             splitView.addSubview_(view)
-
 
     def getRBSplitView(self):
         warn("SplitView no longer wraps RBSplitView. Use getNSSplitView instead of getRBSplitView.")
