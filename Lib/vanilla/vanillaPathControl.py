@@ -1,5 +1,13 @@
-from AppKit import NSPathControl, NSPathStyleStandard, NSColor, NSFocusRingTypeNone
+from AppKit import NSPathControl, NSPathStyleStandard, NSColor, NSFocusRingTypeNone, NSURL, NSPathStylePopUp, NSBezelStyleRounded
+import os
 from vanilla.vanillaBase import VanillaBaseControl
+
+
+_pathStylesMap = {
+    "standaard": NSPathStyleStandard,
+    "popUp": NSPathStylePopUp,
+}
+
 
 class PathControl(VanillaBaseControl):
 
@@ -20,11 +28,17 @@ class PathControl(VanillaBaseControl):
     | Mini    | H | 18        |
     +---------+---+-----------+
 
-    **url** The url to be displayed in the control. This should be a NSURL object.
-
-    **editable** A boolean indicating if this control is editable or not.
+    **url** The url to be displayed in the control.
 
     **callback** The method to be called when the user presses the control.
+
+    **pathStyle** A string representing the path style. The options are:
+
+    +-------------+
+    | "standaard" |
+    +-------------+
+    | "popUp"     |
+    +-------------+
 
     **sizeStyle** A string representing the desired size style of the button. The options are:
 
@@ -38,40 +52,34 @@ class PathControl(VanillaBaseControl):
     """
 
     nsPathControlClass = NSPathControl
-    nspathStyle = NSPathStyleStandard
+    nsPathStyle = NSPathStyleStandard
 
-    def __init__(self, posSize, url, editable=False, callback=None, sizeStyle="regular"):
+    def __init__(self, posSize, url, callback=None, pathStyle="standaard", sizeStyle="regular"):
         self._setupView(self.nsPathControlClass, posSize, callback=callback)
-        self._nsObject.setPathStyle_(self.nspathStyle)
+        self._nsObject.setPathStyle_(_pathStylesMap[pathStyle])
         self._setSizeStyle(sizeStyle)
-        self._nsObject.setURL_(url)
         self._nsObject.setBackgroundColor_(NSColor.clearColor())
         self._nsObject.setFocusRingType_(NSFocusRingTypeNone)
+        self._nsObject.cell().setBordered_(True)
+        self._nsObject.cell().setBezelStyle_(NSBezelStyleRounded)
+        self.set(url)
 
+    def set(self, url):
+        if url is not None:
+            url = NSURL.URLWithString_(url)
+        self._nsObject.setURL_(url)
 
-#class PathControlBar(VanillaBaseControl):
-#
-#    nsPathControlClass = NSPathControl
-#    nspathStyle = NSPathStyleNavigationBar
-#
-#    frameAdjustments = {
-#        "mini": (-1, -2, 2, 2),
-#        "small": (-5, -7, 10, 11),
-#        "regular": (-6, -8, 12, 12),
-#        }
-#
-#    def __init__(self, posSize, title, callback=None, sizeStyle="regular"):
-#
-#
-#class PathControlPopUp(VanillaBaseControl):
-#
-#    nsPathControlClass = NSPathControl
-#    nspathStyle = NSPathStylePopUp
-#
-#    frameAdjustments = {
-#        "mini": (-1, -2, 2, 2),
-#        "small": (-5, -7, 10, 11),
-#        "regular": (-6, -8, 12, 12),
-#        }
-#
-#    def __init__(self, posSize, title, callback=None, sizeStyle="regular"):
+    def get(self):
+        url = self._nsObject.URL()
+        if url is not None:
+            return url.path()
+        return None
+
+    def getSelected(self):
+        path = []
+        for item in self._nsObject.pathItems():
+            cell = item.pathComponentCell()
+            path.append(item.title())
+            if cell == self._nsObject.clickedPathComponentCell():
+                break
+        return os.sep.join(path)
