@@ -4,7 +4,7 @@ from vanilla.vanillaBase import VanillaBaseControl
 
 
 _pathStylesMap = {
-    "standaard": NSPathStyleStandard,
+    "standard": NSPathStyleStandard,
     "popUp": NSPathStylePopUp,
 }
 
@@ -34,11 +34,11 @@ class PathControl(VanillaBaseControl):
 
     **pathStyle** A string representing the path style. The options are:
 
-    +-------------+
-    | "standaard" |
-    +-------------+
-    | "popUp"     |
-    +-------------+
+    +------------+
+    | "standard" |
+    +------------+
+    | "popUp"    |
+    +------------+
 
     **sizeStyle** A string representing the desired size style of the button. The options are:
 
@@ -52,9 +52,8 @@ class PathControl(VanillaBaseControl):
     """
 
     nsPathControlClass = NSPathControl
-    nsPathStyle = NSPathStyleStandard
 
-    def __init__(self, posSize, url, callback=None, pathStyle="standaard", sizeStyle="regular"):
+    def __init__(self, posSize, url, callback=None, pathStyle="standard", sizeStyle="regular"):
         self._setupView(self.nsPathControlClass, posSize, callback=callback)
         self._nsObject.setPathStyle_(_pathStylesMap[pathStyle])
         self._setSizeStyle(sizeStyle)
