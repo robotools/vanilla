@@ -28,6 +28,8 @@ class BaseMessageDialog(NSObject):
         if parentWindow is None:
             code = alert.runModal()
             self._translateValue(code)
+            if self._resultCallback is not None:
+                self._resultCallback(self._value)
         else:
             alert.beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_(parentWindow, self, "alertDidEnd:returnCode:contextInfo:", 0)
         return self
