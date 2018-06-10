@@ -1,4 +1,4 @@
-from AppKit import NSPathControl, NSPathStyleStandard, NSColor, NSFocusRingTypeNone, NSURL, NSPathStylePopUp, NSBezelStyleRounded
+from AppKit import NSPathControl, NSPathStyleStandard, NSColor, NSFocusRingTypeNone, NSURL, NSPathStylePopUp, NSRoundedBezelStyle
 import os
 from vanilla.vanillaBase import VanillaBaseControl
 
@@ -60,7 +60,7 @@ class PathControl(VanillaBaseControl):
         self._nsObject.setBackgroundColor_(NSColor.clearColor())
         self._nsObject.setFocusRingType_(NSFocusRingTypeNone)
         self._nsObject.cell().setBordered_(True)
-        self._nsObject.cell().setBezelStyle_(NSBezelStyleRounded)
+        self._nsObject.cell().setBezelStyle_(NSRoundedBezelStyle)
         self.set(url)
 
     def set(self, url):
