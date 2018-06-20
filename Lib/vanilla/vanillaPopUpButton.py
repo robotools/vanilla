@@ -1,9 +1,10 @@
 from AppKit import NSPopUpButton, NSPopUpButtonCell, NSMenuItem, NSImageNameActionTemplate, NSImage, NSMenu, NSTexturedRoundedBezelStyle
 from vanilla.vanillaBase import VanillaBaseControl, VanillaCallbackWrapper, _reverseSizeStyleMap
+from vanilla.vanillaList import VanillaMenuBuilder
 
 
 class PopUpButton(VanillaBaseControl):
-    
+
     """
     A button which, when selected, displays a list of items for the user to choose from.::
 
@@ -93,7 +94,7 @@ class PopUpButton(VanillaBaseControl):
         Get the selected item title in the pop up list.
         """
         return self._nsObject.titleOfSelectedItem()
-        
+
     def setItem(self, item):
         """
         Set the selected item title in the pop up list.
@@ -118,8 +119,9 @@ class PopUpButton(VanillaBaseControl):
         """
         return self._nsObject.itemTitles()
 
+
 class ActionButton(PopUpButton):
-    
+
     """
     An Action Button with a menu.
 
@@ -129,7 +131,7 @@ class ActionButton(PopUpButton):
 
             def __init__(self):
                 self.w = Window((100, 40))
-                
+
                 items = [
                         dict(title="first", callback=self.firstCallback),
                         dict(title="second", callback=self.secondCallback),
@@ -137,7 +139,7 @@ class ActionButton(PopUpButton):
                                 dict(title="sub first", callback=self.subFirstCallback)
                             ])
                     ]
-                
+
                 self.w.actionPopUpButton = ActionButton((10, 10, 30, 20),
                                       items,
                                       )
@@ -145,15 +147,15 @@ class ActionButton(PopUpButton):
 
             def firstCallback(self, sender):
                 print("first")
-            
+
             def secondCallback(self, sender):
                 print("second")
-            
+
             def subFirstCallback(self, sender):
                 print("sub first")
 
         ActionPopUpButtonDemo()
-    
+
     **posSize** Tuple of form *(left, top, width, height)* representing the position and
     size of the pop up button. The size of the button sould match the appropriate value
     for the given *sizeStyle*.
@@ -168,9 +170,9 @@ class ActionButton(PopUpButton):
     | Mini    | H | 15        |
     +---------+---+-----------+
 
-    **items** A list of items to appear in the pop up list as dictionaries. Optionally an item could be a NSMenuItem. 
+    **items** A list of items to appear in the pop up list as dictionaries. Optionally an item could be a NSMenuItem.
     when an item is set to "----" will be a menu item separator.
-    
+
     +------------+--------------------------------------------------------------------------------+
     | "title"*   | The title of the item.                                                         |
     +------------+--------------------------------------------------------------------------------+
@@ -178,7 +180,7 @@ class ActionButton(PopUpButton):
     +------------+--------------------------------------------------------------------------------+
     | "items"    | Each item could have sub menu's, as list of dictionaries with the same format. |
     +------------+--------------------------------------------------------------------------------+
-    
+
     **sizeStyle** A string representing the desired size style of the pop up button. The options are:
 
     +-----------+
@@ -191,41 +193,17 @@ class ActionButton(PopUpButton):
 
     **bordered** Boolean representing if the button should be bordered.
     """
-        
+
     def __init__(self, posSize, items, sizeStyle="regular", bordered=True):
         super(ActionButton, self).__init__(posSize, items, sizeStyle=sizeStyle)
         self._nsObject.setPullsDown_(True)
         self._nsObject.setBezelStyle_(NSTexturedRoundedBezelStyle)
         self._nsObject.setBordered_(bordered)
-        
+
     def _breakCycles(self):
-        self._callbackWrappers = None
+        self._menuItemCallbackWrappers = None
         super(ActionButton, self)._breakCycles()
-        
-    def _buildMenu(self, items, menu):
-        for item in items:
-            if isinstance(item, NSMenuItem):
-                menu.addItem_(item)
-            elif item == "----":
-                item = NSMenuItem.separatorItem()
-                menu.addItem_(item)
-            else:
-                title = item["title"]
-                callback = item.get("callback")
-                subItems = item.get("items")
-                
-                menuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(title, "", "")
-                if callback:
-                    wrapper = VanillaCallbackWrapper(callback)
-                    self._callbackWrappers.append(wrapper)
-                    menuItem.setTarget_(wrapper)
-                    menuItem.setAction_("action:")
-                if subItems:
-                    subMenu = NSMenu.alloc().init()
-                    self._buildMenu(subItems, subMenu)
-                    menuItem.setSubmenu_(subMenu)
-                menu.addItem_(menuItem)
-    
+
     def getFirstItem(self):
         actionImage = NSImage.imageNamed_(NSImageNameActionTemplate).copy()
         sizeStyle = _reverseSizeStyleMap[self._nsObject.cell().controlSize()]
@@ -237,7 +215,7 @@ class ActionButton(PopUpButton):
         firstActionItem.setImage_(actionImage)
         firstActionItem.setTitle_("")
         return firstActionItem
-    
+
     def setItems(self, items):
         """
         Set the items to appear in the pop up list.
@@ -246,5 +224,5 @@ class ActionButton(PopUpButton):
         self._nsObject.removeAllItems()
         menu = NSMenu.alloc().init()
         menu.addItem_(self.getFirstItem())
-        self._buildMenu(items, menu)
+        VanillaMenuBuilder(self, items, menu)
         self._nsObject.setMenu_(menu)
