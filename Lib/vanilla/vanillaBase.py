@@ -5,6 +5,7 @@ from distutils.version import StrictVersion
 from vanilla.nsSubclasses import getNSSubclass
 
 osVersionCurrent = StrictVersion(platform.mac_ver()[0])
+osVersion10_14 = StrictVersion("10.14")
 osVersion10_13 = StrictVersion("10.13")
 osVersion10_12 = StrictVersion("10.12")
 osVersion10_11 = StrictVersion("10.11")
@@ -13,6 +14,7 @@ osVersion10_9 = StrictVersion("10.9")
 osVersion10_8 = StrictVersion("10.8")
 osVersion10_7 = StrictVersion("10.7")
 osVersion10_6 = StrictVersion("10.6")
+
 
 class VanillaError(Exception): pass
 
@@ -216,6 +218,7 @@ class VanillaCallbackWrapper(NSObject):
             sender = sender.vanillaWrapper()
         if self.callback is not None:
             self.callback(sender)
+
 
 
 _sizeStyleMap = {

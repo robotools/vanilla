@@ -1,7 +1,7 @@
 import time
 import objc
 from Foundation import NSObject, NSArray, NSMutableArray, NSDictionary, NSMutableDictionary, NSMutableIndexSet, NSString, NSAttributedString, NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
-from AppKit import NSApp, NSTableView, NSTableColumn, NSArrayController, NSScrollView, NSSwitchButton, NSButtonCell, NSSliderCell, NSPopUpButtonCell, NSImageCell, NSSegmentedCell, NSFont, NSImage, NSReturnTextMovement, NSTabTextMovement, NSBacktabTextMovement, NSIllegalTextMovement, NSNotification, NSDragOperationNone, NSTableViewDropOn, NSDragOperationCopy, NSBezelBorder, NSFocusRingTypeNone, NSTableViewSolidVerticalGridLineMask, NSTableViewSolidHorizontalGridLineMask, NSTableViewUniformColumnAutoresizingStyle, NSTableColumnNoResizing, NSTableColumnUserResizingMask, NSTableColumnAutoresizingMask, NSCreatesSortDescriptorBindingOption, NSBackspaceCharacter, NSDeleteFunctionKey, NSDeleteCharacter, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSSmallControlSize, NSMiniControlSize, NSSegmentSwitchTrackingSelectOne
+from AppKit import NSApp, NSTableView, NSTableColumn, NSArrayController, NSScrollView, NSSwitchButton, NSButtonCell, NSSliderCell, NSPopUpButtonCell, NSImageCell, NSSegmentedCell, NSFont, NSImage, NSReturnTextMovement, NSTabTextMovement, NSBacktabTextMovement, NSIllegalTextMovement, NSNotification, NSDragOperationNone, NSTableViewDropOn, NSDragOperationCopy, NSBezelBorder, NSFocusRingTypeNone, NSTableViewSolidVerticalGridLineMask, NSTableViewSolidHorizontalGridLineMask, NSTableViewUniformColumnAutoresizingStyle, NSTableColumnNoResizing, NSTableColumnUserResizingMask, NSTableColumnAutoresizingMask, NSCreatesSortDescriptorBindingOption, NSBackspaceCharacter, NSDeleteFunctionKey, NSDeleteCharacter, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSSmallControlSize, NSMiniControlSize, NSSegmentSwitchTrackingSelectOne, NSMenuItem, NSMenu
 
 from vanilla.py23 import basestring, range, unichr, python_method
 from vanilla.nsSubclasses import getNSSubclass
@@ -32,6 +32,12 @@ class VanillaTableViewSubclass(NSTableView):
             self.window().makeFirstResponder_(self)
         else:
             super(VanillaTableViewSubclass, self).textDidEndEditing_(notification)
+
+    def menuForEvent_(self, event):
+        wrapper = self.vanillaWrapper()
+        if wrapper._menu is not None:
+            return wrapper._menu
+
 
 class _VanillaTableViewSubclass(VanillaTableViewSubclass):
 
@@ -186,6 +192,32 @@ class _VanillaArrayController(VanillaArrayController):
         from warnings import warn
         warn(DeprecationWarning("_VanillaArrayController is deprecated. Use VanillaArrayController"))
         return super(_VanillaArrayController, self).init()
+
+
+def VanillaMenuBuilder(sender, items, menu):
+    sender._menuItemCallbackWrappers = []
+    for item in items:
+        if isinstance(item, NSMenuItem):
+            menu.addItem_(item)
+        elif item == "----":
+            item = NSMenuItem.separatorItem()
+            menu.addItem_(item)
+        else:
+            title = item["title"]
+            callback = item.get("callback")
+            subItems = item.get("items")
+
+            menuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(title, "", "")
+            if callback:
+                wrapper = VanillaCallbackWrapper(callback)
+                sender._menuItemCallbackWrappers.append(wrapper)
+                menuItem.setTarget_(wrapper)
+                menuItem.setAction_("action:")
+            if subItems:
+                subMenu = NSMenu.alloc().init()
+                VanillaMenuBuilder(subItems, subMenu)
+                menuItem.setSubmenu_(subMenu)
+            menu.addItem_(menuItem)
 
 
 class List(VanillaBaseObject):
@@ -579,6 +611,7 @@ class List(VanillaBaseObject):
         return self._tableView
 
     def _breakCycles(self):
+        self._menuItemCallbackWrappers = None
         super(List, self)._breakCycles()
         if hasattr(self, "_editCallback") and self._editObserver is not None:
             self._editObserver._targetMethod = None
@@ -992,6 +1025,13 @@ class List(VanillaBaseObject):
         indexes = self._getSortedIndexesFromUnsortedIndexes(selection)
         index = min(indexes)
         self._tableView.scrollRowToVisible_(index)
+
+    _menu = None
+
+    def setMenu(self, items):
+        self._callbackWrappers = []
+        self._menu = menu = NSMenu.alloc().init()
+        VanillaMenuBuilder(self, items, menu)
 
     # methods for handling sorted/unsorted index conversion
 
