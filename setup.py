@@ -27,6 +27,6 @@ setup(name="vanilla",
     author_email="tal@typesupply.com",
     url="https://github.com/typesupply/vanilla",
     license="MIT",
-    packages=["vanilla"],
+    packages=["vanilla", "vanilla.test"],
     package_dir={"":"Lib"}
 )
