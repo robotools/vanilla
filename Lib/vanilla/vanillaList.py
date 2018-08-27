@@ -35,8 +35,7 @@ class VanillaTableViewSubclass(NSTableView):
 
     def menuForEvent_(self, event):
         wrapper = self.vanillaWrapper()
-        if wrapper._menu is not None:
-            return wrapper._menu
+        return wrapper._menuForEvent(event)
 
 
 class _VanillaTableViewSubclass(VanillaTableViewSubclass):
@@ -405,6 +404,8 @@ class List(VanillaBaseObject):
 
     **editCallback** Callback to be called after an item has been edited.
 
+    **menuCallback** Callback to be called when a contextual menu is requested.
+
     **enableDelete** A boolean representing if items in the list can be deleted via the interface.
 
     **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
@@ -487,7 +488,7 @@ class List(VanillaBaseObject):
     nsArrayControllerObserverClass = VanillaArrayControllerObserver
 
     def __init__(self, posSize, items, dataSource=None, columnDescriptions=None, showColumnTitles=True,
-                selectionCallback=None, doubleClickCallback=None, editCallback=None,
+                selectionCallback=None, doubleClickCallback=None, editCallback=None, menuCallback=None,
                 enableDelete=False, enableTypingSensitivity=False,
                 allowsMultipleSelection=True, allowsEmptySelection=True,
                 allowsSorting=True,
@@ -577,6 +578,8 @@ class List(VanillaBaseObject):
             self._doubleClickTarget = VanillaCallbackWrapper(doubleClickCallback)
             self._tableView.setTarget_(self._doubleClickTarget)
             self._tableView.setDoubleAction_("action:")
+        # store the contextual menu callback
+        self._menuCallback = menuCallback
         # set the drop data
         self._selfDropSettings = selfDropSettings
         self._selfWindowDropSettings = selfWindowDropSettings
@@ -900,6 +903,21 @@ class List(VanillaBaseObject):
                 return True
         return False
 
+    def _menuForEvent(self, event):
+        # this method is called by the NSTableView subclass to request a contextual menu
+        # if there is a menuCallack convert a the incomming items to an nsmenu
+        if self._menuCallback is not None:
+            items = self._menuCallback(self)
+            # if the list is empty or None, dont do anything
+            if items:
+                menu = NSMenu.alloc().init()
+                VanillaMenuBuilder(self, items, menu)
+            return menu
+        # if a menu is been set by setMenu
+        elif self._menu is not None:
+            return self._menu
+        return None
+
     # -------------
     # list behavior
     # -------------
@@ -1051,7 +1069,6 @@ class List(VanillaBaseObject):
     _menu = None
 
     def setMenu(self, items):
-        self._callbackWrappers = []
         self._menu = menu = NSMenu.alloc().init()
         VanillaMenuBuilder(self, items, menu)
 
