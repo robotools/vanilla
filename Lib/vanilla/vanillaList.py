@@ -912,9 +912,9 @@ class List(VanillaBaseObject):
             if items:
                 menu = NSMenu.alloc().init()
                 VanillaMenuBuilder(self, items, menu)
-            return menu
+                return menu
         # if a menu is been set by setMenu
-        elif self._menu is not None:
+        if self._menu is not None:
             return self._menu
         return None
 
