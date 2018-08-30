@@ -228,7 +228,7 @@ def VanillaMenuBuilder(sender, items, menu):
                 menuItem.setAction_("action:")
             if subItems:
                 subMenu = NSMenu.alloc().init()
-                VanillaMenuBuilder(subItems, subMenu)
+                VanillaMenuBuilder(sender, subItems, subMenu)
                 menuItem.setSubmenu_(subMenu)
 
             if image is not None:
