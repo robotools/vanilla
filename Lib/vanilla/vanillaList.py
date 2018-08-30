@@ -193,7 +193,7 @@ class _VanillaArrayController(VanillaArrayController):
         return super(_VanillaArrayController, self).init()
 
 
-def VanillaMenuBuilder(sender, items, menu):
+def VanillaMenuBuilder(sender, items, menu, resetCallbackWrapper=True):
     """
     Build a menu from a given set of items
     Each items must be a dict with the following keys:
@@ -205,7 +205,8 @@ def VanillaMenuBuilder(sender, items, menu):
     * **state** a menu item state: must be either 0, 1 or -1 (on, off or mixed).
     * **enabled** enable the menu item, must be a bool.
     """
-    sender._menuItemCallbackWrappers = []
+    if resetCallbackWrapper:
+        sender._menuItemCallbackWrappers = []
     for item in items:
         if isinstance(item, NSMenuItem):
             menu.addItem_(item)
@@ -228,7 +229,7 @@ def VanillaMenuBuilder(sender, items, menu):
                 menuItem.setAction_("action:")
             if subItems:
                 subMenu = NSMenu.alloc().init()
-                VanillaMenuBuilder(sender, subItems, subMenu)
+                VanillaMenuBuilder(sender, subItems, subMenu, resetCallbackWrapper=False)
                 menuItem.setSubmenu_(subMenu)
 
             if image is not None:
