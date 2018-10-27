@@ -6,9 +6,6 @@ import vanilla
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
 from vanilla.py23 import python_method
 
-import objc
-objc.setVerbose(True)
-
 
 _dividerStyleMap = {
     "splitter": NSSplitViewDividerStylePaneSplitter,
