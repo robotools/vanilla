@@ -122,7 +122,7 @@ class Slider(VanillaBaseControl):
 
     def __init__(self, posSize, minValue=0, maxValue=100, value=50,
             tickMarkCount=None, stopOnTickMarks=False, continuous=True,
-            callback=None, sizeStyle="regular"):
+            callback=None, sizeStyle="regular", isVertical=False):
         self._setupView(self.nsSliderClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setMinValue_(minValue)
@@ -136,8 +136,7 @@ class Slider(VanillaBaseControl):
             self._nsObject.setContinuous_(True)
         else:
             self._nsObject.setContinuous_(False)
-        if osVersionCurrent >= osVersion10_12:
-            self._nsObject.setVertical_(self._isVertical())
+        self._nsObject.setVertical_(isVertical)
 
     def getNSSlider(self):
         """
@@ -145,18 +144,12 @@ class Slider(VanillaBaseControl):
         """
         return self._nsObject
 
-    def _isVertical(self):
-        # based on the pos size return if the slider is vertical or not.
-        w, h = self._posSize[2:]
-        return w > h
-
     def _adjustPosSize(self, frame):
-        if self._isVertical():
-            isVertical = True
+        isVertical = self._nsObject.isVertical()
+        if isVertical:
             prefix = "V-"
         else:
             prefix = "H-"
-            isVertical = False
         tickPos = "None"
         tickMarkCount = self._nsObject.numberOfTickMarks()
         if tickMarkCount:
@@ -237,10 +230,7 @@ class Slider(VanillaBaseControl):
         # because if this is called before the object
         # has been added to an open window, the isVertical
         # method is unable to determine horizontal or vertical
-        if self._isVertical():
-            isVertical = True
-        else:
-            isVertical = False
+        isVertical = self._nsObject.isVertical()
         if isVertical:
             if value == "top" or value == "bottom":
                 raise VanillaError("vertical sliders can only position tick marks at 'left' or 'right'")

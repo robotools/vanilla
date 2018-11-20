@@ -192,18 +192,18 @@ class ButtonTest(BaseTest):
         sliderSizeStyles = [("regular", 15), ("small", 11), ("mini", 10)]
         for sizeStyle, width in sliderSizeStyles:
             attrName = "VSlider_noTicks_%s" % sizeStyle
-            button = Slider((left, top, width, height), 0, 100, callback=self.getCallback, sizeStyle=sizeStyle)
+            button = Slider((left, top, width, height), 0, 100, callback=self.getCallback, sizeStyle=sizeStyle, isVertical=True)
             setattr(self.w, attrName, button)
             left += 30
         sliderSizeStyles = [("regular", 23), ("small", 17), ("mini", 16)]
         for sizeStyle, width in sliderSizeStyles:
             attrName = "VSlider_rightTicks_%s" % sizeStyle
-            button = Slider((left, top, width, height), 0, 100, tickMarkCount=10, callback=self.getCallback, sizeStyle=sizeStyle)
+            button = Slider((left, top, width, height), 0, 100, tickMarkCount=10, callback=self.getCallback, sizeStyle=sizeStyle, isVertical=True)
             setattr(self.w, attrName, button)
             left += 30
         for sizeStyle, width in sliderSizeStyles:
             attrName = "VSlider_leftTicks_%s" % sizeStyle
-            button = Slider((left, top, width, height), 0, 100, tickMarkCount=10, callback=self.getCallback, sizeStyle=sizeStyle)
+            button = Slider((left, top, width, height), 0, 100, tickMarkCount=10, callback=self.getCallback, sizeStyle=sizeStyle, isVertical=True)
             button.setTickMarkPosition("left")
             setattr(self.w, attrName, button)
             left += 30
@@ -286,10 +286,10 @@ class ButtonTest(BaseTest):
         pathControlSizeStyles = [("regular", 22), ("small", 20), ("mini", 18)]
         left = 10
         width = -10
-        url = NSURL.fileURLWithPath_(__file__)
+        urlPath = __file__
         for sizeStyle, height in pathControlSizeStyles:
             attrName = "PathControl_%s" % sizeStyle
-            button = PathControl((left, top, width, height), url, callback=None, sizeStyle=sizeStyle)
+            button = PathControl((left, top, width, height), urlPath, callback=None, sizeStyle=sizeStyle)
             setattr(self.w, attrName, button)
             top += 30
 
