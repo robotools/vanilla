@@ -231,9 +231,5 @@ class Slider(VanillaBaseControl):
         | "bottom" |
         +----------+
         """
-        # don't rely on self._nsObject.isVertical here
-        # because if this is called before the object
-        # has been added to an open window, the isVertical
-        # method is unable to determine horizontal or vertical
         position = _tickPositionMap[value]
         self._nsObject.setTickMarkPosition_(position)
