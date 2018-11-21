@@ -203,7 +203,7 @@ class ButtonTest(BaseTest):
             left += 30
         for sizeStyle, width in sliderSizeStyles:
             attrName = "VSlider_leftTicks_%s" % sizeStyle
-            button = Slider((left, top, width, height), 0, 100, tickMarkCount=10, callback=self.getCallback, sizeStyle=sizeStyle, isVertical=True)
+            button = Slider((left, top, width, height), 0, 100, tickMarkCount=10, callback=self.getCallback, sizeStyle=sizeStyle)
             button.setTickMarkPosition("left")
             setattr(self.w, attrName, button)
             left += 30
