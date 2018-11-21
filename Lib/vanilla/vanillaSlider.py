@@ -86,6 +86,7 @@ class Slider(VanillaBaseControl):
 
     **isVertical** Boolean if the slider is vertical or horizontal. If not
     provided it will be calculated from the posSize width and height values.
+    *isVertical* will be ignored below 10.12.
     """
 
     nsSliderClass = NSSlider
@@ -139,9 +140,10 @@ class Slider(VanillaBaseControl):
             self._nsObject.setContinuous_(True)
         else:
             self._nsObject.setContinuous_(False)
-        if isVertical is None:
-            isVertical = self._isVerticalFromPosSize()
-        self._nsObject.setVertical_(isVertical)
+        if osVersionCurrent >= osVersion10_12:
+            if isVertical is None:
+                isVertical = self._isVerticalFromPosSize()
+            self._nsObject.setVertical_(isVertical)
 
     def getNSSlider(self):
         """
