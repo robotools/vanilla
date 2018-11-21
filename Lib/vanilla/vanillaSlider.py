@@ -83,10 +83,6 @@ class Slider(VanillaBaseControl):
     +-----------+
     | "mini"    |
     +-----------+
-
-    **isVertical** Boolean if the slider is vertical or horizontal. If not
-    provided it will be calculated from the posSize width and height values.
-    *isVertical* will be ignored below 10.12.
     """
 
     nsSliderClass = NSSlider
@@ -126,7 +122,7 @@ class Slider(VanillaBaseControl):
 
     def __init__(self, posSize, minValue=0, maxValue=100, value=50,
             tickMarkCount=None, stopOnTickMarks=False, continuous=True,
-            callback=None, sizeStyle="regular", isVertical=None):
+            callback=None, sizeStyle="regular"):
         self._setupView(self.nsSliderClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setMinValue_(minValue)
@@ -140,10 +136,6 @@ class Slider(VanillaBaseControl):
             self._nsObject.setContinuous_(True)
         else:
             self._nsObject.setContinuous_(False)
-        if osVersionCurrent >= osVersion10_12:
-            if isVertical is None:
-                isVertical = self._isVerticalFromPosSize()
-            self._nsObject.setVertical_(isVertical)
 
     def getNSSlider(self):
         """
@@ -151,14 +143,14 @@ class Slider(VanillaBaseControl):
         """
         return self._nsObject
 
-    def _isVerticalFromPosSize(self):
-        w, h = self._posSize[2:]
-        if w < 0:
-            return w >= h
+    def _isVerticalFromFrame(self, frame):
+        w, h = frame[1]
         return w < h
 
     def _adjustPosSize(self, frame):
-        isVertical = self._nsObject.isVertical()
+        isVertical = self._isVerticalFromFrame(frame)
+        if osVersionCurrent >= osVersion10_12:
+            self._nsObject.setVertical_(isVertical)
         if isVertical:
             prefix = "V-"
         else:
@@ -243,7 +235,7 @@ class Slider(VanillaBaseControl):
         # because if this is called before the object
         # has been added to an open window, the isVertical
         # method is unable to determine horizontal or vertical
-        isVertical = self._nsObject.isVertical()
+        isVertical = self._isVerticalFromFrame(self._nsObject.frame())
         if isVertical:
             if value == "top" or value == "bottom":
                 raise VanillaError("vertical sliders can only position tick marks at 'left' or 'right'")
