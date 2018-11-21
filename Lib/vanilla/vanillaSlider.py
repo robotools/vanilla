@@ -136,7 +136,6 @@ class Slider(VanillaBaseControl):
             self._nsObject.setContinuous_(True)
         else:
             self._nsObject.setContinuous_(False)
-        self._tickMarkPosition = None
 
     def getNSSlider(self):
         """
@@ -152,18 +151,6 @@ class Slider(VanillaBaseControl):
         isVertical = self._isVerticalFromFrame(frame)
         if osVersionCurrent >= osVersion10_12:
             self._nsObject.setVertical_(isVertical)
-
-        if self._tickMarkPosition:
-            if isVertical:
-                if self._tickMarkPosition == "top" or self._tickMarkPosition == "bottom":
-                    raise VanillaError("vertical sliders can only position tick marks at 'left' or 'right'")
-            else:
-                if self._tickMarkPosition == "left" or self._tickMarkPosition == "right":
-                    raise VanillaError("horizontal sliders can only position tick marks at 'top' or 'bottom'")
-            position = _tickPositionMap[self._tickMarkPosition]
-            self._nsObject.setTickMarkPosition_(position)
-            self._tickMarkPosition = None
-
         if isVertical:
             prefix = "V-"
         else:
@@ -248,4 +235,5 @@ class Slider(VanillaBaseControl):
         # because if this is called before the object
         # has been added to an open window, the isVertical
         # method is unable to determine horizontal or vertical
-        self._tickMarkPosition = value
+        position = _tickPositionMap[value]
+        self._nsObject.setTickMarkPosition_(position)
