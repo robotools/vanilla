@@ -286,10 +286,10 @@ class ButtonTest(BaseTest):
         pathControlSizeStyles = [("regular", 22), ("small", 20), ("mini", 18)]
         left = 10
         width = -10
-        url = NSURL.fileURLWithPath_(__file__)
+        urlPath = __file__
         for sizeStyle, height in pathControlSizeStyles:
             attrName = "PathControl_%s" % sizeStyle
-            button = PathControl((left, top, width, height), url, callback=None, sizeStyle=sizeStyle)
+            button = PathControl((left, top, width, height), urlPath, callback=None, sizeStyle=sizeStyle)
             setattr(self.w, attrName, button)
             top += 30
 

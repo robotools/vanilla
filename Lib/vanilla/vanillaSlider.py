@@ -136,8 +136,6 @@ class Slider(VanillaBaseControl):
             self._nsObject.setContinuous_(True)
         else:
             self._nsObject.setContinuous_(False)
-        if osVersionCurrent >= osVersion10_12:
-            self._nsObject.setVertical_(self._isVertical())
 
     def getNSSlider(self):
         """
@@ -145,18 +143,18 @@ class Slider(VanillaBaseControl):
         """
         return self._nsObject
 
-    def _isVertical(self):
-        # based on the pos size return if the slider is vertical or not.
-        w, h = self._posSize[2:]
-        return w > h
+    def _isVerticalFromFrame(self, frame):
+        w, h = frame[1]
+        return w < h
 
     def _adjustPosSize(self, frame):
-        if self._isVertical():
-            isVertical = True
+        isVertical = self._isVerticalFromFrame(frame)
+        if osVersionCurrent >= osVersion10_12:
+            self._nsObject.setVertical_(isVertical)
+        if isVertical:
             prefix = "V-"
         else:
             prefix = "H-"
-            isVertical = False
         tickPos = "None"
         tickMarkCount = self._nsObject.numberOfTickMarks()
         if tickMarkCount:
@@ -233,19 +231,5 @@ class Slider(VanillaBaseControl):
         | "bottom" |
         +----------+
         """
-        # don't rely on self._nsObject.isVertical here
-        # because if this is called before the object
-        # has been added to an open window, the isVertical
-        # method is unable to determine horizontal or vertical
-        if self._isVertical():
-            isVertical = True
-        else:
-            isVertical = False
-        if isVertical:
-            if value == "top" or value == "bottom":
-                raise VanillaError("vertical sliders can only position tick marks at 'left' or 'right'")
-        else:
-            if value == "left" or value == "right":
-                raise VanillaError("horizontal sliders can only position tick marks at 'top' or 'bottom'")
         position = _tickPositionMap[value]
         self._nsObject.setTickMarkPosition_(position)
