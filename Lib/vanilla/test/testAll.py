@@ -192,13 +192,13 @@ class ButtonTest(BaseTest):
         sliderSizeStyles = [("regular", 15), ("small", 11), ("mini", 10)]
         for sizeStyle, width in sliderSizeStyles:
             attrName = "VSlider_noTicks_%s" % sizeStyle
-            button = Slider((left, top, width, height), 0, 100, callback=self.getCallback, sizeStyle=sizeStyle, isVertical=True)
+            button = Slider((left, top, width, height), 0, 100, callback=self.getCallback, sizeStyle=sizeStyle)
             setattr(self.w, attrName, button)
             left += 30
         sliderSizeStyles = [("regular", 23), ("small", 17), ("mini", 16)]
         for sizeStyle, width in sliderSizeStyles:
             attrName = "VSlider_rightTicks_%s" % sizeStyle
-            button = Slider((left, top, width, height), 0, 100, tickMarkCount=10, callback=self.getCallback, sizeStyle=sizeStyle, isVertical=True)
+            button = Slider((left, top, width, height), 0, 100, tickMarkCount=10, callback=self.getCallback, sizeStyle=sizeStyle)
             setattr(self.w, attrName, button)
             left += 30
         for sizeStyle, width in sliderSizeStyles:

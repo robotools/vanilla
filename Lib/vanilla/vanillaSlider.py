@@ -83,6 +83,9 @@ class Slider(VanillaBaseControl):
     +-----------+
     | "mini"    |
     +-----------+
+
+    **isVertical** Boolean if the slider is vertical or horizontal. If not
+    provided it will be calculated from the posSize width and height values.
     """
 
     nsSliderClass = NSSlider
@@ -122,7 +125,7 @@ class Slider(VanillaBaseControl):
 
     def __init__(self, posSize, minValue=0, maxValue=100, value=50,
             tickMarkCount=None, stopOnTickMarks=False, continuous=True,
-            callback=None, sizeStyle="regular", isVertical=False):
+            callback=None, sizeStyle="regular", isVertical=None):
         self._setupView(self.nsSliderClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setMinValue_(minValue)
@@ -136,6 +139,8 @@ class Slider(VanillaBaseControl):
             self._nsObject.setContinuous_(True)
         else:
             self._nsObject.setContinuous_(False)
+        if isVertical is None:
+            isVertical = self._isVerticalFromPosSize()
         self._nsObject.setVertical_(isVertical)
 
     def getNSSlider(self):
@@ -143,6 +148,12 @@ class Slider(VanillaBaseControl):
         Return the *NSSlider* that this object wraps.
         """
         return self._nsObject
+
+    def _isVerticalFromPosSize(self):
+        w, h = self._posSize[2:]
+        if w < 0:
+            return w >= h
+        return w < h
 
     def _adjustPosSize(self, frame):
         isVertical = self._nsObject.isVertical()
