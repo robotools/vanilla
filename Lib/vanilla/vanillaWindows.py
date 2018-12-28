@@ -554,6 +554,8 @@ class Window(NSObject):
         +-------------------------------+---------------------------------------------------------------------------+
         | *imageObject* (optional)      | A _NSImage_ object. Defaults to *None*.                                   |
         +-------------------------------+---------------------------------------------------------------------------+
+        | *imageTemplate* (optional)    | A boolean representing if the image should converted to a template image. |
+        +-------------------------------+---------------------------------------------------------------------------+
         | *selectable* (optional)       | A boolean representing if the item is selectable or not. The default      |
         |                               | value is _False_. For more information on selectable toolbar items, refer |
         |                               | to Apple's `documentation <http://tinyurl.com/SelectableItems>`_          |

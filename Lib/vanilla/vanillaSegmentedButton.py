@@ -48,19 +48,21 @@ class SegmentedButton(VanillaBaseControl):
 
     **segmentDescriptions** An ordered list of dictionaries describing the segments.
 
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | width (optional)       | The desired width of the segment.                                                                |
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | title (optional)       | The title of the segment.                                                                        |
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | enabled (optional)     | The enabled state of the segment. The default is `True`.                                         |
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | imagePath (optional)   | A file path to an image to display in the segment.                                               |
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | imageNamed (optional)  | The name of an image already loaded as a *NSImage* by the application to display in the segment. |
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | imageObject (optional) | A *NSImage* object to display in the segment.                                                    |
-    +------------------------+--------------------------------------------------------------------------------------------------+
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | width (optional)           | The desired width of the segment.                                                                |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | title (optional)           | The title of the segment.                                                                        |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | enabled (optional)         | The enabled state of the segment. The default is `True`.                                         |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | imagePath (optional)       | A file path to an image to display in the segment.                                               |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | imageNamed (optional)      | The name of an image already loaded as a *NSImage* by the application to display in the segment. |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | imageObject (optional)     | A *NSImage* object to display in the segment.                                                    |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | *imageTemplate* (optional) | A boolean representing if the image should converted to a template image.                        |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
 
     **callback** The method to be called when the user presses the segmented button.
 
