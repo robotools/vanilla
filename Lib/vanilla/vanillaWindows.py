@@ -725,6 +725,7 @@ class Window(NSObject):
         imagePath = itemData.get("imagePath")
         imageNamed = itemData.get("imageNamed")
         imageObject = itemData.get("imageObject")
+        imageTemplate = itemData.get("imageTemplate")
         view = itemData.get("view")
         callback = itemData.get("callback", None)
         # create the NSImage if needed
@@ -741,6 +742,9 @@ class Window(NSObject):
         toolbarItem.setPaletteLabel_(paletteLabel)
         toolbarItem.setToolTip_(toolTip)
         if image is not None:
+            if imageTemplate is not None:
+                # only change the image template setting if its either True or False
+                image.setTemplate_(imageTemplate)
             toolbarItem.setImage_(image)
         elif view is not None:
             toolbarItem.setView_(view)

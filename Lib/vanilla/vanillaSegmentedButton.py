@@ -110,6 +110,7 @@ class SegmentedButton(VanillaBaseControl):
             enabled = segmentDescription.get("enabled", True)
             imagePath = segmentDescription.get("imagePath")
             imageNamed = segmentDescription.get("imageNamed")
+            imageTemplate = segmentDescription.get("imageTemplate")
             imageObject = segmentDescription.get("imageObject")
             # create the NSImage if needed
             if imagePath is not None:
@@ -124,6 +125,9 @@ class SegmentedButton(VanillaBaseControl):
             nsObject.setLabel_forSegment_(title, segmentIndex)
             nsObject.setEnabled_forSegment_(enabled, segmentIndex)
             if image is not None:
+                if imageTemplate is not None:
+                    # only change the image template setting if its either True or False
+                    image.setTemplate_(imageTemplate)
                 nsObject.setImage_forSegment_(image, segmentIndex)
 
     def getNSSegmentedButton(self):
