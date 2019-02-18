@@ -124,7 +124,7 @@ class Popover(VanillaBaseObject):
         Open the popover. If desired, the **parentView** may be specified.
         If not, the values assigned during init will be used. Additionally,
         a rect of form (x, y, width, height) may be specified to indicate
-        where the popover shoulw pop out from. If not provided, the parent
+        where the popover should pop out from. If not provided, the parent
         view's bounds will be used.
         """
         if isinstance(parentView, VanillaBaseObject):
