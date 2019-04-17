@@ -24,7 +24,7 @@ class PopUpButton(VanillaBaseControl):
 
         PopUpButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and
     size of the pop up button. The size of the button sould match the appropriate value
     for the given *sizeStyle*.
 
@@ -156,7 +156,7 @@ class ActionButton(PopUpButton):
 
         ActionPopUpButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and
     size of the pop up button. The size of the button sould match the appropriate value
     for the given *sizeStyle*.
 

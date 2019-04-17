@@ -3,7 +3,7 @@ from Foundation import NSObject
 from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToolbar, NSToolbarItem, NSImage, NSNormalWindowLevel, NSFloatingWindowLevel, NSClosableWindowMask, NSMiniaturizableWindowMask, NSResizableWindowMask, NSTexturedBackgroundWindowMask, NSUnifiedTitleAndToolbarWindowMask, NSHUDWindowMask, NSUtilityWindowMask, NSTitledWindowMask, NSBorderlessWindowMask, NSBackingStoreBuffered, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSToolbarPrintItemIdentifier, NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarDisplayModeDefault, NSToolbarDisplayModeIconAndLabel, NSToolbarDisplayModeIconOnly, NSToolbarDisplayModeLabelOnly, NSToolbarSizeModeDefault, NSToolbarSizeModeRegular, NSToolbarSizeModeSmall
 
 
-from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
+from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _addConstraints, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersionCurrent, osVersion10_7, osVersion10_10
 from vanilla.py23 import python_method
 
@@ -144,6 +144,7 @@ class Window(NSObject):
         self._window.setLevel_(self.nsWindowLevel)
         self._window.setReleasedWhenClosed_(False)
         self._window.setDelegate_(self)
+        self._autoLayoutViews = {}
         self._bindings = {}
         self._initiallyVisible = initiallyVisible
         # full screen mode
@@ -351,6 +352,17 @@ class Window(NSObject):
             screenFrame = ((sL, 0), (sW, sH + sB))
         frame = _calcFrame(screenFrame, ((l, t), (w, h)), absolutePositioning=True)
         self._window.setFrame_display_animate_(frame, True, animate)
+
+    def addPosSizeConstraints(self, constraints, metrics=None):
+        """
+        Add auto layout contraints for controls/view in this view.
+        **constraints** must by a list of strings that follow the
+        `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
+        **metrics** may be either **None** or a dict containing
+        key value pairs representing metrics keywords used in the
+        constraints.
+        """
+        _addConstraints(self, constraints, metrics)
 
     def center(self):
         """

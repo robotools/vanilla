@@ -32,7 +32,7 @@ class ObjectBrowser(VanillaBaseObject):
     """
     An object browser.
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and
     size of the browser.
 
     **obj** The object to be displayed.

@@ -56,7 +56,7 @@ class Tabs(VanillaBaseObject):
         myTab = self.w.tabs[0]
 
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position
     and size of the tabs.
 
     **titles** An ordered list of tab titles.

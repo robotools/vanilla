@@ -28,7 +28,7 @@ A standard check box.::
 
     CheckBoxDemo()
 
-**posSize** Tuple of form (left, top, width, height) representing the position and size of
+**posSize** Tuple of form (left, top, width, height) or *"auto"* representing the position and size of
 the check box. The size of the check box should match the appropriate value for the given *sizeStyle*.
 
 +-------------------------+

@@ -44,7 +44,7 @@ class LevelIndicator(VanillaBaseControl):
 
         LevelIndicatorDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position
     and size of the level indicator.
 
     +-------------------------------+

@@ -23,7 +23,7 @@ class Box(VanillaBaseObject):
 
     No special naming is required for the attributes. However, each attribute must have a unique name.
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the box.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the box.
 
     **title** The title to be displayed dabove the box. Pass *None* if no title is desired.
     """

@@ -32,7 +32,7 @@ class SegmentedButton(VanillaBaseControl):
 
         SegmentedButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position
     and size of the segmented button. The size of the segmented button sould match
     the appropriate value for the given *sizeStyle*.
 

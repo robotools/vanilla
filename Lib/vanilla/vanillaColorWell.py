@@ -27,7 +27,7 @@ class ColorWell(VanillaBaseObject):
 
         ColorWellDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the color well.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the color well.
 
     **callback** The method to be caled when the user selects a new color.
 

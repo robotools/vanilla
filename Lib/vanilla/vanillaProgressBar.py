@@ -27,7 +27,7 @@ class ProgressBar(VanillaBaseObject):
 
         ProgressBarDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the progress bar. The height of the progress
     bar sould match the appropriate value for the given *sizeStyle*.
 

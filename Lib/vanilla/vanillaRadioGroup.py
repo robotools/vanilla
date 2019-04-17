@@ -24,7 +24,7 @@ class RadioGroup(VanillaBaseControl):
 
         RadioGroupDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the radio group.
 
     **titles** A list of titles to be shown next to the radio buttons.

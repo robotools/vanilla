@@ -24,7 +24,7 @@ _dateDisplayFlagMap = {
 class DatePicker(VanillaBaseControl):
 
     """
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the date picker control.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the date picker control.
 
     +-------------------------------------+
     | **Standard Dimensions - Text Mode** |

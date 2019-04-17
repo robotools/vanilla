@@ -1,6 +1,6 @@
 import platform
 from Foundation import NSObject
-from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin
+from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin, NSLayoutConstraint
 from distutils.version import StrictVersion
 from vanilla.nsSubclasses import getNSSubclass
 
@@ -22,6 +22,10 @@ class VanillaError(Exception): pass
 class VanillaBaseObject(object):
 
     frameAdjustments = None
+
+    def __init__(self, posSize):
+        super(VanillaBaseObject, self).__init__(posSize)
+        self._autoLayoutViews = {}
 
     def __setattr__(self, attr, value):
         _setAttr(VanillaBaseObject, self, attr, value)
@@ -57,6 +61,8 @@ class VanillaBaseObject(object):
             self._nsObject.setAction_("action:")
 
     def _setAutosizingFromPosSize(self, posSize):
+        if posSize == "auto":
+            return
         l, t, w, h = posSize
         mask = 0
 
@@ -77,6 +83,8 @@ class VanillaBaseObject(object):
         self._nsObject.setAutoresizingMask_(mask)
 
     def _setFrame(self, parentFrame, animate=False):
+        if self._posSize == "auto":
+            return
         l, t, w, h = self._posSize
         frame  = _calcFrame(parentFrame, ((l, t), (w, h)))
         frame = self._adjustPosSize(frame)
@@ -142,17 +150,33 @@ class VanillaBaseObject(object):
         **animate** A boolean flag telling to animate the transition. Off by default.
         """
         self._posSize = posSize
+        if posSize == "auto":
+            return
         self._setAutosizingFromPosSize(posSize)
         superview = self._nsObject.superview()
         if superview is not None:
             self._setFrame(superview.frame(), animate)
             superview.setNeedsDisplay_(True)
 
+    def addPosSizeConstraints(self, constraints, metrics=None):
+        """
+        Add auto layout contraints for controls/view in this view.
+        **constraints** must by a list of strings that follow the
+        `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
+        **metrics** may be either **None** or a dict containing
+        key value pairs representing metrics keywords used in the
+        constraints.
+        """
+        _addConstraints(self, constraints, metrics)
+
     def move(self, x, y):
         """
         Move the object by **x** units and **y** units.
         """
-        l, t, w, h = self.getPosSize()
+        posSize = self.getPosSize()
+        if posSize == "auto":
+            return
+        l, t, w, h = posSize
         l = l + x
         t = t + y
         self.setPosSize((l, t, w, h))
@@ -161,7 +185,10 @@ class VanillaBaseObject(object):
         """
         Change the size of the object to **width** and **height**.
         """
-        l, t, w, h = self.getPosSize()
+        posSize = self.getPosSize()
+        if posSize == "auto":
+            return
+        l, t, w, h = posSize
         self.setPosSize((l, t, width, height))
 
 
@@ -279,6 +306,10 @@ def _recursiveSetFrame(view):
 
 
 def _setAttr(cls, obj, attr, value):
+    if hasattr(value, "getPosSize") and value.getPosSize() == "auto":
+        view = value._getContentView()
+        view.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        obj._autoLayoutViews[attr] = view
     if isinstance(value, VanillaBaseObject) and hasattr(value, "_posSize"):
         assert not hasattr(obj, attr), "can't replace vanilla attribute"
         view = obj._getContentView()
@@ -294,9 +325,22 @@ def _setAttr(cls, obj, attr, value):
 
 
 def _delAttr(cls, obj, attr):
+    if hasattr(obj, "_autoLayoutViews"):
+        if attr in obj._autoLayoutViews:
+            del obj._autoLayoutViews[attr]
     value = getattr(obj, attr)
     if isinstance(value, VanillaBaseObject):
         value._nsObject.removeFromSuperview()
     #elif isinstance(value, NSView):
     #    value.removeFromSuperview()
     super(cls, obj).__delattr__(attr)
+
+
+def _addConstraints(obj, constraints, metrics=None):
+    from AppKit import NSLayoutFormatAlignAllLeft
+    view = obj._getContentView()
+    if metrics is None:
+        metrics = {}
+    for constraint in constraints:
+        constraint = NSLayoutConstraint.constraintsWithVisualFormat_options_metrics_views_(constraint, 0, metrics, obj._autoLayoutViews)
+        view.addConstraints_(constraint)
