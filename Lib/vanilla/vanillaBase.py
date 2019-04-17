@@ -158,7 +158,7 @@ class VanillaBaseObject(object):
             self._setFrame(superview.frame(), animate)
             superview.setNeedsDisplay_(True)
 
-    def addPosSizeConstraints(self, constraints, metrics=None):
+    def addLayoutConstraints(self, constraints, metrics=None):
         """
         Add auto layout contraints for controls/view in this view.
         **constraints** must by a list of strings that follow the

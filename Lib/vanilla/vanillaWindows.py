@@ -353,7 +353,7 @@ class Window(NSObject):
         frame = _calcFrame(screenFrame, ((l, t), (w, h)), absolutePositioning=True)
         self._window.setFrame_display_animate_(frame, True, animate)
 
-    def addPosSizeConstraints(self, constraints, metrics=None):
+    def addLayoutConstraints(self, constraints, metrics=None):
         """
         Add auto layout contraints for controls/view in this view.
         **constraints** must by a list of strings that follow the
