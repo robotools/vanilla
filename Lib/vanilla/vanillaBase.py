@@ -23,10 +23,6 @@ class VanillaBaseObject(object):
 
     frameAdjustments = None
 
-    def __init__(self, posSize):
-        super(VanillaBaseObject, self).__init__(posSize)
-        self._autoLayoutViews = {}
-
     def __setattr__(self, attr, value):
         _setAttr(VanillaBaseObject, self, attr, value)
 
@@ -34,6 +30,7 @@ class VanillaBaseObject(object):
         _delAttr(VanillaBaseObject, self, attr)
 
     def _setupView(self, classOrName, posSize, callback=None):
+        self._autoLayoutViews = {}
         self._testForDeprecatedAttributes()
         cls = getNSSubclass(classOrName)
         self._nsObject = cls(self)
