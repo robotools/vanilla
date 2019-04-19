@@ -1,6 +1,6 @@
 import platform
 from Foundation import NSObject
-from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin, NSLayoutConstraint
+from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin, NSLayoutConstraint, NSLayoutFormatAlignAllLeft
 from distutils.version import StrictVersion
 from vanilla.nsSubclasses import getNSSubclass
 
@@ -334,7 +334,6 @@ def _delAttr(cls, obj, attr):
 
 
 def _addConstraints(obj, constraints, metrics=None):
-    from AppKit import NSLayoutFormatAlignAllLeft
     view = obj._getContentView()
     if metrics is None:
         metrics = {}
