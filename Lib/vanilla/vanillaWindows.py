@@ -471,12 +471,15 @@ class Window(NSObject):
         # call the delegate method which calls
         # this method) before the super
         # call in __init__ is complete.
+        returnValues = []
         if hasattr(self, "_bindings"):
             if key in self._bindings:
                 for callback in self._bindings[key]:
-                    # XXX this return causes only the first binding to be called XXX
-                    # see http://code.typesupply.com/ticket/2
-                    return callback(self)
+                    value = callback(self)
+                    if value is not None:
+                        # elimitate None return value
+                        returnValues.append(value)
+        return all(returnValues)
 
     def windowWillClose_(self, notification):
         self.hide()
