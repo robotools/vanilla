@@ -1,4 +1,4 @@
-from vanillaBase import VanillaBaseObject
+from vanilla.vanillaBase import VanillaBaseObject
 from AppKit import NSStackView, NSLayoutAttributeCenterY, NSLayoutAttributeCenterX, NSLayoutAttributeLeading, NSLayoutAttributeTrailing
 
 NSUserInterfaceLayoutOrientationHorizontal = 0
@@ -51,7 +51,7 @@ class _StackGroup(VanillaBaseObject):
 
         **width** and **height** are None, numbers or strings:
 
-        * value as integer or float    
+        * value as integer or float
         * "==value" where value can be coerced to an integer or float
         * "<=value" where value can be coerced to an integer or float
         * ">=value" where value can be coerced to an integer or float
