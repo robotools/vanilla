@@ -1,4 +1,5 @@
 import platform
+from distutils.version import StrictVersion
 from Foundation import NSObject
 from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, \
     NSViewMinXMargin, NSViewMaxXMargin, NSViewMaxYMargin, NSViewMinYMargin, \
@@ -7,9 +8,14 @@ from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniContr
     NSLayoutAttributeLeft, NSLayoutAttributeRight, NSLayoutAttributeTop, NSLayoutAttributeBottom, NSLayoutAttributeLeading, NSLayoutAttributeTrailing, \
     NSLayoutAttributeWidth, NSLayoutAttributeHeight, NSLayoutAttributeCenterX, NSLayoutAttributeCenterY, NSLayoutAttributeBaseline, NSLayoutAttributeLastBaseline, NSLayoutAttributeFirstBaseline, \
     NSLayoutRelationLessThanOrEqual, NSLayoutRelationEqual, NSLayoutRelationGreaterThanOrEqual
-
-from distutils.version import StrictVersion
 from vanilla.nsSubclasses import getNSSubclass
+
+
+class VanillaError(Exception): pass
+
+# --------------------
+# OS Version Constants
+# --------------------
 
 osVersionCurrent = StrictVersion(platform.mac_ver()[0])
 osVersion10_14 = StrictVersion("10.14")
@@ -23,8 +29,9 @@ osVersion10_7 = StrictVersion("10.7")
 osVersion10_6 = StrictVersion("10.6")
 
 
-class VanillaError(Exception): pass
-
+# ---------
+# Base View
+# ---------
 
 class VanillaBaseObject(object):
 
@@ -69,21 +76,18 @@ class VanillaBaseObject(object):
             return
         l, t, w, h = posSize
         mask = 0
-
         if l < 0:
             mask |= NSViewMinXMargin
         if w <= 0 and (w > 0 or l >= 0):
             mask |= NSViewWidthSizable
         if w > 0 and l >= 0:
             mask |= NSViewMaxXMargin
-
         if t < 0:
             mask |= NSViewMaxYMargin
         if h <= 0 and (h > 0 or t >= 0):
             mask |= NSViewHeightSizable
         if h > 0 and t >= 0:
             mask |= NSViewMinYMargin
-
         self._nsObject.setAutoresizingMask_(mask)
 
     def _setFrame(self, parentFrame, animate=False):
@@ -102,7 +106,6 @@ class VanillaBaseObject(object):
             sizeStyle = _reverseSizeStyleMap[self._nsObject.cell().controlSize()]
         else:
             sizeStyle = None
-        #
         adjustments = self.frameAdjustments
         if adjustments:
             if sizeStyle is None:
@@ -277,6 +280,22 @@ class VanillaBaseObject(object):
         self.setPosSize((l, t, width, height))
 
 
+# ------------
+# Base Control
+# ------------
+
+_sizeStyleMap = {
+    "regular": NSRegularControlSize,
+    "small": NSSmallControlSize,
+    "mini": NSMiniControlSize
+}
+
+_reverseSizeStyleMap = {
+    NSRegularControlSize: "regular",
+    NSSmallControlSize: "small",
+    NSMiniControlSize: "mini"
+}
+
 class VanillaBaseControl(VanillaBaseObject):
 
     def _setSizeStyle(self, value):
@@ -315,71 +334,9 @@ class VanillaBaseControl(VanillaBaseObject):
         raise NotImplementedError
 
 
-class VanillaCallbackWrapper(NSObject):
-
-    def __new__(cls, callback):
-        return cls.alloc().initWithCallback_(callback)
-
-    def initWithCallback_(self, callback):
-        self = self.init()
-        self.callback = callback
-        return self
-
-    def action_(self, sender):
-        if hasattr(sender, "vanillaWrapper"):
-            sender = sender.vanillaWrapper()
-        if self.callback is not None:
-            self.callback(sender)
-
-
-
-_sizeStyleMap = {
-    "regular": NSRegularControlSize,
-    "small": NSSmallControlSize,
-    "mini": NSMiniControlSize
-}
-
-_reverseSizeStyleMap = {
-    NSRegularControlSize: "regular",
-    NSSmallControlSize: "small",
-    NSMiniControlSize: "mini"
-}
-
-
-def _calcFrame(parentFrame, posSize, absolutePositioning=False):
-    """Convert a vanilla posSize rect to a Cocoa frame."""
-    (pL, pB), (pW, pH) = parentFrame
-    (l, t), (w, h) = posSize
-    if not absolutePositioning:
-        if l < 0:
-            l = pW + l
-        if w <= 0:
-            w = pW + w - l
-        if t < 0:
-            t = pH + t
-        if h <= 0:
-            h = pH + h - t
-    b = pH - t - h  # flip it upside down
-    return (l, b), (w, h)
-
-
-def _flipFrame(parentFrame, objFrame):
-    """Translate a Cocoa frame to vanilla coordinates"""
-    (pL, pB), (pW, pH) = parentFrame
-    (oL, oB), (oW, oH) =  objFrame
-    oT = pH - oB - oH
-    return oL, oT, oW, oH
-
-
-def _breakCycles(view):
-    """Break cyclic references by deleting _target attributes."""
-    if hasattr(view, "vanillaWrapper"):
-        obj = view.vanillaWrapper()
-        if hasattr(obj, "_breakCycles"):
-            obj._breakCycles()
-    for view in view.subviews():
-        _breakCycles(view)
-
+# -------------------
+# Sub-View Management
+# -------------------
 
 def _recursiveSetFrame(view):
     for subview in view.subviews():
@@ -388,7 +345,6 @@ def _recursiveSetFrame(view):
             if obj is not None and hasattr(obj, "_posSize"):
                 obj.setPosSize(obj.getPosSize())
         _recursiveSetFrame(subview)
-
 
 def _setAttr(cls, obj, attr, value):
     if hasattr(value, "getPosSize") and value.getPosSize() == "auto":
@@ -408,7 +364,6 @@ def _setAttr(cls, obj, attr, value):
     #    view.addSubview_(value)
     super(cls, obj).__setattr__(attr, value)
 
-
 def _delAttr(cls, obj, attr):
     if hasattr(obj, "_autoLayoutViews"):
         if attr in obj._autoLayoutViews:
@@ -421,9 +376,9 @@ def _delAttr(cls, obj, attr):
     super(cls, obj).__delattr__(attr)
 
 
-# -----------------------
-# Auto Layout Constraints
-# -----------------------
+# -------------------
+# Auto Layout Support
+# -------------------
 
 _layoutAttributeMap = dict(
    left=NSLayoutAttributeLeft,
@@ -479,3 +434,69 @@ def _addConstraints(obj, constraints, metrics=None):
             )
         built.append(constraint)
     view.addConstraints_(built)
+
+
+# --------------------------
+# Frame-Based Layout Support
+# --------------------------
+
+def _calcFrame(parentFrame, posSize, absolutePositioning=False):
+    """
+    Convert a vanilla posSize rect to a Cocoa frame.
+    """
+    (pL, pB), (pW, pH) = parentFrame
+    (l, t), (w, h) = posSize
+    if not absolutePositioning:
+        if l < 0:
+            l = pW + l
+        if w <= 0:
+            w = pW + w - l
+        if t < 0:
+            t = pH + t
+        if h <= 0:
+            h = pH + h - t
+    b = pH - t - h  # flip it upside down
+    return (l, b), (w, h)
+
+
+def _flipFrame(parentFrame, objFrame):
+    """
+    Translate a Cocoa frame to vanilla coordinates.
+    """
+    (pL, pB), (pW, pH) = parentFrame
+    (oL, oB), (oW, oH) =  objFrame
+    oT = pH - oB - oH
+    return oL, oT, oW, oH
+
+
+# ----------------
+# Callback Support
+# ----------------
+
+class VanillaCallbackWrapper(NSObject):
+
+    def __new__(cls, callback):
+        return cls.alloc().initWithCallback_(callback)
+
+    def initWithCallback_(self, callback):
+        self = self.init()
+        self.callback = callback
+        return self
+
+    def action_(self, sender):
+        if hasattr(sender, "vanillaWrapper"):
+            sender = sender.vanillaWrapper()
+        if self.callback is not None:
+            self.callback(sender)
+
+
+def _breakCycles(view):
+    """
+    Break cyclic references by deleting _target attributes.
+    """
+    if hasattr(view, "vanillaWrapper"):
+        obj = view.vanillaWrapper()
+        if hasattr(obj, "_breakCycles"):
+            obj._breakCycles()
+    for view in view.subviews():
+        _breakCycles(view)
