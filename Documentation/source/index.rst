@@ -11,8 +11,7 @@ Concepts
 .. toctree::
    :maxdepth: 1
 
-   concepts/dimensions
-   concepts/callbacks
+   concepts/layout
 
 
 Objects
