@@ -3,7 +3,7 @@ from Foundation import NSObject
 from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToolbar, NSToolbarItem, NSImage, NSNormalWindowLevel, NSFloatingWindowLevel, NSClosableWindowMask, NSMiniaturizableWindowMask, NSResizableWindowMask, NSTexturedBackgroundWindowMask, NSUnifiedTitleAndToolbarWindowMask, NSHUDWindowMask, NSUtilityWindowMask, NSTitledWindowMask, NSBorderlessWindowMask, NSBackingStoreBuffered, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSToolbarPrintItemIdentifier, NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarDisplayModeDefault, NSToolbarDisplayModeIconAndLabel, NSToolbarDisplayModeIconOnly, NSToolbarDisplayModeLabelOnly, NSToolbarSizeModeDefault, NSToolbarSizeModeRegular, NSToolbarSizeModeSmall
 
 
-from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _addConstraints, _flipFrame, \
+from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _addAutoLayoutRules, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersionCurrent, osVersion10_7, osVersion10_10
 from vanilla.py23 import python_method
 
@@ -354,12 +354,12 @@ class Window(NSObject):
         self._window.setFrame_display_animate_(frame, True, animate)
 
     @python_method
-    def addLayoutConstraints(self, constraints, metrics=None):
+    def addAutoPosSizeRules(self, rules, metrics=None):
         """
-        Add auto layout contraints for controls/view in this view.
+        Add auto layout rules for controls/view in this view.
 
-        **constraints** must by a list of constrain definitions.
-        Constrain definitions may take two forms:
+        **rules** must by a list of rule definitions.
+        Rule definitions may take two forms:
 
         * strings that follow the `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
         * dictionaries with the following key/value pairs:
@@ -367,26 +367,26 @@ class Window(NSObject):
         +---------------------------+-------------------------------------------------------------------------+
         | key                       | value                                                                   |
         +===========================+=========================================================================+
-        | *"view1"*                 | The vanilla wrapped view for the left side of the constraint.           |
+        | *"view1"*                 | The vanilla wrapped view for the left side of the rule.                 |
         +---------------------------+-------------------------------------------------------------------------+
-        | *"attribute1"*            | The attribute of the view for the left side of the constraint.          |
+        | *"attribute1"*            | The attribute of the view for the left side of the rule.                |
         |                           | See below for options.                                                  |
         +---------------------------+-------------------------------------------------------------------------+
-        | *"relation"* (optional)   | The relationship between the left side of the constraint                |
-        |                           | and the right side of the constraint. See below for options.            |
+        | *"relation"* (optional)   | The relationship between the left side of the rule                      |
+        |                           | and the right side of the rule. See below for options.                  |
         |                           | The default value is `"=="`.                                            |
         +---------------------------+-------------------------------------------------------------------------+
-        | *"view2"*                 | The vanilla wrapped view for the right side of the constraint.          |
+        | *"view2"*                 | The vanilla wrapped view for the right side of the rule.                |
         +---------------------------+-------------------------------------------------------------------------+
-        | *"attribute2"*            | The attribute of the view for the right side of the constraint.         |
+        | *"attribute2"*            | The attribute of the view for the right side of the rule.               |
         |                           | See below for options.                                                  |
         +---------------------------+-------------------------------------------------------------------------+
         | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of         |
-        |                           | the constraint as part of getting the modified attribute.               |
+        |                           | the rule as part of getting the modified attribute.               |
         |                           | The default value is `1`.                                               |
         +---------------------------+-------------------------------------------------------------------------+
         | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right       |
-        |                           | side of the constraint to yield the final modified attribute.           |
+        |                           | side of the rule to yield the final modified attribute.           |
         |                           | The default value is `0`.                                               |
         +---------------------------+-------------------------------------------------------------------------+
 
@@ -442,9 +442,9 @@ class Window(NSObject):
 
         **metrics** may be either **None** or a dict containing
         key value pairs representing metrics keywords used in the
-        constraints defined with strings.
+        rules defined with strings.
         """
-        _addConstraints(self, constraints, metrics)
+        _addAutoLayoutRules(self, rules, metrics)
 
     def center(self):
         """

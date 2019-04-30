@@ -165,12 +165,12 @@ class VanillaBaseObject(object):
             self._setFrame(superview.frame(), animate)
             superview.setNeedsDisplay_(True)
 
-    def addLayoutConstraints(self, constraints, metrics=None):
+    def addAutoPosSizeRules(self, rules, metrics=None):
         """
-        Add auto layout contraints for controls/view in this view.
+        Add auto layout rules for controls/view in this view.
 
-        **constraints** must by a list of constrain definitions.
-        Constrain definitions may take two forms:
+        **rules** must by a list of rule definitions.
+        Rule definitions may take two forms:
 
         * strings that follow the `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
         * dictionaries with the following key/value pairs:
@@ -178,26 +178,26 @@ class VanillaBaseObject(object):
         +---------------------------+-------------------------------------------------------------------------+
         | key                       | value                                                                   |
         +===========================+=========================================================================+
-        | *"view1"*                 | The vanilla wrapped view for the left side of the constraint.           |
+        | *"view1"*                 | The vanilla wrapped view for the left side of the rule.                 |
         +---------------------------+-------------------------------------------------------------------------+
-        | *"attribute1"*            | The attribute of the view for the left side of the constraint.          |
+        | *"attribute1"*            | The attribute of the view for the left side of the rule.                |
         |                           | See below for options.                                                  |
         +---------------------------+-------------------------------------------------------------------------+
-        | *"relation"* (optional)   | The relationship between the left side of the constraint                |
-        |                           | and the right side of the constraint. See below for options.            |
+        | *"relation"* (optional)   | The relationship between the left side of the rule                      |
+        |                           | and the right side of the rule. See below for options.                  |
         |                           | The default value is `"=="`.                                            |
         +---------------------------+-------------------------------------------------------------------------+
-        | *"view2"*                 | The vanilla wrapped view for the right side of the constraint.          |
+        | *"view2"*                 | The vanilla wrapped view for the right side of the rule.                |
         +---------------------------+-------------------------------------------------------------------------+
-        | *"attribute2"*            | The attribute of the view for the right side of the constraint.         |
+        | *"attribute2"*            | The attribute of the view for the right side of the rule.               |
         |                           | See below for options.                                                  |
         +---------------------------+-------------------------------------------------------------------------+
         | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of         |
-        |                           | the constraint as part of getting the modified attribute.               |
+        |                           | the rule as part of getting the modified attribute.               |
         |                           | The default value is `1`.                                               |
         +---------------------------+-------------------------------------------------------------------------+
         | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right       |
-        |                           | side of the constraint to yield the final modified attribute.           |
+        |                           | side of the rule to yield the final modified attribute.           |
         |                           | The default value is `0`.                                               |
         +---------------------------+-------------------------------------------------------------------------+
 
@@ -253,9 +253,9 @@ class VanillaBaseObject(object):
 
         **metrics** may be either **None** or a dict containing
         key value pairs representing metrics keywords used in the
-        constraints defined with strings.
+        rules defined with strings.
         """
-        _addConstraints(self, constraints, metrics)
+        _addAutoLayoutRules(self, rules, metrics)
 
     def move(self, x, y):
         """
@@ -402,20 +402,20 @@ _layoutRelationMap = {
     ">=" : NSLayoutRelationGreaterThanOrEqual
 }
 
-def _addConstraints(obj, constraints, metrics=None):
+def _addAutoLayoutRules(obj, rules, metrics=None):
     view = obj._getContentView()
     if metrics is None:
         metrics = {}
-    built = []
-    for constraint in constraints:
-        if isinstance(constraint, dict):
-            view1 = constraint["view1"]._getContentView()
-            attribute1 = _layoutAttributeMap[constraint["attribute1"]]
-            relation = _layoutRelationMap[constraint.get("relation", "==")]
-            view2 = constraint["view2"]._getContentView()
-            attribute2 = _layoutAttributeMap[constraint["attribute2"]]
-            multiplier = constraint.get("multiplier", 1)
-            constant = constraint.get("constant", 0)
+    constraints = []
+    for rule in rules:
+        if isinstance(rule, dict):
+            view1 = rule["view1"]._getContentView()
+            attribute1 = _layoutAttributeMap[rule["attribute1"]]
+            relation = _layoutRelationMap[rule.get("relation", "==")]
+            view2 = rule["view2"]._getContentView()
+            attribute2 = _layoutAttributeMap[rule["attribute2"]]
+            multiplier = rule.get("multiplier", 1)
+            constant = rule.get("constant", 0)
             constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
                 view1,
                 attribute1,
@@ -427,13 +427,13 @@ def _addConstraints(obj, constraints, metrics=None):
             )
         else:
             constraint = NSLayoutConstraint.constraintsWithVisualFormat_options_metrics_views_(
-                constraint,
+                rule,
                 0,
                 metrics,
                 obj._autoLayoutViews
             )
-        built.append(constraint)
-    view.addConstraints_(built)
+        constraints.append(constraint)
+    view.addConstraints_(constraints)
 
 
 # --------------------------
