@@ -41,6 +41,8 @@ Layout Views
   objects/Box
   objects/HorizontalLine
   objects/VerticalLine
+  objects/HorizontalStackGroup
+  objects/VerticalStackGroup
 
 Data Views
 ^^^^^^^^^^
