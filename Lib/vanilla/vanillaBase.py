@@ -1,6 +1,13 @@
 import platform
 from Foundation import NSObject
-from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, NSViewMinXMargin, NSViewWidthSizable, NSViewMaxXMargin, NSViewMaxYMargin, NSViewHeightSizable, NSViewMinYMargin, NSLayoutConstraint, NSLayoutFormatAlignAllLeft
+from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, \
+    NSViewMinXMargin, NSViewMaxXMargin, NSViewMaxYMargin, NSViewMinYMargin, \
+    NSViewWidthSizable, NSViewHeightSizable, \
+    NSLayoutConstraint, NSLayoutFormatAlignAllLeft, \
+    NSLayoutAttributeLeft, NSLayoutAttributeRight, NSLayoutAttributeTop, NSLayoutAttributeBottom, NSLayoutAttributeLeading, NSLayoutAttributeTrailing, \
+    NSLayoutAttributeWidth, NSLayoutAttributeHeight, NSLayoutAttributeCenterX, NSLayoutAttributeCenterY, NSLayoutAttributeBaseline, NSLayoutAttributeLastBaseline, NSLayoutAttributeFirstBaseline, \
+    NSLayoutRelationLessThanOrEqual, NSLayoutRelationEqual, NSLayoutRelationGreaterThanOrEqual
+
 from distutils.version import StrictVersion
 from vanilla.nsSubclasses import getNSSubclass
 
@@ -158,11 +165,92 @@ class VanillaBaseObject(object):
     def addLayoutConstraints(self, constraints, metrics=None):
         """
         Add auto layout contraints for controls/view in this view.
-        **constraints** must by a list of strings that follow the
-        `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
+
+        **constraints** must by a list of constrain definitions.
+        Constrain definitions may take two forms:
+
+        * strings that follow the `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
+        * dictionaries with the following key/value pairs:
+
+        +---------------------------+-------------------------------------------------------------------------+
+        | key                       | value                                                                   |
+        +===========================+=========================================================================+
+        | *"view1"*                 | The vanilla wrapped view for the left side of the constraint.           |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute1"*            | The attribute of the view for the left side of the constraint.          |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"relation"* (optional)   | The relationship between the left side of the constraint                |
+        |                           | and the right side of the constraint. See below for options.            |
+        |                           | The default value is `"=="`.                                            |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"view2"*                 | The vanilla wrapped view for the right side of the constraint.          |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute2"*            | The attribute of the view for the right side of the constraint.         |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of         |
+        |                           | the constraint as part of getting the modified attribute.               |
+        |                           | The default value is `1`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right       |
+        |                           | side of the constraint to yield the final modified attribute.           |
+        |                           | The default value is `0`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
+
+        The `attribute1` and `attribute2` options are:
+
+        +-------------------+--------------------------------+
+        | value             | AppKit equivalent              |
+        +===================+================================+
+        | *"left"*          | NSLayoutAttributeLeft          |
+        +-------------------+--------------------------------+
+        | *"right"*         | NSLayoutAttributeRight         |
+        +-------------------+--------------------------------+
+        | *"top"*           | NSLayoutAttributeTop           |
+        +-------------------+--------------------------------+
+        | *"bottom"*        | NSLayoutAttributeBottom        |
+        +-------------------+--------------------------------+
+        | *"leading"*       | NSLayoutAttributeLeading       |
+        +-------------------+--------------------------------+
+        | *"trailing"*      | NSLayoutAttributeTrailing      |
+        +-------------------+--------------------------------+
+        | *"width"*         | NSLayoutAttributeWidth         |
+        +-------------------+--------------------------------+
+        | *"height"*        | NSLayoutAttributeHeight        |
+        +-------------------+--------------------------------+
+        | *"centerX"*       | NSLayoutAttributeCenterX       |
+        +-------------------+--------------------------------+
+        | *"centerY"*       | NSLayoutAttributeCenterY       |
+        +-------------------+--------------------------------+
+        | *"baseline"*      | NSLayoutAttributeBaseline      |
+        +-------------------+--------------------------------+
+        | *"lastBaseline"*  | NSLayoutAttributeLastBaseline  |
+        +-------------------+--------------------------------+
+        | *"firstBaseline"* | NSLayoutAttributeFirstBaseline |
+        +-------------------+--------------------------------+
+
+        Refer to the `NSLayoutAttribute documentation <https://developer.apple.com/documentation/uikit/nslayoutattribute>`_
+        for the information about what each of these do.
+
+        The `relation` options are:
+
+        +--------+------------------------------------+
+        | value  | AppKit equivalent                  |
+        +========+====================================+
+        | *"<="* | NSLayoutRelationLessThanOrEqual    |
+        +--------+------------------------------------+
+        | *"=="* | NSLayoutRelationEqual              |
+        +--------+------------------------------------+
+        | *">="* | NSLayoutRelationGreaterThanOrEqual |
+        +--------+------------------------------------+        
+
+        Refer to the `NSLayoutRelation documentation <https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc>`_
+        for the information about what each of these do.
+
         **metrics** may be either **None** or a dict containing
         key value pairs representing metrics keywords used in the
-        constraints.
+        constraints defined with strings.
         """
         _addConstraints(self, constraints, metrics)
 
@@ -333,10 +421,61 @@ def _delAttr(cls, obj, attr):
     super(cls, obj).__delattr__(attr)
 
 
+# -----------------------
+# Auto Layout Constraints
+# -----------------------
+
+_layoutAttributeMap = dict(
+   left=NSLayoutAttributeLeft,
+   right=NSLayoutAttributeRight,
+   top=NSLayoutAttributeTop,
+   bottom=NSLayoutAttributeBottom,
+   leading=NSLayoutAttributeLeading,
+   trailing=NSLayoutAttributeTrailing,
+   width=NSLayoutAttributeWidth,
+   height=NSLayoutAttributeHeight,
+   centerX=NSLayoutAttributeCenterX,
+   centerY=NSLayoutAttributeCenterY,
+   baseline=NSLayoutAttributeBaseline,
+   lastBaseline=NSLayoutAttributeLastBaseline,
+   firstBaseline=NSLayoutAttributeFirstBaseline,
+)
+
+_layoutRelationMap = {
+    "<=" : NSLayoutRelationLessThanOrEqual,
+    "==" : NSLayoutRelationEqual,
+    ">=" : NSLayoutRelationGreaterThanOrEqual
+}
+
 def _addConstraints(obj, constraints, metrics=None):
     view = obj._getContentView()
     if metrics is None:
         metrics = {}
+    built = []
     for constraint in constraints:
-        constraint = NSLayoutConstraint.constraintsWithVisualFormat_options_metrics_views_(constraint, 0, metrics, obj._autoLayoutViews)
-        view.addConstraints_(constraint)
+        if isinstance(constraint, dict):
+            view1 = constraint["view1"]._getContentView()
+            attribute1 = _layoutAttributeMap[constraint["attribute1"]]
+            relation = _layoutRelationMap[constraint.get("relation", "==")]
+            view2 = constraint["view2"]._getContentView()
+            attribute2 = _layoutAttributeMap[constraint["attribute2"]]
+            multiplier = constraint.get("multiplier", 1)
+            constant = constraint.get("constant", 0)
+            constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                view1,
+                attribute1,
+                relation,
+                view2,
+                attribute2,
+                multiplier,
+                constant
+            )
+        else:
+            constraint = NSLayoutConstraint.constraintsWithVisualFormat_options_metrics_views_(
+                constraint,
+                0,
+                metrics,
+                obj._autoLayoutViews
+            )
+        built.append(constraint)
+    view.addConstraints_(built)

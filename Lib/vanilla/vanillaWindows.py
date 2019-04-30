@@ -357,11 +357,92 @@ class Window(NSObject):
     def addLayoutConstraints(self, constraints, metrics=None):
         """
         Add auto layout contraints for controls/view in this view.
-        **constraints** must by a list of strings that follow the
-        `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
+
+        **constraints** must by a list of constrain definitions.
+        Constrain definitions may take two forms:
+
+        * strings that follow the `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
+        * dictionaries with the following key/value pairs:
+
+        +---------------------------+-------------------------------------------------------------------------+
+        | key                       | value                                                                   |
+        +===========================+=========================================================================+
+        | *"view1"*                 | The vanilla wrapped view for the left side of the constraint.           |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute1"*            | The attribute of the view for the left side of the constraint.          |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"relation"* (optional)   | The relationship between the left side of the constraint                |
+        |                           | and the right side of the constraint. See below for options.            |
+        |                           | The default value is `"=="`.                                            |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"view2"*                 | The vanilla wrapped view for the right side of the constraint.          |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute2"*            | The attribute of the view for the right side of the constraint.         |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of         |
+        |                           | the constraint as part of getting the modified attribute.               |
+        |                           | The default value is `1`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right       |
+        |                           | side of the constraint to yield the final modified attribute.           |
+        |                           | The default value is `0`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
+
+        The `attribute1` and `attribute2` options are:
+
+        +-------------------+--------------------------------+
+        | value             | AppKit equivalent              |
+        +===================+================================+
+        | *"left"*          | NSLayoutAttributeLeft          |
+        +-------------------+--------------------------------+
+        | *"right"*         | NSLayoutAttributeRight         |
+        +-------------------+--------------------------------+
+        | *"top"*           | NSLayoutAttributeTop           |
+        +-------------------+--------------------------------+
+        | *"bottom"*        | NSLayoutAttributeBottom        |
+        +-------------------+--------------------------------+
+        | *"leading"*       | NSLayoutAttributeLeading       |
+        +-------------------+--------------------------------+
+        | *"trailing"*      | NSLayoutAttributeTrailing      |
+        +-------------------+--------------------------------+
+        | *"width"*         | NSLayoutAttributeWidth         |
+        +-------------------+--------------------------------+
+        | *"height"*        | NSLayoutAttributeHeight        |
+        +-------------------+--------------------------------+
+        | *"centerX"*       | NSLayoutAttributeCenterX       |
+        +-------------------+--------------------------------+
+        | *"centerY"*       | NSLayoutAttributeCenterY       |
+        +-------------------+--------------------------------+
+        | *"baseline"*      | NSLayoutAttributeBaseline      |
+        +-------------------+--------------------------------+
+        | *"lastBaseline"*  | NSLayoutAttributeLastBaseline  |
+        +-------------------+--------------------------------+
+        | *"firstBaseline"* | NSLayoutAttributeFirstBaseline |
+        +-------------------+--------------------------------+
+
+        Refer to the `NSLayoutAttribute documentation <https://developer.apple.com/documentation/uikit/nslayoutattribute>`_
+        for the information about what each of these do.
+
+        The `relation` options are:
+
+        +--------+------------------------------------+
+        | value  | AppKit equivalent                  |
+        +========+====================================+
+        | *"<="* | NSLayoutRelationLessThanOrEqual    |
+        +--------+------------------------------------+
+        | *"=="* | NSLayoutRelationEqual              |
+        +--------+------------------------------------+
+        | *">="* | NSLayoutRelationGreaterThanOrEqual |
+        +--------+------------------------------------+        
+
+        Refer to the `NSLayoutRelation documentation <https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc>`_
+        for the information about what each of these do.
+
         **metrics** may be either **None** or a dict containing
         key value pairs representing metrics keywords used in the
-        constraints.
+        constraints defined with strings.
         """
         _addConstraints(self, constraints, metrics)
 
