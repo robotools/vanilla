@@ -198,9 +198,11 @@ class VanillaSplitViewDelegate(NSObject):
             if hasattr(subview, "vanillaWrapper"):
                 vanillawrapper = subview.vanillaWrapper()
                 if vanillawrapper is not None and hasattr(vanillawrapper, "_posSize"):
-                    vX, vY, vW, vH = vanillawrapper.getPosSize()
-                    if vW <= 0 or vH <= 0:
-                        vanillawrapper.setPosSize((vX, vY, vW, vH))
+                    posSize = vanillawrapper.getPosSize()
+                    if posSize != "auto":
+                        vX, vY, vW, vH = posSize
+                        if vW <= 0 or vH <= 0:
+                            vanillawrapper.setPosSize((vX, vY, vW, vH))
             self._recursivelyResizeSubviews(subview)
 
     # Pane Collapsing
