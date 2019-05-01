@@ -4,50 +4,77 @@
 Positioning
 ***********
 
-----------------
-View Terminology
-----------------
+Positioning objects on screen is the whole point of vanilla. This document explains the models, syntax and more. First, some terminology:
 
-- view
-- superview
-- subview
-- window
+- **view** Almost every object in vanilla represents a "view." A view is something that appears on screen: a button, a text editor, an image container, a slider, etc.
+- **superview** Every view is positioned within a "superview." If the superview moves, the view moves.
+- **subview** A view added to another view is a "subview."
+- **window** Windows contain a special superview that is positioned edge to edge of the non-title bar area of the window.
 
-------
-Models
-------
+There are two ways to position views in vanilla:
 
-- "auto"
-- (x, y, w, h)
-- these can be mixed in same view
+- **Specifying numerical coordinates.** This model, named "frame layout," allows you to specify the x and y coordinates and the width and height of views. These values manually adust the frame of the view within the superview. This model offers the most control, but can be cumbersome and the precision makes it difficult to revise complex interface layouts.
+- **Specfifying relative positions.** This model, known as "auto layout," allows you to describe where controls should be positioned relative to the superview and other views. This model is more verbose, but it is (typically) faster to implement both simple and complex interafces and it makes revisions significantly easier in complex interface layouts.
 
-================================
-Automatic Positioning and Sizing
-================================
+These models can be mixed and matched within an interface and even within a single superview.
 
-- "auto"
-- this is incredibly powerful, but can be very complex.
-- This is not a full documentation of all the options. This is targeted at the basic kinds of layouts vanilla is typically used for. Refer to Apple's documentation for that.
-- https://developer.apple.com/documentation/uikit/nslayoutconstraint?language=objc
-- https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/index.html#//apple_ref/doc/uid/TP40010853-CH7-SW1
-- there are often > 1 ways to accomplish a single layout.
+The model that you want to use for positioning a view is indicated with the first argument, named ``posSize``, when constructing the view. To indicate that you want to use frame layout, you give a tuple of numbers. To indicate that you want to use auto layout, you use the string ``"auto"`` and provide rules in a method of the view object. ::
+
+	w.button1((10, 10, 100, 20), "Frame Layout")
+	w.button2("auto", "Auto Layout")
+
+============
+Frame Layout
+============
+
+Frame layout is specified with a tuple of four numbers:
+
+1. x position within the superview
+2. y position within the superview
+3. width
+4. height
+
+The (0, 0) coordinate is the top left corner of the superview.
+
+Positions relative to the bottom or right of the superview are indicated with negative numbers or zero for the x, y, width and/or height. For example, ``(-100, 20, 0, 20)`` indicates that the x position is 100 units from the right and the width should align with the right.
+
+--------
+Examples
+--------
+
+**Basic window**::
+
+	w = vanilla.Window((200, 200), minSize=(100, 100))
+	w.editor = vanilla.TextEditor((15, 15, -15, -43), "Hello World!")
+	w.button = vanilla.Button((15, -35, -15, 20), "Done")
+	w.open()
+
+===========
+Auto Layout
+===========
+
+Auto layout is specified with a series of rules that are added after all subviews have been added to the superview. Auto layout is incredibly powerful, but incredibly complex. The information below is written to cover the interface layouts that are typically created with vanilla. For complete information, read Apple's `Auto Layout Guide <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/index.html#//apple_ref/doc/uid/TP40010853-CH7-SW1>`_ and documentation on `NSLayoutConstraint <https://developer.apple.com/documentation/uikit/nslayoutconstraint?language=objc>`_
 
 -----
 Rules
 -----
 
-- Rules specify relationships to other views.
-- Add rules to superview with superview.addAutoPosSizeRules.
-- Many controls have a preset height or width, so you don't need to specify these.
-- Rules are defined as:
--- string
--- dict
-- In strings, there can be metrics.
--- metrics
+Auto layout rules specify the relation of one view to another. These rules are added with the superview's ``addAutoPosSizeRules`` method after the views themselves have been added to the superview. ::
 
+	w = vanilla.Window((200, 200))
+	w.button1 = vanilla.Button("auto", "Button 1")
+	w.button2 = vanilla.Button("auto", "Button 2")
+	rules = [
+		# see below for documentation
+	]
+	w.addAutoPosSizeRules(rules)
 
-String Syntax
-^^^^^^^^^^^^^
+Rules can be defined as strings formatted in Apple's `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_ or they can be defined as dictionaries with key/value pairs defining view relationships. The dictionary rule form is for advanced edge cases and is defined in detail in the ``addAutoPosSizeRules`` method documentation. Most interface can be specified with the string rule form, so that form is used for all of the examples that follow.
+
+An optional ``metrics`` dictionary can be passed to the ``addAutoPosSizeRules`` method. These allow the string rules to reference constant values, such as spacing values or control sizes, by name. Examples of this are below.
+
+String Rules
+^^^^^^^^^^^^
 
 **Orientations**
 
@@ -194,8 +221,9 @@ Views can be referenced by other views within rules. To make the buttons have th
 		"V:|-[button2]-|"
 	]
 
+--------
 Examples
-""""""""
+--------
 
 **Basic window**::
 
@@ -346,13 +374,3 @@ Examples
 
 - need to finish GridGroup for this.
 - https://github.com/typemytype/batchRoboFontExtension (ttfautohint section)
-
-
-==================================
-Frame Based Positioning and Sizing
-==================================
-
-- (0, 0) location
-- (l, t, w, b)
-- negative value meaning for w, h
-- simple examples
