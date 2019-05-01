@@ -170,7 +170,7 @@ Define minimum and maximum widths::
 		"|-[button(>=75,<=200)]-|"
 	]
 
-The previous examples all specified horizontal rules. To indicate the direction of a rule, start the rule with ``H:`` for horizontal and ``V:`` for vertical. If an orientation isn't specied, as in the examples above, the orientation will be horizontal.
+The previous examples all specified horizontal rules. To indicate the direction of a rule, start the rule with ``H:`` for horizontal and ``V:`` for vertical. If an orientation isn't specied, as in the examples above, the orientation will be horizontal. ::
 
 	rules = [
 		# Horizontal
@@ -181,7 +181,7 @@ The previous examples all specified horizontal rules. To indicate the direction 
 
 All of the options shown for specifying values in horizontal orientation also work for specifying values in vertical orientation.
 
-That covers the basics of placing one view in a superview. Placing multiple views uses the same syntax. The following examples use this code, replacing ``rules`` and ``metrics`` as indicated.
+That covers the basics of placing one view in a superview. Placing multiple views uses the same syntax. The following examples use this code, replacing ``rules`` and ``metrics`` as indicated. ::
 
 	w = vanilla.Window((200, 200), minSize=(100, 100))
 	w.button1 = vanilla.Button("auto", "Hello")
