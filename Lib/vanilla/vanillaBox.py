@@ -99,6 +99,14 @@ class _Line(Box):
         self._nsObject.setBoxType_(NSBoxSeparator)
         self._nsObject.setTitlePosition_(NSNoTitle)
 
+    def _getContentView(self):
+        return self._nsObject
+
+    def _breakCycles(self):
+        view = self._getContentView()
+        if view is not None:
+            _breakCycles(view)
+
 
 class HorizontalLine(_Line):
     
