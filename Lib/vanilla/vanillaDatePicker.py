@@ -1,5 +1,5 @@
 # from Foundation import *
-from AppKit import NSDatePicker, NSClockAndCalendarDatePickerStyle, NSTextFieldAndStepperDatePickerStyle, NSHourMinuteDatePickerElementFlag, NSHourMinuteSecondDatePickerElementFlag, NSYearMonthDatePickerElementFlag, NSYearMonthDayDatePickerElementFlag
+from AppKit import NSDate, NSDatePicker, NSClockAndCalendarDatePickerStyle, NSTextFieldAndStepperDatePickerStyle, NSHourMinuteDatePickerElementFlag, NSHourMinuteSecondDatePickerElementFlag, NSYearMonthDatePickerElementFlag, NSYearMonthDayDatePickerElementFlag
 from vanilla.vanillaBase import VanillaBaseControl
 
 
@@ -20,6 +20,7 @@ _dateDisplayFlagMap = {
     "yearMonth" : NSYearMonthDatePickerElementFlag,
     "yearMonthDay" : NSYearMonthDayDatePickerElementFlag,
 }
+
 
 class DatePicker(VanillaBaseControl):
 
