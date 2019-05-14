@@ -72,7 +72,7 @@ class Box(VanillaBaseObject):
 
     def _breakCycles(self):
         super(Box, self)._breakCycles()
-        view = self._getContentView()
+        view = self._nsObject.contentView()
         if view is not None:
             _breakCycles(view)
 
@@ -101,11 +101,6 @@ class _Line(Box):
 
     def _getContentView(self):
         return self._nsObject
-
-    def _breakCycles(self):
-        view = self._getContentView()
-        if view is not None:
-            _breakCycles(view)
 
 
 class HorizontalLine(_Line):
