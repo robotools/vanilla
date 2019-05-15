@@ -1,11 +1,221 @@
 from AppKit import NSMatrix, NSRadioButton, NSButtonCell, NSRadioModeMatrix, NSFont, NSCellDisabled
 from vanilla.py23 import range
 from vanilla.vanillaBase import VanillaBaseControl, _sizeStyleMap
+from vanilla.vanillaButton import Button
+from vanilla.vanillaStackGroup import VerticalStackGroup, HorizontalStackGroup
 
+try:
+    from AppKit import NSRadioButtonType
+except ImportError:
+    from AppKit import NSRadioButton
+    NSRadioButtonType = NSRadioButton
+
+
+class _RadioGroupMixin(object):
+
+    _heights = dict(
+        regular=18,
+        small=15,
+        mini=12
+    )
+
+    def _init(self, cls, posSize, titles, callback=None, sizeStyle="regular"):
+        spacing = self._spacing[sizeStyle]
+        self._buttonHeight = self._heights[sizeStyle]
+        self._callback = callback
+        self._sizeStyle = sizeStyle
+        super(cls, self).__init__(posSize, spacing=spacing, alignment="leading")
+        self._buildButtons(titles, sizeStyle)
+
+    def _buildButtons(self, titles, sizeStyle):
+        self._buttons = []
+        for title in titles:
+            button = RadioButton("auto", title, callback=self._buttonCallback, sizeStyle=sizeStyle)
+            self._buttons.append(button)
+            self.addView(button, height=self._buttonHeight)
+
+    def _buttonCallback(self, sender):
+        for button in self._buttons:
+            if button != sender:
+                button.set(False)
+        if self._callback is not None:
+            self._callback(self)
+
+    def getIntrinsicHeight(self):
+        """
+        Get the intrinsic height for all buttons in the group.
+        """
+        count = len(self._buttons)
+        size = self._heights[self._sizeStyle]
+        spacing = self._spacing[self._sizeStyle]
+        height = size * count
+        height += spacing * (count - 1)
+        return height
+
+    def get(self):
+        """
+        Get the index of the selected radio button.
+        """
+        for index, button in enumerate(self._buttons):
+            if button.get():
+                return index
+
+    def set(self, index):
+        """
+        Set the index of the selected radio button.
+        """
+        for other, button in enumerate(self._buttons):
+            button.set(other == index)
+
+
+class VerticalRadioGroup(VerticalStackGroup, _RadioGroupMixin):
+
+    """
+    A vertical collection of radio buttons.::
+
+        from vanilla import *
+
+        class RadioGroupDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 0))
+                self.w.radioGroup = VerticalRadioGroup(
+                    "auto",
+                    ["Option 1", "Option 2"],
+                    callback=self.radioGroupCallback
+                )
+                rules = [
+                    "H:|-[radioGroup]-|",
+                    "V:|-[radioGroup(==%d)]-|" % self.w.radioGroup.getIntrinsicHeight()
+                ]
+                self.w.open()
+
+            def radioGroupCallback(self, sender):
+                print("radio group edit!", sender.get())
+
+        RadioGroupDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
+    the position and size of the radio group.
+
+    **titles** A list of titles to be shown next to the radio buttons.
+
+    **callback** The method to be caled when a radio button is selected.
+
+    **sizeStyle** A string representing the desired size style of the radio group.
+    The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
+    """
+
+    _spacing = dict(
+        regular=2,
+        small=2,
+        mini=2
+    )
+
+    def __init__(self, posSize, titles, callback=None, sizeStyle="regular"):
+        self._init(VerticalRadioGroup, posSize, titles, callback=callback, sizeStyle=sizeStyle)
+
+
+class HorizontalRadioGroup(HorizontalStackGroup, _RadioGroupMixin):
+
+    """
+    A horizontal collection of radio buttons.::
+
+        from vanilla import *
+
+        class RadioGroupDemo(object):
+
+            def __init__(self):
+                self.w = Window((200, 0))
+                self.w.radioGroup = HorizontalRadioGroup(
+                    "auto",
+                    ["Option 1", "Option 2"],
+                    callback=self.radioGroupCallback
+                )
+                rules = [
+                    "H:|-[radioGroup]-|",
+                    "V:|-[radioGroup(==%d)]-|" % self.w.radioGroup.getIntrinsicHeight()
+                ]
+                self.w.open()
+
+            def radioGroupCallback(self, sender):
+                print("radio group edit!", sender.get())
+
+        RadioGroupDemo()
+
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
+    the position and size of the radio group.
+
+    **titles** A list of titles to be shown next to the radio buttons.
+
+    **callback** The method to be caled when a radio button is selected.
+
+    **sizeStyle** A string representing the desired size style of the radio group.
+    The options are:
+
+    +-----------+
+    | "regular" |
+    +-----------+
+    | "small"   |
+    +-----------+
+    | "mini"    |
+    +-----------+
+    """
+
+    _spacing = dict(
+        regular=4,
+        small=3,
+        mini=3
+    )
+
+    def __init__(self, posSize, titles, callback=None, sizeStyle="regular"):
+        self._init(HorizontalRadioGroup, posSize, titles, callback=callback, sizeStyle=sizeStyle)
+
+
+class RadioButton(Button):
+
+    """
+    A single radio button.
+    """
+
+    nsButtonType = NSRadioButtonType
+
+    def __init__(self, posSize, title, value=False, callback=None, sizeStyle="regular"):
+        super(RadioButton, self).__init__(posSize, title, callback=callback, sizeStyle=sizeStyle)
+        self.set(value)
+
+    def set(self, value):
+        """
+        Set the state of the radio button.
+
+        **value** A boolean representing the state of the radio button.
+        """
+        self._nsObject.setState_(value)
+
+    def get(self):
+        """
+        Get the state of the radio button.
+        """
+        return self._nsObject.state()
+
+
+# ------
+# Legacy
+# ------
 
 class RadioGroup(VanillaBaseControl):
 
     """
+    This should be used only for frame layout.
+
     A collection of radio buttons.::
 
         from vanilla import *
@@ -62,15 +272,19 @@ class RadioGroup(VanillaBaseControl):
         cellSizeStyle = _sizeStyleMap[sizeStyle]
         font = NSFont.systemFontOfSize_(NSFont.systemFontSizeForControlSize_(cellSizeStyle))
         # intercell spacing and cell spacing are based on the sizeStyle
+        if posSize == "auto":
+            w = 0
+        else:
+            w = posSize[2]
         if sizeStyle == "regular":
             matrix.setIntercellSpacing_((4.0, 2.0))
-            matrix.setCellSize_((posSize[2], 18))
+            matrix.setCellSize_((w, 18))
         elif sizeStyle == "small":
             matrix.setIntercellSpacing_((3.5, 2.0))
-            matrix.setCellSize_((posSize[2], 15))
+            matrix.setCellSize_((w, 15))
         elif sizeStyle == "mini":
             matrix.setIntercellSpacing_((3.0, 2.0))
-            matrix.setCellSize_((posSize[2], 12))
+            matrix.setCellSize_((w, 12))
         else:
             raise ValueError("sizeStyle must be 'regular', 'small' or 'mini'")
         for _ in range(len(titles)):

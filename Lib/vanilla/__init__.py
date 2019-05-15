@@ -17,7 +17,7 @@ from vanilla.vanillaPathControl import PathControl
 from vanilla.vanillaPopUpButton import PopUpButton, ActionButton
 from vanilla.vanillaProgressBar import ProgressBar
 from vanilla.vanillaProgressSpinner import ProgressSpinner
-from vanilla.vanillaRadioGroup import RadioGroup
+from vanilla.vanillaRadioGroup import RadioGroup, VerticalRadioGroup, HorizontalRadioGroup, RadioButton
 from vanilla.vanillaScrollView import ScrollView
 from vanilla.vanillaSearchBox import SearchBox
 from vanilla.vanillaSegmentedButton import SegmentedButton
