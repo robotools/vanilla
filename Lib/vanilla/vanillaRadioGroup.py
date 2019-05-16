@@ -41,9 +41,9 @@ class _RadioGroupMixin(object):
         if self._callback is not None:
             self._callback(self)
 
-    def getIntrinsicHeight(self):
+    def getFittingHeight(self):
         """
-        Get the intrinsic height for all buttons in the group.
+        Get the fitting height for all buttons in the group.
         """
         count = len(self._buttons)
         size = self._heights[self._sizeStyle]
@@ -86,7 +86,7 @@ class VerticalRadioGroup(VerticalStackGroup, _RadioGroupMixin):
                 )
                 rules = [
                     "H:|-[radioGroup]-|",
-                    "V:|-[radioGroup(==%d)]-|" % self.w.radioGroup.getIntrinsicHeight()
+                    "V:|-[radioGroup(==%d)]-|" % self.w.radioGroup.getFittingHeight()
                 ]
                 self.w.open()
 
@@ -142,7 +142,7 @@ class HorizontalRadioGroup(HorizontalStackGroup, _RadioGroupMixin):
                 )
                 rules = [
                     "H:|-[radioGroup]-|",
-                    "V:|-[radioGroup(==%d)]-|" % self.w.radioGroup.getIntrinsicHeight()
+                    "V:|-[radioGroup(==%d)]-|" % self.w.radioGroup.getFittingHeight()
                 ]
                 self.w.open()
 
