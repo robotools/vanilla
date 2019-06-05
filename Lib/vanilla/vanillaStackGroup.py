@@ -43,6 +43,9 @@ class _StackGroup(VanillaBaseObject):
         stackView.setAlignment_(alignment)
         stackView.setEdgeInsets_(edgeInsets)
 
+    def getNSStackView(self):
+        return self._nsObject
+
     def addView(self, view, width=None, height=None, gravity="center"):
         """
         Add a view.
