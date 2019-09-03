@@ -17,12 +17,13 @@ from vanilla.vanillaPathControl import PathControl
 from vanilla.vanillaPopUpButton import PopUpButton, ActionButton
 from vanilla.vanillaProgressBar import ProgressBar
 from vanilla.vanillaProgressSpinner import ProgressSpinner
-from vanilla.vanillaRadioGroup import RadioGroup
+from vanilla.vanillaRadioGroup import RadioGroup, VerticalRadioGroup, HorizontalRadioGroup, RadioButton
 from vanilla.vanillaScrollView import ScrollView
 from vanilla.vanillaSearchBox import SearchBox
 from vanilla.vanillaSegmentedButton import SegmentedButton
 from vanilla.vanillaSlider import Slider
 from vanilla.vanillaSplitView import SplitView, SplitView2
+from vanilla.vanillaStackGroup import HorizontalStackGroup, VerticalStackGroup 
 from vanilla.vanillaTabs import Tabs
 from vanilla.vanillaTextBox import TextBox
 from vanilla.vanillaTextEditor import TextEditor
@@ -56,6 +57,7 @@ __all__ = [
     "Slider",
     "SplitView",
     "SplitView2",
+    "HorizontalStackGroup", "VerticalStackGroup",
     "Tabs",
     "TextBox",
     "TextEditor",

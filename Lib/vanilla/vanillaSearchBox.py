@@ -22,7 +22,7 @@ class SearchBox(VanillaBaseControl):
 
         SearchBoxDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the search box.
 
     +-------------------------+

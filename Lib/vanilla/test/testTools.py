@@ -3,6 +3,9 @@ from AppKit import NSApplication, NSMenu, NSMenuItem, NSBundle
 from PyObjCTools import AppHelper
 
 
+class _VanillaMiniApp(NSApplication): pass
+
+
 class _VanillaMiniAppDelegate(NSObject):
 
     def applicationShouldTerminateAfterLastWindowClosed_(self, notification):
@@ -13,7 +16,7 @@ def executeVanillaTest(cls, nibPath=None, calls=None, **kwargs):
     """
     Execute a Vanilla UI class in a mini application.
     """
-    app = NSApplication.sharedApplication()
+    app = _VanillaMiniApp.sharedApplication()
     delegate = _VanillaMiniAppDelegate.alloc().init()
     app.setDelegate_(delegate)
 

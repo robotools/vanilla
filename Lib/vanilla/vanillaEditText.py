@@ -35,7 +35,7 @@ class EditText(VanillaBaseControl):
 
         EditTextDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the text entry control.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the text entry control.
 
     +-------------------------+
     | **Standard Dimensions** |
@@ -170,7 +170,7 @@ class SecureEditText(EditText):
 
         SecureEditTextDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the text entry control.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the text entry control.
 
     +-------------------------+
     | **Standard Dimensions** |

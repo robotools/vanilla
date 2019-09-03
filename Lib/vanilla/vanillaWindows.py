@@ -3,7 +3,7 @@ from Foundation import NSObject
 from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToolbar, NSToolbarItem, NSImage, NSNormalWindowLevel, NSFloatingWindowLevel, NSClosableWindowMask, NSMiniaturizableWindowMask, NSResizableWindowMask, NSTexturedBackgroundWindowMask, NSUnifiedTitleAndToolbarWindowMask, NSHUDWindowMask, NSUtilityWindowMask, NSTitledWindowMask, NSBorderlessWindowMask, NSBackingStoreBuffered, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSToolbarPrintItemIdentifier, NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarDisplayModeDefault, NSToolbarDisplayModeIconAndLabel, NSToolbarDisplayModeIconOnly, NSToolbarDisplayModeLabelOnly, NSToolbarSizeModeDefault, NSToolbarSizeModeRegular, NSToolbarSizeModeSmall
 
 
-from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _flipFrame, \
+from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _addAutoLayoutRules, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersionCurrent, osVersion10_7, osVersion10_10
 from vanilla.py23 import python_method
 
@@ -144,6 +144,7 @@ class Window(NSObject):
         self._window.setLevel_(self.nsWindowLevel)
         self._window.setReleasedWhenClosed_(False)
         self._window.setDelegate_(self)
+        self._autoLayoutViews = {}
         self._bindings = {}
         self._initiallyVisible = initiallyVisible
         # full screen mode
@@ -351,6 +352,99 @@ class Window(NSObject):
             screenFrame = ((sL, 0), (sW, sH + sB))
         frame = _calcFrame(screenFrame, ((l, t), (w, h)), absolutePositioning=True)
         self._window.setFrame_display_animate_(frame, True, animate)
+
+    @python_method
+    def addAutoPosSizeRules(self, rules, metrics=None):
+        """
+        Add auto layout rules for controls/view in this view.
+
+        **rules** must by a list of rule definitions.
+        Rule definitions may take two forms:
+
+        * strings that follow the `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
+        * dictionaries with the following key/value pairs:
+
+        +---------------------------+-------------------------------------------------------------------------+
+        | key                       | value                                                                   |
+        +===========================+=========================================================================+
+        | *"view1"*                 | The vanilla wrapped view for the left side of the rule.                 |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute1"*            | The attribute of the view for the left side of the rule.                |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"relation"* (optional)   | The relationship between the left side of the rule                      |
+        |                           | and the right side of the rule. See below for options.                  |
+        |                           | The default value is `"=="`.                                            |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"view2"*                 | The vanilla wrapped view for the right side of the rule.                |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute2"*            | The attribute of the view for the right side of the rule.               |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of         |
+        |                           | the rule as part of getting the modified attribute.               |
+        |                           | The default value is `1`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right       |
+        |                           | side of the rule to yield the final modified attribute.           |
+        |                           | The default value is `0`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
+
+        The `attribute1` and `attribute2` options are:
+
+        +-------------------+--------------------------------+
+        | value             | AppKit equivalent              |
+        +===================+================================+
+        | *"left"*          | NSLayoutAttributeLeft          |
+        +-------------------+--------------------------------+
+        | *"right"*         | NSLayoutAttributeRight         |
+        +-------------------+--------------------------------+
+        | *"top"*           | NSLayoutAttributeTop           |
+        +-------------------+--------------------------------+
+        | *"bottom"*        | NSLayoutAttributeBottom        |
+        +-------------------+--------------------------------+
+        | *"leading"*       | NSLayoutAttributeLeading       |
+        +-------------------+--------------------------------+
+        | *"trailing"*      | NSLayoutAttributeTrailing      |
+        +-------------------+--------------------------------+
+        | *"width"*         | NSLayoutAttributeWidth         |
+        +-------------------+--------------------------------+
+        | *"height"*        | NSLayoutAttributeHeight        |
+        +-------------------+--------------------------------+
+        | *"centerX"*       | NSLayoutAttributeCenterX       |
+        +-------------------+--------------------------------+
+        | *"centerY"*       | NSLayoutAttributeCenterY       |
+        +-------------------+--------------------------------+
+        | *"baseline"*      | NSLayoutAttributeBaseline      |
+        +-------------------+--------------------------------+
+        | *"lastBaseline"*  | NSLayoutAttributeLastBaseline  |
+        +-------------------+--------------------------------+
+        | *"firstBaseline"* | NSLayoutAttributeFirstBaseline |
+        +-------------------+--------------------------------+
+
+        Refer to the `NSLayoutAttribute documentation <https://developer.apple.com/documentation/uikit/nslayoutattribute>`_
+        for the information about what each of these do.
+
+        The `relation` options are:
+
+        +--------+------------------------------------+
+        | value  | AppKit equivalent                  |
+        +========+====================================+
+        | *"<="* | NSLayoutRelationLessThanOrEqual    |
+        +--------+------------------------------------+
+        | *"=="* | NSLayoutRelationEqual              |
+        +--------+------------------------------------+
+        | *">="* | NSLayoutRelationGreaterThanOrEqual |
+        +--------+------------------------------------+        
+
+        Refer to the `NSLayoutRelation documentation <https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc>`_
+        for the information about what each of these do.
+
+        **metrics** may be either **None** or a dict containing
+        key value pairs representing metrics keywords used in the
+        rules defined with strings.
+        """
+        _addAutoLayoutRules(self, rules, metrics)
 
     def center(self):
         """

@@ -4,7 +4,7 @@ from AppKit import NSView, NSViewController, NSPopover, NSMinXEdge, NSMaxXEdge, 
     NSMinYEdge, NSMaxYEdge, NSPopoverBehaviorApplicationDefined, NSPopoverBehaviorTransient, \
     NSPopoverBehaviorSemitransient
 
-from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
+from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, _addAutoLayoutRules
 from vanilla.nsSubclasses import getNSSubclass
 
 _edgeMap = {
@@ -133,6 +133,7 @@ class Popover(VanillaBaseObject):
         self._delegate.vanillaWrapper = weakref.ref(self)
         self._popover.setDelegate_(self._delegate)
         self._bindings = {}
+        self._autoLayoutViews = {}
 
     def __del__(self):
         self._breakCycles()
@@ -221,3 +222,95 @@ class Popover(VanillaBaseObject):
                 for callback in self._bindings[key]:
                     # XXX why return? there could be more than one binding.
                     return callback(self)
+
+    def addAutoPosSizeRules(self, rules, metrics=None):
+        """
+        Add auto layout rules for controls/view in this view.
+
+        **rules** must by a list of rule definitions.
+        Rule definitions may take two forms:
+
+        * strings that follow the `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
+        * dictionaries with the following key/value pairs:
+
+        +---------------------------+-------------------------------------------------------------------------+
+        | key                       | value                                                                   |
+        +===========================+=========================================================================+
+        | *"view1"*                 | The vanilla wrapped view for the left side of the rule.                 |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute1"*            | The attribute of the view for the left side of the rule.                |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"relation"* (optional)   | The relationship between the left side of the rule                      |
+        |                           | and the right side of the rule. See below for options.                  |
+        |                           | The default value is `"=="`.                                            |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"view2"*                 | The vanilla wrapped view for the right side of the rule.                |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute2"*            | The attribute of the view for the right side of the rule.               |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of         |
+        |                           | the rule as part of getting the modified attribute.               |
+        |                           | The default value is `1`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right       |
+        |                           | side of the rule to yield the final modified attribute.           |
+        |                           | The default value is `0`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
+
+        The `attribute1` and `attribute2` options are:
+
+        +-------------------+--------------------------------+
+        | value             | AppKit equivalent              |
+        +===================+================================+
+        | *"left"*          | NSLayoutAttributeLeft          |
+        +-------------------+--------------------------------+
+        | *"right"*         | NSLayoutAttributeRight         |
+        +-------------------+--------------------------------+
+        | *"top"*           | NSLayoutAttributeTop           |
+        +-------------------+--------------------------------+
+        | *"bottom"*        | NSLayoutAttributeBottom        |
+        +-------------------+--------------------------------+
+        | *"leading"*       | NSLayoutAttributeLeading       |
+        +-------------------+--------------------------------+
+        | *"trailing"*      | NSLayoutAttributeTrailing      |
+        +-------------------+--------------------------------+
+        | *"width"*         | NSLayoutAttributeWidth         |
+        +-------------------+--------------------------------+
+        | *"height"*        | NSLayoutAttributeHeight        |
+        +-------------------+--------------------------------+
+        | *"centerX"*       | NSLayoutAttributeCenterX       |
+        +-------------------+--------------------------------+
+        | *"centerY"*       | NSLayoutAttributeCenterY       |
+        +-------------------+--------------------------------+
+        | *"baseline"*      | NSLayoutAttributeBaseline      |
+        +-------------------+--------------------------------+
+        | *"lastBaseline"*  | NSLayoutAttributeLastBaseline  |
+        +-------------------+--------------------------------+
+        | *"firstBaseline"* | NSLayoutAttributeFirstBaseline |
+        +-------------------+--------------------------------+
+
+        Refer to the `NSLayoutAttribute documentation <https://developer.apple.com/documentation/uikit/nslayoutattribute>`_
+        for the information about what each of these do.
+
+        The `relation` options are:
+
+        +--------+------------------------------------+
+        | value  | AppKit equivalent                  |
+        +========+====================================+
+        | *"<="* | NSLayoutRelationLessThanOrEqual    |
+        +--------+------------------------------------+
+        | *"=="* | NSLayoutRelationEqual              |
+        +--------+------------------------------------+
+        | *">="* | NSLayoutRelationGreaterThanOrEqual |
+        +--------+------------------------------------+        
+
+        Refer to the `NSLayoutRelation documentation <https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc>`_
+        for the information about what each of these do.
+
+        **metrics** may be either **None** or a dict containing
+        key value pairs representing metrics keywords used in the
+        rules defined with strings.
+        """
+        _addAutoLayoutRules(self, rules, metrics)

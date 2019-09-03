@@ -33,7 +33,7 @@ class TextEditor(VanillaBaseObject):
 
         TextEditorDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the text entry control.
 
     **text** The text to be displayed in the text entry control.

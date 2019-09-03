@@ -27,7 +27,7 @@ class TextBox(VanillaBaseControl):
 
         TextBoxDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the text box.
 
     +-------------------------+

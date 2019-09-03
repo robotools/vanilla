@@ -50,7 +50,7 @@ class ComboBox(VanillaBaseControl):
 
         ComboBoxDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the
     combo box control. The size of the combo box sould match the appropriate value for the given *sizeStyle*.
 
     +-------------------------+

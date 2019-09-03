@@ -20,7 +20,7 @@ class ProgressSpinner(VanillaBaseObject):
 
         ProgressSpinnerDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the
     position and size of the spinner. The size of the spinner sould match the
     appropriate value for the given *sizeStyle*.
 

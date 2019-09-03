@@ -29,7 +29,7 @@ class ScrollView(VanillaBaseObject):
 
         ScrollViewDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the
     position and size of the scroll view.
 
     **nsView** A *NSView* object.

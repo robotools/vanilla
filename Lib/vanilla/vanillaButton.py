@@ -44,7 +44,7 @@ class Button(VanillaBaseControl):
 
         ButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position
     and size of the button. The size of the button sould match the appropriate value
     for the given *sizeStyle*.
 
@@ -174,7 +174,7 @@ class SquareButton(Button):
 
         SquareButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the button.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the button.
 
     **title** The text to be displayed on the button. Pass _None_ is no title is desired.
 
@@ -226,7 +226,7 @@ class ImageButton(SquareButton):
 
         ImageButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the button.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the button.
 
     **title** The text to be displayed on the button. Pass *None* is no title is desired.
 
@@ -336,7 +336,7 @@ class HelpButton(Button):
 
         HelpButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and
     size of the button. The size of the button sould match the standard dimensions.
 
     +-------------------------+

@@ -340,7 +340,7 @@ class List(VanillaBaseObject):
         "B"
         "C"
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the
     position and size of the list.
 
     **items** The items to be displayed in the list. In the case of multiple

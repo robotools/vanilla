@@ -11,8 +11,7 @@ Concepts
 .. toctree::
    :maxdepth: 1
 
-   concepts/dimensions
-   concepts/callbacks
+   concepts/layout
 
 
 Objects
@@ -42,6 +41,8 @@ Layout Views
   objects/Popover
   objects/HorizontalLine
   objects/VerticalLine
+  objects/HorizontalStackGroup
+  objects/VerticalStackGroup
 
 Data Views
 ^^^^^^^^^^

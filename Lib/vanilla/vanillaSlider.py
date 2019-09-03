@@ -31,7 +31,7 @@ class Slider(VanillaBaseControl):
 
         SliderDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and
     size of the slider. The size of the slider sould match the appropriate value for
     the given *sizeStyle*.
 

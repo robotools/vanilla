@@ -25,7 +25,7 @@ class ImageView(VanillaBaseObject):
     """
     A view that displays an image.
 
-    **posSize** Tuple of form *(left, top, width, height)* representing
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the view.
 
     **horizontalAlignment** A string representing the desired horizontal

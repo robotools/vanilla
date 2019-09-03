@@ -23,7 +23,7 @@ class Box(VanillaBaseObject):
 
     No special naming is required for the attributes. However, each attribute must have a unique name.
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the box.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the box.
 
     **title** The title to be displayed dabove the box. Pass *None* if no title is desired.
     """
@@ -72,7 +72,7 @@ class Box(VanillaBaseObject):
 
     def _breakCycles(self):
         super(Box, self)._breakCycles()
-        view = self._getContentView()
+        view = self._nsObject.contentView()
         if view is not None:
             _breakCycles(view)
 
@@ -98,6 +98,9 @@ class _Line(Box):
         self._nsObject.setBorderType_(NSLineBorder)
         self._nsObject.setBoxType_(NSBoxSeparator)
         self._nsObject.setTitlePosition_(NSNoTitle)
+
+    def _getContentView(self):
+        return self._nsObject
 
 
 class HorizontalLine(_Line):
