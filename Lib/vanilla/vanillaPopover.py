@@ -62,6 +62,7 @@ class Popover(VanillaBaseObject):
 
     **preferredEdge** The edge of the parent view that you want the popover
     to pop out from. These are the options:
+
     +------------+
     | *"left"*   |
     +------------+
@@ -73,6 +74,7 @@ class Popover(VanillaBaseObject):
     +------------+
 
     **behavior** The desired behavior of the popover. These are the options:
+
     +------------------------+-----------------------------------------------------+
     | *"applicationDefined"* | Corresponds to NSPopoverBehaviorApplicationDefined. |
     +------------------------+-----------------------------------------------------+
@@ -80,6 +82,32 @@ class Popover(VanillaBaseObject):
     +------------------------+-----------------------------------------------------+
     | *"semitransient"*      | Corresponds to NSPopoverBehaviorSemitransient.      |
     +------------------------+-----------------------------------------------------+
+
+    Example::
+
+        from vanilla import *
+
+        class PopoverExample:
+
+            def __init__(self):
+                self.w = Window((120, 120))
+                self.w.list = List((0, 0, -0, -0),
+                        ['A', 'B', 'C'],
+                        selectionCallback=self.showPopoverCallback)
+                self.w.open()
+
+            def showPopoverCallback(self, sender):
+                selection = sender.getSelection()
+                if not selection:
+                    return
+                index = sender.getSelection()[0]
+                relativeRect = sender.getNSTableView().rectOfRow_(index)
+                pop = Popover((140, 80))
+                pop.text = TextBox((10, 10, -10, -10), 'This is a popover.')
+                pop.open(parentView=sender, preferredEdge='right', relativeRect=relativeRect)
+
+        PopoverExample()
+
     """
 
     nsPopoverClass = NSPopover

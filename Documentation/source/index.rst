@@ -39,6 +39,7 @@ Layout Views
   objects/ScrollView
   objects/SplitView
   objects/Box
+  objects/Popover
   objects/HorizontalLine
   objects/VerticalLine
 
