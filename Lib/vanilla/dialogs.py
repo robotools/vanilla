@@ -1,7 +1,7 @@
 import objc
 from objc import selector
 from Foundation import NSObject
-from AppKit import NSAlert, NSSavePanel, NSOpenPanel, NSInformationalAlertStyle, NSAlertFirstButtonReturn, NSAlertSecondButtonReturn, NSAlertThirdButtonReturn, NSOKButton
+from AppKit import NSAlert, NSSavePanel, NSOpenPanel, NSInformationalAlertStyle, NSAlertFirstButtonReturn, NSAlertSecondButtonReturn, NSAlertThirdButtonReturn, NSOKButton, NSURL
 from vanilla.py23 import python_method
 
 
@@ -12,27 +12,32 @@ class BaseMessageDialog(NSObject):
 
     def initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(self,
         messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
-
         self = super(BaseMessageDialog, self).init()
         self.retain()
         self._resultCallback = resultCallback
         self._buttonTitlesValues = buttonTitlesValues
         #
-        alert = NSAlert.alloc().init()
-        alert.setMessageText_(messageText)
-        alert.setInformativeText_(informativeText)
-        alert.setAlertStyle_(alertStyle)
+        self.alert = NSAlert.alloc().init()
+        self.alert.setMessageText_(messageText)
+        self.alert.setInformativeText_(informativeText)
+        self.alert.setAlertStyle_(alertStyle)
         for buttonTitle, value in buttonTitlesValues:
-            alert.addButtonWithTitle_(buttonTitle)
+            self.alert.addButtonWithTitle_(buttonTitle)
         self._value = None
         if parentWindow is None:
-            code = alert.runModal()
+            code = self.alert.runModal()
             self._translateValue(code)
             if self._resultCallback is not None:
                 self._resultCallback(self._value)
         else:
-            alert.beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_(parentWindow, self, "alertDidEnd:returnCode:contextInfo:", 0)
+            self.alert.beginSheetModalForWindow_completionHandler_(parentWindow, self.completionHandler_)
         return self
+
+    def completionHandler_(self, returnCode):
+        self.alert.window().close()
+        self._translateValue(returnCode)
+        if self._resultCallback is not None:
+            self._resultCallback(self._value)
 
     @python_method
     def _translateValue(self, code):
@@ -46,14 +51,6 @@ class BaseMessageDialog(NSObject):
             value = code - NSAlertThirdButtonReturn + 3
         self._value = self._buttonTitlesValues[value-1][1]
 
-    def alertDidEnd_returnCode_contextInfo_(self, alert, code, context):
-        alert.window().close()
-        self._translateValue(code)
-        if self._resultCallback is not None:
-            self._resultCallback(self._value)
-
-    alertDidEnd_returnCode_contextInfo_ = selector(alertDidEnd_returnCode_contextInfo_, signature=b"v@:@i@")
-
     def windowWillClose_(self, notification):
         self.autorelease()
 
@@ -66,6 +63,13 @@ class BasePutGetPanel(NSObject):
         self._parentWindow = parentWindow
         self._resultCallback = resultCallback
         return self
+
+    def completionHandler_(self, returnCode):
+        self.panel.close()
+        if returnCode:
+            self._result = self.panel.filename()
+            if self._resultCallback is not None:
+                self._resultCallback(self._result)
 
     def windowWillClose_(self, notification):
         self.autorelease()
@@ -86,34 +90,26 @@ class PutFilePanel(BasePutGetPanel):
         return self
 
     def run(self):
-        panel = NSSavePanel.alloc().init()
+        self.panel = NSSavePanel.alloc().init()
         if self.messageText:
-            panel.setMessage_(self.messageText)
+            self.panel.setMessage_(self.messageText)
         if self.title:
-            panel.setTitle_(self.title)
+            self.panel.setTitle_(self.title)
+        if self.fileName:
+            self.panel.setNameFieldStringValue_(self.fileName)
         if self.directory:
-            panel.setDirectory_(self.directory)
+            self.panel.setDirectoryURL_(NSURL.fileURLWithPath_(self.directory))
         if self.fileTypes:
-            panel.setAllowedFileTypes_(self.fileTypes)
-        panel.setCanCreateDirectories_(self.canCreateDirectories)
-        panel.setCanSelectHiddenExtension_(True)
-        panel.setAccessoryView_(self.accessoryView)
+            self.panel.setAllowedFileTypes_(self.fileTypes)
+        self.panel.setCanCreateDirectories_(self.canCreateDirectories)
+        self.panel.setCanSelectHiddenExtension_(True)
+        self.panel.setAccessoryView_(self.accessoryView)
         if self._parentWindow is not None:
-            panel.beginSheetForDirectory_file_modalForWindow_modalDelegate_didEndSelector_contextInfo_(
-                    self.directory, self.fileName, self._parentWindow, self, "savePanelDidEnd:returnCode:contextInfo:", 0)
+            self.panel.beginSheetModalForWindow_completionHandler_(self._parentWindow, self.completionHandler_)
         else:
-            isOK = panel.runModalForDirectory_file_(self.directory, self.fileName)
+            isOK = self.panel.runModalForDirectory_file_(self.directory, self.fileName)
             if isOK == NSOKButton:
-                self._result = panel.filename()
-
-    def savePanelDidEnd_returnCode_contextInfo_(self, panel, returnCode, context):
-        panel.close()
-        if returnCode:
-            self._result = panel.filename()
-            if self._resultCallback is not None:
-                self._resultCallback(self._result)
-
-    savePanelDidEnd_returnCode_contextInfo_ = objc.selector(savePanelDidEnd_returnCode_contextInfo_, signature=b"v@:@ii")
+                self._result = self.panel.filename()
 
 
 class GetFileOrFolderPanel(BasePutGetPanel):
@@ -133,35 +129,27 @@ class GetFileOrFolderPanel(BasePutGetPanel):
         return self
 
     def run(self):
-        panel = NSOpenPanel.alloc().init()
+        self.panel = NSOpenPanel.alloc().init()
         if self.messageText:
-            panel.setMessage_(self.messageText)
+            self.panel.setMessage_(self.messageText)
         if self.title:
-            panel.setTitle_(self.title)
+            self.panel.setTitle_(self.title)
+        if self.fileName:
+            self.panel.setNameFieldLabel_(self.fileName)
         if self.directory:
-            panel.setDirectory_(self.directory)
+            self.panel.setDirectoryURL_(NSURL.fileURLWithPath_(self.directory))
         if self.fileTypes:
-            panel.setAllowedFileTypes_(self.fileTypes)
-        panel.setCanChooseDirectories_(self.canChooseDirectories)
-        panel.setCanChooseFiles_(self.canChooseFiles)
-        panel.setAllowsMultipleSelection_(self.allowsMultipleSelection)
-        panel.setResolvesAliases_(self.resolvesAliases)
+            self.panel.setAllowedFileTypes_(self.fileTypes)
+        self.panel.setCanChooseDirectories_(self.canChooseDirectories)
+        self.panel.setCanChooseFiles_(self.canChooseFiles)
+        self.panel.setAllowsMultipleSelection_(self.allowsMultipleSelection)
+        self.panel.setResolvesAliases_(self.resolvesAliases)
         if self._parentWindow is not None:
-            panel.beginSheetForDirectory_file_types_modalForWindow_modalDelegate_didEndSelector_contextInfo_(
-                    self.directory, self.fileName, self.fileTypes, self._parentWindow, self, "openPanelDidEnd:returnCode:contextInfo:", 0)
+            self.panel.beginSheetModalForWindow_completionHandler_(self._parentWindow, self.completionHandler_)
         else:
-            isOK = panel.runModalForDirectory_file_types_(self.directory, self.fileName, self.fileTypes)
+            isOK = self.panel.runModalForDirectory_file_types_(self.directory, self.fileName, self.fileTypes)
             if isOK == NSOKButton:
-                self._result = panel.filenames()
-
-    def openPanelDidEnd_returnCode_contextInfo_(self, panel, returnCode, context):
-        panel.close()
-        if returnCode:
-            self._result = panel.filenames()
-            if self._resultCallback is not None:
-                self._resultCallback(self._result)
-
-    openPanelDidEnd_returnCode_contextInfo_ = objc.selector(openPanelDidEnd_returnCode_contextInfo_, signature=b"v@:@ii")
+                self._result = self.panel.filenames()
 
 
 def _unwrapWindow(window):
