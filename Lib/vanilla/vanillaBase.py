@@ -1,5 +1,6 @@
 import platform
 from distutils.version import StrictVersion
+import py23
 from Foundation import NSObject
 from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, \
     NSViewMinXMargin, NSViewMaxXMargin, NSViewMaxYMargin, NSViewMinYMargin, \

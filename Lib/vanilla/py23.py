@@ -30,3 +30,10 @@ try:
 except ImportError:
     def python_method(arg):
         return arg
+try:
+    print "import NSLayoutAttributeLastBaseline"
+    from AppKit import NSLayoutAttributeLastBaseline
+except ImportError:
+    import AppKit
+    AppKit.NSLayoutAttributeLastBaseline = 11
+    AppKit.NSLayoutAttributeFirstBaseline = 12
