@@ -6,8 +6,15 @@ from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniContr
     NSViewWidthSizable, NSViewHeightSizable, \
     NSLayoutConstraint, NSLayoutFormatAlignAllLeft, \
     NSLayoutAttributeLeft, NSLayoutAttributeRight, NSLayoutAttributeTop, NSLayoutAttributeBottom, NSLayoutAttributeLeading, NSLayoutAttributeTrailing, \
-    NSLayoutAttributeWidth, NSLayoutAttributeHeight, NSLayoutAttributeCenterX, NSLayoutAttributeCenterY, NSLayoutAttributeBaseline, NSLayoutAttributeLastBaseline, NSLayoutAttributeFirstBaseline, \
+    NSLayoutAttributeWidth, NSLayoutAttributeHeight, NSLayoutAttributeCenterX, NSLayoutAttributeCenterY, NSLayoutAttributeBaseline, \
     NSLayoutRelationLessThanOrEqual, NSLayoutRelationEqual, NSLayoutRelationGreaterThanOrEqual
+
+try:
+    from AppKit import NSLayoutAttributeLastBaseline
+except ImportError:
+    NSLayoutAttributeLastBaseline = 11
+    NSLayoutAttributeFirstBaseline = 12
+
 from vanilla.nsSubclasses import getNSSubclass
 
 
