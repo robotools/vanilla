@@ -10,7 +10,7 @@ from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniContr
     NSLayoutRelationLessThanOrEqual, NSLayoutRelationEqual, NSLayoutRelationGreaterThanOrEqual
 
 try:
-    from AppKit import NSLayoutAttributeLastBaseline
+    from AppKit import NSLayoutAttributeLastBaseline, NSLayoutAttributeFirstBaseline
 except ImportError:
     NSLayoutAttributeLastBaseline = 11
     NSLayoutAttributeFirstBaseline = 12
