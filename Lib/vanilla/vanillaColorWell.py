@@ -10,6 +10,7 @@ class ColorWell(VanillaBaseObject):
     ColorWell objects handle
     `NSColor <http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Classes/NSColor_Class/index.html>`_
     objects.::
+
         from AppKit import NSColor
         from vanilla import *
 

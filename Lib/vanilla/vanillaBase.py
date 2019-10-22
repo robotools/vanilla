@@ -200,11 +200,11 @@ class VanillaBaseObject(object):
         |                           | See below for options.                                                  |
         +---------------------------+-------------------------------------------------------------------------+
         | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of         |
-        |                           | the rule as part of getting the modified attribute.               |
+        |                           | the rule as part of getting the modified attribute.                     |
         |                           | The default value is `1`.                                               |
         +---------------------------+-------------------------------------------------------------------------+
         | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right       |
-        |                           | side of the rule to yield the final modified attribute.           |
+        |                           | side of the rule to yield the final modified attribute.                 |
         |                           | The default value is `0`.                                               |
         +---------------------------+-------------------------------------------------------------------------+
 
@@ -253,7 +253,7 @@ class VanillaBaseObject(object):
         | *"=="* | NSLayoutRelationEqual              |
         +--------+------------------------------------+
         | *">="* | NSLayoutRelationGreaterThanOrEqual |
-        +--------+------------------------------------+        
+        +--------+------------------------------------+
 
         Refer to the `NSLayoutRelation documentation <https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc>`_
         for the information about what each of these do.
