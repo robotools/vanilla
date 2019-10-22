@@ -78,33 +78,37 @@ String Rules
 
 **Orientations**
 
-====== ==================
-``H:`` A horizontal rule.
-``V:`` A vertical rule.
-====== ==================
++--------+--------------------+
+| ``H:`` | A horizontal rule. |
++--------+--------------------+
+| ``V:`` | A vertical rule.   |
++--------+--------------------+
 
 **View References**
 
-========== ===============================================================
-``| ``     Edge of the superview.
-``[name]`` An attribute name you used to assign the view to the superview.
-========== ===============================================================
++------------+-----------------------------------------------------------------+
+| ``|``      | Edge of the superview.                                          |
++------------+-----------------------------------------------------------------+
+| ``[name]`` | An attribute name you used to assign the view to the superview. |
++------------+-----------------------------------------------------------------+
 
 **Relations**
 
-====== ======================
-``==`` Equal.
-``>=`` Greater than or equal.
-``<=`` Less than or equal.
-====== ======================
++--------+------------------------+
+| ``==`` | Equal.                 |
+| ``>=`` | Greater than or equal. |
+| ``<=`` | Less than or equal.    |
++--------+------------------------+
 
 **Metrics**
 
-===================== ===========================================
-``-``                 Standard space.
-number (int or float) A specific number of points.
-metric name (string)  A metric defined in the metrics dictionary.
-===================== ===========================================
++-----------------------+---------------------------------------------+
+| ``-``                 | Standard space.                             |
++-----------------------+---------------------------------------------+
+| number (int or float) | A specific number of points.                |
++-----------------------+---------------------------------------------+
+| metric name (string)  | A metric defined in the metrics dictionary. |
++-----------------------+---------------------------------------------+
 
 Examples
 
