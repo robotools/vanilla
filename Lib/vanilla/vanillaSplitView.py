@@ -399,36 +399,35 @@ class SplitView(VanillaBaseObject):
 
         SplitViewDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
-    representing the position and size of the split view.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
+    the position and size of the split view.
 
     **paneDescriptions** An ordered list of dictionaries describing the
     subviews, or "panes". Those dictionaries can have the following keys:
 
-    +-----------------------+-------------------------------------------------------------------------------+
-    | *view*                | A view, either a Vanilla object or a NSView. Required.                        |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | *"identifier"*        | A string identifying the pane. Required.                                      |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | *"size"*              | The initial size of the pane. Optional.                                       |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | *"minSize"*           | The minimum size of the pane. Optional. The default is 0.                     |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | *"maxSize"*           | The maximum size of the pane. Optional. The default is no maximum size.       |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | *"canCollapse"*       | Boolean indicating if the pane can collapse. Optional. The default is *True*. |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | *"resizeFlexibility"* | Boolean indicating if the pane can adjust its size automatically when the     |
-    |                       | SplitView size changes. Optional. The default is *True* unless the pane has a |
-    |                       | fixed size.                                                                   |
-    +-----------------------+-------------------------------------------------------------------------------+
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *view*                | A view, either a Vanilla object or a NSView. Required.                      |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"identifier"*        | A string identifying the pane. Required.                                    |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"size"*              | The initial size of the pane. Optional.                                     |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"minSize"*           | The minimum size of the pane. Optional. The default is 0.                   |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"maxSize"*           | The maximum size of the pane. Optional. The default is no maximum size.     |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"canCollapse"*       | Boolean indicating if the pane can collapse. Optional. The default is True. |
+    +-----------------------+-----------------------------------------------------------------------------+
+    | *"resizeFlexibility"* | Boolean indicating if the pane can adjust its size automatically when the   |
+    |                       | SplitView size changes. Optional. The default is True unless the pane has a |
+    |                       | fixed size.                                                                 |
+    +-----------------------+-----------------------------------------------------------------------------+
 
     **isVertical** Boolean representing if the split view is vertical.
     Default is *True*.
 
     **dividerStyle** String representing the style of the divider.
     These are the options:
-
     +----------+
     | splitter |
     +----------+
@@ -441,7 +440,7 @@ class SplitView(VanillaBaseObject):
 
     **dividerThickness** An integer representing the desired thickness of the divider.
 
-    **dividerColor** A *NSColor* that should be used to paint the divider.
+    **dividerColor** A NSColor that should be used to paint the divider.
 
     **autosaveName** The autosave name for the SplitView.
     """
@@ -540,8 +539,9 @@ class SplitView(VanillaBaseObject):
 
     def setDividerDrawingFunction(self, function):
         """
-        Set a function that will draw the contents of the divider.
-        This can be *None* or a function that accepts the following arguments:
+        Set a function that will draw the contents of
+        the divider. This can be **None** or a function
+        that accepts the following arguments:
 
         +-----------+---------------------------------------+
         | splitView | The SplitView calling the function.   |
@@ -555,16 +555,17 @@ class SplitView(VanillaBaseObject):
 
     def isPaneVisible(self, identifier):
         """
-        Returns a boolean indicating if the pane with *identifier* is visible or not.
+        Returns a boolean indicating if the pane with **identifier**
+        is visible or not.
         """
         return self.getNSSplitView().getStateForPane_(identifier)
 
     def showPane(self, identifier, onOff, animate=False):
         """
-        Set the visibility of the pane with *identifier*.
-
-        **onOff** should be a boolean indicating the desired visibility of the pane.
-        If *animate* is True, the pane will expand or collapse with an animation.
+        Set the visibility of the pane with **identifier**.
+        **onOff* should be a boolean indicating the desired
+        visibility of the pane. If **animate** is True,
+        the pane will expand or collapse with and animation.
         """
         if animate:
             warn("Pane animation is not supported at this time.")
@@ -572,8 +573,9 @@ class SplitView(VanillaBaseObject):
 
     def togglePane(self, identifier, animate=False):
         """
-        Toggle the visibility of the pane with *identifier*.
-        If *animate* is True, the pane will expand or collapse with and animation.
+        Toggle the visibility of the pane with **identifier**.
+        If **animate** is True, the pane will expand or collapse
+        with and animation.
         """
         currentState = self.isPaneVisible(identifier)
         self.showPane(identifier, not currentState, animate)

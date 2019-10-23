@@ -22,8 +22,8 @@ class SearchBox(VanillaBaseControl):
 
         SearchBoxDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
-    representing the position and size of the search box.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
+    the position and size of the search box.
 
     +-------------------------+
     | **Standard Dimensions** |
@@ -39,14 +39,14 @@ class SearchBox(VanillaBaseControl):
 
     **callback** The method to be called when the user presses the search box.
 
-    **formatter** A `NSFormatter`_ for controlling the display and input of
-    the text entry.
+    **formatter** A `NSFormatter <http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html>`_
+    for controlling the display and input of the text entry.
 
     **placeholder** A placeholder string to be shown when the text entry
     control is empty.
 
-    **sizeStyle** A string representing the desired size style of the
-    search box. The options are:
+    **sizeStyle** A string representing the desired size style of the search box.
+    The options are:
 
     +-----------+
     | "regular" |
@@ -55,9 +55,6 @@ class SearchBox(VanillaBaseControl):
     +-----------+
     | "mini"    |
     +-----------+
-
-    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
-
     """
 
     nsSearchFieldClass = NSSearchField

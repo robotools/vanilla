@@ -32,9 +32,9 @@ class SegmentedButton(VanillaBaseControl):
 
         SegmentedButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
-    the position and size of the segmented button. The size of the segmented button
-    should match the appropriate value for the given *sizeStyle*.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position
+    and size of the segmented button. The size of the segmented button sould match
+    the appropriate value for the given *sizeStyle*.
 
     +-------------------------+
     | **Standard Dimensions** |
@@ -48,23 +48,21 @@ class SegmentedButton(VanillaBaseControl):
 
     **segmentDescriptions** An ordered list of dictionaries describing the segments.
 
-    +----------------------------+----------------------------------------------------------+
-    | width (optional)           | The desired width of the segment.                        |
-    +----------------------------+----------------------------------------------------------+
-    | title (optional)           | The title of the segment.                                |
-    +----------------------------+----------------------------------------------------------+
-    | enabled (optional)         | The enabled state of the segment. The default is `True`. |
-    +----------------------------+----------------------------------------------------------+
-    | imagePath (optional)       | A file path to an image to display in the segment.       |
-    +----------------------------+----------------------------------------------------------+
-    | imageNamed (optional)      | The name of an image already loaded as a *NSImage* by    |
-    |                            | the application to display in the segment.               |
-    +----------------------------+----------------------------------------------------------+
-    | imageObject (optional)     | A *NSImage* object to display in the segment.            |
-    +----------------------------+----------------------------------------------------------+
-    | *imageTemplate* (optional) | A boolean representing if the image should converted     |
-    |                            | to a template image.                                     |
-    +----------------------------+----------------------------------------------------------+
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | width (optional)           | The desired width of the segment.                                                                |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | title (optional)           | The title of the segment.                                                                        |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | enabled (optional)         | The enabled state of the segment. The default is `True`.                                         |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | imagePath (optional)       | A file path to an image to display in the segment.                                               |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | imageNamed (optional)      | The name of an image already loaded as a *NSImage* by the application to display in the segment. |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | imageObject (optional)     | A *NSImage* object to display in the segment.                                                    |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
+    | *imageTemplate* (optional) | A boolean representing if the image should converted to a template image.                        |
+    +----------------------------+--------------------------------------------------------------------------------------------------+
 
     **callback** The method to be called when the user presses the segmented button.
 
@@ -78,8 +76,7 @@ class SegmentedButton(VanillaBaseControl):
     | momentary | A segmented is only selected when tracking. |
     +-----------+---------------------------------------------+
 
-    **sizeStyle** A string representing the desired size style of the segmented button.
-    The options are:
+    **sizeStyle** A string representing the desired size style of the segmented button. The options are:
 
     +-----------+
     | "regular" |

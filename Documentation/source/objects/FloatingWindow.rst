@@ -6,8 +6,6 @@ FloatingWindow
 
 .. module:: vanilla
 .. autoclass:: FloatingWindow
-   :inherited-members:
-   :members:
 
 .. method:: FloatingWindow.assignToDocument(document)
 
@@ -16,33 +14,102 @@ FloatingWindow
     **document** should be a *NSDocument* instance.
 
 
+.. method:: FloatingWindow.getNSWindow()
+
+    Return the *NSWindow* that this Vanilla object wraps.
+
+
+.. method:: FloatingWindow.getNSWindowController()
+
+    Return an *NSWindowController* for the *NSWindow* that this Vanilla
+    object wraps, creating a one if needed.
+
+
+.. method:: FloatingWindow.open()
+
+    Open the window.
+
+
+.. method:: FloatingWindow.close()
+
+    Close the window.
+
+    Once a window has been closed it can not be re-opened.
+
+
+.. method:: FloatingWindow.hide()
+
+    Hide the window.
+
+
+.. method:: FloatingWindow.show()
+
+    Show the window if it is hidden.
+
+
+.. method:: FloatingWindow.makeKey()
+
+    Make the window the key window.
+
+
+.. method:: FloatingWindow.makeMain()
+
+    Make the window the main window.
+
+
 .. method:: FloatingWindow.setTitle(title)
 
     Set the title in the window's title bar.
 
-    **title** should be a string.
+    **title** shoud be a string.
+
+
+.. method:: FloatingWindow.getTitle()
+
+    The title in the window's title bar.
+
+
+.. method:: FloatingWindow.select()
+
+    Select the window if it is not the currently selected window.
+
+
+.. method:: FloatingWindow.isVisible()
+
+    A boolean value representing if the window is visible or not.
+
+
+.. method:: FloatingWindow.getPosSize()
+
+    A tuple of form *(left, top, width, height)* representing the window's
+    position and size.
 
 
 .. method:: FloatingWindow.setPosSize(posSize, animate=True)
 
-    Set the position and size of the Floatingwindow.
+    Set the position and size of the window.
 
     **posSize** A tuple of form *(left, top, width, height)*.
 
 
+.. method:: FloatingWindow.center()
+
+    Center the window within the screen.
+
+
 .. method:: FloatingWindow.move(x, y, animate=True)
 
-    Move the window by *x* units and *y* units.
+    Move the window by **x** units and **y** units.
 
 
 .. method:: FloatingWindow.resize(width, height, animate=True)
 
-    Change the size of the window to *width* and *height*.
+    Change the size of the window to **width** and **height**.
 
 
 .. method:: FloatingWindow.setDefaultButton(button)
 
-    Set the default button in the Floatingwindow.
+    Set the default button in the window.
 
     **button** will be bound to the Return and Enter keys.
 
@@ -61,7 +128,7 @@ FloatingWindow
     +-------------------+----------------------------------------------------------------------+
     | *"move"*          | Called immediately after the window is moved.                        |
     +-------------------+----------------------------------------------------------------------+
-    | *"resize"*        | Called immediately after the window is resized.                      |
+    | *"resize"*        | Caled immediately after the window is resized.                       |
     +-------------------+----------------------------------------------------------------------+
     | *"became main"*   | Called immediately after the window has become the main window.      |
     +-------------------+----------------------------------------------------------------------+
@@ -72,23 +139,21 @@ FloatingWindow
     | *"resigned key"*  | Called immediately after the window has lost its key window status.  |
     +-------------------+----------------------------------------------------------------------+
 
-    For more information about main and key windows, refer to the Cocoa `documentation`_ on the subject.
-
-    .. _documentation: http://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyFloatingWindow.html
+    *For more information about main and key windows, refer to the Cocoa
+    `documentation <http://developer.apple.com/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyWindow.html>`_
+    on the subject.*
 
     **callback** The callback that will be called when the event occurs. It should accept a *sender* argument which will
     be the Window that called the callback.::
 
-        from vanilla import Window
-
         class WindowBindDemo(object):
 
-            def __init__(self):
+            def __init__():
                 self.w = Window((200, 200))
                 self.w.bind("move", self.windowMoved)
                 self.w.open()
 
-            def windowMoved(self, sender):
+            def windowMoved(sender):
                 print("window moved!", sender)
 
         WindowBindDemo()
@@ -106,93 +171,58 @@ FloatingWindow
 
 .. method:: FloatingWindow.addToolbar(toolbarIdentifier, toolbarItems, addStandardItems=True)
 
-        Add a toolbar to the Floatingwindow.
+    Add a toolbar to the window.
 
-        **toolbarIdentifier** A string representing a unique name for the toolbar.
+    **toolbarIdentifier** A string representing a unique name for the toolbar.
 
-        **toolbarItems** An ordered list of dictionaries containing the following items:
+    **toolbarItems** An ordered list of dictionaries containing the following items:
 
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *itemIdentifier*              | A unique string identifier for the item. This is only used internally.    |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *label* (optional)            | The text label for the item. Defaults to *None*.                          |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *paletteLabel* (optional)     | The text label shown in the customization palette. Defaults to *label*.   |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *toolTip* (optional)          | The tool tip for the item. Defaults to *label*.                           |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imagePath* (optional)        | A file path to an image. Defaults to *None*.                              |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imageNamed* (optional)       | The name of an image already loaded as a `NSImage`_ by the application.   |
-        |                               | Defaults to *None*.                                                       |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imageObject* (optional)      | A `NSImage`_ object. Defaults to *None*.                                  |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imageTemplate* (optional)    | A boolean representing if the image should converted to a template image. |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *selectable* (optional)       | A boolean representing if the item is selectable or not. The default      |
-        |                               | value is *False*. For more information on selectable toolbar items, refer |
-        |                               | to Apple's documentation.                                                 |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *view* (optional)             | A *NSView* object to be used instead of an image. Defaults to *None*.     |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *visibleByDefault* (optional) | If the item should be visible by default pass *True* to this argument.    |
-        |                               | If the item should be added to the toolbar only through the customization |
-        |                               | palette, use a value of *False*. Defaults to *True*.                      |
-        +-------------------------------+---------------------------------------------------------------------------+
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *itemIdentifier*              | A unique string identifier for the item. This is only used internally.    |
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *label* (optional)            | The text label for the item. Defaults to *None*.                          |
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *paletteLabel* (optional)     | The text label shown in the customization palette. Defaults to *label*.   |
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *toolTip* (optional)          | The tool tip for the item. Defaults to *label*.                           |
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *imagePath* (optional)        | A file path to an image. Defaults to *None*.                              |
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *imageNamed* (optional)       | The name of an image already loaded as a *NSImage* by the application.    |
+    |                               | Defaults to *None*.                                                       |
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *imageObject* (optional)      | A _NSImage_ object. Defaults to *None*.                                   |
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *selectable* (optional)       | A boolean representing if the item is selectable or not. The default      |
+    |                               | value is _False_. For more information on selectable toolbar items, refer |
+    |                               | to Apple's `documentation <http://tinyurl.com/SelectableItems>`_          |
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *view* (optional)             | A *NSView* object to be used instead of an image. Defaults to *None*.     |
+    +-------------------------------+---------------------------------------------------------------------------+
+    | *visibleByDefault* (optional) | If the item should be visible by default pass True to this argument.      |
+    |                               | If the item should be added to the toolbar only through the customization |
+    |                               | palette, use a value of _False_. Defaults to _True_. |                    |
+    +-------------------------------+---------------------------------------------------------------------------+
 
-        .. _NSImage: http://developer.apple.com/documentation/appkit/nsimage?language=objc
+    **addStandardItems** A boolean, specifying whether the standard Cocoa toolbar items
+    should be added. Defaults to *True*. If you set it to *False*, you must specify any
+    standard items manually in *toolbarItems*, by using the constants from the AppKit module:
 
-        **addStandardItems** A boolean, specifying whether the standard Cocoa toolbar items
-        should be added. Defaults to *True*. If you set it to *False*, you must specify any
-        standard items manually in *toolbarItems*, by using the constants from the AppKit module:
+    +-------------------------------------------+----------------------------------------------------------------+
+    | *NSToolbarSeparatorItemIdentifier*        | The Separator item.                                            |
+    +-------------------------------------------+----------------------------------------------------------------+
+    | *NSToolbarSpaceItemIdentifier*            | The Space item.                                                |
+    +-------------------------------------------+----------------------------------------------------------------+
+    | *NSToolbarFlexibleSpaceItemIdentifier*    | The Flexible Space item.                                       |
+    +-------------------------------------------+----------------------------------------------------------------+
+    | *NSToolbarShowColorsItemIdentifier*       | The Colors item. Shows the color panel.                        |
+    +-------------------------------------------+----------------------------------------------------------------+
+    | *NSToolbarShowFontsItemIdentifier*        | The Fonts item. Shows the font panel.                          |
+    +-------------------------------------------+----------------------------------------------------------------+
+    | *NSToolbarCustomizeToolbarItemIdentifier* | The Customize item. Shows the customization palette.           |
+    +-------------------------------------------+----------------------------------------------------------------+
+    | *NSToolbarPrintItemIdentifier*            | The Print item. Refer to Apple's *NSToolbarItem* documentation |
+    |                                           | for more information.                                          |
+    +-------------------------------------------+----------------------------------------------------------------+
 
-        +-------------------------------------------+------------------------------------------------------+
-        | *NSToolbarSeparatorItemIdentifier*        | The Separator item.                                  |
-        +-------------------------------------------+------------------------------------------------------+
-        | *NSToolbarSpaceItemIdentifier*            | The Space item.                                      |
-        +-------------------------------------------+------------------------------------------------------+
-        | *NSToolbarFlexibleSpaceItemIdentifier*    | The Flexible Space item.                             |
-        +-------------------------------------------+------------------------------------------------------+
-        | *NSToolbarShowColorsItemIdentifier*       | The Colors item. Shows the color panel.              |
-        +-------------------------------------------+------------------------------------------------------+
-        | *NSToolbarShowFontsItemIdentifier*        | The Fonts item. Shows the font panel.                |
-        +-------------------------------------------+------------------------------------------------------+
-        | *NSToolbarCustomizeToolbarItemIdentifier* | The Customize item. Shows the customization palette. |
-        +-------------------------------------------+------------------------------------------------------+
-        | *NSToolbarPrintItemIdentifier*            | The Print item. Refer to Apple's `NSToolbarItem`_    |
-        |                                           | documentation for more information.                  |
-        +-------------------------------------------+------------------------------------------------------+
-
-        .. _NSToolbarItem: https://developer.apple.com/documentation/appkit/nstoolbaritem?language=objc
-
-        **displayMode** A string representing the desired display mode for the toolbar.
-
-        +-------------+
-        | "default"   |
-        +-------------+
-        | "iconLabel" |
-        +-------------+
-        | "icon"      |
-        +-------------+
-        | "label"     |
-        +-------------+
-
-        **sizeStyle** A string representing the desired size for the toolbar
-
-        +-----------+
-        | "default" |
-        +-----------+
-        | "regular" |
-        +-----------+
-        | "small"   |
-        +-----------+
-
-        Returns a dictionary containing the created toolbar items, mapped by itemIdentifier.
-
-
-.. method:: FloatingWindow.removeToolbarItem(itemIdentifier)
-
-    Remove a toolbar item by his identifier.
-
-    **itemIdentifier** A unique string identifier for the removed item.
+    Returns a dictionary containing the created toolbar items, mapped by itemIdentifier.

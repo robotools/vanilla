@@ -35,8 +35,7 @@ class EditText(VanillaBaseControl):
 
         EditTextDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
-    representing the position and size of the text entry control.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the text entry control.
 
     +-------------------------+
     | **Standard Dimensions** |
@@ -48,27 +47,22 @@ class EditText(VanillaBaseControl):
     | Mini    | H | 16        |
     +---------+---+-----------+
 
-    **text** An object representing the contents of the text entry control.
-    If no formatter has been assigned to the control, this should be a string.
-    If a formatter has been assigned, this should be an object of the type
-    that the formatter expects.
+    **text** An object representing the contents of the text entry control. If no formatter has been assigned to the control,
+    this should be a string. If a formatter has been assigned, this should be an object of the type that the formatter expects.
 
     **callback** The method to be called when the user enters text.
 
-    **continuous** If *True*, the callback (if any) will be called upon each
-    keystroke, if *False*, only call the callback when editing finishes.
-    Default is *True*.
+    **continuous** If True, the callback (if any) will be called upon each keystroke, if False, only call the callback when
+    editing finishes. Default is True.
 
     **readOnly** Boolean representing if the text can be edited or not.
 
-    **formatter** A `NSFormatter`_ for controlling the display and input of
-    the text entry.
+    **formatter** An `NSFormatter <http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html>`_
+    for controlling the display and input of the text entry.
 
-    **placeholder** A placeholder string to be shown when the text entry
-    control is empty.
+    **placeholder** A placeholder string to be shown when the text entry control is empty.
 
-    **sizeStyle** A string representing the desired size style of the text
-    entry control. The options are:
+    **sizeStyle** A string representing the desired size style of the text entry control. The options are:
 
     +-----------+
     | "regular" |
@@ -77,9 +71,6 @@ class EditText(VanillaBaseControl):
     +-----------+
     | "mini"    |
     +-----------+
-
-    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
-
     """
 
     nsTextFieldClass = NSTextField
@@ -134,8 +125,8 @@ class EditText(VanillaBaseControl):
 
         **value** An object representing the contents of the text entry control.
         If no formatter has been assigned to the control, this should be a string.
-        If a formatter has been assigned, this should be an object of the type
-        that the formatter expects.
+        If a formatter has been assigned, this should be an object of the type that
+        the formatter expects.
         """
         self._nsObject.setObjectValue_(value)
 
@@ -147,8 +138,8 @@ class EditText(VanillaBaseControl):
 
     def setPlaceholder(self, value):
         """
-        Set *value* as the placeholder string to be displayed in the control.
-        *value* must be a string.
+        Set **value** as the placeholder string to be displayed in the control.
+        **value** must be a string.
         """
         self._nsObject.cell().setPlaceholderString_(value)
 
@@ -179,8 +170,7 @@ class SecureEditText(EditText):
 
         SecureEditTextDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
-    representing the position and size of the text entry control.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the text entry control.
 
     +-------------------------+
     | **Standard Dimensions** |
@@ -192,27 +182,22 @@ class SecureEditText(EditText):
     | Mini    | H | 16        |
     +---------+---+-----------+
 
-    **text** An object representing the contents of the text entry control.
-    If no formatter has been assigned to the control, this should be a string.
-    If a formatter has been assigned, this should be an object of the type
-    that the formatter expects.
+    **text** An object representing the contents of the text entry control. If no formatter has been assigned to the control,
+    this should be a string. If a formatter has been assigned, this should be an object of the type that the formatter expects.
 
     **callback** The method to be called when the user enters text.
 
-    **continuous** If *True*, the callback (if any) will be called upon each
-    keystroke, if *False*, only call the callback when editing finishes.
-    Default is *True*.
+    **continuous** If True, the callback (if any) will be called upon each keystroke, if False, only call the callback when
+    editing finishes. Default is True.
 
     **readOnly** Boolean representing if the text can be edited or not.
 
-    **formatter** A `NSFormatter`_ for controlling the display and input
-    of the text entry.
+    **formatter** An `NSFormatter <http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html>`_
+    for controlling the display and input of the text entry.
 
-    **placeholder** A placeholder string to be shown when the text  entry
-    control is empty.
+    **placeholder** A placeholder string to be shown when the text entry control is empty.
 
-    **sizeStyle** A string representing the desired size style of the text
-    entry control. The options are:
+    **sizeStyle** A string representing the desired size style of the text entry control. The options are:
 
     +-----------+
     | "regular" |
@@ -221,9 +206,6 @@ class SecureEditText(EditText):
     +-----------+
     | "mini"    |
     +-----------+
-
-    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
-
     """
 
     nsTextFieldClass = NSSecureTextField

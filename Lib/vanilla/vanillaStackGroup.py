@@ -11,25 +11,23 @@ NSStackViewGravityBottom = 3
 NSStackViewGravityTrailing = 3
 
 
-_doc = """
-**posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
-the position and size of the group.
-
-**spacing** Space to insert between views in points.
-
-**alignment** The alignment of the views. Options:
-
-* "leading"
-* "center"
-* "trailing"
-* One of the *NSLayoutAttribute* options.
-
-**edgeInsets** Tuple of four numbers indicating the amount to inset the views.
-"""
-
 class _StackGroup(VanillaBaseObject):
 
-    __doc__ = _doc
+    """
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the
+    position and size of the group.
+
+    **spacing** Space to insert between views in points.
+
+    **alignment** The alignment of the views. Options:
+
+    * "leading"
+    * "center"
+    * "trailing"
+    * One of the NSLayoutAttribute options.
+
+    **edgeInsets** Tuple of four numbers indicating the amount to inset the views.
+    """
 
     nsStackViewClass = NSStackView
     _orientation = None
@@ -52,7 +50,7 @@ class _StackGroup(VanillaBaseObject):
         """
         Add a view.
 
-        **view** A vanilla object or an instance of *NSView*.
+        **view** A vanilla object or an instance of NSView.
 
         **width** and **height** are None, numbers or strings:
 
@@ -61,7 +59,7 @@ class _StackGroup(VanillaBaseObject):
         * "<=value" where value can be coerced to an integer or float
         * ">=value" where value can be coerced to an integer or float
 
-        Up to two are allowed. Separate with ``,`` (comma).
+        Up to two are allowed. Separate with *,*.
 
         **gravity** The gravity that this view should be attracted to.
 
@@ -70,14 +68,14 @@ class _StackGroup(VanillaBaseObject):
         * "leading"
         * "center"
         * "trailing"
-        * One of the *NSStackViewGravity* options.
+        * One of the NSStackViewGravity options.
 
         VerticalStackGroup Options:
 
         * "top"
         * "center"
         * "bottom"
-        * One of the *NSStackViewGravity* options.
+        * One of the NSStackViewGravity options.
         """
 
         index = len(self._getContentView().views())
@@ -87,7 +85,7 @@ class _StackGroup(VanillaBaseObject):
         """
         Insert a view.
 
-        See :meth:`addView` documentation.
+        See addView documentation.
         """
         gravity = self._gravities.get(gravity, gravity)
         if isinstance(view, VanillaBaseObject):
@@ -102,7 +100,7 @@ class _StackGroup(VanillaBaseObject):
         """
         Remove a view.
 
-        **view** A vanilla object or an instance of *NSView*.
+        **view** A vanilla object or an instance of NSView.
         """
         if isinstance(view, VanillaBaseObject):
             view = view._getContentView()
@@ -110,8 +108,6 @@ class _StackGroup(VanillaBaseObject):
 
 
 class HorizontalStackGroup(_StackGroup):
-
-    __doc__ = _doc
 
     _orientation = NSUserInterfaceLayoutOrientationHorizontal
     _gravities = dict(
@@ -126,8 +122,6 @@ class HorizontalStackGroup(_StackGroup):
     )
 
 class VerticalStackGroup(_StackGroup):
-
-    __doc__ = _doc
 
     _orientation = NSUserInterfaceLayoutOrientationVertical
     _gravities = dict(

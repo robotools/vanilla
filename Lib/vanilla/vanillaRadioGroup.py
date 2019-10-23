@@ -214,7 +214,7 @@ class RadioButton(Button):
 class RadioGroup(VanillaBaseControl):
 
     """
-    .. note:: This should be used only for frame layout.
+    This should be used only for frame layout.
 
     A collection of radio buttons.::
 

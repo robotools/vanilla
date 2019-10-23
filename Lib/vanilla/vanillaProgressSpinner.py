@@ -20,9 +20,9 @@ class ProgressSpinner(VanillaBaseObject):
 
         ProgressSpinnerDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
-    representing the position and size of the spinner. The size of the spinner
-    should match the appropriate value for the given *sizeStyle*.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the
+    position and size of the spinner. The size of the spinner sould match the
+    appropriate value for the given *sizeStyle*.
 
     +---------------------------+
     | **Standard Dimensions**   |
@@ -32,7 +32,7 @@ class ProgressSpinner(VanillaBaseObject):
     | Small   | W | 16 | H | 16 |
     +---------+---+----+---+----+
 
-    **displayWhenStopped** Boolean representing if the spinner should be
+    **displayWhenStopped** Boolean representing if the spiiner should be
     displayed when it is not spinning.
 
     **sizeStyle** A string representing the desired size style of the spinner.

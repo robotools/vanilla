@@ -49,34 +49,32 @@ class Window(NSObject):
     No special naming is required for the attributes. However, each attribute
     must have a unique name.
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the
-    position and size of the window. It may also be a tuple of form  *(width, height)*.
-    In this case, the window will be positioned on screen automatically.
+    **posSize** Tuple of form *(left, top, width, height)* representing the position and
+    size of the window. It may also be a tuple of form *(width, height)*. In this case,
+    the window will be positioned on screen automatically.
 
     **title** The title to be set in the title bar of the window.
 
-    **minSize** Tuple of the form *(width, height)* representing the minimum size
-    that the window can be resized to.
+    **minSize** Tuple of the form *(width, height)* representing the minimum size that
+    the window can be resized to.
 
-    **maxSize** Tuple of the form *(width, height)* representing the maximum size
-    that the window can be resized to.
+    **maxSize** Tuple of the form *(width, height)* representing the maximum size that
+    the window can be resized to.
 
     **textured** Boolean value representing if the window should have a textured
     appearance or not.
 
-    **autosaveName** A string representing a unique name for the window.
-    If given, this name will be used to store the window position and size in
-    the application preferences.
+    **autosaveName** A string representing a unique name for the window. If given,
+    this name will be used to store the window position and size in the application preferences.
 
-    **closable** Boolean value representing if the window should have a
-    close button in the title bar.
+    **closable** Boolean value representing if the window should have a close button in the
+    title bar.
 
-    **miniaturizable** Boolean value representing if the window should have a
-    minimize button in the title bar.
+    **miniaturizable** Boolean value representing if the window should have a minimize button
+    in the title bar.
 
-    **initiallyVisible** Boolean value representing if the window will be
-    initially visible. Default is *True*. If *False*, you can show the window later
-    by calling `window.show()`.
+    **initiallyVisible** Boolean value representing if the window will be initially visible.
+    Default is *True*. If *False*, you can show the window later by calling `window.show()`.
 
     **fullScreenMode** An indication of the full screen mode. These are the options:
 
@@ -93,11 +91,8 @@ class Window(NSObject):
     **fullSizeContentView** Boolean value indicating if the content view should be the
     full size of the window, including the area underneath the titlebar and toolbar.
 
-    **screen** A `NSScreen`_ object indicating the screen that the window should be
-    drawn to. When None the window will be drawn to the main screen.
-
-    .. _NSScreen: http://developer.apple.com/documentation/appkit/nsscreen?language=objc
-
+    **screen** A `NSScreen <http://tinyurl.com/NSScreen>`_ object indicating the screen that
+    the window should be drawn to. When None the window will be drawn to the main screen.
     """
 
     def __new__(cls, *args, **kwargs):
@@ -366,34 +361,34 @@ class Window(NSObject):
         **rules** must by a list of rule definitions.
         Rule definitions may take two forms:
 
-        * strings that follow the `Visual Format Language`_
+        * strings that follow the `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
         * dictionaries with the following key/value pairs:
 
-        +---------------------------+-------------------------------------------------------------+
-        | key                       | value                                                       |
-        +===========================+=============================================================+
-        | *"view1"*                 | The vanilla wrapped view for the left side of the rule.     |
-        +---------------------------+-------------------------------------------------------------+
-        | *"attribute1"*            | The attribute of the view for the left side of the rule.    |
-        |                           | See below for options.                                      |
-        +---------------------------+-------------------------------------------------------------+
-        | *"relation"* (optional)   | The relationship between the left side of the rule          |
-        |                           | and the right side of the rule. See below for options.      |
-        |                           | The default value is `"=="`.                                |
-        +---------------------------+-------------------------------------------------------------+
-        | *"view2"*                 | The vanilla wrapped view for the right side of the rule.    |
-        +---------------------------+-------------------------------------------------------------+
-        | *"attribute2"*            | The attribute of the view for the right side of the rule.   |
-        |                           | See below for options.                                      |
-        +---------------------------+-------------------------------------------------------------+
-        | *"multiplier"* (optional) | The constant multiplied with the attribute on the right     |
-        |                           | side of the rule as part of getting the modified attribute. |
-        |                           | The default value is `1`.                                   |
-        +---------------------------+-------------------------------------------------------------+
-        | *"constant"* (optional)   | The constant added to the multiplied attribute value on     |
-        |                           | the right side of the rule to yield the final modified      |
-        |                           | attribute. The default value is `0`.                        |
-        +---------------------------+-------------------------------------------------------------+
+        +---------------------------+-------------------------------------------------------------------------+
+        | key                       | value                                                                   |
+        +===========================+=========================================================================+
+        | *"view1"*                 | The vanilla wrapped view for the left side of the rule.                 |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute1"*            | The attribute of the view for the left side of the rule.                |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"relation"* (optional)   | The relationship between the left side of the rule                      |
+        |                           | and the right side of the rule. See below for options.                  |
+        |                           | The default value is `"=="`.                                            |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"view2"*                 | The vanilla wrapped view for the right side of the rule.                |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"attribute2"*            | The attribute of the view for the right side of the rule.               |
+        |                           | See below for options.                                                  |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of         |
+        |                           | the rule as part of getting the modified attribute.               |
+        |                           | The default value is `1`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
+        | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right       |
+        |                           | side of the rule to yield the final modified attribute.           |
+        |                           | The default value is `0`.                                               |
+        +---------------------------+-------------------------------------------------------------------------+
 
         The `attribute1` and `attribute2` options are:
 
@@ -427,8 +422,8 @@ class Window(NSObject):
         | *"firstBaseline"* | NSLayoutAttributeFirstBaseline |
         +-------------------+--------------------------------+
 
-        Refer to the `NSLayoutAttribute documentation`_ for the information
-        about what each of these do.
+        Refer to the `NSLayoutAttribute documentation <https://developer.apple.com/documentation/uikit/nslayoutattribute>`_
+        for the information about what each of these do.
 
         The `relation` options are:
 
@@ -440,19 +435,14 @@ class Window(NSObject):
         | *"=="* | NSLayoutRelationEqual              |
         +--------+------------------------------------+
         | *">="* | NSLayoutRelationGreaterThanOrEqual |
-        +--------+------------------------------------+
+        +--------+------------------------------------+        
 
-        Refer to the `NSLayoutRelation documentation`_ for the information
-        about what each of these do.
+        Refer to the `NSLayoutRelation documentation <https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc>`_
+        for the information about what each of these do.
 
         **metrics** may be either **None** or a dict containing
         key value pairs representing metrics keywords used in the
         rules defined with strings.
-
-        .. _Visual Format Language: http://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
-        .. _NSLayoutAttribute documentation: http://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
-        .. _NSLayoutRelation documentation: https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc
-
         """
         _addAutoLayoutRules(self, rules, metrics)
 
@@ -518,13 +508,12 @@ class Window(NSObject):
         | *"resigned key"*  | Called immediately after the window has lost its key window status.  |
         +-------------------+----------------------------------------------------------------------+
 
-        *For more information about main and key windows, refer to the Cocoa `documentation`_
+        *For more information about main and key windows, refer to the Cocoa
+        `documentation <http://developer.apple.com/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyWindow.html>`_
         on the subject.*
 
-        .. _documentation: http://developer.apple.com/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyWindow.html
-
-        **callback** The callback that will be called when the event occurs.
-        It should accept a *sender* argument which will be the Window that called the callback.::
+        **callback** The callback that will be called when the event occurs. It should accept a *sender* argument which will
+        be the Window that called the callback.::
 
             from vanilla import Window
 
@@ -657,10 +646,10 @@ class Window(NSObject):
         +-------------------------------+---------------------------------------------------------------------------+
         | *imagePath* (optional)        | A file path to an image. Defaults to *None*.                              |
         +-------------------------------+---------------------------------------------------------------------------+
-        | *imageNamed* (optional)       | The name of an image already loaded as a `NSImage`_ by the application.   |
+        | *imageNamed* (optional)       | The name of an image already loaded as a *NSImage* by the application.    |
         |                               | Defaults to *None*.                                                       |
         +-------------------------------+---------------------------------------------------------------------------+
-        | *imageObject* (optional)      | A `NSImage`_ object. Defaults to *None*.                                  |
+        | *imageObject* (optional)      | A _NSImage_ object. Defaults to *None*.                                   |
         +-------------------------------+---------------------------------------------------------------------------+
         | *imageTemplate* (optional)    | A boolean representing if the image should converted to a template image. |
         +-------------------------------+---------------------------------------------------------------------------+
@@ -672,10 +661,8 @@ class Window(NSObject):
         +-------------------------------+---------------------------------------------------------------------------+
         | *visibleByDefault* (optional) | If the item should be visible by default pass True to this argument.      |
         |                               | If the item should be added to the toolbar only through the customization |
-        |                               | palette, use a value of _False_. Defaults to _True_.                      |
+        |                               | palette, use a value of _False_. Defaults to _True_. |                    |
         +-------------------------------+---------------------------------------------------------------------------+
-
-        .. _NSImage: http://developer.apple.com/documentation/appkit/nsimage?language=objc
 
         **addStandardItems** A boolean, specifying whether the standard Cocoa toolbar items
         should be added. Defaults to *True*. If you set it to *False*, you must specify any
@@ -930,10 +917,8 @@ class FloatingWindow(Window):
     **closable** Boolean value representing if the window should have a close button
     in the title bar.
 
-    **screen** A `NSScreen`_ object indicating the screen that the window
-    should be drawn to. When None the window will be drawn to the main screen.
-
-    .. _NSScreen: http://developer.apple.com/documentation/appkit/nsscreen?language=objc
+    **screen** A `NSScreen <http://tinyurl.com/NSScreen>`_ object indicating the screen that
+    the window should be drawn to. When None the window will be drawn to the main screen.
     """
 
     nsWindowStyleMask = NSTitledWindowMask | NSUtilityWindowMask
@@ -992,17 +977,15 @@ class HUDFloatingWindow(FloatingWindow):
     **textured** Boolean value representing if the window should have a textured
     appearance or not.
 
-    **autosaveName** A string representing a unique name for the window.
-    If given, this name will be used to store the window position and size in
-    the application preferences.
+    **autosaveName** A string representing a unique name for the window. If given,
+    this name will be used to store the window position and size in the application
+    preferences.
 
     **closable** Boolean value representing if the window should have a close button
     in the title bar.
 
-    **screen** A `NSScreen`_ object indicating the screen that the window
-    should be drawn to. When None the window will be drawn to the main screen.
-
-    .. _NSScreen: http://developer.apple.com/documentation/appkit/nsscreen?language=objc
+    **screen** A `NSScreen <http://tinyurl.com/NSScreen>`_ object indicating the screen that
+    the window should be drawn to. When None the window will be drawn to the main screen.
     """
 
     nsWindowStyleMask = NSHUDWindowMask | NSUtilityWindowMask | NSTitledWindowMask | NSBorderlessWindowMask
@@ -1034,11 +1017,11 @@ class Sheet(Window):
 
     **parentWindow** The window that the sheet should be attached to.
 
-    **minSize** Tuple of the form *(width, height)* representing the minimum size
-    that the sheet can be resized to.
+    **minSize** Tuple of the form *(width, height)* representing the minimum size that
+    the sheet can be resized to.
 
-    **maxSize** Tuple of the form *(width, height)* representing the maximum size
-    that the sheet can be resized to.
+    **maxSize** Tuple of the form *(width, height)* representing the maximum size that
+    the sheet can be resized to.
 
     **autosaveName** A string representing a unique name for the sheet. If given,
     this name will be used to store the sheet size in the application preferences.

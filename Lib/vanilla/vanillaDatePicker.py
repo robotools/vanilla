@@ -25,8 +25,7 @@ _dateDisplayFlagMap = {
 class DatePicker(VanillaBaseControl):
 
     """
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
-    representing the position and size of the date picker control.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the date picker control.
 
     +-------------------------------------+
     | **Standard Dimensions - Text Mode** |
@@ -48,20 +47,15 @@ class DatePicker(VanillaBaseControl):
     | Clock              | 122w 123h           |
     +--------------------+---------------------+
 
-    **date** A *NSDate* object representing the date and time that should be
-    set in the control.
+    **date** A *NSDate* object representing the date and time that should be set in the control.
 
-    **minDate** A *NSDate* object representing the lowest date and time that
-    can be set in the control.
+    **minDate** A *NSDate* object representing the lowest date and time that can be set in the control.
 
-    **maxDate** A *NSDate* object representing the highest date and time that
-    can be set in the control.
+    **maxDate** A *NSDate* object representing the highest date and time that can be set in the control.
 
-    **showStepper** A boolean indicating if the thumb stepper should be shown
-    in text mode.
+    **showStepper** A boolean indicating if the thumb stepper should be shown in text mode.
 
-    **mode** A string representing the desired mode for the date picker control.
-    The options are:
+    **mode** A string representing the desired mode for the date picker control. The options are:
 
     +-------------+
     | "text"      |
@@ -69,8 +63,8 @@ class DatePicker(VanillaBaseControl):
     | "graphical" |
     +-------------+
 
-    **timeDisplay** A string representing the desired time units that should be
-    displayed in the date picker control. The options are:
+    **timeDisplay** A string representing the desired time units that should be displayed in the
+    date picker control. The options are:
 
     +--------------------+-------------------------------+
     | None               | Do not display time.          |
@@ -80,8 +74,8 @@ class DatePicker(VanillaBaseControl):
     | "hourMinuteSecond" | Display hour, minute, second. |
     +--------------------+-------------------------------+
 
-    **dateDisplay** A string representing the desired date units that should be
-    displayed in the date picker control. The options are:
+    **dateDisplay** A string representing the desired date units that should be displayed in the
+    date picker control. The options are:
 
     +----------------+------------------------------+
     | None           | Do not display date.         |
@@ -91,8 +85,8 @@ class DatePicker(VanillaBaseControl):
     | "yearMonthDay" | Display year, month and day. |
     +----------------+------------------------------+
 
-    **sizeStyle** A string representing the desired size style of the
-    date picker control. This only applies in text mode. The options are:
+    **sizeStyle** A string representing the desired size style of the date picker control. This only
+    applies in text mode. The options are:
 
     +-----------+
     | "regular" |

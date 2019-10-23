@@ -83,7 +83,6 @@ Inputs
   objects/ColorWell
   objects/ComboBox
   objects/PopUpButton
-  objects/ActionButton
   objects/RadioGroup
   objects/Slider
 

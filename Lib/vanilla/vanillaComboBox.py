@@ -32,8 +32,7 @@ class VanillaComboBoxDelegate(NSObject):
 class ComboBox(VanillaBaseControl):
 
     """
-    A text entry control that allows direct text entry or selection for a list
-    of options.::
+    A text entry control that allows direct text entry or selection for a list of options.::
 
         from vanilla import *
 
@@ -51,38 +50,32 @@ class ComboBox(VanillaBaseControl):
 
         ComboBoxDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
-    representing the position and size of the combo box control. The size of
-    the combo box sould match the appropriate value for the given *sizeStyle*.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the
+    combo box control. The size of the combo box sould match the appropriate value for the given *sizeStyle*.
 
-    +---------------------------+
-    | **Standard Dimensions**   |
-    +-----------+---+-----------+
-    | *Regular* | H | 21        |
-    +-----------+---+-----------+
-    | *Small*   | H | 17        |
-    +-----------+---+-----------+
-    | *Mini*    | H | 14        |
-    +-----------+---+-----------+
+    +-------------------------+
+    | **Standard Dimensions** |
+    +---------+---+-----------+
+    | Regular | H | 21        |
+    +---------+---+-----------+
+    | Small   | H | 17        |
+    +---------+---+-----------+
+    | Mini    | H | 14        |
+    +---------+---+-----------+
 
     **items** The items to be displayed in the combo box.
 
-    **completes** Boolean representing if the combo box auto completes
-    entered text.
+    **completes** Boolean representing if the combo box auto completes entered text.
 
-    **continuous** If *True*, the callback (if any) will be called upon each
-    keystroke, if *False*, only call the callback when editing finishes or
-    after item selection. Default is *False*.
+    **continuous** If True, the callback (if any) will be called upon each keystroke, if False, only call the callback when
+    editing finishes or after item selection. Default is False.
 
     **callback** The method to be called when the user enters text.
 
-    **formatter** A `NSFormatter`_ for controlling the display and input of
-    the text entry.
+    **formatter** An `NSFormatter <http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html>`_
+    for controlling the display and input of the combo box.
 
-    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
-
-    **sizeStyle** A string representing the desired size style of the combo box.
-    The options are:
+    **sizeStyle** A string representing the desired size style of the combo box. The options are:
 
     +-----------+
     | "regular" |

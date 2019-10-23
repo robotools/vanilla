@@ -57,8 +57,8 @@ class Popover(VanillaBaseObject):
     **size** Tuple of form *(width, height)* representing the size of the content
     in the popover.
 
-    **parentView** The parent view that the popover should pop out from. This
-    can be either a vanilla object or an instance of `NSView` or `NSView` subclass.
+    **size** The parent view that the popover should pop out from. This can be either
+    a vanilla object or an instance of NSView or NSView subclass.
 
     **preferredEdge** The edge of the parent view that you want the popover
     to pop out from. These are the options:
@@ -150,12 +150,11 @@ class Popover(VanillaBaseObject):
 
     def open(self, parentView=None, preferredEdge=None, relativeRect=None):
         """
-        Open the popover. If desired, the *parentView* may be specified.
-        If not, the values assigned during init will be used.
-
-        Additionally, a rect of form `(x, y, width, height)` may be
-        specified to indicate where the popover should pop out from.
-        If not provided, the parent view's bounds will be used.
+        Open the popover. If desired, the **parentView** may be specified.
+        If not, the values assigned during init will be used. Additionally,
+        a rect of form (x, y, width, height) may be specified to indicate
+        where the popover should pop out from. If not provided, the parent
+        view's bounds will be used.
         """
         if isinstance(parentView, VanillaBaseObject):
             parentView = parentView._getContentView()
@@ -182,7 +181,7 @@ class Popover(VanillaBaseObject):
 
     def resize(self, width, height):
         """
-        Change the size of the popover to *width* and *height*.
+        Change the size of the popover to **width** and **height**.
         """
         self._popover.setContentSize_((width, height))
 
@@ -211,7 +210,7 @@ class Popover(VanillaBaseObject):
         Unbind a callback from an event.
 
         **event** A string representing the desired event.
-        Refer to :meth:`Popover.bind` for the options.
+        Refer to *bind* for the options.
 
         **callback** The callback that has been bound to the event.
         """
@@ -228,9 +227,10 @@ class Popover(VanillaBaseObject):
         """
         Add auto layout rules for controls/view in this view.
 
-        **rules** must by a list of rule definitions. Rule definitions may take two forms:
+        **rules** must by a list of rule definitions.
+        Rule definitions may take two forms:
 
-        * strings that follow the `Visual Format Language`_
+        * strings that follow the `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
         * dictionaries with the following key/value pairs:
 
         +---------------------------+-------------------------------------------------------------------------+
@@ -291,7 +291,8 @@ class Popover(VanillaBaseObject):
         | *"firstBaseline"* | NSLayoutAttributeFirstBaseline |
         +-------------------+--------------------------------+
 
-        Refer to the `NSLayoutAttribute documentation`_ for the information about what each of these do.
+        Refer to the `NSLayoutAttribute documentation <https://developer.apple.com/documentation/uikit/nslayoutattribute>`_
+        for the information about what each of these do.
 
         The `relation` options are:
 
@@ -305,14 +306,11 @@ class Popover(VanillaBaseObject):
         | *">="* | NSLayoutRelationGreaterThanOrEqual |
         +--------+------------------------------------+
 
-        Refer to the `NSLayoutRelation documentation`_ for the information about what each of these do.
+        Refer to the `NSLayoutRelation documentation <https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc>`_
+        for the information about what each of these do.
 
-        **metrics** may be either *None* or a dict containing key value pairs
-        representing metrics keywords used in the rules defined with strings.
-
-        .. _Visual Format Language: http://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
-        .. _NSLayoutAttribute documentation: http://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
-        .. _NSLayoutRelation documentation: https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc
-
+        **metrics** may be either **None** or a dict containing
+        key value pairs representing metrics keywords used in the
+        rules defined with strings.
         """
         _addAutoLayoutRules(self, rules, metrics)
