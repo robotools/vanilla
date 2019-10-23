@@ -27,28 +27,29 @@ class ProgressBar(VanillaBaseObject):
 
         ProgressBarDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
-    the position and size of the progress bar. The height of the progress
-    bar sould match the appropriate value for the given *sizeStyle*.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
+    representing the position and size of the progress bar. The height of the
+    progress bar should match the appropriate value for the given *sizeStyle*.
 
-    +-------------------------+
-    | **Standard Dimensions** |
-    +---------+---+-----------+
-    | Regular | H | 16        |
-    +---------+---+-----------+
-    | Small   | H | 10        |
-    +---------+---+-----------+
+    +---------------------------+
+    | **Standard Dimensions**   |
+    +-----------+---+-----------+
+    | *Regular* | H | 16        |
+    +-----------+---+-----------+
+    | *Small*   | H | 10        |
+    +-----------+---+-----------+
 
     **minValue** The minimum value of the progress bar.
 
     **maxValue** The maximum value of the progress bar.
 
-    **isIndeterminate** Boolean representing if the progress bar is indeterminate.
-    Determinate progress bars show how much of the task has been completed.
-    Indeterminate progress bars simply show that the application is busy.
+    **isIndeterminate** Boolean representing if the progress bar is
+    indeterminate. Determinate progress bars show how much of the task
+    has been completed. Indeterminate progress bars simply show that
+    the application is busy.
 
-    **sizeStyle** A string representing the desired size style of the pregress bar.
-    The options are:
+    **sizeStyle** A string representing the desired size style of the
+    pregress bar. The options are:
 
     +-----------+
     | "regular" |

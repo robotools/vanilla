@@ -24,25 +24,27 @@ class PopUpButton(VanillaBaseControl):
 
         PopUpButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and
-    size of the pop up button. The size of the button sould match the appropriate value
-    for the given *sizeStyle*.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
+    the position and size of the pop up button. The size of the button should match
+    the appropriate value for the given *sizeStyle*.
 
-    +-------------------------+
-    | **Standard Dimensions** |
-    +---------+---+-----------+
-    | Regular | H | 20        |
-    +---------+---+-----------+
-    | Small   | H | 17        |
-    +---------+---+-----------+
-    | Mini    | H | 15        |
-    +---------+---+-----------+
+    +---------------------------+
+    | **Standard Dimensions**   |
+    +-----------+---+-----------+
+    | *Regular* | H | 20        |
+    +-----------+---+-----------+
+    | *Small*   | H | 17        |
+    +-----------+---+-----------+
+    | *Mini*    | H | 15        |
+    +-----------+---+-----------+
 
     **items** A list of items to appear in the pop up list.
 
-    **callback** The method to be called when the user selects an item in the pop up list.
+    **callback** The method to be called when the user selects an item in the
+    pop up list.
 
-    **sizeStyle** A string representing the desired size style of the pop up button. The options are:
+    **sizeStyle** A string representing the desired size style of the pop up button.
+    The options are:
 
     +-----------+
     | "regular" |
@@ -123,7 +125,7 @@ class PopUpButton(VanillaBaseControl):
 class ActionButton(PopUpButton):
 
     """
-    An Action Button with a menu.
+    An action button with a menu.::
 
         from vanilla import *
 
@@ -131,18 +133,14 @@ class ActionButton(PopUpButton):
 
             def __init__(self):
                 self.w = Window((100, 40))
-
                 items = [
                         dict(title="first", callback=self.firstCallback),
                         dict(title="second", callback=self.secondCallback),
                         dict(title="third", items=[
                                 dict(title="sub first", callback=self.subFirstCallback)
                             ])
-                    ]
-
-                self.w.actionPopUpButton = ActionButton((10, 10, 30, 20),
-                                      items,
-                                      )
+                        ]
+                self.w.actionPopUpButton = ActionButton((10, 10, 30, 20), items)
                 self.w.open()
 
             def firstCallback(self, sender):
@@ -156,32 +154,35 @@ class ActionButton(PopUpButton):
 
         ActionPopUpButtonDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and
-    size of the pop up button. The size of the button sould match the appropriate value
-    for the given *sizeStyle*.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
+    the position and size of the pop up button. The size of the button should match
+    the appropriate value for the given *sizeStyle*.
 
-    +-------------------------+
-    | **Standard Dimensions** |
-    +---------+---+-----------+
-    | Regular | H | 20        |
-    +---------+---+-----------+
-    | Small   | H | 17        |
-    +---------+---+-----------+
-    | Mini    | H | 15        |
-    +---------+---+-----------+
+    +---------------------------+
+    | **Standard Dimensions**   |
+    +-----------+---+-----------+
+    | *Regular* | H | 20        |
+    +-----------+---+-----------+
+    | *Small*   | H | 17        |
+    +-----------+---+-----------+
+    | *Mini*    | H | 15        |
+    +-----------+---+-----------+
 
-    **items** A list of items to appear in the pop up list as dictionaries. Optionally an item could be a NSMenuItem.
-    when an item is set to "----" will be a menu item separator.
+    **items** A list of items to appear in the pop up list as dictionaries.
+    Optionally an item could be a *NSMenuItem*.
+    When an item is set to ``----``, it will be a menu item separator.
 
-    +------------+--------------------------------------------------------------------------------+
-    | "title"*   | The title of the item.                                                         |
-    +------------+--------------------------------------------------------------------------------+
-    | "callback" | The callback fo the item.                                                      |
-    +------------+--------------------------------------------------------------------------------+
-    | "items"    | Each item could have sub menu's, as list of dictionaries with the same format. |
-    +------------+--------------------------------------------------------------------------------+
+    +------------+----------------------------------------------+
+    | "title"    | The title of the item.                       |
+    +------------+----------------------------------------------+
+    | "callback" | The callback of the item.                    |
+    +------------+----------------------------------------------+
+    | "items"    | Each item could have sub menus, as list of   |
+    |            | dictionaries with the same format.           |
+    +------------+----------------------------------------------+
 
-    **sizeStyle** A string representing the desired size style of the pop up button. The options are:
+    **sizeStyle** A string representing the desired size style of the pop up button.
+    The options are:
 
     +-----------+
     | "regular" |

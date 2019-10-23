@@ -8,14 +8,13 @@ class ScrollView(VanillaBaseObject):
     A view with scrollers for containing another view.::
 
         from AppKit import NSView, NSColor, NSRectFill
-        from vanilla import *
+        from vanilla import Window, ScrollView
 
         class DemoView(NSView):
 
             def drawRect_(self, rect):
                 NSColor.redColor().set()
                 NSRectFill(self.bounds())
-
 
         class ScrollViewDemo(object):
 
@@ -29,22 +28,18 @@ class ScrollView(VanillaBaseObject):
 
         ScrollViewDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the
-    position and size of the scroll view.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
+    the position and size of the scroll view.
 
     **nsView** A *NSView* object.
 
-    **hasHorizontalScroller** Boolean representing if the scroll view has
-    horizontal scrollers.
+    **hasHorizontalScroller** Boolean representing if the scroll view has horizontal scrollers.
 
-    **hasVerticalScroller** Boolean representing if the scroll view has
-    vertical scrollers.
+    **hasVerticalScroller** Boolean representing if the scroll view has vertical scrollers.
 
-    **autohidesScrollers** Boolean representing if the scroll view auto-hides
-    its scrollers.
+    **autohidesScrollers** Boolean representing if the scroll view auto-hides its scrollers.
 
-    **backgroundColor** A *NSColor* object representing the background
-    color of the scroll view.
+    **backgroundColor** A *NSColor* object representing the background color of the scroll view.
 
     **drawsBackground** Boolean representing if the background should be drawn.
     """

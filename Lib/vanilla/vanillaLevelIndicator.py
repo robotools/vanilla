@@ -47,33 +47,21 @@ class LevelIndicator(VanillaBaseControl):
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position
     and size of the level indicator.
 
-    +-------------------------------+
-    | **Standard Dimensions()**     |
-    +-------------------------------+
-    | *discrete without ticks*      |
-    +-------------------------------+
-    | H | 18                        |
-    +-------------------------------+
-    | *discrete with minor ticks*   |
-    +-------------------------------+
-    | H | 22                        |
-    +-------------------------------+
-    | *discrete with major ticks*   |
-    +-------------------------------+
-    | H | 25                        |
-    +-------------------------------+
-    | *continuous without ticks*    |
-    +-------------------------------+
-    | H | 16                        |
-    +-------------------------------+
-    | *continuous with minor ticks* |
-    +-------------------------------+
-    | H | 20                        |
-    +-------------------------------+
-    | *continuous with major ticks* |
-    +-------------------------------+
-    | H | 23                        |
-    +-------------------------------+
+    +----------------------------------------+
+    | **Standard Dimensions**                |
+    +===============================+===+====+
+    | *discrete without ticks*      | H | 18 |
+    +-------------------------------+---+----+
+    | *discrete with minor ticks*   | H | 22 |
+    +-------------------------------+---+----+
+    | *discrete with major ticks*   | H | 25 |
+    +-------------------------------+---+----+
+    | *continuous without ticks*    | H | 16 |
+    +-------------------------------+---+----+
+    | *continuous with minor ticks* | H | 20 |
+    +-------------------------------+---+----+
+    | *continuous with major ticks* | H | 23 |
+    +-------------------------------+---+----+
 
     **style** The style of the level indicator. The options are:
 
@@ -212,8 +200,11 @@ def LevelIndicatorListCell(style="discrete",
     """
     An object that displays a level indicator in a List column.
 
-    **This object should only be used in the *columnDescriptions* argument
-    during the construction of a List.**::
+    .. note::
+       This object should only be used in the *columnDescriptions* argument
+       during the construction of a List.
+
+    Example::
 
         from vanilla import *
 

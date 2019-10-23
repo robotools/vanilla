@@ -46,11 +46,14 @@ class Group(VanillaBaseObject):
 
         GroupDemo()
 
-    No special naming is required for the attributes. However, each attribute must have a unique name.
+    No special naming is required for the attributes. However, each attribute
+    must have a unique name.
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the group.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
+    representing the position and size of the group.
 
-    **blendingMode** The blending mode for the window. These are the possible options:
+    **blendingMode** The blending mode for the window.
+    These are the possible options:
 
     +----------------+-------------------------------------------+
     | None           | No special blending.                      |
