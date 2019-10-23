@@ -13,7 +13,7 @@ class Slider(VanillaBaseControl):
 
     """
     A standard slider control. Sliders can be vertical or horizontal and
-    they can show tick marks or not show tick marks.::
+    they can show tick marks or not.::
 
         from vanilla import *
 
@@ -31,9 +31,9 @@ class Slider(VanillaBaseControl):
 
         SliderDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and
-    size of the slider. The size of the slider sould match the appropriate value for
-    the given *sizeStyle*.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
+    representing the position and size of the slider. The size of the slider
+    should match the appropriate value for the given *sizeStyle*.
 
     +---------------------------+
     | **Standard Dimensions**   |

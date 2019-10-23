@@ -283,11 +283,11 @@ class List(VanillaBaseObject):
 
         ListDemo()
 
-    List objects behave like standard Python lists. For xample, given this List:::
+    List objects behave like standard Python lists. For example, given this List::
 
         self.w.myList = List((10, 10, 200, 100), ["A", "B", "C"])
 
-    The following Python list methods work:::
+    The following Python list methods work::
 
         # Getting the length of the List.
         >>> len(self.w.myList)
@@ -340,61 +340,65 @@ class List(VanillaBaseObject):
         "B"
         "C"
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the
-    position and size of the list.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
+    representing the position and size of the list.
 
     **items** The items to be displayed in the list. In the case of multiple
     column lists, this should be a list of dictionaries with the data for
-    each column keyed by the column key as defined in columnDescriptions.
+    each column keyed by the column key as defined in *columnDescriptions*.
     If you intend to use a dataSource, *items* must be *None*.
 
-    **dataSource** A Cocoa object supporting the *NSTableDataSource*
+    **dataSource** A Cocoa object supporting the `NSTableViewDataSource`_
     protocol. If *dataSource* is given, *items* must be *None*.
 
     **columnDescriptions** An ordered list of dictionaries describing the
     columns. This is only necessary for multiple column lists.
 
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"title"*                      | The title to appear in the column header.                                      |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"key"* (optional)             | The key from which this column should get                                      |
-    |                                | its data from each dictionary in *items*. If                                   |
-    |                                | nothing is given, the key will be the string                                   |
-    |                                | given in *title*.                                                              |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"formatter"* (optional)       | An `NSFormatter` <http://tinyurl.com/NSFormatter>`_                            |
-    |                                | for cntrolling the display and input of the                                    |
-    |                                | column's cells.                                                                |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"cell"* (optional)            | A cell type to be displayed in the column.                                     |
-    |                                | If nothing is given, a text cell is used.                                      |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"editable"* (optional)        | Enable or disable editing in the column. If                                    |
-    |                                | nothing is given, it will follow the                                           |
-    |                                | editability of the rest of the list.                                           |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"width"* (optional)           | The width of the column.                                                       |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"minWidth"* (optional)        | The minimum width of the column. The fallback is `width`.                      |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"maxWidth"* (optional)        | The maximum width of the column. The fallback is `width`.                      |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"allowsSorting"* (optional)   | A boolean representing that this column allows the user                        |
-    |                                | to sort the table by clicking the column's header.                             |
-    |                                | The fallback is `True`. If a List is set to disallow                           |
-    |                                | sorting the column level settings will be ignored                              |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *"typingSensitive"* (optional) | A boolean representing that this column                                        |
-    |                                | should be the column that responds to user                                     |
-    |                                | key input. Only one column can be flagged as                                   |
-    |                                | True. If no column is flagged, the first                                       |
-    |                                | column will automatically be flagged.                                          |
-    +--------------------------------+--------------------------------------------------------------------------------+
-    | *binding* (optional)           | A string indicating which `binding object <http://tinyurl.com/CocoaBindings>`_ |
-    |                                | the column's cell should be bound to. By                                       |
-    |                                | default, this is "value." You should only                                      |
-    |                                | override this in very specific cases.                                          |
-    +--------------------------------+--------------------------------------------------------------------------------+
+    .. _NSTableViewDataSource: http://developer.apple.com/documentation/appkit/nstableviewdatasource?language=objc
+
+    +--------------------------------+-----------------------------------------------------------+
+    | *"title"*                      | The title to appear in the column header.                 |
+    +--------------------------------+-----------------------------------------------------------+
+    | *"key"* (optional)             | The key from which this column should get                 |
+    |                                | its data from each dictionary in *items*. If              |
+    |                                | nothing is given, the key will be the string              |
+    |                                | given in *title*.                                         |
+    +--------------------------------+-----------------------------------------------------------+
+    | *"formatter"* (optional)       | An `NSFormatter`_ for controlling the display and input   |
+    |                                | of the column's cells.                                    |
+    +--------------------------------+-----------------------------------------------------------+
+    | *"cell"* (optional)            | A cell type to be displayed in the column.                |
+    |                                | If nothing is given, a text cell is used.                 |
+    +--------------------------------+-----------------------------------------------------------+
+    | *"editable"* (optional)        | Enable or disable editing in the column. If               |
+    |                                | nothing is given, it will follow the                      |
+    |                                | editability of the rest of the list.                      |
+    +--------------------------------+-----------------------------------------------------------+
+    | *"width"* (optional)           | The width of the column.                                  |
+    +--------------------------------+-----------------------------------------------------------+
+    | *"minWidth"* (optional)        | The minimum width of the column. The fallback is `width`. |
+    +--------------------------------+-----------------------------------------------------------+
+    | *"maxWidth"* (optional)        | The maximum width of the column. The fallback is `width`. |
+    +--------------------------------+-----------------------------------------------------------+
+    | *"allowsSorting"* (optional)   | A boolean representing that this column allows the user   |
+    |                                | to sort the table by clicking the column's header.        |
+    |                                | The fallback is `True`. If a List is set to disallow      |
+    |                                | sorting the column level settings will be ignored.        |
+    +--------------------------------+-----------------------------------------------------------+
+    | *"typingSensitive"* (optional) | A boolean representing that this column                   |
+    |                                | should be the column that responds to user                |
+    |                                | key input. Only one column can be flagged as              |
+    |                                | *True*. If no column is flagged, the first                |
+    |                                | column will automatically be flagged.                     |
+    +--------------------------------+-----------------------------------------------------------+
+    | *binding* (optional)           | A string indicating which `binding object`_               |
+    |                                | the column's cell should be bound to. By                  |
+    |                                | default, this is "value". You should only                 |
+    |                                | override this in very specific cases.                     |
+    +--------------------------------+-----------------------------------------------------------+
+
+    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
+    .. _binding object: http://developer.apple.com/documentation/appkit/cocoa_bindings?language=objc
 
     **showColumnTitles** Boolean representing if the column titles should be shown or not.
     Column titles will not be shown in single column lists.
@@ -447,40 +451,42 @@ class List(VanillaBaseObject):
 
     +-----------------------------------+--------------------------------------------------------------------+
     | *type*                            | A single drop type indicating what drop types the list accepts.    |
-    |                                   | For example, NSFilenamesPboardType or "MyCustomPboardType".        |
+    |                                   | For example, "NSFilenamesPboardType" or "MyCustomPboardType".      |
     +-----------------------------------+--------------------------------------------------------------------+
-    | *operation* (optional)            | A "drag operation <http://tinyurl.com/NSDraggingIn>`_ that         |
-    |                                   | the list accepts. The default is *NSDragOperationCopy*.            |
+    | *operation* (optional)            | A `drag operation`_ that the list accepts.                         |
+    |                                   | The default is *NSDragOperationCopy*.                              |
     +-----------------------------------+--------------------------------------------------------------------+
     | *allowDropBetweenRows* (optional) | A boolean indicating if the list accepts drops between rows.       |
-    |                                   | The default is True.                                               |
+    |                                   | The default is *True*.                                             |
     +-----------------------------------+--------------------------------------------------------------------+
     | *allowDropOnRow* (optional)       | A boolean indicating if the list accepts drops on rows.            |
-    |                                   | The default is False.                                              |
+    |                                   | The default is *False*.                                            |
     +-----------------------------------+--------------------------------------------------------------------+
     | *callback*                        | Callback to be called when a drop is proposed and when a drop      |
     |                                   | is to occur. This method should return a boolean representing      |
     |                                   | if the drop is acceptable or not. This method must accept *sender* |
-    |                                   | and *dropInfo* arguments. The _dropInfo_ will be a dictionary as   |
+    |                                   | and *dropInfo* arguments. The *dropInfo* will be a dictionary as   |
     |                                   | described below.                                                   |
     +-----------------------------------+--------------------------------------------------------------------+
 
-    The dropInfo dictionary passed to drop callbacks will be of this form:
+    .. _drag operation: http://developer.apple.com/documentation/appkit/nsdragginginfo?language=objc
 
-    +--------------+--------------------------------------------------------------------------------------------+
-    | *data*       | The data proposed for the drop. This data will be of the type specified by dropDataFormat. |
-    +--------------+--------------------------------------------------------------------------------------------+
-    | *rowIndex*   | The row where the drop is proposed.                                                        |
-    +--------------+--------------------------------------------------------------------------------------------+
-    | *source*     | The source from which items are being dragged. If this object is wrapped by Vanilla, the   |
-    |              | Vanilla object will be passed as the source.                                               |
-    +--------------+--------------------------------------------------------------------------------------------+
-    | *dropOnRow*  | A boolean representing if the row is being dropped on. If this is False, the drop should   |
-    |              | occur between rows.                                                                        |
-    +--------------+--------------------------------------------------------------------------------------------+
-    | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to       |
-    |              | accept the drop.                                                                           |
-    +--------------+--------------------------------------------------------------------------------------------+
+    The *dropInfo* dictionary passed to drop callbacks will be of this form:
+
+    +--------------+----------------------------------------------------------------------------------------------+
+    | *data*       | The data proposed for the drop. This data will be of the type specified by *dropDataFormat*. |
+    +--------------+----------------------------------------------------------------------------------------------+
+    | *rowIndex*   | The row where the drop is proposed.                                                          |
+    +--------------+----------------------------------------------------------------------------------------------+
+    | *source*     | The source from which items are being dragged. If this object is wrapped by Vanilla, the     |
+    |              | Vanilla object will be passed as the source.                                                 |
+    +--------------+----------------------------------------------------------------------------------------------+
+    | *dropOnRow*  | A boolean representing if the row is being dropped on. If this is *False*, the drop should   |
+    |              | occur between rows.                                                                          |
+    +--------------+----------------------------------------------------------------------------------------------+
+    | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to         |
+    |              | accept the drop.                                                                             |
+    +--------------+----------------------------------------------------------------------------------------------+
     """
 
     nsScrollViewClass = NSScrollView
@@ -1130,14 +1136,15 @@ def CheckBoxListCell(title=None):
     """
     An object that displays a check box in a List column.
 
-    **This object should only be used in the *columnDescriptions*
-    argument during the construction of a List.**
+    .. note::
+       This object should only be used in the *columnDescriptions* argument
+       during the construction of a List.
 
     **title** The title to be set in *all* items in the List column.
 
     Example::
 
-        from vanilla import *
+        from vanilla import Window, List, CheckBoxListCell
 
         class CheckBoxListCellDemo(object):
 
@@ -1169,8 +1176,9 @@ def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks
     """
     An object that displays a slider in a List column.
 
-    **This object should only be used in the *columnDescriptions*
-    argument during the construction of a List.**
+    .. note::
+       This object should only be used in the *columnDescriptions* argument
+       during the construction of a List.
 
     **minValue** The minimum value for the slider.
 
@@ -1184,7 +1192,7 @@ def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks
 
     Example::
 
-        from vanilla import *
+        from vanilla import Window, List, SliderListCell
 
         class SliderListCellDemo(object):
 
@@ -1219,17 +1227,15 @@ def PopUpButtonListCell(items):
     """
     An object that displays a pop up list in a List column.
 
-    **This object should only be used in the *columnDescriptions*
-    argument during the construction of a List.**
-
     **items** The items that should appear in the pop up list.
 
-    Note: when using this cell in a List, the `binding` in the
-    column description must be set to `selectedValue`.
+    .. note::
+       When using this cell in a List, the `binding` in the
+       column description must be set to `selectedValue`.
 
     Example::
 
-        from vanilla import *
+        from vanilla import Window, List, PopUpButtonListCell
 
         class PopUpButtonListCellDemo(object):
 
@@ -1237,9 +1243,11 @@ def PopUpButtonListCell(items):
                 self.w = Window((100, 100))
                 self.w.myList = List((0, 0, -0, -0),
                             [{"value": "A"}, {"value": "B"}],
-                            columnDescriptions=[
-                                {"title": "value", "cell": PopUpButtonListCell(["A", "B", "C"]), "binding": "selectedValue"}
-                            ],
+                            columnDescriptions=[{
+                                "title": "value",
+                                "cell": PopUpButtonListCell(["A", "B", "C"]),
+                                "binding": "selectedValue"
+                            }],
                             editCallback=self.editCallback)
                 self.w.open()
 
@@ -1268,6 +1276,8 @@ def PopUpButtonListCell(items):
 
 def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scale="proportional"):
     """
+    An object that displays an image in a List column.
+
     **horizontalAlignment** A string representing the desired horizontal
     alignment of the image in the view. The options are:
 
@@ -1305,8 +1315,8 @@ def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scal
 
     Example::
 
-        from AppKit import *
-        from vanilla import *
+        from AppKit import NSImage
+        from vanilla import Window, List, ImageListCell
 
         class ImageListCellDemo(object):
 
@@ -1335,24 +1345,28 @@ def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scal
 
 def SegmentedButtonListCell(segmentDescriptions):
     """
+    An object that displays a segmented button in a List column.
+
     **segmentDescriptions** An ordered list of dictionaries describing the segments.
 
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | title (optional)       | The title of the segment.                                                                        |
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | imagePath (optional)   | A file path to an image to display in the segment.                                               |
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | imageNamed (optional)  | The name of an image already loaded as a *NSImage* by the application to display in the segment. |
-    +------------------------+--------------------------------------------------------------------------------------------------+
-    | imageObject (optional) | A *NSImage* object to display in the segment.                                                    |
-    +------------------------+--------------------------------------------------------------------------------------------------+
+    +------------------------+----------------------------------------------------+
+    | title (optional)       | The title of the segment.                          |
+    +------------------------+----------------------------------------------------+
+    | imagePath (optional)   | A file path to an image to display in the segment. |
+    +------------------------+----------------------------------------------------+
+    | imageNamed (optional)  | The name of an image already loaded as a *NSImage* |
+    |                        | by the application to display in the segment.      |
+    +------------------------+----------------------------------------------------+
+    | imageObject (optional) | A *NSImage* object to display in the segment.      |
+    +------------------------+----------------------------------------------------+
 
-    Note: when using this cell in a List, the `binding` in the
-    column description must be set to `selectedIndex`.
+    .. note::
+       When using this cell in a List, the `binding` in the
+       column description must be set to `selectedIndex`.
 
     Example::
 
-        from vanilla import *
+        from vanilla import Window, List, SegmentedButtonListCell
 
         class SegmentedButtonListCellDemo(object):
 
@@ -1397,4 +1411,3 @@ def SegmentedButtonListCell(segmentDescriptions):
         if image is not None:
             cell.setImage_forSegment_(image, segmentIndex)
     return cell
-

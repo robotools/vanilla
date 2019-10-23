@@ -25,8 +25,8 @@ class ImageView(VanillaBaseObject):
     """
     A view that displays an image.
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
-    the position and size of the view.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
+    representing the position and size of the view.
 
     **horizontalAlignment** A string representing the desired horizontal
     alignment of the image in the view. The options are:
@@ -54,7 +54,7 @@ class ImageView(VanillaBaseObject):
     view. The options are:
 
     +----------------+----------------------------------------------+
-    | "porportional" | Proportionally scale the image to fit in the |
+    | "proportional" | Proportionally scale the image to fit in the |
     |                | view if it is larger than the view.          |
     +----------------+----------------------------------------------+
     | "fit"          | Distort the proportions of the image until   |
@@ -90,7 +90,9 @@ class ImageView(VanillaBaseObject):
 
         **imageObject** A *NSImage* object.
 
-        *Only one of imagePath, imageNamed, imageObject should be set.*
+        .. note::
+           Only one of *imagePath*, *imageNamed*, *imageObject* should be set.
+
         """
         if imagePath is not None:
             image = NSImage.alloc().initWithContentsOfFile_(imagePath)

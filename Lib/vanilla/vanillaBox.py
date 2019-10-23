@@ -21,9 +21,11 @@ class Box(VanillaBaseObject):
 
         BoxDemo()
 
-    No special naming is required for the attributes. However, each attribute must have a unique name.
+    No special naming is required for the attributes. However, each attribute
+    must have a unique name.
 
-    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position and size of the box.
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
+    representing the position and size of the box.
 
     **title** The title to be displayed dabove the box. Pass *None* if no title is desired.
     """
@@ -104,7 +106,7 @@ class _Line(Box):
 
 
 class HorizontalLine(_Line):
-    
+
     """
     A horizontal line.::
 
@@ -119,11 +121,12 @@ class HorizontalLine(_Line):
 
         HorizontalLineDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the line.
+    **posSize** Tuple of form *(left, top, width, height)* representing
+    the position and size of the line.
 
     +-------------------------+
     | **Standard Dimensions** |
-    +---+---------------------+
+    +===+=====================+
     | H | 1                   |
     +---+---------------------+
     """
@@ -148,11 +151,12 @@ class VerticalLine(_Line):
 
         VerticalLineDemo()
 
-    **posSize** Tuple of form *(left, top, width, height)* representing the position and size of the line.
+    **posSize** Tuple of form *(left, top, width, height)* representing
+    the position and size of the line.
 
     +-------------------------+
     | **Standard Dimensions** |
-    +---+---------------------+
+    +===+=====================+
     | V | 1                   |
     +---+---------------------+
     """

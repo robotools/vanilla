@@ -37,18 +37,22 @@ class Drawer(VanillaBaseObject):
 
         DrawerDemo()
 
-    No special naming is required for the attributes. However, each attribute must have a unique name.
+    No special naming is required for the attributes. However, each attribute
+    must have a unique name.
 
     **size** Tuple of form *(width, height)* representing the size of the drawer.
 
     **parentWindow** The window that the drawer should be attached to.
 
-    **minSize** Tuple of form *(width, height)* representing the minimum size of the drawer.
+    **minSize** Tuple of form *(width, height)* representing the minimum size
+    of the drawer.
 
-    **maxSize** Tuple of form *(width, height)* representing the maximum size of the drawer.
+    **maxSize** Tuple of form *(width, height)* representing the maximum size
+    of the drawer.
 
-    **preferredEdge** The preferred edge of the window that the drawe should be attached to. If the
-    drawer cannot be opened on the preferred edge, it will be opened on the opposite edge. The options are:
+    **preferredEdge** The preferred edge of the window that the drawer should be
+     attached to. If the drawer cannot be opened on the preferred edge, it will
+     be opened on the opposite edge. The options are:
 
     +----------+
     | "left"   |
@@ -60,11 +64,14 @@ class Drawer(VanillaBaseObject):
     | "bottom" |
     +----------+
 
-    **forceEdge** Boolean representing if the drawer should *always* be opened on the preferred edge.
+    **forceEdge** Boolean representing if the drawer should *always* be opened
+    on the preferred edge.
 
-    **leadingOffset** Distance between the top or left edge of the drawer and the parent window.
+    **leadingOffset** Distance between the top or left edge of the drawer
+    and the parent window.
 
-    **trailingOffset** Distance between the bottom or right edge of the drawer and the parent window.
+    **trailingOffset** Distance between the bottom or right edge of the drawer
+    and the parent window.
     """
 
     nsDrawerClass = NSDrawer
@@ -124,6 +131,6 @@ class Drawer(VanillaBaseObject):
 
     def isOpen(self):
         """
-        Return True if the drawer is open, False if it is closed.
+        Return *True* if the drawer is open, *False* if it is closed.
         """
         return self._nsObject.isOpen()

@@ -132,7 +132,7 @@ class VanillaBaseObject(object):
 
     def enable(self, onOff):
         """
-        Enable or disable the object. **onOff** should be a boolean.
+        Enable or disable the object. *onOff* should be a boolean.
         """
         self._nsObject.setEnabled_(onOff)
 
@@ -158,9 +158,10 @@ class VanillaBaseObject(object):
 
     def setPosSize(self, posSize, animate=False):
         """
-        Set the postion and size of the object.
+        Set the position and size of the object.
 
         **posSize** A tuple of form *(left, top, width, height)*.
+
         **animate** A boolean flag telling to animate the transition. Off by default.
         """
         self._posSize = posSize
@@ -176,37 +177,37 @@ class VanillaBaseObject(object):
         """
         Add auto layout rules for controls/view in this view.
 
-        **rules** must by a list of rule definitions.
+        **rules** must be a list of rule definitions.
         Rule definitions may take two forms:
 
-        * strings that follow the `Visual Format Language <https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1>`_.
+        * strings that follow the `Visual Format Language`_
         * dictionaries with the following key/value pairs:
 
-        +---------------------------+-------------------------------------------------------------------------+
-        | key                       | value                                                                   |
-        +===========================+=========================================================================+
-        | *"view1"*                 | The vanilla wrapped view for the left side of the rule.                 |
-        +---------------------------+-------------------------------------------------------------------------+
-        | *"attribute1"*            | The attribute of the view for the left side of the rule.                |
-        |                           | See below for options.                                                  |
-        +---------------------------+-------------------------------------------------------------------------+
-        | *"relation"* (optional)   | The relationship between the left side of the rule                      |
-        |                           | and the right side of the rule. See below for options.                  |
-        |                           | The default value is `"=="`.                                            |
-        +---------------------------+-------------------------------------------------------------------------+
-        | *"view2"*                 | The vanilla wrapped view for the right side of the rule.                |
-        +---------------------------+-------------------------------------------------------------------------+
-        | *"attribute2"*            | The attribute of the view for the right side of the rule.               |
-        |                           | See below for options.                                                  |
-        +---------------------------+-------------------------------------------------------------------------+
-        | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of         |
-        |                           | the rule as part of getting the modified attribute.                     |
-        |                           | The default value is `1`.                                               |
-        +---------------------------+-------------------------------------------------------------------------+
-        | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right       |
-        |                           | side of the rule to yield the final modified attribute.                 |
-        |                           | The default value is `0`.                                               |
-        +---------------------------+-------------------------------------------------------------------------+
+        +---------------------------+-------------------------------------------------------------------+
+        | key                       | value                                                             |
+        +===========================+===================================================================+
+        | *"view1"*                 | The vanilla wrapped view for the left side of the rule.           |
+        +---------------------------+-------------------------------------------------------------------+
+        | *"attribute1"*            | The attribute of the view for the left side of the rule.          |
+        |                           | See below for options.                                            |
+        +---------------------------+-------------------------------------------------------------------+
+        | *"relation"* (optional)   | The relationship between the left side of the rule                |
+        |                           | and the right side of the rule. See below for options.            |
+        |                           | The default value is `"=="`.                                      |
+        +---------------------------+-------------------------------------------------------------------+
+        | *"view2"*                 | The vanilla wrapped view for the right side of the rule.          |
+        +---------------------------+-------------------------------------------------------------------+
+        | *"attribute2"*            | The attribute of the view for the right side of the rule.         |
+        |                           | See below for options.                                            |
+        +---------------------------+-------------------------------------------------------------------+
+        | *"multiplier"* (optional) | The constant multiplied with the attribute on the right side of   |
+        |                           | the rule as part of getting the modified attribute.               |
+        |                           | The default value is `1`.                                         |
+        +---------------------------+-------------------------------------------------------------------+
+        | *"constant"* (optional)   | The constant added to the multiplied attribute value on the right |
+        |                           | side of the rule to yield the final modified attribute.           |
+        |                           | The default value is `0`.                                         |
+        +---------------------------+-------------------------------------------------------------------+
 
         The `attribute1` and `attribute2` options are:
 
@@ -240,8 +241,7 @@ class VanillaBaseObject(object):
         | *"firstBaseline"* | NSLayoutAttributeFirstBaseline |
         +-------------------+--------------------------------+
 
-        Refer to the `NSLayoutAttribute documentation <https://developer.apple.com/documentation/uikit/nslayoutattribute>`_
-        for the information about what each of these do.
+        Refer to the `NSLayoutAttribute documentation`_ for the information about what each of these do.
 
         The `relation` options are:
 
@@ -255,18 +255,22 @@ class VanillaBaseObject(object):
         | *">="* | NSLayoutRelationGreaterThanOrEqual |
         +--------+------------------------------------+
 
-        Refer to the `NSLayoutRelation documentation <https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc>`_
-        for the information about what each of these do.
+        Refer to the `NSLayoutRelation documentation`_ for the information about what each of these do.
 
-        **metrics** may be either **None** or a dict containing
+        **metrics** may be either *None* or a dict containing
         key value pairs representing metrics keywords used in the
         rules defined with strings.
+
+        .. _Visual Format Language: http://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
+        .. _NSLayoutAttribute documentation: http://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
+        .. _NSLayoutRelation documentation: https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc
+
         """
         _addAutoLayoutRules(self, rules, metrics)
 
     def move(self, x, y):
         """
-        Move the object by **x** units and **y** units.
+        Move the object by *x* units and *y* units.
         """
         posSize = self.getPosSize()
         if posSize == "auto":
@@ -278,7 +282,7 @@ class VanillaBaseObject(object):
 
     def resize(self, width, height):
         """
-        Change the size of the object to **width** and **height**.
+        Change the size of the object to *width* and *height*.
         """
         posSize = self.getPosSize()
         if posSize == "auto":

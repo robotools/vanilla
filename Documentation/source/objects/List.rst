@@ -18,4 +18,3 @@ List Item Cells
 .. autofunction:: SliderListCell
 .. autofunction:: PopUpButtonListCell
 .. autofunction:: ImageListCell
-

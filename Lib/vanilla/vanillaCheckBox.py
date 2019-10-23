@@ -10,7 +10,7 @@ from vanilla.vanillaBase import osVersionCurrent, osVersion10_10, VanillaBaseObj
 # fixes this problem, we can revert back to the standard method for
 # creating the control.
 
-_doc =     """
+_doc = """
 A standard check box.::
 
     from vanilla import *
@@ -28,8 +28,9 @@ A standard check box.::
 
     CheckBoxDemo()
 
-**posSize** Tuple of form (left, top, width, height) or *"auto"* representing the position and size of
-the check box. The size of the check box should match the appropriate value for the given *sizeStyle*.
+**posSize** Tuple of form (left, top, width, height) or *"auto"* representing
+the position and size of the check box. The size of the check box should match
+the appropriate value for the given *sizeStyle*.
 
 +-------------------------+
 | **Standard Dimensions** |
@@ -41,13 +42,16 @@ the check box. The size of the check box should match the appropriate value for 
 | Mini    | H | 10        |
 +---------+---+-----------+
 
-**title** The text to be displayed next to the check box. Pass *None* is no title is desired.
+**title** The text to be displayed next to the check box. Pass *None* if
+no title is desired.
 
-**callback** The method to be called when the user changes the state of the check box.
+**callback** The method to be called when the user changes the state of
+the check box.
 
 **value** A boolean representing the state of the check box.
 
-**sizeStyle** A string representing the desired size style of the check box. The options are:
+**sizeStyle** A string representing the desired size style of the check box.
+The options are:
 
 +-----------+
 | "regular" |
@@ -132,8 +136,6 @@ class _CheckBoxManualBuildTextButton(Button):
 
 
 class _CheckBoxManualBuild(VanillaBaseObject):
-
-    __doc__ = _doc
 
     # both the container view and the check box will be adjusted.
     # this is necessary to create the appropriate buffer
@@ -251,7 +253,10 @@ class _CheckBoxManualBuild(VanillaBaseObject):
 
 
 if osVersionCurrent >= osVersion10_10:
-    class CheckBox(_CheckBoxStandardBuild): pass
+    class CheckBox(_CheckBoxStandardBuild):
+        __doc__ = _doc
+        pass
 else:
-    class CheckBox(_CheckBoxManualBuild): pass
-
+    class CheckBox(_CheckBoxManualBuild):
+        __doc__ = _doc
+        pass
