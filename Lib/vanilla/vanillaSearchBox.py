@@ -5,14 +5,18 @@ from vanilla.vanillaBase import VanillaBaseControl
 class SearchBox(VanillaBaseControl):
 
     """
-    A text entry field similar to the search field in Safari.::
+    A text entry field similar to the search field in Safari.
 
-        from vanilla import *
+    .. image:: /_images/SearchBox.png
+
+    ::
+
+        from vanilla import Window, SearchBox
 
         class SearchBoxDemo(object):
 
             def __init__(self):
-                self.w = Window((100, 42))
+                self.w = Window((120, 42))
                 self.w.searchBox = SearchBox((10, 10, -10, 22),
                                         callback=self.searchBoxCallback)
                 self.w.open()
@@ -57,7 +61,6 @@ class SearchBox(VanillaBaseControl):
     +-----------+
 
     .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
-
     """
 
     nsSearchFieldClass = NSSearchField

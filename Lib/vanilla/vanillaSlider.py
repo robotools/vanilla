@@ -12,10 +12,14 @@ _tickPositionMap = {
 class Slider(VanillaBaseControl):
 
     """
-    A standard slider control. Sliders can be vertical or horizontal and
-    they can show tick marks or not.::
+    A standard slider control. Sliders can be vertical or horizontal
+    and they can show tick marks or not.
 
-        from vanilla import *
+    .. image:: /_images/Slider.png
+
+    ::
+
+        from vanilla import Window, Slider
 
         class SliderDemo(object):
 

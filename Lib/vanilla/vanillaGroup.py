@@ -31,9 +31,11 @@ class Group(VanillaBaseObject):
     """
     An invisible container for controls.
 
+    .. image:: /_images/Group.png
+
     To add a control to a group, simply set it as an attribute of the group.::
 
-        from vanilla import *
+        from vanilla import Window, Group, TextBox
 
         class GroupDemo(object):
 

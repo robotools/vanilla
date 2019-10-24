@@ -380,9 +380,13 @@ class VanillaSplitViewDelegate(NSObject):
 class SplitView(VanillaBaseObject):
 
     """
-    View that can be split into two or more subviews with dividers.::
+    View that can be split into two or more subviews with dividers.
 
-        from vanilla import *
+    .. image:: /_images/SplitView.png
+
+    ::
+
+        from vanilla import Window, List, SplitView
 
         class SplitViewDemo(object):
 

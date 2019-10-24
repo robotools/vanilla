@@ -52,6 +52,7 @@ class VanillaArrayControllerObserver(NSObject):
         if hasattr(self, "_targetMethod") and self._targetMethod is not None:
             self._targetMethod()
 
+
 class _VanillaArrayControllerObserver(VanillaArrayControllerObserver):
 
     def init(self):
@@ -247,9 +248,13 @@ class List(VanillaBaseObject):
     """
     A control that shows a list of items. These lists can contain one or more columns.
 
-    A single column example::
+    A single column example:
 
-        from vanilla import *
+    .. image:: /_images/List.png
+
+    ::
+
+        from vanilla import Window, List
 
         class ListDemo(object):
 
@@ -264,9 +269,13 @@ class List(VanillaBaseObject):
 
         ListDemo()
 
-    A mutliple column example::
+    A multiple column example:
 
-        from vanilla import *
+    .. image:: /_images/ListMulticolumn.png
+
+    ::
+
+        from vanilla import Window, List
 
         class ListDemo(object):
 
@@ -1136,13 +1145,13 @@ def CheckBoxListCell(title=None):
     """
     An object that displays a check box in a List column.
 
+    .. image:: /_images/CheckBoxListCell.png
+
     .. note::
        This object should only be used in the *columnDescriptions* argument
        during the construction of a List.
 
-    **title** The title to be set in *all* items in the List column.
-
-    Example::
+    ::
 
         from vanilla import Window, List, CheckBoxListCell
 
@@ -1160,6 +1169,9 @@ def CheckBoxListCell(title=None):
                 print(sender.get())
 
         CheckBoxListCellDemo()
+
+    **title** The title to be set in *all* items in the List column.
+
     """
     cell = NSButtonCell.alloc().init()
     cell.setButtonType_(NSSwitchButton)
@@ -1176,21 +1188,13 @@ def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks
     """
     An object that displays a slider in a List column.
 
+    .. image:: /_images/SliderListCell.png
+
     .. note::
        This object should only be used in the *columnDescriptions* argument
        during the construction of a List.
 
-    **minValue** The minimum value for the slider.
-
-    **maxValue** The maximum value for the slider.
-
-    **tickMarkCount** The number of tick marcks to be displayed on the slider.
-    If *None* is given, no tick marks will be displayed.
-
-    **stopOnTickMarks** Boolean representing if the slider knob should only
-    stop on the tick marks.
-
-    Example::
+    ::
 
         from vanilla import Window, List, SliderListCell
 
@@ -1211,6 +1215,16 @@ def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks
                 print(sender.get())
 
         SliderListCellDemo()
+
+    **minValue** The minimum value for the slider.
+
+    **maxValue** The maximum value for the slider.
+
+    **tickMarkCount** The number of tick marcks to be displayed on the slider.
+    If *None* is given, no tick marks will be displayed.
+
+    **stopOnTickMarks** Boolean representing if the slider knob should only
+    stop on the tick marks.
     """
     cell = NSSliderCell.alloc().init()
     cell.setControlSize_(NSSmallControlSize)
@@ -1227,13 +1241,13 @@ def PopUpButtonListCell(items):
     """
     An object that displays a pop up list in a List column.
 
-    **items** The items that should appear in the pop up list.
+    .. image:: /_images/PopUpButtonListCell.png
 
     .. note::
        When using this cell in a List, the `binding` in the
        column description must be set to `selectedValue`.
 
-    Example::
+    ::
 
         from vanilla import Window, List, PopUpButtonListCell
 
@@ -1255,6 +1269,9 @@ def PopUpButtonListCell(items):
                 print(sender.get())
 
         PopUpButtonListCellDemo()
+
+    **items** The items that should appear in the pop up list.
+
     """
     cell = NSPopUpButtonCell.alloc().init()
     cell.setBordered_(False)
@@ -1277,6 +1294,29 @@ def PopUpButtonListCell(items):
 def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scale="proportional"):
     """
     An object that displays an image in a List column.
+
+    .. image:: /_images/ImageListCell.png
+
+    ::
+
+        from AppKit import NSImage
+        from vanilla import Window, List, ImageListCell
+
+        class ImageListCellDemo(object):
+
+            def __init__(self):
+                self.w = Window((100, 100))
+                self.w.myList = List((0, 0, -0, -0),
+                            [
+                                {"image": NSImage.imageNamed_("NSActionTemplate")},
+                                {"image": NSImage.imageNamed_("NSRefreshTemplate")}
+                            ],
+                            columnDescriptions=[
+                                {"title": "image", "cell": ImageListCell()}
+                            ])
+                self.w.open()
+
+        ImageListCellDemo()
 
     **horizontalAlignment** A string representing the desired horizontal
     alignment of the image in the view. The options are:
@@ -1312,27 +1352,6 @@ def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scal
     +----------------+----------------------------------------------+
     | "none"         | Do not scale the image.                      |
     +----------------+----------------------------------------------+
-
-    Example::
-
-        from AppKit import NSImage
-        from vanilla import Window, List, ImageListCell
-
-        class ImageListCellDemo(object):
-
-            def __init__(self):
-                self.w = Window((100, 100))
-                self.w.myList = List((0, 0, -0, -0),
-                            [
-                                {"image": NSImage.imageNamed_("NSActionTemplate")},
-                                {"image": NSImage.imageNamed_("NSRefreshTemplate")}
-                            ],
-                            columnDescriptions=[
-                                {"title": "image", "cell": ImageListCell()}
-                            ])
-                self.w.open()
-
-        ImageListCellDemo()
     """
     from vanilla.vanillaImageView import _imageAlignmentMap, _imageScaleMap
     cell = NSImageCell.alloc().init()
@@ -1347,24 +1366,13 @@ def SegmentedButtonListCell(segmentDescriptions):
     """
     An object that displays a segmented button in a List column.
 
-    **segmentDescriptions** An ordered list of dictionaries describing the segments.
-
-    +------------------------+----------------------------------------------------+
-    | title (optional)       | The title of the segment.                          |
-    +------------------------+----------------------------------------------------+
-    | imagePath (optional)   | A file path to an image to display in the segment. |
-    +------------------------+----------------------------------------------------+
-    | imageNamed (optional)  | The name of an image already loaded as a *NSImage* |
-    |                        | by the application to display in the segment.      |
-    +------------------------+----------------------------------------------------+
-    | imageObject (optional) | A *NSImage* object to display in the segment.      |
-    +------------------------+----------------------------------------------------+
+    .. image:: /_images/SegmentedButtonListCell.png
 
     .. note::
        When using this cell in a List, the `binding` in the
        column description must be set to `selectedIndex`.
 
-    Example::
+    ::
 
         from vanilla import Window, List, SegmentedButtonListCell
 
@@ -1388,6 +1396,20 @@ def SegmentedButtonListCell(segmentDescriptions):
                 print(sender.get())
 
         SegmentedButtonListCellDemo()
+
+    **segmentDescriptions** An ordered list of dictionaries describing the segments.
+
+    +------------------------+----------------------------------------------------+
+    | title (optional)       | The title of the segment.                          |
+    +------------------------+----------------------------------------------------+
+    | imagePath (optional)   | A file path to an image to display in the segment. |
+    +------------------------+----------------------------------------------------+
+    | imageNamed (optional)  | The name of an image already loaded as a *NSImage* |
+    |                        | by the application to display in the segment.      |
+    +------------------------+----------------------------------------------------+
+    | imageObject (optional) | A *NSImage* object to display in the segment.      |
+    +------------------------+----------------------------------------------------+
+
     """
     cell = NSSegmentedCell.alloc().init()
     cell.setControlSize_(NSMiniControlSize)

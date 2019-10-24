@@ -92,7 +92,6 @@ class ImageView(VanillaBaseObject):
 
         .. note::
            Only one of *imagePath*, *imageNamed*, *imageObject* should be set.
-
         """
         if imagePath is not None:
             image = NSImage.alloc().initWithContentsOfFile_(imagePath)

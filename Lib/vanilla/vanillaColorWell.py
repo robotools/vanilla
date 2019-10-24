@@ -7,10 +7,14 @@ class ColorWell(VanillaBaseObject):
     """
     A control that allows for showing and choosing a color value.
 
-    ColorWell objects handle `NSColor`_ objects.::
+    .. image:: /_images/ColorWell.png
+
+    ColorWell objects handle `NSColor`_ objects.
+
+    ::
 
         from AppKit import NSColor
-        from vanilla import *
+        from vanilla import Window, ColorWell
 
         class ColorWellDemo(object):
 

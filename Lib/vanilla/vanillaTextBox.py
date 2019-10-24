@@ -14,9 +14,13 @@ _textAlignmentMap = {
 class TextBox(VanillaBaseControl):
 
     """
-    A rectangle containing static text.::
+    A rectangle containing static text.
 
-        from vanilla import *
+    .. image:: /_images/TextBox.png
+
+    ::
+
+        from vanilla import Window, TextBox
 
         class TextBoxDemo(object):
 

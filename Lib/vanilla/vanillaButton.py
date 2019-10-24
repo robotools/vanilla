@@ -27,9 +27,13 @@ _keyMap = {
 class Button(VanillaBaseControl):
 
     """
-    A standard button.::
+    A standard button.
 
-        from vanilla import *
+    .. image:: /_images/Button.png
+
+    ::
+
+        from vanilla import Window, Button
 
         class ButtonDemo(object):
 
@@ -158,7 +162,11 @@ class Button(VanillaBaseControl):
 class SquareButton(Button):
 
     """
-    A standard square button.::
+    A standard square button.
+
+    .. image:: /_images/SquareButton.png
+
+    ::
 
         from vanilla import *
 
@@ -211,9 +219,11 @@ _imagePositionMap = {
 class ImageButton(SquareButton):
 
     """
-    A button with an image.::
+    A button with an image.
 
-        from vanilla import *
+    ::
+
+        from vanilla import Window, ImageButton
 
         class ImageButtonDemo(object):
 
@@ -325,9 +335,13 @@ class ImageButton(SquareButton):
 class HelpButton(Button):
 
     """
-    A standard help button.::
+    A standard help button.
 
-        from vanilla import *
+    .. image:: /_images/HelpButton.png
+
+    ::
+
+        from vanilla import Window, HelpButton
 
         class HelpButtonDemo(object):
 

@@ -6,9 +6,13 @@ from vanilla.vanillaList import VanillaMenuBuilder
 class PopUpButton(VanillaBaseControl):
 
     """
-    A button which, when selected, displays a list of items for the user to choose from.::
+    A button which, when selected, displays a list of items for the user to choose from.
 
-        from vanilla import *
+    .. image:: /_images/PopUpButton.png
+
+    ::
+
+        from vanilla import Window, PopUpButton
 
         class PopUpButtonDemo(object):
 
@@ -125,9 +129,13 @@ class PopUpButton(VanillaBaseControl):
 class ActionButton(PopUpButton):
 
     """
-    An action button with a menu.::
+    An action button with a menu.
 
-        from vanilla import *
+    .. image:: /_images/ActionButton.png
+
+    ::
+
+        from vanilla import Window, ActionButton
 
         class ActionPopUpButtonDemo(object):
 

@@ -5,7 +5,11 @@ from vanilla.vanillaBase import VanillaBaseObject
 class ScrollView(VanillaBaseObject):
 
     """
-    A view with scrollers for containing another view.::
+    A view with scrollers for containing another view.
+
+    .. image:: /_images/ScrollView.png
+
+    ::
 
         from AppKit import NSView, NSColor, NSRectFill
         from vanilla import Window, ScrollView

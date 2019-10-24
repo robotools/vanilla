@@ -14,14 +14,18 @@ _trackingModeMap = {
 class SegmentedButton(VanillaBaseControl):
 
     """
-    A standard segmented button.::
+    A standard segmented button.
 
-        from vanilla import *
+    .. image:: /_images/SegmentedButton.png
+
+    ::
+
+        from vanilla import Window, SegmentedButton
 
         class SegmentedButtonDemo(object):
 
              def __init__(self):
-                 self.w = Window((100, 40))
+                 self.w = Window((120, 40))
                  self.w.button = SegmentedButton((10, 10, -10, 20),
                      [dict(title="A"), dict(title="B"), dict(title="C")],
                     callback=self.buttonCallback)

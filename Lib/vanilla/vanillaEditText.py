@@ -18,15 +18,20 @@ class VanillaEditTextDelegate(VanillaCallbackWrapper):
 class EditText(VanillaBaseControl):
 
     """
-    Standard short text entry control.::
+    Standard short text entry control.
 
-        from vanilla import *
+    .. image:: /_images/EditText.png
+
+    ::
+
+        from vanilla import Window, EditText
 
         class EditTextDemo(object):
 
             def __init__(self):
-                self.w = Window((100, 42))
+                self.w = Window((120, 42))
                 self.w.editText = EditText((10, 10, -10, 22),
+                                    text='some text',
                                     callback=self.editTextCallback)
                 self.w.open()
 
@@ -79,7 +84,6 @@ class EditText(VanillaBaseControl):
     +-----------+
 
     .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
-
     """
 
     nsTextFieldClass = NSTextField
@@ -162,15 +166,20 @@ class EditText(VanillaBaseControl):
 class SecureEditText(EditText):
 
     """
-    Standard secure text entry control.::
+    Standard secure text entry control.
 
-        from vanilla import *
+    .. image:: /_images/SecureEditText.png
+
+    ::
+
+        from vanilla import Window, SecureEditText
 
         class SecureEditTextDemo(object):
 
             def __init__(self):
-                self.w = Window((100, 42))
+                self.w = Window((120, 42))
                 self.w.secureEditText = SecureEditText((10, 10, -10, 22),
+                                    text='abc123',
                                     callback=self.secureEditTextCallback)
                 self.w.open()
 
@@ -223,7 +232,6 @@ class SecureEditText(EditText):
     +-----------+
 
     .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
-
     """
 
     nsTextFieldClass = NSSecureTextField

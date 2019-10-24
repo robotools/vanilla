@@ -16,9 +16,11 @@ class Drawer(VanillaBaseObject):
     """
     A drawer attached to a window. Drawers are capable of containing controls.
 
+    .. image:: /_images/Drawer.png
+
     To add a control to a drawer, simply set it as an attribute of the drawer.::
 
-        from vanilla import *
+        from vanilla import Window, Button, Drawer, TextBox
 
         class DrawerDemo(object):
 

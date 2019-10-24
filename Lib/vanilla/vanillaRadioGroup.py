@@ -71,29 +71,35 @@ class _RadioGroupMixin(object):
 class VerticalRadioGroup(VerticalStackGroup, _RadioGroupMixin):
 
     """
-    A vertical collection of radio buttons.::
+    A vertical collection of radio buttons.
 
-        from vanilla import *
+    .. image:: /_images/VerticalRadioGroup.png
 
-        class RadioGroupDemo(object):
+    ::
+
+        from vanilla import Window, VerticalRadioGroup
+
+        class VerticalRadioGroupDemo(object):
 
             def __init__(self):
-                self.w = Window((100, 0))
+                self.w = Window((100, 100))
                 self.w.radioGroup = VerticalRadioGroup(
                     "auto",
                     ["Option 1", "Option 2"],
                     callback=self.radioGroupCallback
                 )
+                self.w.radioGroup.set(0)
                 rules = [
                     "H:|-[radioGroup]-|",
                     "V:|-[radioGroup(==%d)]-|" % self.w.radioGroup.getFittingHeight()
                 ]
+                self.w.addAutoPosSizeRules(rules)
                 self.w.open()
 
             def radioGroupCallback(self, sender):
                 print("radio group edit!", sender.get())
 
-        RadioGroupDemo()
+        VerticalRadioGroupDemo()
 
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the radio group.
@@ -126,24 +132,30 @@ class VerticalRadioGroup(VerticalStackGroup, _RadioGroupMixin):
 
 class HorizontalRadioGroup(HorizontalStackGroup, _RadioGroupMixin):
 
-    """
-    A horizontal collection of radio buttons.::
+    ### TODO: Example is not horizontal but vertical.
 
-        from vanilla import *
+    """
+    A horizontal collection of radio buttons.
+
+    ::
+
+        from vanilla import Window, HorizontalRadioGroup
 
         class RadioGroupDemo(object):
 
             def __init__(self):
-                self.w = Window((200, 0))
+                self.w = Window((300, 100))
                 self.w.radioGroup = HorizontalRadioGroup(
                     "auto",
                     ["Option 1", "Option 2"],
                     callback=self.radioGroupCallback
                 )
+                self.w.radioGroup.set(0)
                 rules = [
                     "H:|-[radioGroup]-|",
                     "V:|-[radioGroup(==%d)]-|" % self.w.radioGroup.getFittingHeight()
                 ]
+                self.w.addAutoPosSizeRules(rules)
                 self.w.open()
 
             def radioGroupCallback(self, sender):
@@ -214,11 +226,15 @@ class RadioButton(Button):
 class RadioGroup(VanillaBaseControl):
 
     """
+    A collection of radio buttons.
+
+    .. image:: /_images/RadioGroup.png
+
     .. note:: This should be used only for frame layout.
 
-    A collection of radio buttons.::
+    ::
 
-        from vanilla import *
+        from vanilla import Window, RadioGroup
 
         class RadioGroupDemo(object):
 
@@ -227,6 +243,7 @@ class RadioGroup(VanillaBaseControl):
                 self.w.radioGroup = RadioGroup((10, 10, -10, 40),
                                         ["Option 1", "Option 2"],
                                         callback=self.radioGroupCallback)
+                self.w.radioGroup.set(0)
                 self.w.open()
 
             def radioGroupCallback(self, sender):

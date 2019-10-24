@@ -24,9 +24,13 @@ _levelIndicatorStyleMap = {
 class LevelIndicator(VanillaBaseControl):
 
     """
-    A control which shows a value on a linear scale.::
+    A control which shows a value on a linear scale.
 
-        from vanilla import *
+    .. image:: /_images/LevelIndicator.png
+
+    ::
+
+        from vanilla import Window, LevelIndicator
 
         class LevelIndicatorDemo(object):
 
@@ -200,13 +204,15 @@ def LevelIndicatorListCell(style="discrete",
     """
     An object that displays a level indicator in a List column.
 
+    .. image:: /_images/LevelIndicatorListCell.png
+
     .. note::
        This object should only be used in the *columnDescriptions* argument
        during the construction of a List.
 
-    Example::
+    ::
 
-        from vanilla import *
+        from vanilla import Window, List, LevelIndicatorListCell
 
         class LevelIndicatorListCellDemo(object):
 

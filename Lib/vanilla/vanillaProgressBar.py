@@ -5,9 +5,13 @@ from vanilla.vanillaBase import VanillaBaseObject, _sizeStyleMap, osVersion10_11
 class ProgressBar(VanillaBaseObject):
 
     """
-    A standard progress bar.::
+    A standard progress bar.
 
-        from vanilla import *
+    .. image:: /_images/ProgressBar.png
+
+    ::
+
+        from vanilla import Window, ProgressBar, Button
 
         class ProgressBarDemo(object):
 

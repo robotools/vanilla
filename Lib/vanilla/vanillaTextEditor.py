@@ -16,15 +16,20 @@ class VanillaTextEditorDelegate(NSObject):
 class TextEditor(VanillaBaseObject):
 
     """
-    Standard long text entry control.::
+    Standard long text entry control.
 
-        from vanilla import *
+    .. image:: /_images/TextEditor.png
+
+    ::
+
+        from vanilla import Window, TextEditor
 
         class TextEditorDemo(object):
 
             def __init__(self):
                 self.w = Window((200, 200))
-                self.w.textEditor = TextEditor((10, 10, -10, 22),
+                self.w.textEditor = TextEditor((10, 10, -10, -10),
+                                    text='hello world',
                                     callback=self.textEditorCallback)
                 self.w.open()
 

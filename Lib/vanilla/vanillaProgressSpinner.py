@@ -5,9 +5,13 @@ from vanilla.vanillaBase import VanillaBaseObject, _sizeStyleMap
 class ProgressSpinner(VanillaBaseObject):
 
     """
-    An animated, spinning progress indicator.::
+    An animated, spinning progress indicator.
 
-        from vanilla import *
+    .. image:: /_images/ProgressSpinner.png
+
+    ::
+
+        from vanilla import Window, ProgressSpinner
 
         class ProgressSpinnerDemo(object):
 

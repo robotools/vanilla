@@ -7,9 +7,11 @@ class Box(VanillaBaseObject):
     """
     A bordered container for other controls.
 
+    .. image:: /_images/Box.png
+
     To add a control to a box, simply set it as an attribute of the box.::
 
-        from vanilla import *
+        from vanilla import Window, Box, TextBox
 
         class BoxDemo(object):
 
@@ -108,9 +110,13 @@ class _Line(Box):
 class HorizontalLine(_Line):
 
     """
-    A horizontal line.::
+    A horizontal line.
 
-        from vanilla import *
+    .. image:: /_images/HorizontalLine.png
+
+    ::
+
+        from vanilla import Window, HorizontalLine
 
         class HorizontalLineDemo(object):
 
@@ -138,9 +144,13 @@ class HorizontalLine(_Line):
 class VerticalLine(_Line):
 
     """
-    A vertical line.::
+    A vertical line.
 
-        from vanilla import *
+    .. image:: /_images/VerticalLine.png
+
+    ::
+
+        from vanilla import Window, VerticalLine
 
         class VerticalLineDemo(object):
 

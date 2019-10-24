@@ -33,9 +33,13 @@ class ComboBox(VanillaBaseControl):
 
     """
     A text entry control that allows direct text entry or selection for a list
-    of options.::
+    of options.
 
-        from vanilla import *
+    .. image:: /_images/ComboBox.png
+
+    ::
+
+        from vanilla import Window, ComboBox
 
         class ComboBoxDemo(object):
 

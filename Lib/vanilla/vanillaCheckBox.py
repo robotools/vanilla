@@ -11,14 +11,18 @@ from vanilla.vanillaBase import osVersionCurrent, osVersion10_10, VanillaBaseObj
 # creating the control.
 
 _doc = """
-A standard check box.::
+A standard check box.
 
-    from vanilla import *
+.. image:: /_images/CheckBox.png
+
+::
+
+    from vanilla import Window, CheckBox
 
     class CheckBoxDemo(object):
 
         def __init__(self):
-            self.w = Window((100, 40))
+            self.w = Window((120, 40))
             self.w.checkBox = CheckBox((10, 10, -10, 20), "A CheckBox",
                                callback=self.checkBoxCallback, value=True)
             self.w.open()

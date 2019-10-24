@@ -32,9 +32,11 @@ class Window(NSObject):
     """
     A window capable of containing controls.
 
+    .. image:: /_images/Window.png
+
     To add a control to a window, simply set it as an attribute of the window.::
 
-        from vanilla import *
+        from vanilla import Window, Button, TextBox
 
         class WindowDemo(object):
 
@@ -891,9 +893,11 @@ class FloatingWindow(Window):
     """
     A window that floats above all other windows.
 
+    .. image:: /_images/FloatingWindow.png
+
     To add a control to a window, simply set it as an attribute of the window.::
 
-        from vanilla import *
+        from vanilla import FloatingWindow, Button, TextBox
 
         class FloatingWindowDemo(object):
 
@@ -1013,17 +1017,29 @@ class Sheet(Window):
     """
     A window that is attached to another window.
 
+    .. image:: /_images/Sheet.png
+
     To add a control to a sheet, simply set it as an attribute of the sheet.::
 
-        from vanilla import *
+        from vanilla import Window, Sheet, Button
 
         class SheetDemo(object):
 
-            def __init__(self, parentWindow):
-                self.w = Sheet((200, 70), parentWindow)
-                self.w.myButton = Button((10, 10, -10, 20), "My Button")
-                self.w.myTextBox = TextBox((10, 40, -10, 17), "My Text Box")
+            def __init__(self):
+                self.w = Window((240, 140), "Sheet Demo")
+                self.w.openSheet = Button((10, -30, -10, 20),
+                            "open sheet", callback=self.openSheetCallback)
                 self.w.open()
+
+            def openSheetCallback(self, sender):
+                self.sheet = Sheet((160, 70), self.w)
+                self.sheet.closeSheet = Button((10, -30, -10, 20),
+                            "close sheet", callback=self.closeSheetCallback)
+                self.sheet.open()
+
+            def closeSheetCallback(self, sender):
+                self.sheet.close()
+                del self.sheet
 
         SheetDemo()
 
@@ -1062,3 +1078,4 @@ class Sheet(Window):
             self._window, parentWindow, None, None, 0)
         # See Window.open():
         self.retain()
+
