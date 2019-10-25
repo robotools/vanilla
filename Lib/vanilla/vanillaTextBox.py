@@ -22,7 +22,7 @@ class TextBox(VanillaBaseControl):
 
         from vanilla import Window, TextBox
 
-        class TextBoxDemo(object):
+        class TextBoxDemo:
 
              def __init__(self):
                  self.w = Window((100, 37))

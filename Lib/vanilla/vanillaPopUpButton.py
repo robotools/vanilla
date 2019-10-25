@@ -14,7 +14,7 @@ class PopUpButton(VanillaBaseControl):
 
         from vanilla import Window, PopUpButton
 
-        class PopUpButtonDemo(object):
+        class PopUpButtonDemo:
 
             def __init__(self):
                 self.w = Window((100, 40))
@@ -137,7 +137,7 @@ class ActionButton(PopUpButton):
 
         from vanilla import Window, ActionButton
 
-        class ActionPopUpButtonDemo(object):
+        class ActionPopUpButtonDemo:
 
             def __init__(self):
                 self.w = Window((100, 40))

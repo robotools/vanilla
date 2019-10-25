@@ -41,7 +41,7 @@ class ComboBox(VanillaBaseControl):
 
         from vanilla import Window, ComboBox
 
-        class ComboBoxDemo(object):
+        class ComboBoxDemo:
 
             def __init__(self):
                 self.w = Window((100, 41))

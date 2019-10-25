@@ -19,7 +19,7 @@ A standard check box.
 
     from vanilla import Window, CheckBox
 
-    class CheckBoxDemo(object):
+    class CheckBoxDemo:
 
         def __init__(self):
             self.w = Window((120, 40))

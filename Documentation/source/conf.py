@@ -14,7 +14,7 @@ import sphinx_rtd_theme
 
 project = 'Vanilla'
 author = 'Tal Leming, Just van Rossum'
-copyright = '2009, Tal Leming, Just van Rossum'
+copyright = '2009, Tal Leming, Just van Rossum.'
 version = '0.1' # short X.Y version
 release = '0.1' # full version including alpha/beta/rc tags
 
@@ -29,35 +29,19 @@ extensions = [
 ]
 source_suffix = {'.rst': 'restructuredtext'}
 master_doc = 'index'
-exclude_patterns = []
-templates_path = ['_templates']
-nitpicky = False
+nitpicky = True
 smartquotes = True
-highlight_language = 'default'
+highlight_language = 'python3'
 pygments_style = 'sphinx'
 add_function_parentheses = True
-add_module_names = True
-show_authors = False
+add_module_names = False
 
 
 # Options for HTML output
 # -----------------------
 
 html_theme = "sphinx_rtd_theme"
-# html_theme_options = {}
-# html_theme_path = []
-# html_style = None
-# html_title = None # defaults to "<project> v<release> documentation"
-# html_short_title = None # shorter title for the navigation bar
-# html_logo = None
-# html_favicon = None
-# html_static_path = ['_static']
-html_add_permalinks = True
-html_use_index = True
-html_split_index = False
 html_copy_source = True
-html_show_copyright = True
-html_show_sphinx = True
 html_last_updated_fmt = '%b %d, %Y'
 
 
@@ -70,17 +54,10 @@ htmlhelp_basename = 'Vanilladoc'
 # Options for LaTeX output
 # ------------------------
 
-#latex_paper_size = 'letter'
-#latex_font_size = '10pt'
 latex_documents = [
   ('index', 'Vanilla.tex', ur'Vanilla Documentation',
    ur'Tal Leming', 'manual'),
 ]
-#latex_logo = None
-#latex_use_parts = False
-#latex_preamble = ''
-#latex_appendices = []
-#latex_use_modindex = True
 
 
 # Mock some modules for Read The Docs

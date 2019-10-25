@@ -13,7 +13,7 @@ class ProgressSpinner(VanillaBaseObject):
 
         from vanilla import Window, ProgressSpinner
 
-        class ProgressSpinnerDemo(object):
+        class ProgressSpinnerDemo:
 
             def __init__(self):
                 self.w = Window((80, 52))

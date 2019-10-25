@@ -106,7 +106,7 @@ FloatingWindow
 
 .. method:: FloatingWindow.addToolbar(toolbarIdentifier, toolbarItems, addStandardItems=True)
 
-        Add a toolbar to the Floatingwindow.
+        Add a toolbar to the FloatingWindow.
 
         **toolbarIdentifier** A string representing a unique name for the toolbar.
 
@@ -196,3 +196,7 @@ FloatingWindow
     Remove a toolbar item by his identifier.
 
     **itemIdentifier** A unique string identifier for the removed item.
+
+
+.. autoclass:: HUDFloatingWindow
+   :members:

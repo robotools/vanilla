@@ -24,7 +24,7 @@ class TextEditor(VanillaBaseObject):
 
         from vanilla import Window, TextEditor
 
-        class TextEditorDemo(object):
+        class TextEditorDemo:
 
             def __init__(self):
                 self.w = Window((200, 200))

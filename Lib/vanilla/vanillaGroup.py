@@ -33,11 +33,13 @@ class Group(VanillaBaseObject):
 
     .. image:: /_images/Group.png
 
-    To add a control to a group, simply set it as an attribute of the group.::
+    To add a control to a group, simply set it as an attribute of the group.
+
+    ::
 
         from vanilla import Window, Group, TextBox
 
-        class GroupDemo(object):
+        class GroupDemo:
 
             def __init__(self):
                 self.w = Window((150, 50))

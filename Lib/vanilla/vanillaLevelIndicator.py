@@ -32,7 +32,7 @@ class LevelIndicator(VanillaBaseControl):
 
         from vanilla import Window, LevelIndicator
 
-        class LevelIndicatorDemo(object):
+        class LevelIndicatorDemo:
 
              def __init__(self):
                  self.w = Window((200, 68))
@@ -214,7 +214,7 @@ def LevelIndicatorListCell(style="discrete",
 
         from vanilla import Window, List, LevelIndicatorListCell
 
-        class LevelIndicatorListCellDemo(object):
+        class LevelIndicatorListCellDemo:
 
              def __init__(self):
                  self.w = Window((340, 140))

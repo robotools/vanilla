@@ -16,7 +16,7 @@ class ColorWell(VanillaBaseObject):
         from AppKit import NSColor
         from vanilla import Window, ColorWell
 
-        class ColorWellDemo(object):
+        class ColorWellDemo:
 
             def __init__(self):
                 self.w = Window((100, 50))

@@ -34,11 +34,13 @@ class Window(NSObject):
 
     .. image:: /_images/Window.png
 
-    To add a control to a window, simply set it as an attribute of the window.::
+    To add a control to a window, simply set it as an attribute of the window.
+
+    ::
 
         from vanilla import Window, Button, TextBox
 
-        class WindowDemo(object):
+        class WindowDemo:
 
             def __init__(self):
                 self.w = Window((200, 70), "Window Demo")
@@ -526,11 +528,13 @@ class Window(NSObject):
         .. _documentation: http://developer.apple.com/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyWindow.html
 
         **callback** The callback that will be called when the event occurs.
-        It should accept a *sender* argument which will be the Window that called the callback.::
+        It should accept a *sender* argument which will be the Window that called the callback.
+
+        ::
 
             from vanilla import Window
 
-            class WindowBindDemo(object):
+            class WindowBindDemo:
 
                 def __init__(self):
                     self.w = Window((200, 200))
@@ -895,11 +899,13 @@ class FloatingWindow(Window):
 
     .. image:: /_images/FloatingWindow.png
 
-    To add a control to a window, simply set it as an attribute of the window.::
+    To add a control to a window, simply set it as an attribute of the window.
+
+    ::
 
         from vanilla import FloatingWindow, Button, TextBox
 
-        class FloatingWindowDemo(object):
+        class FloatingWindowDemo:
 
             def __init__(self):
                 self.w = FloatingWindow((200, 70), "FloatingWindow Demo")
@@ -964,11 +970,15 @@ class HUDFloatingWindow(FloatingWindow):
     """
     A window that floats above all other windows and has the HUD appearance.
 
-    To add a control to a window, simply set it as an attribute of the window.::
+    .. image:: /_images/HUDFloatingWindow.png
+
+    To add a control to a window, simply set it as an attribute of the window.
+
+    ::
 
         from vanilla import *
 
-        class HUDFloatingWindowDemo(object):
+        class HUDFloatingWindowDemo:
 
             def __init__(self):
                 self.w = HUDFloatingWindow((200, 70), "HUDFloatingWindow Demo")
@@ -1023,7 +1033,7 @@ class Sheet(Window):
 
         from vanilla import Window, Sheet, Button
 
-        class SheetDemo(object):
+        class SheetDemo:
 
             def __init__(self):
                 self.w = Window((240, 140), "Sheet Demo")

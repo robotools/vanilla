@@ -35,7 +35,7 @@ class Button(VanillaBaseControl):
 
         from vanilla import Window, Button
 
-        class ButtonDemo(object):
+        class ButtonDemo:
 
              def __init__(self):
                  self.w = Window((100, 40))
@@ -170,7 +170,7 @@ class SquareButton(Button):
 
         from vanilla import *
 
-        class SquareButtonDemo(object):
+        class SquareButtonDemo:
 
              def __init__(self):
                  self.w = Window((200, 100))
@@ -225,7 +225,7 @@ class ImageButton(SquareButton):
 
         from vanilla import Window, ImageButton
 
-        class ImageButtonDemo(object):
+        class ImageButtonDemo:
 
              def __init__(self):
                  path = "/path/to/an/image"
@@ -343,7 +343,7 @@ class HelpButton(Button):
 
         from vanilla import Window, HelpButton
 
-        class HelpButtonDemo(object):
+        class HelpButtonDemo:
 
              def __init__(self):
                  self.w = Window((90, 40))

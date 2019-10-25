@@ -20,7 +20,7 @@ class ScrollView(VanillaBaseObject):
                 NSColor.redColor().set()
                 NSRectFill(self.bounds())
 
-        class ScrollViewDemo(object):
+        class ScrollViewDemo:
 
             def __init__(self):
                 self.w = Window((200, 200))

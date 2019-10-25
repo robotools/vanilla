@@ -13,7 +13,7 @@ class ProgressBar(VanillaBaseObject):
 
         from vanilla import Window, ProgressBar, Button
 
-        class ProgressBarDemo(object):
+        class ProgressBarDemo:
 
             def __init__(self):
                 self.w = Window((200, 65))

@@ -22,7 +22,7 @@ class Drawer(VanillaBaseObject):
 
         from vanilla import Window, Button, Drawer, TextBox
 
-        class DrawerDemo(object):
+        class DrawerDemo:
 
             def __init__(self):
                 self.w = Window((200, 200))

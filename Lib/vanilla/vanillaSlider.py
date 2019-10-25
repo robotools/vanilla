@@ -21,7 +21,7 @@ class Slider(VanillaBaseControl):
 
         from vanilla import Window, Slider
 
-        class SliderDemo(object):
+        class SliderDemo:
 
              def __init__(self):
                  self.w = Window((200, 43))

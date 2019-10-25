@@ -26,7 +26,7 @@ class EditText(VanillaBaseControl):
 
         from vanilla import Window, EditText
 
-        class EditTextDemo(object):
+        class EditTextDemo:
 
             def __init__(self):
                 self.w = Window((120, 42))
@@ -174,7 +174,7 @@ class SecureEditText(EditText):
 
         from vanilla import Window, SecureEditText
 
-        class SecureEditTextDemo(object):
+        class SecureEditTextDemo:
 
             def __init__(self):
                 self.w = Window((120, 42))

@@ -79,7 +79,7 @@ class VerticalRadioGroup(VerticalStackGroup, _RadioGroupMixin):
 
         from vanilla import Window, VerticalRadioGroup
 
-        class VerticalRadioGroupDemo(object):
+        class VerticalRadioGroupDemo:
 
             def __init__(self):
                 self.w = Window((100, 100))
@@ -141,7 +141,7 @@ class HorizontalRadioGroup(HorizontalStackGroup, _RadioGroupMixin):
 
         from vanilla import Window, HorizontalRadioGroup
 
-        class RadioGroupDemo(object):
+        class RadioGroupDemo:
 
             def __init__(self):
                 self.w = Window((300, 100))
@@ -236,7 +236,7 @@ class RadioGroup(VanillaBaseControl):
 
         from vanilla import Window, RadioGroup
 
-        class RadioGroupDemo(object):
+        class RadioGroupDemo:
 
             def __init__(self):
                 self.w = Window((100, 60))

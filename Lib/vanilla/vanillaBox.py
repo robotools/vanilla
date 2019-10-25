@@ -9,11 +9,13 @@ class Box(VanillaBaseObject):
 
     .. image:: /_images/Box.png
 
-    To add a control to a box, simply set it as an attribute of the box.::
+    To add a control to a box, simply set it as an attribute of the box.
+
+    ::
 
         from vanilla import Window, Box, TextBox
 
-        class BoxDemo(object):
+        class BoxDemo:
 
             def __init__(self):
                 self.w = Window((150, 70))
@@ -29,7 +31,7 @@ class Box(VanillaBaseObject):
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
     representing the position and size of the box.
 
-    **title** The title to be displayed dabove the box. Pass *None* if no title is desired.
+    **title** The title to be displayed above the box. Pass *None* if no title is desired.
     """
 
     allFrameAdjustments = {
@@ -118,7 +120,7 @@ class HorizontalLine(_Line):
 
         from vanilla import Window, HorizontalLine
 
-        class HorizontalLineDemo(object):
+        class HorizontalLineDemo:
 
             def __init__(self):
                 self.w = Window((100, 20))
@@ -152,7 +154,7 @@ class VerticalLine(_Line):
 
         from vanilla import Window, VerticalLine
 
-        class VerticalLineDemo(object):
+        class VerticalLineDemo:
 
             def __init__(self):
                 self.w = Window((80, 100))

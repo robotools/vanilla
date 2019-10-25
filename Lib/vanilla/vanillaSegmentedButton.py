@@ -22,7 +22,7 @@ class SegmentedButton(VanillaBaseControl):
 
         from vanilla import Window, SegmentedButton
 
-        class SegmentedButtonDemo(object):
+        class SegmentedButtonDemo:
 
              def __init__(self):
                  self.w = Window((120, 40))

@@ -256,7 +256,7 @@ class List(VanillaBaseObject):
 
         from vanilla import Window, List
 
-        class ListDemo(object):
+        class ListDemo:
 
             def __init__(self):
                 self.w = Window((100, 100))
@@ -277,7 +277,7 @@ class List(VanillaBaseObject):
 
         from vanilla import Window, List
 
-        class ListDemo(object):
+        class ListDemo:
 
             def __init__(self):
                 self.w = Window((100, 100))
@@ -1155,7 +1155,7 @@ def CheckBoxListCell(title=None):
 
         from vanilla import Window, List, CheckBoxListCell
 
-        class CheckBoxListCellDemo(object):
+        class CheckBoxListCellDemo:
 
             def __init__(self):
                 self.w = Window((100, 100))
@@ -1198,7 +1198,7 @@ def SliderListCell(minValue=0, maxValue=100, tickMarkCount=None, stopOnTickMarks
 
         from vanilla import Window, List, SliderListCell
 
-        class SliderListCellDemo(object):
+        class SliderListCellDemo:
 
             def __init__(self):
                 self.w = Window((200, 100))
@@ -1251,7 +1251,7 @@ def PopUpButtonListCell(items):
 
         from vanilla import Window, List, PopUpButtonListCell
 
-        class PopUpButtonListCellDemo(object):
+        class PopUpButtonListCellDemo:
 
             def __init__(self):
                 self.w = Window((100, 100))
@@ -1302,7 +1302,7 @@ def ImageListCell(horizontalAlignment="center", verticalAlignment="center", scal
         from AppKit import NSImage
         from vanilla import Window, List, ImageListCell
 
-        class ImageListCellDemo(object):
+        class ImageListCellDemo:
 
             def __init__(self):
                 self.w = Window((100, 100))
@@ -1376,7 +1376,7 @@ def SegmentedButtonListCell(segmentDescriptions):
 
         from vanilla import Window, List, SegmentedButtonListCell
 
-        class SegmentedButtonListCellDemo(object):
+        class SegmentedButtonListCellDemo:
 
             def __init__(self):
                 self.w = Window((100, 100))

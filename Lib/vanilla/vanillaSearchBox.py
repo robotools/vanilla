@@ -13,7 +13,7 @@ class SearchBox(VanillaBaseControl):
 
         from vanilla import Window, SearchBox
 
-        class SearchBoxDemo(object):
+        class SearchBoxDemo:
 
             def __init__(self):
                 self.w = Window((120, 42))
