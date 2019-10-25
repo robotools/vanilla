@@ -132,7 +132,9 @@ class LevelIndicator(VanillaBaseControl):
 
     def getNSLevelIndicator(self):
         """
-        Return the *NSLevelIndicator* that this object wraps.
+        Return the `NSLevelIndicator`_ that this object wraps.
+
+        .. _NSLevelIndicator: https://developer.apple.com/documentation/appkit/nslevelindicator?language=objc
         """
         return self._nsObject
 

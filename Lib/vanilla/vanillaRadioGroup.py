@@ -132,7 +132,7 @@ class VerticalRadioGroup(VerticalStackGroup, _RadioGroupMixin):
 
 class HorizontalRadioGroup(HorizontalStackGroup, _RadioGroupMixin):
 
-    ### TODO: Example is not horizontal but vertical.
+    ### TODO: Example is not horizontal but vertical!
 
     """
     A horizontal collection of radio buttons.
@@ -324,7 +324,9 @@ class RadioGroup(VanillaBaseControl):
 
     def getNSMatrix(self):
         """
-        Return the *NSMatrix* that this object wraps.
+        Return the `NSMatrix`_ that this object wraps.
+
+        .. _NSMatrix: https://developer.apple.com/documentation/appkit/nsmatrix?language=objc
         """
         return self._nsObject
 

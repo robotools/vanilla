@@ -83,7 +83,7 @@ class EditText(VanillaBaseControl):
     | "mini"    |
     +-----------+
 
-    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
+    .. _NSFormatter: https://developer.apple.com/documentation/foundation/nsformatter?language=objc
     """
 
     nsTextFieldClass = NSTextField
@@ -112,7 +112,9 @@ class EditText(VanillaBaseControl):
 
     def getNSTextField(self):
         """
-        Return the *NSTextField* that this object wraps.
+        Return the `NSTextField`_ that this object wraps.
+
+        .. _NSTextField: https://developer.apple.com/documentation/appkit/nstextfield?language=objc
         """
         return self._nsObject
 
@@ -231,13 +233,15 @@ class SecureEditText(EditText):
     | "mini"    |
     +-----------+
 
-    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
+    .. _NSFormatter: https://developer.apple.com/documentation/foundation/nsformatter?language=objc
     """
 
     nsTextFieldClass = NSSecureTextField
 
     def getNSSecureTextField(self):
         """
-        Return the *NSSecureTextField* that this object wraps.
+        Return the `NSSecureTextField`_ that this object wraps.
+
+        .. _NSSecureTextField: https://developer.apple.com/documentation/appkit/nssecuretextfield?language=objc
         """
         return self._nsObject

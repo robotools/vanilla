@@ -85,7 +85,7 @@ class Popover(VanillaBaseObject):
     in the popover.
 
     **parentView** The parent view that the popover should pop out from. This
-    can be either a vanilla object or an instance of `NSView` or `NSView` subclass.
+    can be either a vanilla object or an instance of `NSView`_ or `NSView_` subclass.
 
     **preferredEdge** The edge of the parent view that you want the popover
     to pop out from. These are the options:
@@ -109,6 +109,8 @@ class Popover(VanillaBaseObject):
     +------------------------+-----------------------------------------------------+
     | *"semitransient"*      | Corresponds to NSPopoverBehaviorSemitransient.      |
     +------------------------+-----------------------------------------------------+
+
+    .. _NSView: https://developer.apple.com/documentation/appkit/nsview?language=objc
     """
 
     nsPopoverClass = NSPopover
@@ -311,8 +313,8 @@ class Popover(VanillaBaseObject):
         **metrics** may be either *None* or a dict containing key value pairs
         representing metrics keywords used in the rules defined with strings.
 
-        .. _Visual Format Language: http://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
-        .. _NSLayoutAttribute documentation: http://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
+        .. _Visual Format Language: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
+        .. _NSLayoutAttribute documentation: https://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
         .. _NSLayoutRelation documentation: https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc
 
         """

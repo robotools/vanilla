@@ -192,9 +192,11 @@ class _CheckBoxManualBuild(VanillaBaseObject):
 
     def getNSButton(self):
         """
-        Return the *NSButton* that this object wraps.
+        Return the `NSButton`_ that this object wraps.
 
         *This is currently not implemented for CheckBox.*
+
+        .. _NSButton: https://developer.apple.com/documentation/appkit/nsbutton?language=objc
         """
         # this is not possible since the control is built from parts
         raise NotImplementedError

@@ -60,7 +60,9 @@ class ProgressSpinner(VanillaBaseObject):
 
     def getNSProgressIndicator(self):
         """
-        Return the *NSProgressIndicator* that this object wraps.
+        Return the `NSProgressIndicator`_ that this object wraps.
+
+        .. _NSProgressIndicator: https://developer.apple.com/documentation/appkit/nsprogressindicator?language=objc
         """
         return self._nsObject
 

@@ -60,7 +60,7 @@ class SearchBox(VanillaBaseControl):
     | "mini"    |
     +-----------+
 
-    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
+    .. _NSFormatter: https://developer.apple.com/documentation/foundation/nsformatter?language=objc
     """
 
     nsSearchFieldClass = NSSearchField
@@ -78,7 +78,9 @@ class SearchBox(VanillaBaseControl):
 
     def getNSSearchField(self):
         """
-        Return the *NSSearchField* that this object wraps.
+        Return the `NSSearchField`_ that this object wraps.
+
+        .. _NSSearchField: https://developer.apple.com/documentation/appkit/nssearchfield?language=objc
         """
         return self._nsObject
 

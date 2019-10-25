@@ -57,7 +57,7 @@ class ComboBox(VanillaBaseControl):
 
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
     representing the position and size of the combo box control. The size of
-    the combo box sould match the appropriate value for the given *sizeStyle*.
+    the combo box should match the appropriate value for the given *sizeStyle*.
 
     +---------------------------+
     | **Standard Dimensions**   |
@@ -83,8 +83,6 @@ class ComboBox(VanillaBaseControl):
     **formatter** A `NSFormatter`_ for controlling the display and input of
     the text entry.
 
-    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
-
     **sizeStyle** A string representing the desired size style of the combo box.
     The options are:
 
@@ -95,6 +93,8 @@ class ComboBox(VanillaBaseControl):
     +-----------+
     | "mini"    |
     +-----------+
+
+    .. _NSFormatter: https://developer.apple.com/documentation/foundation/nsformatter?language=objc
     """
 
     nsComboBoxClass = NSComboBox
@@ -128,7 +128,9 @@ class ComboBox(VanillaBaseControl):
 
     def getNSComboBox(self):
         """
-        Return the *NSComboBox* that this object wraps.
+        Return the `NSComboBox`_ that this object wraps.
+
+        .. _NSComboBox: https://developer.apple.com/documentation/appkit/nscombobox?language=objc
         """
         return self._nsObject
 

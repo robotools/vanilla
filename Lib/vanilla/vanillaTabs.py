@@ -108,7 +108,9 @@ class Tabs(VanillaBaseObject):
 
     def getNSTabView(self):
         """
-        Return the *NSTabView* that this object wraps.
+        Return the `NSTabView`_ that this object wraps.
+
+        .. _NSTabView: https://developer.apple.com/documentation/appkit/nstabview?language=objc
         """
         return self._nsObject
 

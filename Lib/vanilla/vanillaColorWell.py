@@ -35,10 +35,10 @@ class ColorWell(VanillaBaseObject):
 
     **callback** The method to be caled when the user selects a new color.
 
-    **color** A *NSColor* object. If *None* is given, the color shown will
+    **color** A `NSColor`_ object. If *None* is given, the color shown will
     be white.
 
-    .. _NSColor: http://developer.apple.com/documentation/appkit/nscolor?language=objc
+    .. _NSColor: https://developer.apple.com/documentation/appkit/nscolor?language=objc
     """
 
     nsColorWellClass = NSColorWell
@@ -52,14 +52,18 @@ class ColorWell(VanillaBaseObject):
 
     def getNSColorWell(self):
         """
-        Return the *NSColorWell* that this object wraps.
+        Return the `NSColorWell`_ that this object wraps.
+
+        .. _NSColorWell: https://developer.apple.com/documentation/appkit/nscolorwell?language=objc
         """
         return self._nsObject
 
     def get(self):
         """
-        Get the *NSColor* object representing the current color in
+        Get the `NSColor`_ object representing the current color in
         the color well.
+
+        .. _NSColor: https://developer.apple.com/documentation/appkit/nscolor?language=objc
         """
         return self._nsObject.color()
 
@@ -67,7 +71,7 @@ class ColorWell(VanillaBaseObject):
         """
         Set the color in the color well.
 
-        **color** A *NSColor* object representing the color to be displayed
+        **color** A `NSColor`_ object representing the color to be displayed
         in the color well.
         """
         return self._nsObject.setColor_(color)

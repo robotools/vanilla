@@ -61,10 +61,10 @@ class SegmentedButton(VanillaBaseControl):
     +----------------------------+----------------------------------------------------------+
     | imagePath (optional)       | A file path to an image to display in the segment.       |
     +----------------------------+----------------------------------------------------------+
-    | imageNamed (optional)      | The name of an image already loaded as a *NSImage* by    |
+    | imageNamed (optional)      | The name of an image already loaded as a `NSImage`_ by   |
     |                            | the application to display in the segment.               |
     +----------------------------+----------------------------------------------------------+
-    | imageObject (optional)     | A *NSImage* object to display in the segment.            |
+    | imageObject (optional)     | A `NSImage`_ object to display in the segment.           |
     +----------------------------+----------------------------------------------------------+
     | *imageTemplate* (optional) | A boolean representing if the image should converted     |
     |                            | to a template image.                                     |
@@ -92,6 +92,8 @@ class SegmentedButton(VanillaBaseControl):
     +-----------+
     | "mini"    |
     +-----------+
+
+    .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
     """
 
     nsSegmentedControlClass = NSSegmentedControl
@@ -141,7 +143,9 @@ class SegmentedButton(VanillaBaseControl):
 
     def getNSSegmentedButton(self):
         """
-        Return the *NSSegmentedButton* that this object wraps.
+        Return the `NSSegmentedControl`_ that this object wraps.
+
+        .. _NSSegmentedControl: https://developer.apple.com/documentation/appkit/nssegmentedcontrol?language=objc
         """
         return self._nsObject
 
@@ -154,7 +158,7 @@ class SegmentedButton(VanillaBaseControl):
 
     def set(self, value):
         """
-        Set the selected segement. If this control is set to
+        Set the selected segment. If this control is set to
         `any` mode, `value` should be a list of integers.
         Otherwise `value` should be a single integer.
         """
@@ -167,7 +171,7 @@ class SegmentedButton(VanillaBaseControl):
 
     def get(self):
         """
-        Get the selected segement. If this control is set to
+        Get the selected segment. If this control is set to
         `any` mode, the returned value will be a list of integers.
         Otherwise the returned value will be a single integer.
         """

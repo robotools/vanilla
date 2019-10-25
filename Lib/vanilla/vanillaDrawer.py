@@ -18,7 +18,11 @@ class Drawer(VanillaBaseObject):
 
     .. image:: /_images/Drawer.png
 
-    To add a control to a drawer, simply set it as an attribute of the drawer.::
+    .. warning:: Drawers are deprecated and should not be used in modern macOS apps.
+
+    To add a control to a drawer, simply set it as an attribute of the drawer.
+
+    ::
 
         from vanilla import Window, Button, Drawer, TextBox
 
@@ -53,8 +57,8 @@ class Drawer(VanillaBaseObject):
     of the drawer.
 
     **preferredEdge** The preferred edge of the window that the drawer should be
-     attached to. If the drawer cannot be opened on the preferred edge, it will
-     be opened on the opposite edge. The options are:
+    attached to. If the drawer cannot be opened on the preferred edge, it will
+    be opened on the opposite edge. The options are:
 
     +----------+
     | "left"   |
@@ -97,7 +101,9 @@ class Drawer(VanillaBaseObject):
 
     def getNSDrawer(self):
         """
-        Return the *NSDrawer* that this object wraps.
+        Return the `NSDrawer`_ that this object wraps.
+
+        .. _NSDrawer: https://developer.apple.com/documentation/appkit/nsdrawer?language=objc
         """
         return self._nsObject
 

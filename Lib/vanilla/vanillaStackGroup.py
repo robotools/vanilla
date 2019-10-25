@@ -22,9 +22,11 @@ the position and size of the group.
 * "leading"
 * "center"
 * "trailing"
-* One of the *NSLayoutAttribute* options.
+* One of the `NSLayoutAttribute`_ options.
 
 **edgeInsets** Tuple of four numbers indicating the amount to inset the views.
+
+.. _NSLayoutAttribute: https://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
 """
 
 class _StackGroup(VanillaBaseObject):
@@ -52,7 +54,7 @@ class _StackGroup(VanillaBaseObject):
         """
         Add a view.
 
-        **view** A vanilla object or an instance of *NSView*.
+        **view** A vanilla object or an instance of `NSView`_.
 
         **width** and **height** are None, numbers or strings:
 
@@ -70,14 +72,17 @@ class _StackGroup(VanillaBaseObject):
         * "leading"
         * "center"
         * "trailing"
-        * One of the *NSStackViewGravity* options.
+        * One of the `NSStackViewGravity`_ options.
 
         VerticalStackGroup Options:
 
         * "top"
         * "center"
         * "bottom"
-        * One of the *NSStackViewGravity* options.
+        * One of the `NSStackViewGravity`_ options.
+
+        .. _NSView: https://developer.apple.com/documentation/appkit/nsview?language=objc
+        .. _NSStackViewGravity: https://developer.apple.com/documentation/appkit/nsstackviewgravity?language=occ
         """
 
         index = len(self._getContentView().views())
@@ -102,7 +107,7 @@ class _StackGroup(VanillaBaseObject):
         """
         Remove a view.
 
-        **view** A vanilla object or an instance of *NSView*.
+        **view** A vanilla object or an instance of `NSView`_.
         """
         if isinstance(view, VanillaBaseObject):
             view = view._getContentView()

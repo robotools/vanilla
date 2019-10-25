@@ -16,11 +16,11 @@ class GradientButton(ImageButton):
 
     **imagePath** A file path to an image.
 
-    **imageNamed** The name of an image already loaded as a *NSImage* by the application.
+    **imageNamed** The name of an image already loaded as a `NSImage`_ by the application.
 
-    **imageObject** A *NSImage* object.
+    **imageObject** A `NSImage`_ object.
 
-    *Only one of imagePath, imageNamed, imageObject should be set.*
+    .. note:: Only one of *imagePath*, *imageNamed*, *imageObject* should be set.
 
     **imagePosition** The position of the image relative to the title.
     The options are:
@@ -47,6 +47,8 @@ class GradientButton(ImageButton):
     +-----------+
     | "mini"    |
     +-----------+
+
+    .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
     """
 
     nsBezelStyle = NSSmallSquareBezelStyle

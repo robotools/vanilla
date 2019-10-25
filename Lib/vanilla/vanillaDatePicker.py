@@ -48,13 +48,13 @@ class DatePicker(VanillaBaseControl):
     | Clock              | 122w 123h           |
     +--------------------+---------------------+
 
-    **date** A *NSDate* object representing the date and time that should be
+    **date** A `NSDate`_ object representing the date and time that should be
     set in the control.
 
-    **minDate** A *NSDate* object representing the lowest date and time that
+    **minDate** A `NSDate`_ object representing the lowest date and time that
     can be set in the control.
 
-    **maxDate** A *NSDate* object representing the highest date and time that
+    **maxDate** A `NSDate`_ object representing the highest date and time that
     can be set in the control.
 
     **showStepper** A boolean indicating if the thumb stepper should be shown
@@ -101,6 +101,8 @@ class DatePicker(VanillaBaseControl):
     +-----------+
     | "mini"    |
     +-----------+
+
+    .. _NSDate: https://developer.apple.com/documentation/foundation/nsdate?language=objc
     """
 
     nsDatePickerClass = NSDatePicker
@@ -128,7 +130,9 @@ class DatePicker(VanillaBaseControl):
 
     def getNSDatePicker(self):
         """
-        Return the *NSDatePicker* that this object wraps.
+        Return the `NSDatePicker`_ that this object wraps.
+
+        .. _NSDatePicker: https://developer.apple.com/documentation/appkit/nsdatepicker?language=objc
         """
         return self._nsObject
 
@@ -142,6 +146,6 @@ class DatePicker(VanillaBaseControl):
         """
         Set the contents of the date picker control.
 
-        **value** A *NSDate* object.
+        **value** A `NSDate`_ object.
         """
         self._nsObject.setDateValue_(value)

@@ -410,7 +410,7 @@ class SplitView(VanillaBaseObject):
     subviews, or "panes". Those dictionaries can have the following keys:
 
     +-----------------------+-------------------------------------------------------------------------------+
-    | *view*                | A view, either a Vanilla object or a NSView. Required.                        |
+    | *view*                | A view, either a Vanilla object or a `NSView`_. Required.                     |
     +-----------------------+-------------------------------------------------------------------------------+
     | *"identifier"*        | A string identifying the pane. Required.                                      |
     +-----------------------+-------------------------------------------------------------------------------+
@@ -445,9 +445,12 @@ class SplitView(VanillaBaseObject):
 
     **dividerThickness** An integer representing the desired thickness of the divider.
 
-    **dividerColor** A *NSColor* that should be used to paint the divider.
+    **dividerColor** A `NSColor`_ that should be used to paint the divider.
 
     **autosaveName** The autosave name for the SplitView.
+
+    .. _NSColor: https://developer.apple.com/documentation/appkit/nscolor?language=objc
+    .. _NSView: https://developer.apple.com/documentation/appkit/nsview?language=objc
     """
 
     nsSplitViewClass = VanillaSplitViewSubclass
@@ -538,7 +541,9 @@ class SplitView(VanillaBaseObject):
 
     def getNSSplitView(self):
         """
-        Return the *NSSplitView* that this object wraps.
+        Return the `NSSplitView`_ that this object wraps.
+
+        .. _NSSplitView: https://developer.apple.com/documentation/appkit/nssplitview?language=objc
         """
         return self._nsObject
 
@@ -547,11 +552,11 @@ class SplitView(VanillaBaseObject):
         Set a function that will draw the contents of the divider.
         This can be *None* or a function that accepts the following arguments:
 
-        +-----------+---------------------------------------+
-        | splitView | The SplitView calling the function.   |
-        +-----------+---------------------------------------+
-        | rect      | The rectangle containing the divider. |
-        +-----------+---------------------------------------+
+        +-------------+---------------------------------------+
+        | *splitView* | The SplitView calling the function.   |
+        +-------------+---------------------------------------+
+        | *rect*      | The rectangle containing the divider. |
+        +-------------+---------------------------------------+
 
         The function must use the Cocoa drawing API.
         """

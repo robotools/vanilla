@@ -143,7 +143,9 @@ class Slider(VanillaBaseControl):
 
     def getNSSlider(self):
         """
-        Return the *NSSlider* that this object wraps.
+        Return the `NSSlider`_ that this object wraps.
+
+        .. _NSSlider: https://developer.apple.com/documentation/appkit/nsslider?language=objc
         """
         return self._nsObject
 

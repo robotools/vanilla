@@ -57,7 +57,9 @@ class Box(VanillaBaseObject):
 
     def getNSBox(self):
         """
-        Return the *NSBox* that this object wraps.
+        Return the `NSBox`_ that this object wraps.
+
+        .. _NSBox: https://developer.apple.com/documentation/appkit/nsbox?language=objc
         """
         return self._nsObject
 

@@ -363,7 +363,7 @@ class List(VanillaBaseObject):
     **columnDescriptions** An ordered list of dictionaries describing the
     columns. This is only necessary for multiple column lists.
 
-    .. _NSTableViewDataSource: http://developer.apple.com/documentation/appkit/nstableviewdatasource?language=objc
+    .. _NSTableViewDataSource: https://developer.apple.com/documentation/appkit/nstableviewdatasource?language=objc
 
     +--------------------------------+-----------------------------------------------------------+
     | *"title"*                      | The title to appear in the column header.                 |
@@ -406,8 +406,8 @@ class List(VanillaBaseObject):
     |                                | override this in very specific cases.                     |
     +--------------------------------+-----------------------------------------------------------+
 
-    .. _NSFormatter: http://developer.apple.com/documentation/foundation/nsformatter?language=objc
-    .. _binding object: http://developer.apple.com/documentation/appkit/cocoa_bindings?language=objc
+    .. _NSFormatter: https://developer.apple.com/documentation/foundation/nsformatter?language=objc
+    .. _binding object: https://developer.apple.com/documentation/appkit/cocoa_bindings?language=objc
 
     **showColumnTitles** Boolean representing if the column titles should be shown or not.
     Column titles will not be shown in single column lists.
@@ -478,7 +478,7 @@ class List(VanillaBaseObject):
     |                                   | described below.                                                   |
     +-----------------------------------+--------------------------------------------------------------------+
 
-    .. _drag operation: http://developer.apple.com/documentation/appkit/nsdragginginfo?language=objc
+    .. _drag operation: https://developer.apple.com/documentation/appkit/nsdragginginfo?language=objc
 
     The *dropInfo* dictionary passed to drop callbacks will be of this form:
 
@@ -641,13 +641,17 @@ class List(VanillaBaseObject):
 
     def getNSScrollView(self):
         """
-        Return the *NSScrollView* that this object wraps.
+        Return the `NSScrollView`_ that this object wraps.
+
+        .. _NSScrollView: https://developer.apple.com/documentation/appkit/nsscrollview?language=objc
         """
         return self._nsObject
 
     def getNSTableView(self):
         """
-        Return the *NSTableView* that this object wraps.
+        Return the `NSTableView`_ that this object wraps.
+
+        .. _NSTableView: https://developer.apple.com/documentation/appkit/nstableview?language=objc
         """
         return self._tableView
 
@@ -1399,17 +1403,18 @@ def SegmentedButtonListCell(segmentDescriptions):
 
     **segmentDescriptions** An ordered list of dictionaries describing the segments.
 
-    +------------------------+----------------------------------------------------+
-    | title (optional)       | The title of the segment.                          |
-    +------------------------+----------------------------------------------------+
-    | imagePath (optional)   | A file path to an image to display in the segment. |
-    +------------------------+----------------------------------------------------+
-    | imageNamed (optional)  | The name of an image already loaded as a *NSImage* |
-    |                        | by the application to display in the segment.      |
-    +------------------------+----------------------------------------------------+
-    | imageObject (optional) | A *NSImage* object to display in the segment.      |
-    +------------------------+----------------------------------------------------+
+    +------------------------+-----------------------------------------------------+
+    | title (optional)       | The title of the segment.                           |
+    +------------------------+-----------------------------------------------------+
+    | imagePath (optional)   | A file path to an image to display in the segment.  |
+    +------------------------+-----------------------------------------------------+
+    | imageNamed (optional)  | The name of an image already loaded as a `NSImage`_ |
+    |                        | by the application to display in the segment.       |
+    +------------------------+-----------------------------------------------------+
+    | imageObject (optional) | A `NSImage`_ object to display in the segment.      |
+    +------------------------+-----------------------------------------------------+
 
+    .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
     """
     cell = NSSegmentedCell.alloc().init()
     cell.setControlSize_(NSMiniControlSize)

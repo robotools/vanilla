@@ -106,13 +106,17 @@ class Group(VanillaBaseObject):
 
     def getNSView(self):
         """
-        Return the *NSView* that this object wraps.
+        Return the `NSView`_ that this object wraps.
+
+        .. _NSView: https://developer.apple.com/documentation/appkit/nsview?language=objc
         """
         return self._nsObject
 
     def getNSVisualEffectView(self):
         """
-        Return the *NSVisualEffectView* that this object wraps.
+        Return the `NSVisualEffectView`_ that this object wraps.
+
+        .. _NSVisualEffectView: https://developer.apple.com/documentation/appkit/nsvisualeffectview?language=objc
         """
 
 

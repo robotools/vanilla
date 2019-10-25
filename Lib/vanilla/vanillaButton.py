@@ -107,7 +107,9 @@ class Button(VanillaBaseControl):
 
     def getNSButton(self):
         """
-        Return the *NSButton* that this object wraps.
+        Return the `NSButton`_ that this object wraps.
+
+        .. _NSButton: https://developer.apple.com/documentation/appkit/nsbutton?language=objc
         """
         return self._nsObject
 
@@ -248,11 +250,11 @@ class ImageButton(SquareButton):
 
     **imagePath** A file path to an image.
 
-    **imageNamed** The name of an image already loaded as a *NSImage* by the application.
+    **imageNamed** The name of an image already loaded as a `NSImage`_ by the application.
 
-    **imageObject** A *NSImage* object.
+    **imageObject** A `NSImage`_ object.
 
-    *Only one of imagePath, imageNamed, imageObject should be set.*
+    .. note:: Only one of *imagePath*, *imageNamed*, *imageObject* should be set.
 
     **imagePosition** The position of the image relative to the title.
     The options are:
@@ -279,6 +281,8 @@ class ImageButton(SquareButton):
     +-----------+
     | "mini"    |
     +-----------+
+
+    .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
     """
 
     frameAdjustments = None
@@ -315,11 +319,11 @@ class ImageButton(SquareButton):
 
         **imagePath** A file path to an image.
 
-        **imageNamed** The name of an image already load as a *NSImage* by the application.
+        **imageNamed** The name of an image already loaded as an `NSImage`_ by the application.
 
-        **imageObject** A *NSImage* object.
+        **imageObject** A `NSImage`_ object.
 
-        *Only one of imagePath, imageNamed, imageObject should be set.*
+        .. note:: Only one of *imagePath*, *imageNamed*, *imageObject* should be set.
         """
         if imagePath is not None:
             image = NSImage.alloc().initWithContentsOfFile_(imagePath)

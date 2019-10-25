@@ -35,7 +35,7 @@ class ScrollView(VanillaBaseObject):
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the scroll view.
 
-    **nsView** A *NSView* object.
+    **nsView** A `NSView`_ object.
 
     **hasHorizontalScroller** Boolean representing if the scroll view has horizontal scrollers.
 
@@ -43,9 +43,12 @@ class ScrollView(VanillaBaseObject):
 
     **autohidesScrollers** Boolean representing if the scroll view auto-hides its scrollers.
 
-    **backgroundColor** A *NSColor* object representing the background color of the scroll view.
+    **backgroundColor** A `NSColor`_ object representing the background color of the scroll view.
 
     **drawsBackground** Boolean representing if the background should be drawn.
+
+    .. _NSView: https://developer.apple.com/documentation/appkit/nsview?language=objc
+    .. _NSColor: https://developer.apple.com/documentation/appkit/nscolor?language=objc
     """
 
     nsScrollViewClass = NSScrollView
@@ -73,13 +76,15 @@ class ScrollView(VanillaBaseObject):
 
     def getNSScrollView(self):
         """
-        Return the *NSScrollView* that this object wraps.
+        Return the `NSScrollView`_ that this object wraps.
+
+        .. _NSScrollView: https://developer.apple.com/documentation/appkit/nsscrollview?language=objc
         """
         return self._nsObject
 
     def setBackgroundColor(self, color):
         """
-        Set the background of the scrol view to _color_.
+        Set the background of the scrol view to *color*.
         """
         self._nsObject.setBackgroundColor_(color)
 

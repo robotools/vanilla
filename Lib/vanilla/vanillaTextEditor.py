@@ -82,13 +82,17 @@ class TextEditor(VanillaBaseObject):
 
     def getNSScrollView(self):
         """
-        Return the *NSScrollView* that this object wraps.
+        Return the `NSScrollView`_ that this object wraps.
+
+        .. _NSScrollView: https://developer.apple.com/documentation/appkit/nsscrollview?language=objc
         """
         return self._nsObject
 
     def getNSTextView(self):
         """
-        Return the *NSTextView* that this object wraps.
+        Return the `NSTextView`_ that this object wraps.
+
+        .. _NSTextView: https://developer.apple.com/documentation/appkit/nstextview?language=objc
         """
         return self._textView
 
