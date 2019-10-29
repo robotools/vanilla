@@ -75,7 +75,9 @@ class ImageView(VanillaBaseObject):
 
     def getNSImageView(self):
         """
-        Return the *NSImageView* that this object wraps.
+        Return the `NSImageView`_ that this object wraps.
+
+        .. _NSImageView: https://developer.apple.com/documentation/appkit/nsimageview?language=objc
         """
         return self._nsObject
 
@@ -85,14 +87,15 @@ class ImageView(VanillaBaseObject):
 
         **imagePath** A file path to an image.
 
-        **imageNamed** The name of an image already load as a *NSImage*
+        **imageNamed** The name of an image already load as a `NSImage`_
         by the application.
 
-        **imageObject** A *NSImage* object.
+        **imageObject** A `NSImage`_ object.
 
         .. note::
            Only one of *imagePath*, *imageNamed*, *imageObject* should be set.
 
+        .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
         """
         if imagePath is not None:
             image = NSImage.alloc().initWithContentsOfFile_(imagePath)

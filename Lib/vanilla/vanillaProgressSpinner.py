@@ -5,11 +5,15 @@ from vanilla.vanillaBase import VanillaBaseObject, _sizeStyleMap
 class ProgressSpinner(VanillaBaseObject):
 
     """
-    An animated, spinning progress indicator.::
+    An animated, spinning progress indicator.
 
-        from vanilla import *
+    .. image:: /_images/ProgressSpinner.png
 
-        class ProgressSpinnerDemo(object):
+    ::
+
+        from vanilla import Window, ProgressSpinner
+
+        class ProgressSpinnerDemo:
 
             def __init__(self):
                 self.w = Window((80, 52))
@@ -56,7 +60,9 @@ class ProgressSpinner(VanillaBaseObject):
 
     def getNSProgressIndicator(self):
         """
-        Return the *NSProgressIndicator* that this object wraps.
+        Return the `NSProgressIndicator`_ that this object wraps.
+
+        .. _NSProgressIndicator: https://developer.apple.com/documentation/appkit/nsprogressindicator?language=objc
         """
         return self._nsObject
 

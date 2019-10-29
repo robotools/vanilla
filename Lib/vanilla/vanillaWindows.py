@@ -32,11 +32,15 @@ class Window(NSObject):
     """
     A window capable of containing controls.
 
-    To add a control to a window, simply set it as an attribute of the window.::
+    .. image:: /_images/Window.png
 
-        from vanilla import *
+    To add a control to a window, simply set it as an attribute of the window.
 
-        class WindowDemo(object):
+    ::
+
+        from vanilla import Window, Button, TextBox
+
+        class WindowDemo:
 
             def __init__(self):
                 self.w = Window((200, 70), "Window Demo")
@@ -96,7 +100,7 @@ class Window(NSObject):
     **screen** A `NSScreen`_ object indicating the screen that the window should be
     drawn to. When None the window will be drawn to the main screen.
 
-    .. _NSScreen: http://developer.apple.com/documentation/appkit/nsscreen?language=objc
+    .. _NSScreen: https://developer.apple.com/documentation/appkit/nsscreen?language=objc
 
     """
 
@@ -216,20 +220,26 @@ class Window(NSObject):
         """
         Add this window to the list of windows associated with a document.
 
-        **document** should be a *NSDocument* instance.
+        **document** should be a `NSDocument`_ instance.
+
+        .. _NSDocument: https://developer.apple.com/documentation/appkit/nsdocument?language=objc
         """
         document.addWindowController_(self.getNSWindowController())
 
     def getNSWindow(self):
         """
-        Return the *NSWindow* that this Vanilla object wraps.
+        Return the `NSWindow`_ that this Vanilla object wraps.
+
+        .. _NSWindow: https://developer.apple.com/documentation/appkit/nswindow?language=objc
         """
         return self._window
 
     def getNSWindowController(self):
         """
-        Return an *NSWindowController* for the *NSWindow* that this Vanilla
+        Return an `NSWindowController`_ for the `NSWindow`_ that this Vanilla
         object wraps, creating a one if needed.
+
+        .. _NSWindowController: https://developer.apple.com/documentation/appkit/nswindowcontroller?language=objc
         """
         controller = self._window.windowController()
         if controller is None:
@@ -449,8 +459,8 @@ class Window(NSObject):
         key value pairs representing metrics keywords used in the
         rules defined with strings.
 
-        .. _Visual Format Language: http://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
-        .. _NSLayoutAttribute documentation: http://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
+        .. _Visual Format Language: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
+        .. _NSLayoutAttribute documentation: https://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
         .. _NSLayoutRelation documentation: https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc
 
         """
@@ -521,14 +531,16 @@ class Window(NSObject):
         *For more information about main and key windows, refer to the Cocoa `documentation`_
         on the subject.*
 
-        .. _documentation: http://developer.apple.com/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyWindow.html
+        .. _documentation: https://developer.apple.com/documentation/Cocoa/Conceptual/WinPanel/Concepts/ChangingMainKeyWindow.html
 
         **callback** The callback that will be called when the event occurs.
-        It should accept a *sender* argument which will be the Window that called the callback.::
+        It should accept a *sender* argument which will be the Window that called the callback.
+
+        ::
 
             from vanilla import Window
 
-            class WindowBindDemo(object):
+            class WindowBindDemo:
 
                 def __init__(self):
                     self.w = Window((200, 200))
@@ -666,16 +678,16 @@ class Window(NSObject):
         +-------------------------------+---------------------------------------------------------------------------+
         | *selectable* (optional)       | A boolean representing if the item is selectable or not. The default      |
         |                               | value is _False_. For more information on selectable toolbar items, refer |
-        |                               | to Apple's `documentation <http://tinyurl.com/SelectableItems>`_          |
+        |                               | to Apple's documentation.                                                 |
         +-------------------------------+---------------------------------------------------------------------------+
-        | *view* (optional)             | A *NSView* object to be used instead of an image. Defaults to *None*.     |
+        | *view* (optional)             | A `NSView`_ object to be used instead of an image. Defaults to *None*.    |
         +-------------------------------+---------------------------------------------------------------------------+
         | *visibleByDefault* (optional) | If the item should be visible by default pass True to this argument.      |
         |                               | If the item should be added to the toolbar only through the customization |
         |                               | palette, use a value of _False_. Defaults to _True_.                      |
         +-------------------------------+---------------------------------------------------------------------------+
 
-        .. _NSImage: http://developer.apple.com/documentation/appkit/nsimage?language=objc
+        .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
 
         **addStandardItems** A boolean, specifying whether the standard Cocoa toolbar items
         should be added. Defaults to *True*. If you set it to *False*, you must specify any
@@ -891,11 +903,15 @@ class FloatingWindow(Window):
     """
     A window that floats above all other windows.
 
-    To add a control to a window, simply set it as an attribute of the window.::
+    .. image:: /_images/FloatingWindow.png
 
-        from vanilla import *
+    To add a control to a window, simply set it as an attribute of the window.
 
-        class FloatingWindowDemo(object):
+    ::
+
+        from vanilla import FloatingWindow, Button, TextBox
+
+        class FloatingWindowDemo:
 
             def __init__(self):
                 self.w = FloatingWindow((200, 70), "FloatingWindow Demo")
@@ -933,7 +949,7 @@ class FloatingWindow(Window):
     **screen** A `NSScreen`_ object indicating the screen that the window
     should be drawn to. When None the window will be drawn to the main screen.
 
-    .. _NSScreen: http://developer.apple.com/documentation/appkit/nsscreen?language=objc
+    .. _NSScreen: https://developer.apple.com/documentation/appkit/nsscreen?language=objc
     """
 
     nsWindowStyleMask = NSTitledWindowMask | NSUtilityWindowMask
@@ -960,11 +976,15 @@ class HUDFloatingWindow(FloatingWindow):
     """
     A window that floats above all other windows and has the HUD appearance.
 
-    To add a control to a window, simply set it as an attribute of the window.::
+    .. image:: /_images/HUDFloatingWindow.png
+
+    To add a control to a window, simply set it as an attribute of the window.
+
+    ::
 
         from vanilla import *
 
-        class HUDFloatingWindowDemo(object):
+        class HUDFloatingWindowDemo:
 
             def __init__(self):
                 self.w = HUDFloatingWindow((200, 70), "HUDFloatingWindow Demo")
@@ -1002,7 +1022,7 @@ class HUDFloatingWindow(FloatingWindow):
     **screen** A `NSScreen`_ object indicating the screen that the window
     should be drawn to. When None the window will be drawn to the main screen.
 
-    .. _NSScreen: http://developer.apple.com/documentation/appkit/nsscreen?language=objc
+    .. _NSScreen: https://developer.apple.com/documentation/appkit/nsscreen?language=objc
     """
 
     nsWindowStyleMask = NSHUDWindowMask | NSUtilityWindowMask | NSTitledWindowMask | NSBorderlessWindowMask
@@ -1013,17 +1033,29 @@ class Sheet(Window):
     """
     A window that is attached to another window.
 
+    .. image:: /_images/Sheet.png
+
     To add a control to a sheet, simply set it as an attribute of the sheet.::
 
-        from vanilla import *
+        from vanilla import Window, Sheet, Button
 
-        class SheetDemo(object):
+        class SheetDemo:
 
-            def __init__(self, parentWindow):
-                self.w = Sheet((200, 70), parentWindow)
-                self.w.myButton = Button((10, 10, -10, 20), "My Button")
-                self.w.myTextBox = TextBox((10, 40, -10, 17), "My Text Box")
+            def __init__(self):
+                self.w = Window((240, 140), "Sheet Demo")
+                self.w.openSheet = Button((10, -30, -10, 20),
+                            "open sheet", callback=self.openSheetCallback)
                 self.w.open()
+
+            def openSheetCallback(self, sender):
+                self.sheet = Sheet((160, 70), self.w)
+                self.sheet.closeSheet = Button((10, -30, -10, 20),
+                            "close sheet", callback=self.closeSheetCallback)
+                self.sheet.open()
+
+            def closeSheetCallback(self, sender):
+                self.sheet.close()
+                del self.sheet
 
         SheetDemo()
 
@@ -1062,3 +1094,4 @@ class Sheet(Window):
             self._window, parentWindow, None, None, 0)
         # See Window.open():
         self.retain()
+

@@ -7,11 +7,15 @@ class Box(VanillaBaseObject):
     """
     A bordered container for other controls.
 
-    To add a control to a box, simply set it as an attribute of the box.::
+    .. image:: /_images/Box.png
 
-        from vanilla import *
+    To add a control to a box, simply set it as an attribute of the box.
 
-        class BoxDemo(object):
+    ::
+
+        from vanilla import Window, Box, TextBox
+
+        class BoxDemo:
 
             def __init__(self):
                 self.w = Window((150, 70))
@@ -27,7 +31,7 @@ class Box(VanillaBaseObject):
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
     representing the position and size of the box.
 
-    **title** The title to be displayed dabove the box. Pass *None* if no title is desired.
+    **title** The title to be displayed above the box. Pass *None* if no title is desired.
     """
 
     allFrameAdjustments = {
@@ -53,7 +57,9 @@ class Box(VanillaBaseObject):
 
     def getNSBox(self):
         """
-        Return the *NSBox* that this object wraps.
+        Return the `NSBox`_ that this object wraps.
+
+        .. _NSBox: https://developer.apple.com/documentation/appkit/nsbox?language=objc
         """
         return self._nsObject
 
@@ -108,11 +114,15 @@ class _Line(Box):
 class HorizontalLine(_Line):
 
     """
-    A horizontal line.::
+    A horizontal line.
 
-        from vanilla import *
+    .. image:: /_images/HorizontalLine.png
 
-        class HorizontalLineDemo(object):
+    ::
+
+        from vanilla import Window, HorizontalLine
+
+        class HorizontalLineDemo:
 
             def __init__(self):
                 self.w = Window((100, 20))
@@ -138,11 +148,15 @@ class HorizontalLine(_Line):
 class VerticalLine(_Line):
 
     """
-    A vertical line.::
+    A vertical line.
 
-        from vanilla import *
+    .. image:: /_images/VerticalLine.png
 
-        class VerticalLineDemo(object):
+    ::
+
+        from vanilla import Window, VerticalLine
+
+        class VerticalLineDemo:
 
             def __init__(self):
                 self.w = Window((80, 100))

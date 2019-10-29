@@ -11,14 +11,18 @@ from vanilla.vanillaBase import osVersionCurrent, osVersion10_10, VanillaBaseObj
 # creating the control.
 
 _doc = """
-A standard check box.::
+A standard check box.
 
-    from vanilla import *
+.. image:: /_images/CheckBox.png
 
-    class CheckBoxDemo(object):
+::
+
+    from vanilla import Window, CheckBox
+
+    class CheckBoxDemo:
 
         def __init__(self):
-            self.w = Window((100, 40))
+            self.w = Window((120, 40))
             self.w.checkBox = CheckBox((10, 10, -10, 20), "A CheckBox",
                                callback=self.checkBoxCallback, value=True)
             self.w.open()
@@ -188,9 +192,11 @@ class _CheckBoxManualBuild(VanillaBaseObject):
 
     def getNSButton(self):
         """
-        Return the *NSButton* that this object wraps.
+        Return the `NSButton`_ that this object wraps.
 
         *This is currently not implemented for CheckBox.*
+
+        .. _NSButton: https://developer.apple.com/documentation/appkit/nsbutton?language=objc
         """
         # this is not possible since the control is built from parts
         raise NotImplementedError

@@ -14,11 +14,15 @@ _textAlignmentMap = {
 class TextBox(VanillaBaseControl):
 
     """
-    A rectangle containing static text.::
+    A rectangle containing static text.
 
-        from vanilla import *
+    .. image:: /_images/TextBox.png
 
-        class TextBoxDemo(object):
+    ::
+
+        from vanilla import Window, TextBox
+
+        class TextBoxDemo:
 
              def __init__(self):
                  self.w = Window((100, 37))
@@ -41,7 +45,7 @@ class TextBox(VanillaBaseControl):
     +---------+---+-----------+
 
     **text** The text to be displayed in the text box. If the object is a
-    *NSAttributedString*, the attributes will be used for display.
+    `NSAttributedString`_, the attributes will be used for display.
 
     **alignment** A string representing the desired visual alignment of the
     text in the text box. The options are:
@@ -70,6 +74,8 @@ class TextBox(VanillaBaseControl):
     +-----------+
     | "mini"    |
     +-----------+
+
+    .. _NSAttributedString: https://developer.apple.com/documentation/foundation/nsattributedstring?language=objc
     """
 
     nsTextFieldClass = NSTextField
@@ -89,7 +95,9 @@ class TextBox(VanillaBaseControl):
 
     def getNSTextField(self):
         """
-        Return the *NSTextField* that this object wraps.
+        Return the `NSTextField`_ that this object wraps.
+
+        .. _NSTextField: https://developer.apple.com/documentation/appkit/nstextfield?language=objc
         """
         return self._nsObject
 

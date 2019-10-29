@@ -6,11 +6,15 @@ from vanilla.vanillaList import VanillaMenuBuilder
 class PopUpButton(VanillaBaseControl):
 
     """
-    A button which, when selected, displays a list of items for the user to choose from.::
+    A button which, when selected, displays a list of items for the user to choose from.
 
-        from vanilla import *
+    .. image:: /_images/PopUpButton.png
 
-        class PopUpButtonDemo(object):
+    ::
+
+        from vanilla import Window, PopUpButton
+
+        class PopUpButtonDemo:
 
             def __init__(self):
                 self.w = Window((100, 40))
@@ -75,7 +79,9 @@ class PopUpButton(VanillaBaseControl):
 
     def getNSPopUpButton(self):
         """
-        Return the *NSPopUpButton* that this object wraps.
+        Return the `NSPopUpButton`_ that this object wraps.
+
+        .. _NSPopUpButton: https://developer.apple.com/documentation/appkit/nspopupbutton?language=objc
         """
         return self._nsObject
 
@@ -125,11 +131,15 @@ class PopUpButton(VanillaBaseControl):
 class ActionButton(PopUpButton):
 
     """
-    An action button with a menu.::
+    An action button with a menu.
 
-        from vanilla import *
+    .. image:: /_images/ActionButton.png
 
-        class ActionPopUpButtonDemo(object):
+    ::
+
+        from vanilla import Window, ActionButton
+
+        class ActionPopUpButtonDemo:
 
             def __init__(self):
                 self.w = Window((100, 40))
@@ -169,7 +179,7 @@ class ActionButton(PopUpButton):
     +-----------+---+-----------+
 
     **items** A list of items to appear in the pop up list as dictionaries.
-    Optionally an item could be a *NSMenuItem*.
+    Optionally an item could be a `NSMenuItem`_.
     When an item is set to ``----``, it will be a menu item separator.
 
     +------------+----------------------------------------------+
@@ -193,6 +203,8 @@ class ActionButton(PopUpButton):
     +-----------+
 
     **bordered** Boolean representing if the button should be bordered.
+
+    .. _NSMenuItem: https://developer.apple.com/documentation/appkit/nsmenuitem?language=objc
     """
 
     def __init__(self, posSize, items, sizeStyle="regular", bordered=True):

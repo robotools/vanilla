@@ -15,7 +15,7 @@ class PathControl(VanillaBaseControl):
     A path control.
 
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position
-    and size of the control. The size of the control sould match the appropriate value
+    and size of the control. The size of the control should match the appropriate value
     for the given *sizeStyle*.
 
     +-------------------------+

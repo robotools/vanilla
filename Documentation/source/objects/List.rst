@@ -13,8 +13,9 @@ List
 List Item Cells
 ===============
 
-.. autofunction:: LevelIndicatorListCell
 .. autofunction:: CheckBoxListCell
 .. autofunction:: SliderListCell
 .. autofunction:: PopUpButtonListCell
 .. autofunction:: ImageListCell
+.. autofunction:: SegmentedButtonListCell
+.. autofunction:: LevelIndicatorListCell
