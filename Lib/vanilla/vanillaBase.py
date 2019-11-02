@@ -25,6 +25,7 @@ class VanillaError(Exception): pass
 # --------------------
 
 osVersionCurrent = StrictVersion(platform.mac_ver()[0])
+osVersion10_15 = StrictVersion("10.15")
 osVersion10_14 = StrictVersion("10.14")
 osVersion10_13 = StrictVersion("10.13")
 osVersion10_12 = StrictVersion("10.12")
