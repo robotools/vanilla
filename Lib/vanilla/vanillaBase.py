@@ -24,7 +24,10 @@ class VanillaError(Exception): pass
 # OS Version Constants
 # --------------------
 
-osVersionCurrent = StrictVersion(platform.mac_ver()[0])
+macVersion = platform.mac_ver()[0]
+if platform.system() != "Darwin":
+    macVersion = "0.0"
+osVersionCurrent = StrictVersion(macVersion)
 osVersion10_15 = StrictVersion("10.15")
 osVersion10_14 = StrictVersion("10.14")
 osVersion10_13 = StrictVersion("10.13")

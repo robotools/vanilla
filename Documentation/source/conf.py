@@ -200,6 +200,8 @@ latex_documents = [
 
 class MetaMock(type):
 
+    __slots__ = []
+
     def __getattr__(self, name):
         return self
 
@@ -215,9 +217,7 @@ class MetaMock(type):
     __or__ = __ror__ = __ior__ = _operation
     __mod__ = __rmod__ = __imod__ = _operation
 
-class Mock(object):
-
-    __metaclass__ = MetaMock
+class Mock(object, metaclass=MetaMock):
 
     def __init__(self, *args, **kwargs):
         pass
