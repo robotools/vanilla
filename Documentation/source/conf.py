@@ -120,8 +120,6 @@ pygments_style = 'sphinx'
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
 
-html_theme = "nature"
-
 # html_theme = "nature"
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
