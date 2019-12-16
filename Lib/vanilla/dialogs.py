@@ -11,7 +11,7 @@ __all__ = ["message", "askYesNoCancel", "askYesNo", "getFile", "getFolder", "get
 class BaseMessageDialog(NSObject):
 
     def initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(self,
-        messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
+            messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
         self = super(BaseMessageDialog, self).init()
         self.retain()
         self._resultCallback = resultCallback
@@ -67,7 +67,7 @@ class BasePutGetPanel(NSObject):
     def completionHandler_(self, returnCode):
         self.panel.close()
         if returnCode:
-            self._result = self.panel.filename()
+            self._result = self.panel.filenames()
             if self._resultCallback is not None:
                 self._resultCallback(self._result)
 
@@ -110,6 +110,13 @@ class PutFilePanel(BasePutGetPanel):
             isOK = self.panel.runModalForDirectory_file_(self.directory, self.fileName)
             if isOK == NSOKButton:
                 self._result = self.panel.filename()
+
+    def completionHandler_(self, returnCode):
+        self.panel.close()
+        if returnCode:
+            self._result = self.panel.filename()
+            if self._resultCallback is not None:
+                self._resultCallback(self._result)
 
 
 class GetFileOrFolderPanel(BasePutGetPanel):
