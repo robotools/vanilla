@@ -6,19 +6,25 @@ Positioning
 
 Positioning objects on screen is the whole point of vanilla. This document explains the models, syntax and more. First, some terminology:
 
-**view** Almost every object in vanilla represents a "view." A view is something that appears on screen: a button, a text editor, an image container, a slider, etc.
+**view**
+    Almost every object in vanilla represents a "view." A view is something that appears on screen: a button, a text editor, an image container, a slider, etc.
 
-**superview** Every view is positioned within a "superview." If the superview moves, the view moves.
+**superview**
+    Every view is positioned within a "superview." If the superview moves, the view moves.
 
-**subview** A view added to another view is a "subview."
+**subview**
+    A view added to another view is a "subview."
 
-**window** Windows contain a special superview that is positioned edge to edge of the non-title bar area of the window.
+**window**
+    Windows contain a special superview that is positioned edge to edge of the non-title bar area of the window.
 
 There are two ways to position views in vanilla:
 
-**Specifying numerical coordinates.** This model, named "frame layout", allows you to specify the x and y coordinates and the width and height of views. These values manually adust the frame of the view within the superview. This model offers the most control, but can be cumbersome and the precision makes it difficult to revise complex interface layouts.
+**Specifying numerical coordinates.**
+    This model, named "frame layout", allows you to specify the x and y coordinates and the width and height of views. These values manually adust the frame of the view within the superview. This model offers the most control, but can be cumbersome and the precision makes it difficult to revise complex interface layouts.
 
-**Specifying relative positions.** This model, known as "auto layout", allows you to describe where controls should be positioned relative to the superview and other views. This model is more verbose, but it is (typically) faster to implement both simple and complex interafces and it makes revisions significantly easier in complex interface layouts.
+**Specifying relative positions.**
+    This model, known as "auto layout", allows you to describe where controls should be positioned relative to the superview and other views. This model is more verbose, but it is (typically) faster to implement both simple and complex interafces and it makes revisions significantly easier in complex interface layouts.
 
 These models can be mixed and matched within an interface and even within a single superview.
 
