@@ -245,7 +245,7 @@ class VanillaBaseObject(object):
         | *"firstBaseline"* | NSLayoutAttributeFirstBaseline |
         +-------------------+--------------------------------+
 
-        Refer to the `NSLayoutAttribute documentation`_ for the information about what each of these do.
+        Refer to the `NSLayoutAttribute`_ documentation for the information about what each of these do.
 
         The `relation` options are:
 
@@ -259,15 +259,15 @@ class VanillaBaseObject(object):
         | *">="* | NSLayoutRelationGreaterThanOrEqual |
         +--------+------------------------------------+
 
-        Refer to the `NSLayoutRelation documentation`_ for the information about what each of these do.
+        Refer to the `NSLayoutRelation`_ documentation for the information about what each of these do.
 
         **metrics** may be either *None* or a dict containing
         key value pairs representing metrics keywords used in the
         rules defined with strings.
 
-        .. _Visual Format Language: http://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
-        .. _NSLayoutAttribute documentation: http://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
-        .. _NSLayoutRelation documentation: https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc
+        .. _Visual Format Language: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
+        .. _NSLayoutAttribute: https://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
+        .. _NSLayoutRelation: https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc
 
         """
         _addAutoLayoutRules(self, rules, metrics)

@@ -29,13 +29,17 @@ class VanillaTabsDelegate(NSObject):
 class Tabs(VanillaBaseObject):
 
     """
-    A drawer attached to a window. Drawers are capable of containing controls.
+    A set of tabs attached to a window. Each tab is capable of containing controls.
 
-    To add a control to a tab, simply set it as an attribute of the tab.::
+    .. image:: /_images/Tabs.png
 
-        from vanilla import *
+    To add a control to a tab, simply set it as an attribute of the tab.
 
-        class TabDemo(object):
+    ::
+
+        from vanilla import Window, Tabs, TextBox
+
+        class TabsDemo:
 
             def __init__(self):
                 self.w = Window((250, 100))
@@ -46,15 +50,14 @@ class Tabs(VanillaBaseObject):
                 tab2.text = TextBox((10, 10, -10, -10), "This is tab 2")
                 self.w.open()
 
-        TabDemo()
+        TabsDemo()
 
     No special naming is required for the attributes. However, each attribute
     must have a unique name.
 
-    To retrieve a particular tab, access it by index:::
+    To retrieve a particular tab, access it by index::
 
         myTab = self.w.tabs[0]
-
 
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing the position
     and size of the tabs.
@@ -105,7 +108,9 @@ class Tabs(VanillaBaseObject):
 
     def getNSTabView(self):
         """
-        Return the *NSTabView* that this object wraps.
+        Return the `NSTabView`_ that this object wraps.
+
+        .. _NSTabView: https://developer.apple.com/documentation/appkit/nstabview?language=objc
         """
         return self._nsObject
 

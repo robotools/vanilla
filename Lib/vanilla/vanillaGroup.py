@@ -31,11 +31,15 @@ class Group(VanillaBaseObject):
     """
     An invisible container for controls.
 
-    To add a control to a group, simply set it as an attribute of the group.::
+    .. image:: /_images/Group.png
 
-        from vanilla import *
+    To add a control to a group, simply set it as an attribute of the group.
 
-        class GroupDemo(object):
+    ::
+
+        from vanilla import Window, Group, TextBox
+
+        class GroupDemo:
 
             def __init__(self):
                 self.w = Window((150, 50))
@@ -102,13 +106,17 @@ class Group(VanillaBaseObject):
 
     def getNSView(self):
         """
-        Return the *NSView* that this object wraps.
+        Return the `NSView`_ that this object wraps.
+
+        .. _NSView: https://developer.apple.com/documentation/appkit/nsview?language=objc
         """
         return self._nsObject
 
     def getNSVisualEffectView(self):
         """
-        Return the *NSVisualEffectView* that this object wraps.
+        Return the `NSVisualEffectView`_ that this object wraps.
+
+        .. _NSVisualEffectView: https://developer.apple.com/documentation/appkit/nsvisualeffectview?language=objc
         """
 
 

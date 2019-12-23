@@ -12,12 +12,16 @@ _tickPositionMap = {
 class Slider(VanillaBaseControl):
 
     """
-    A standard slider control. Sliders can be vertical or horizontal and
-    they can show tick marks or not.::
+    A standard slider control. Sliders can be vertical or horizontal
+    and they can show tick marks or not.
 
-        from vanilla import *
+    .. image:: /_images/Slider.png
 
-        class SliderDemo(object):
+    ::
+
+        from vanilla import Window, Slider
+
+        class SliderDemo:
 
              def __init__(self):
                  self.w = Window((200, 43))
@@ -139,7 +143,9 @@ class Slider(VanillaBaseControl):
 
     def getNSSlider(self):
         """
-        Return the *NSSlider* that this object wraps.
+        Return the `NSSlider`_ that this object wraps.
+
+        .. _NSSlider: https://developer.apple.com/documentation/appkit/nsslider?language=objc
         """
         return self._nsObject
 

@@ -24,11 +24,15 @@ _levelIndicatorStyleMap = {
 class LevelIndicator(VanillaBaseControl):
 
     """
-    A control which shows a value on a linear scale.::
+    A control which shows a value on a linear scale.
 
-        from vanilla import *
+    .. image:: /_images/LevelIndicator.png
 
-        class LevelIndicatorDemo(object):
+    ::
+
+        from vanilla import Window, LevelIndicator
+
+        class LevelIndicatorDemo:
 
              def __init__(self):
                  self.w = Window((200, 68))
@@ -128,7 +132,9 @@ class LevelIndicator(VanillaBaseControl):
 
     def getNSLevelIndicator(self):
         """
-        Return the *NSLevelIndicator* that this object wraps.
+        Return the `NSLevelIndicator`_ that this object wraps.
+
+        .. _NSLevelIndicator: https://developer.apple.com/documentation/appkit/nslevelindicator?language=objc
         """
         return self._nsObject
 
@@ -200,15 +206,17 @@ def LevelIndicatorListCell(style="discrete",
     """
     An object that displays a level indicator in a List column.
 
+    .. image:: /_images/LevelIndicatorListCell.png
+
     .. note::
        This object should only be used in the *columnDescriptions* argument
        during the construction of a List.
 
-    Example::
+    ::
 
-        from vanilla import *
+        from vanilla import Window, List, LevelIndicatorListCell
 
-        class LevelIndicatorListCellDemo(object):
+        class LevelIndicatorListCellDemo:
 
              def __init__(self):
                  self.w = Window((340, 140))

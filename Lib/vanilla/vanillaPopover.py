@@ -54,11 +54,38 @@ class Popover(VanillaBaseObject):
     """
     A popover capable of containing controls.
 
+    .. image:: /_images/Popover.png
+
+    ::
+
+        from vanilla import Window, List, Popover, TextBox
+
+        class PopoverExample:
+
+            def __init__(self):
+                self.w = Window((120, 120))
+                self.w.list = List((0, 0, -0, -0),
+                        ['A', 'B', 'C'],
+                        selectionCallback=self.showPopoverCallback)
+                self.w.open()
+
+            def showPopoverCallback(self, sender):
+                selection = sender.getSelection()
+                if not selection:
+                    return
+                index = sender.getSelection()[0]
+                relativeRect = sender.getNSTableView().rectOfRow_(index)
+                pop = Popover((140, 80))
+                pop.text = TextBox((10, 10, -10, -10), 'This is a popover.')
+                pop.open(parentView=sender, preferredEdge='right', relativeRect=relativeRect)
+
+        PopoverExample()
+
     **size** Tuple of form *(width, height)* representing the size of the content
     in the popover.
 
     **parentView** The parent view that the popover should pop out from. This
-    can be either a vanilla object or an instance of `NSView` or `NSView` subclass.
+    can be either a vanilla object or an instance of `NSView`_ or `NSView_` subclass.
 
     **preferredEdge** The edge of the parent view that you want the popover
     to pop out from. These are the options:
@@ -83,31 +110,7 @@ class Popover(VanillaBaseObject):
     | *"semitransient"*      | Corresponds to NSPopoverBehaviorSemitransient.      |
     +------------------------+-----------------------------------------------------+
 
-    Example::
-
-        from vanilla import *
-
-        class PopoverExample:
-
-            def __init__(self):
-                self.w = Window((120, 120))
-                self.w.list = List((0, 0, -0, -0),
-                        ['A', 'B', 'C'],
-                        selectionCallback=self.showPopoverCallback)
-                self.w.open()
-
-            def showPopoverCallback(self, sender):
-                selection = sender.getSelection()
-                if not selection:
-                    return
-                index = sender.getSelection()[0]
-                relativeRect = sender.getNSTableView().rectOfRow_(index)
-                pop = Popover((140, 80))
-                pop.text = TextBox((10, 10, -10, -10), 'This is a popover.')
-                pop.open(parentView=sender, preferredEdge='right', relativeRect=relativeRect)
-
-        PopoverExample()
-
+    .. _NSView: https://developer.apple.com/documentation/appkit/nsview?language=objc
     """
 
     nsPopoverClass = NSPopover
@@ -310,8 +313,8 @@ class Popover(VanillaBaseObject):
         **metrics** may be either *None* or a dict containing key value pairs
         representing metrics keywords used in the rules defined with strings.
 
-        .. _Visual Format Language: http://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
-        .. _NSLayoutAttribute documentation: http://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
+        .. _Visual Format Language: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html#//apple_ref/doc/uid/TP40010853-CH27-SW1
+        .. _NSLayoutAttribute documentation: https://developer.apple.com/documentation/uikit/nslayoutattribute?language=objc
         .. _NSLayoutRelation documentation: https://developer.apple.com/documentation/uikit/nslayoutrelation?language=objc
 
         """

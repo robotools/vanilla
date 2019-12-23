@@ -23,7 +23,7 @@ from vanilla.vanillaSearchBox import SearchBox
 from vanilla.vanillaSegmentedButton import SegmentedButton
 from vanilla.vanillaSlider import Slider
 from vanilla.vanillaSplitView import SplitView, SplitView2
-from vanilla.vanillaStackGroup import HorizontalStackGroup, VerticalStackGroup 
+from vanilla.vanillaStackGroup import HorizontalStackGroup, VerticalStackGroup
 from vanilla.vanillaTabs import Tabs
 from vanilla.vanillaTextBox import TextBox
 from vanilla.vanillaTextEditor import TextEditor
@@ -49,7 +49,7 @@ __all__ = [
     "PopUpButton", "ActionButton",
     "ProgressBar",
     "ProgressSpinner",
-    "RadioGroup",
+    "RadioGroup", "VerticalRadioGroup", "HorizontalRadioGroup", "RadioButton",
     "ScrollView",
     "SearchBox",
     "SecureEditText",

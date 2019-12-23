@@ -44,7 +44,7 @@ Frame layout is specified with a tuple of four numbers:
 3. width
 4. height
 
-The (0, 0) coordinate is the top left corner of the superview.
+The ``(0, 0)`` coordinate is the top left corner of the superview.
 
 Positions relative to the bottom or right of the superview are indicated with negative numbers or zero for the x, y, width and/or height. For example, ``(-100, 20, 0, 20)`` indicates that the x position is 100 units from the right and the width should align with the right.
 
@@ -193,7 +193,7 @@ Define minimum and maximum widths::
         "|-[button(>=75,<=200)]-|"
     ]
 
-The previous examples all specified horizontal rules. To indicate the direction of a rule, start the rule with ``H:`` for horizontal and ``V:`` for vertical. If an orientation isn't specied, as in the examples above, the orientation will be horizontal. ::
+The previous examples all specified horizontal rules. To indicate the direction of a rule, start the rule with ``H:`` for horizontal and ``V:`` for vertical. If an orientation isn't specified, as in the examples above, the orientation will be horizontal. ::
 
     rules = [
         # Horizontal
@@ -388,7 +388,8 @@ Views can be referenced by other views within rules. To make the buttons have th
     w.nest.addAutoPosSizeRules(nestRules, metrics)
     w.open()
 
-**Table of views**
+**Table of views**:
 
-- need to finish GridGroup for this
-- https://github.com/typemytype/batchRoboFontExtension (ttfautohint section)
+.. todo::
+    - need to finish ``GridGroup`` for this
+    - https://github.com/typemytype/batchRoboFontExtension (ttfautohint section)

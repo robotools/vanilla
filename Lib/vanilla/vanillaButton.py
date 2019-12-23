@@ -27,11 +27,15 @@ _keyMap = {
 class Button(VanillaBaseControl):
 
     """
-    A standard button.::
+    A standard button.
 
-        from vanilla import *
+    .. image:: /_images/Button.png
 
-        class ButtonDemo(object):
+    ::
+
+        from vanilla import Window, Button
+
+        class ButtonDemo:
 
              def __init__(self):
                  self.w = Window((100, 40))
@@ -103,7 +107,9 @@ class Button(VanillaBaseControl):
 
     def getNSButton(self):
         """
-        Return the *NSButton* that this object wraps.
+        Return the `NSButton`_ that this object wraps.
+
+        .. _NSButton: https://developer.apple.com/documentation/appkit/nsbutton?language=objc
         """
         return self._nsObject
 
@@ -158,11 +164,15 @@ class Button(VanillaBaseControl):
 class SquareButton(Button):
 
     """
-    A standard square button.::
+    A standard square button.
+
+    .. image:: /_images/SquareButton.png
+
+    ::
 
         from vanilla import *
 
-        class SquareButtonDemo(object):
+        class SquareButtonDemo:
 
              def __init__(self):
                  self.w = Window((200, 100))
@@ -211,11 +221,13 @@ _imagePositionMap = {
 class ImageButton(SquareButton):
 
     """
-    A button with an image.::
+    A button with an image.
 
-        from vanilla import *
+    ::
 
-        class ImageButtonDemo(object):
+        from vanilla import Window, ImageButton
+
+        class ImageButtonDemo:
 
              def __init__(self):
                  path = "/path/to/an/image"
@@ -238,11 +250,11 @@ class ImageButton(SquareButton):
 
     **imagePath** A file path to an image.
 
-    **imageNamed** The name of an image already loaded as a *NSImage* by the application.
+    **imageNamed** The name of an image already loaded as a `NSImage`_ by the application.
 
-    **imageObject** A *NSImage* object.
+    **imageObject** A `NSImage`_ object.
 
-    *Only one of imagePath, imageNamed, imageObject should be set.*
+    .. note:: Only one of *imagePath*, *imageNamed*, *imageObject* should be set.
 
     **imagePosition** The position of the image relative to the title.
     The options are:
@@ -269,6 +281,8 @@ class ImageButton(SquareButton):
     +-----------+
     | "mini"    |
     +-----------+
+
+    .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
     """
 
     frameAdjustments = None
@@ -305,11 +319,11 @@ class ImageButton(SquareButton):
 
         **imagePath** A file path to an image.
 
-        **imageNamed** The name of an image already load as a *NSImage* by the application.
+        **imageNamed** The name of an image already loaded as an `NSImage`_ by the application.
 
-        **imageObject** A *NSImage* object.
+        **imageObject** A `NSImage`_ object.
 
-        *Only one of imagePath, imageNamed, imageObject should be set.*
+        .. note:: Only one of *imagePath*, *imageNamed*, *imageObject* should be set.
         """
         if imagePath is not None:
             image = NSImage.alloc().initWithContentsOfFile_(imagePath)
@@ -325,11 +339,15 @@ class ImageButton(SquareButton):
 class HelpButton(Button):
 
     """
-    A standard help button.::
+    A standard help button.
 
-        from vanilla import *
+    .. image:: /_images/HelpButton.png
 
-        class HelpButtonDemo(object):
+    ::
+
+        from vanilla import Window, HelpButton
+
+        class HelpButtonDemo:
 
              def __init__(self):
                  self.w = Window((90, 40))

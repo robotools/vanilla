@@ -1,12 +1,8 @@
-.. Vanilla documentation master file, created by sphinx-quickstart on Tue Feb 24 16:28:50 2009.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Vanilla's documentation!
 ===================================
 
 Concepts
-========
+--------
 
 .. toctree::
    :maxdepth: 1
@@ -15,7 +11,7 @@ Concepts
 
 
 Objects
-=======
+-------
 
 Windows
 ^^^^^^^
@@ -35,6 +31,7 @@ Layout Views
   :maxdepth: 1
 
   objects/Group
+  objects/Tabs
   objects/ScrollView
   objects/SplitView
   objects/Box
@@ -98,9 +95,6 @@ Progress Indicators
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-

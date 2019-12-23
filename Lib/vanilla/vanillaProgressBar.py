@@ -5,11 +5,15 @@ from vanilla.vanillaBase import VanillaBaseObject, _sizeStyleMap, osVersion10_11
 class ProgressBar(VanillaBaseObject):
 
     """
-    A standard progress bar.::
+    A standard progress bar.
 
-        from vanilla import *
+    .. image:: /_images/ProgressBar.png
 
-        class ProgressBarDemo(object):
+    ::
+
+        from vanilla import Window, ProgressBar, Button
+
+        class ProgressBarDemo:
 
             def __init__(self):
                 self.w = Window((200, 65))
@@ -83,7 +87,9 @@ class ProgressBar(VanillaBaseObject):
 
     def getNSProgressIndicator(self):
         """
-        Return the *NSProgressIndicator* that this object wraps.
+        Return the `NSProgressIndicator`_ that this object wraps.
+
+        .. _NSProgressIndicator: https://developer.apple.com/documentation/appkit/nsprogressindicator?language=objc
         """
         return self._nsObject
 

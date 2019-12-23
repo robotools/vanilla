@@ -25,7 +25,7 @@ FloatingWindow
 
 .. method:: FloatingWindow.setPosSize(posSize, animate=True)
 
-    Set the position and size of the Floatingwindow.
+    Set the position and size of the FloatingWindow.
 
     **posSize** A tuple of form *(left, top, width, height)*.
 
@@ -42,7 +42,7 @@ FloatingWindow
 
 .. method:: FloatingWindow.setDefaultButton(button)
 
-    Set the default button in the Floatingwindow.
+    Set the default button in the FloatingWindow.
 
     **button** will be bound to the Return and Enter keys.
 
@@ -106,7 +106,7 @@ FloatingWindow
 
 .. method:: FloatingWindow.addToolbar(toolbarIdentifier, toolbarItems, addStandardItems=True)
 
-        Add a toolbar to the Floatingwindow.
+        Add a toolbar to the FloatingWindow.
 
         **toolbarIdentifier** A string representing a unique name for the toolbar.
 
@@ -196,3 +196,7 @@ FloatingWindow
     Remove a toolbar item by his identifier.
 
     **itemIdentifier** A unique string identifier for the removed item.
+
+
+.. autoclass:: HUDFloatingWindow
+   :members:
