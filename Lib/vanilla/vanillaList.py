@@ -659,9 +659,17 @@ class List(VanillaBaseObject):
         self._menuItemCallbackWrappers = None
         super(List, self)._breakCycles()
         if hasattr(self, "_editCallback") and self._editObserver is not None:
+            for column in self._tableView.tableColumns():
+                if not column.isEditable():
+                    continue
+                keyPath = "arrangedObjects.%s" % column.identifier()
+                self._arrayController.removeObserver_forKeyPath_(self._editObserver, keyPath)
             self._editObserver._targetMethod = None
+            del self._editCallback
         if hasattr(self, "_selectionCallback") and self._selectionCallback is not None:
+            self._arrayController.removeObserver_forKeyPath_(self._selectionObserver, "selectionIndexes")
             self._selectionObserver._targetMethod = None
+            del self._selectionCallback
         if hasattr(self, "_doubleClickTarget") and self._doubleClickTarget is not None:
             self._doubleClickTarget.callback = None
         self._selfDropSettings = None
