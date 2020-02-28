@@ -578,6 +578,7 @@ class SplitView(VanillaBaseObject):
         if animate:
             warn("Pane animation is not supported at this time.")
         self.getNSSplitView().setState_forPane_(onOff, identifier)
+        self._nsObject.setNeedsDisplay_(True)
 
     def togglePane(self, identifier, animate=False):
         """
