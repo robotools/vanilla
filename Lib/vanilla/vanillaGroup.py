@@ -118,6 +118,7 @@ class Group(VanillaBaseObject):
 
         .. _NSVisualEffectView: https://developer.apple.com/documentation/appkit/nsvisualeffectview?language=objc
         """
+        return self._visualEffectGroup.getNSVisualEffectView()
 
 
 class _VisualEffectGroup(VanillaBaseObject):
