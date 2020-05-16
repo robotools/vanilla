@@ -363,7 +363,7 @@ def _recursiveSetFrame(view):
 
 def _setAttr(cls, obj, attr, value):
     if hasattr(value, "getPosSize") and value.getPosSize() == "auto":
-        view = value._getContentView()
+        view = value._nsObject
         view.setTranslatesAutoresizingMaskIntoConstraints_(False)
         obj._autoLayoutViews[attr] = view
     if isinstance(value, VanillaBaseObject) and hasattr(value, "_posSize"):
