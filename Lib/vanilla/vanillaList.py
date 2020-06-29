@@ -137,6 +137,7 @@ class VanillaArrayController(NSArrayController):
             return NSDragOperationNone
         # unpack data
         dropInformation["data"] = self._unpackPboard(settings, draggingInfo)
+        dropInformation["operation"] = draggingInfo.draggingSourceOperationMask()
         # call the callback
         result = settings["callback"](vanillaWrapper, dropInformation)
         if result:
