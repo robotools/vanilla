@@ -1,5 +1,4 @@
 from AppKit import NSMatrix, NSRadioButton, NSButtonCell, NSRadioModeMatrix, NSFont, NSCellDisabled
-from vanilla.py23 import range
 from vanilla.vanillaBase import VanillaBaseControl, _sizeStyleMap
 from vanilla.vanillaButton import Button
 from vanilla.vanillaStackGroup import VerticalStackGroup, HorizontalStackGroup

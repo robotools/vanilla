@@ -1,7 +1,6 @@
-import objc
 from AppKit import NSObject, NSComboBox
+from objc import python_method
 from vanilla.vanillaBase import VanillaBaseControl
-from vanilla.py23 import python_method
 
 
 class VanillaComboBoxDelegate(NSObject):

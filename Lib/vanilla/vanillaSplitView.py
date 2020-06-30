@@ -1,10 +1,10 @@
 from warnings import warn
 from Foundation import NSObject
 from AppKit import NSSplitView, NSSplitViewDividerStylePaneSplitter, NSSplitViewDividerStyleThin, NSSplitViewDividerStyleThick, NSViewWidthSizable, NSViewHeightSizable
+from objc import python_method
 
 import vanilla
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
-from vanilla.py23 import python_method
 
 
 _dividerStyleMap = {
