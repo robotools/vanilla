@@ -9,6 +9,7 @@ class VanillaTabItem(VanillaBaseObject):
     nsTabViewItemClass = NSTabViewItem
 
     def __init__(self, title):
+        self._autoLayoutViews = {}
         self._tabItem = self.nsTabViewItemClass.alloc().initWithIdentifier_(title)
         self._tabItem.setLabel_(title)
 
@@ -17,6 +18,7 @@ class VanillaTabItem(VanillaBaseObject):
 
     def _breakCycles(self):
         _breakCycles(self._tabItem.view())
+        self._autoLayoutViews.clear()
 
 
 class VanillaTabsDelegate(NSObject):
