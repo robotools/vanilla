@@ -1,3 +1,11 @@
+import warnings
+
+warnings.warn(
+    "The py23 module has been deprecated and will be removed. "
+    "Please update your code.",
+    DeprecationWarning,
+)
+
 __all__ = ['basestring', 'unicode', 'long', 'python_method']
 
 try:

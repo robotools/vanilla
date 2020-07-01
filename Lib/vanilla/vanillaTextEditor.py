@@ -2,7 +2,6 @@ from Foundation import NSObject
 from AppKit import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaCallbackWrapper
-from vanilla.py23 import unicode
 
 
 class VanillaTextEditorDelegate(NSObject):
@@ -109,7 +108,7 @@ class TextEditor(VanillaBaseObject):
         """
         Get the contents of the text entry control.
         """
-        return unicode(self._textView.string())
+        return str(self._textView.string())
 
     def set(self, value):
         """

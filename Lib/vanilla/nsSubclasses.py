@@ -1,8 +1,6 @@
 import objc
 import weakref
 
-from vanilla.py23 import basestring
-
 
 class _VanillaMethods:
 
@@ -48,7 +46,7 @@ def getNSSubclass(classOrName=None):
 
     """
     subCls = None
-    if isinstance(classOrName, basestring):
+    if isinstance(classOrName, str):
         cls = objc.lookUpClass(classOrName)
         className = classOrName
     else:

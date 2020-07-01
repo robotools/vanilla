@@ -1,8 +1,7 @@
-import objc
 from objc import selector
+from objc import python_method
 from Foundation import NSObject
 from AppKit import NSAlert, NSSavePanel, NSOpenPanel, NSInformationalAlertStyle, NSAlertFirstButtonReturn, NSAlertSecondButtonReturn, NSAlertThirdButtonReturn, NSOKButton, NSURL
-from vanilla.py23 import python_method
 
 
 __all__ = ["message", "askYesNoCancel", "askYesNo", "getFile", "getFolder", "getFileOrFolder", "putFile"]

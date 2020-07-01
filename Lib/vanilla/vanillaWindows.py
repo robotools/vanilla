@@ -1,12 +1,10 @@
-import objc
 from Foundation import NSObject
 from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToolbar, NSToolbarItem, NSImage, NSNormalWindowLevel, NSFloatingWindowLevel, NSClosableWindowMask, NSMiniaturizableWindowMask, NSResizableWindowMask, NSTexturedBackgroundWindowMask, NSUnifiedTitleAndToolbarWindowMask, NSHUDWindowMask, NSUtilityWindowMask, NSTitledWindowMask, NSBorderlessWindowMask, NSBackingStoreBuffered, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSToolbarPrintItemIdentifier, NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarDisplayModeDefault, NSToolbarDisplayModeIconAndLabel, NSToolbarDisplayModeIconOnly, NSToolbarDisplayModeLabelOnly, NSToolbarSizeModeDefault, NSToolbarSizeModeRegular, NSToolbarSizeModeSmall
-
+from objc import python_method
 
 from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _addAutoLayoutRules, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaWarning, VanillaBaseControl, \
         osVersionCurrent, osVersion10_7, osVersion10_10
-from vanilla.py23 import python_method
 
 # PyObjC may not have these constants wrapped,
 # so test and fallback if needed.

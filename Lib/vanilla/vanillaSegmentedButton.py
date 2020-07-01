@@ -1,6 +1,5 @@
 from AppKit import NSSegmentedControl, NSSegmentedCell, NSImage, NSSegmentSwitchTrackingSelectOne, NSSegmentSwitchTrackingSelectAny, NSSegmentSwitchTrackingMomentary
 
-from vanilla.py23 import range
 from vanilla.vanillaBase import VanillaBaseControl
 
 

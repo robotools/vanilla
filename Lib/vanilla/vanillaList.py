@@ -1,9 +1,8 @@
 import time
-import objc
 from Foundation import NSObject, NSArray, NSMutableArray, NSDictionary, NSMutableDictionary, NSMutableIndexSet, NSString, NSAttributedString, NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import NSApp, NSTableView, NSTableColumn, NSArrayController, NSScrollView, NSSwitchButton, NSButtonCell, NSSliderCell, NSPopUpButtonCell, NSImageCell, NSSegmentedCell, NSFont, NSImage, NSReturnTextMovement, NSTabTextMovement, NSBacktabTextMovement, NSIllegalTextMovement, NSNotification, NSDragOperationNone, NSTableViewDropOn, NSDragOperationCopy, NSBezelBorder, NSFocusRingTypeNone, NSTableViewSolidVerticalGridLineMask, NSTableViewSolidHorizontalGridLineMask, NSTableViewUniformColumnAutoresizingStyle, NSTableColumnNoResizing, NSTableColumnUserResizingMask, NSTableColumnAutoresizingMask, NSCreatesSortDescriptorBindingOption, NSBackspaceCharacter, NSDeleteFunctionKey, NSDeleteCharacter, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSSmallControlSize, NSMiniControlSize, NSSegmentSwitchTrackingSelectOne, NSMenuItem, NSMenu
+from objc import python_method
 
-from vanilla.py23 import basestring, range, unichr, python_method
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
 
@@ -834,7 +833,7 @@ class List(VanillaBaseObject):
             NSBackspaceCharacter,
             NSDeleteFunctionKey,
             NSDeleteCharacter,
-            unichr(0x007F),
+            chr(0x007F),
         ]
         nonCharacters = [
             NSUpArrowFunctionKey,
@@ -843,7 +842,7 @@ class List(VanillaBaseObject):
             NSRightArrowFunctionKey,
             NSPageUpFunctionKey,
             NSPageDownFunctionKey,
-            unichr(0x0003),
+            chr(0x0003),
             u"\r",
             u"\t",
         ]
@@ -891,7 +890,7 @@ class List(VanillaBaseObject):
                 else:
                     item = getattr(item, columnID)()
                 # only test strings
-                if not isinstance(item, basestring):
+                if not isinstance(item, str):
                     continue
                 # if the item starts with the input string, it is considered a match
                 if item.startswith(inputString):
