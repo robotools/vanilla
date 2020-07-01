@@ -3,8 +3,8 @@ from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToo
 from objc import python_method
 
 from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _addAutoLayoutRules, _flipFrame, \
-        VanillaCallbackWrapper, VanillaError, VanillaBaseControl, osVersionCurrent, osVersion10_7, osVersion10_10
-
+        VanillaCallbackWrapper, VanillaError, VanillaWarning, VanillaBaseControl, \
+        osVersionCurrent, osVersion10_7, osVersion10_10
 
 # PyObjC may not have these constants wrapped,
 # so test and fallback if needed.
@@ -257,6 +257,20 @@ class Window(NSObject):
         # caller doesn't keep a reference. It's balanced by a release
         # in windowWillClose_().
         self.retain()
+        self._validateMinMaxSize()
+
+    def _validateMinMaxSize(self):
+        # warn when the min size is bigger then the initial window size
+        # or when the max size is smaller then the initial window size
+        size = self._window.frame().size
+        minSize = self._window.minSize()
+        maxSize = self._window.maxSize()
+        if size.width < minSize.width or size.height < minSize.height:
+            from warnings import warn
+            warn("The windows `minSize` is bigger then the initial size.", VanillaWarning)
+        elif size.width > maxSize.width or size.height > maxSize.height:
+            from warnings import warn
+            warn("The windows `maxSize` is bigger then the initial size.", VanillaWarning)
 
     def close(self):
         """
@@ -1093,4 +1107,4 @@ class Sheet(Window):
             self._window, parentWindow, None, None, 0)
         # See Window.open():
         self.retain()
-
+        self._validateMinMaxSize()

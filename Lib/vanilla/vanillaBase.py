@@ -20,6 +20,8 @@ from vanilla.nsSubclasses import getNSSubclass
 
 class VanillaError(Exception): pass
 
+class VanillaWarning(Warning): pass
+
 # --------------------
 # OS Version Constants
 # --------------------
