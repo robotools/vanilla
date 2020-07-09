@@ -77,7 +77,7 @@ class Popover(VanillaBaseObject):
                 relativeRect = sender.getNSTableView().rectOfRow_(index)
                 self.pop = Popover((140, 80))
                 self.pop.text = TextBox((10, 10, -10, -10), 'This is a popover.')
-                self.pop.open(parentView=sender, preferredEdge='right', relativeRect=relativeRect)
+                self.pop.open(parentView=sender.getNSTableView(), preferredEdge='right', relativeRect=relativeRect)
 
         PopoverExample()
 
