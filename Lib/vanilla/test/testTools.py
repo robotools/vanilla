@@ -2,6 +2,13 @@ from Foundation import NSObject
 from AppKit import NSApplication, NSMenu, NSMenuItem, NSBundle
 from PyObjCTools import AppHelper
 
+try:
+    import asyncio
+    from corefoundationasyncio import CoreFoundationEventLoop
+    hasCorefoundationasyncio = True
+except ImportError:
+    hasCorefoundationasyncio = False
+
 
 class _VanillaMiniApp(NSApplication): pass
 
@@ -50,4 +57,13 @@ def executeVanillaTest(cls, nibPath=None, calls=None, **kwargs):
             call(**kwargs)
 
     app.activateIgnoringOtherApps_(True)
-    AppHelper.runEventLoop()
+
+    if hasCorefoundationasyncio:
+        loop = CoreFoundationEventLoop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_forever()
+        finally:
+            loop.close()
+    else:
+        AppHelper.runEventLoop()
