@@ -1,9 +1,9 @@
 from Foundation import NSObject
 from AppKit import NSApplication, NSMenu, NSMenuItem, NSBundle
 from PyObjCTools import AppHelper
+import asyncio
 
 try:
-    import asyncio
     from corefoundationasyncio import CoreFoundationEventLoop
     hasCorefoundationasyncio = True
 except ImportError:
