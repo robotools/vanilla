@@ -146,9 +146,9 @@ class GridView(VanillaBaseObject):
                     )
             # place the views
             for rowIndex, viewData in enumerate(views):
-                if viewData is None:
-                    continue
                 view = viewData["view"]
+                if view is None:
+                    continue
                 columnPlacement = viewData.get("columnPlacement")
                 rowPlacement = viewData.get("rowPlacement")
                 if isinstance(view, VanillaBaseObject):
@@ -159,6 +159,39 @@ class GridView(VanillaBaseObject):
                     cell.setXPlacement_(columnPlacements[columnPlacement])
                 if rowPlacement is not None:
                     cell.setYPlacement_(rowPlacements[rowPlacement])
+                constraints = []
+                width = viewData.get("width")
+                height = viewData.get("height")
+                if view.intrinsicContentSize() == (-1, -1):
+                    if width is None:
+                        width = gridView.columnAtIndex_(columnIndex).width()
+                    if height is None:
+                        height = gridView.rowAtIndex_(rowIndex).height()
+                if width is not None:
+                    constraint = AppKit.NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                        view,
+                        AppKit.NSLayoutAttributeWidth,
+                        AppKit.NSLayoutRelationEqual,
+                        None,
+                        AppKit.NSLayoutAttributeWidth,
+                        1.0,
+                        width
+                    )
+                    constraints.append(constraint)
+                if height is not None:
+                    constraint = AppKit.NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                        view,
+                        AppKit.NSLayoutAttributeHeight,
+                        AppKit.NSLayoutRelationEqual,
+                        None,
+                        AppKit.NSLayoutAttributeHeight,
+                        1.0,
+                        height
+                    )
+                    constraints.append(constraint)
+                if constraints:
+                    cell.setCustomPlacementConstraints_(constraints)
+
 
     # Columns & Rows
 
@@ -197,7 +230,7 @@ class Test:
             "Type to test callback.",
             callback=self.editTextCallback
         )
-        views = [
+        rows = [
             (
                 vanilla.TextBox("auto", "TextBox:"),
                 vanilla.TextBox("auto", "Hello")
@@ -252,13 +285,19 @@ class Test:
                 vanilla.TextBox("auto", "Slider:"),
                 vanilla.Slider("auto", minValue=0, maxValue=100, value=50)
             ),
-            (
-                vanilla.TextBox("auto", "RadioGroup:"),
-                vanilla.RadioGroup("auto", ["One", "Two", "Three"])
+            dict(
+                height=100,
+                views=(
+                    vanilla.TextBox("auto", "RadioGroup:"),
+                    vanilla.RadioGroup("auto", ["One", "Two", "Three"])
+                )
             ),
-            (
-                vanilla.TextBox("auto", "ColorWell:"),
-                vanilla.ColorWell((0, 0, 100, 75), color=AppKit.NSColor.redColor())
+            dict(
+                height=100,
+                views=(
+                    vanilla.TextBox("auto", "ColorWell:"),
+                    vanilla.ColorWell("auto", color=AppKit.NSColor.redColor())
+                )
             ),
             dict(
                 height=100,
@@ -281,7 +320,7 @@ class Test:
         ]
         self.w.gridView = GridView(
             "auto",
-            views,
+            rows,
             columnDescriptions,
             columnWidth=150,
             columnSpacing=10,
