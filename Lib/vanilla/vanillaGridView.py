@@ -71,14 +71,14 @@ class GridView(VanillaBaseObject):
         gridView = self._getContentView()
         for columnDescription in columnDescriptions:
             width = columnDescription.get("width", globalWidth)
-            padding = columnDescription.get("padding", globalPadding)
-            placement = columnDescription.get("placement")
+            columnPadding = columnDescription.get("columnPadding", globalPadding)
+            columnPlacement = columnDescription.get("columnPlacement")
             column = gridView.addColumnWithViews_([])
             column.setWidth_(width)
-            column.setLeadingPadding_(padding[0])
-            column.setTrailingPadding_(padding[1])
-            if placement is not None:
-                column.setXPlacement_(columnPlacements[placement])
+            column.setLeadingPadding_(columnPadding[0])
+            column.setTrailingPadding_(columnPadding[1])
+            if columnPlacement is not None:
+                column.setXPlacement_(columnPlacements[columnPlacement])
 
     def _buildRows(self, rows, globalHeight, globalPadding):
         gridView = self._getContentView()
@@ -91,8 +91,8 @@ class GridView(VanillaBaseObject):
                 row = dict(views=row)
             if "height" not in row:
                 row["height"] = globalHeight
-            if "padding" not in row:
-                row["padding"] = globalPadding
+            if "rowPadding" not in row:
+                row["rowPadding"] = globalPadding
             v = []
             for view in row["views"]:
                 if not isinstance(view, dict):
@@ -104,17 +104,17 @@ class GridView(VanillaBaseObject):
         # set row sizing
         for rowIndex, rowData in enumerate(rows):
             height = rowData["height"]
-            padding = rowData["padding"]
-            placement = rowData.get("placement")
-            alignment = rowData.get("alignment")
+            rowPadding = rowData["rowPadding"]
+            rowPlacement = rowData.get("rowPlacement")
+            rowAlignment = rowData.get("rowAlignment")
             row = gridView.rowAtIndex_(rowIndex)
             row.setHeight_(height)
-            row.setTopPadding_(padding[0])
-            row.setBottomPadding_(padding[1])
-            if placement is not None:
-                row.setYPlacement_(rowPlacements[placement])
-            if alignment is not None:
-                row.setRowAlignment_(rowAlignments[alignment])
+            row.setTopPadding_(rowPadding[0])
+            row.setBottomPadding_(rowPadding[1])
+            if rowPlacement is not None:
+                row.setYPlacement_(rowPlacements[rowPlacement])
+            if rowAlignment is not None:
+                row.setRowAlignment_(rowAlignments[rowAlignment])
         # populate columns
         columns = {}
         for rowData in rows:
@@ -162,7 +162,7 @@ class GridView(VanillaBaseObject):
                 cell.setContentView_(view)
                 columnPlacement = viewData.get("columnPlacement")
                 rowPlacement = viewData.get("rowPlacement")
-                alignment = viewData.get("alignment")
+                rowAlignment = viewData.get("rowAlignment")
                 width = viewData.get("width")
                 height = viewData.get("height")
                 # special handling and defaults for
@@ -172,8 +172,8 @@ class GridView(VanillaBaseObject):
                         width = gridView.columnAtIndex_(columnIndex).width()
                     if height is None:
                         height = gridView.rowAtIndex_(rowIndex).height()
-                    if alignment is None:
-                        alignment = "none"
+                    if rowAlignment is None:
+                        rowAlignment = "none"
                     if columnPlacement is None:
                         columnPlacement = "leading"
                     if rowPlacement is None:
@@ -182,8 +182,8 @@ class GridView(VanillaBaseObject):
                     cell.setXPlacement_(columnPlacements[columnPlacement])
                 if rowPlacement is not None:
                     cell.setYPlacement_(rowPlacements[rowPlacement])
-                if alignment is not None:
-                    cell.setRowAlignment_(rowAlignments[alignment])
+                if rowAlignment is not None:
+                    cell.setRowAlignment_(rowAlignments[rowAlignment])
                 constraints = []
                 if width is not None:
                     constraint = AppKit.NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
@@ -235,11 +235,11 @@ class Test:
 
         columnDescriptions = [
             dict(
-                placement="trailing"
+                columnPlacement="trailing"
             ),
             dict(
                 width=300,
-                placement="fill"
+                columnPlacement="fill"
             )
         ]
 
@@ -274,14 +274,14 @@ class Test:
                 vanilla.CheckBox("auto", "CheckBox 1")
             ),
             dict(
-                padding=(0, 0),
+                rowPadding=(0, 0),
                 views=(
                     None,
                     vanilla.CheckBox("auto", "CheckBox 2")
                 )
             ),
             dict(
-                padding=(0, 0),
+                rowPadding=(0, 0),
                 views=(
                     None,
                     vanilla.CheckBox("auto", "CheckBox 3")
@@ -308,7 +308,7 @@ class Test:
                 views=(
                     vanilla.TextBox("auto", "RadioGroup:"),
                     dict(
-                        alignment="none",
+                        rowAlignment="none",
                         view=vanilla.RadioGroup("auto", ["One", "Two", "Three"])
                     )
                 )
