@@ -14,6 +14,11 @@ rowPlacements = dict(
     bottom=AppKit.NSGridCellPlacementBottom,
     fill=AppKit.NSGridCellPlacementFill
 )
+rowAlignments = dict(
+    firstBaseline=AppKit.NSGridRowAlignmentFirstBaseline,
+    lastBaseline=AppKit.NSGridRowAlignmentLastBaseline,
+    none=AppKit.NSGridRowAlignmentNone
+)
 
 class GridView(VanillaBaseObject):
 
@@ -44,7 +49,8 @@ class GridView(VanillaBaseObject):
         rowHeight=None,
         rowSpacing=0,
         rowPadding=(0, 0),
-        rowPlacement="top"
+        rowPlacement="top",
+        rowAlignment="firstBaseline"
     ):
         self._setupView(self.nsGridViewClass, posSize)
         gridView = self._getContentView()
@@ -52,10 +58,8 @@ class GridView(VanillaBaseObject):
         gridView.setRowSpacing_(rowSpacing)
         gridView.setXPlacement_(columnPlacements[columnPlacement])
         gridView.setYPlacement_(rowPlacements[rowPlacement])
-        gridView.setRowAlignment_(AppKit.NSGridRowAlignmentFirstBaseline)
-        # build the columns
+        gridView.setRowAlignment_(rowAlignments[rowAlignment])
         self._buildColumns(columnDescriptions, columnWidth, columnPadding)
-        # build the rows
         self._buildRows(rows, rowHeight, rowPadding)
 
     def getNSGridView(self):
@@ -102,12 +106,15 @@ class GridView(VanillaBaseObject):
             height = rowData["height"]
             padding = rowData["padding"]
             placement = rowData.get("placement")
+            alignment = rowData.get("alignment")
             row = gridView.rowAtIndex_(rowIndex)
             row.setHeight_(height)
             row.setTopPadding_(padding[0])
             row.setBottomPadding_(padding[1])
             if placement is not None:
                 row.setYPlacement_(rowPlacements[placement])
+            if alignment is not None:
+                row.setRowAlignment_(rowAlignments[alignment])
         # populate columns
         columns = {}
         for rowData in rows:
@@ -149,24 +156,35 @@ class GridView(VanillaBaseObject):
                 view = viewData["view"]
                 if view is None:
                     continue
-                columnPlacement = viewData.get("columnPlacement")
-                rowPlacement = viewData.get("rowPlacement")
                 if isinstance(view, VanillaBaseObject):
                     view = view._getContentView()
                 cell = gridView.cellAtColumnIndex_rowIndex_(columnIndex, rowIndex)
                 cell.setContentView_(view)
-                if columnPlacement is not None:
-                    cell.setXPlacement_(columnPlacements[columnPlacement])
-                if rowPlacement is not None:
-                    cell.setYPlacement_(rowPlacements[rowPlacement])
-                constraints = []
+                columnPlacement = viewData.get("columnPlacement")
+                rowPlacement = viewData.get("rowPlacement")
+                alignment = viewData.get("alignment")
                 width = viewData.get("width")
                 height = viewData.get("height")
+                # special handling and defaults for
+                # views without an intrinsic size
                 if view.intrinsicContentSize() == (-1, -1):
                     if width is None:
                         width = gridView.columnAtIndex_(columnIndex).width()
                     if height is None:
                         height = gridView.rowAtIndex_(rowIndex).height()
+                    if alignment is None:
+                        alignment = "none"
+                    if columnPlacement is None:
+                        columnPlacement = "leading"
+                    if rowPlacement is None:
+                        rowPlacement = "top"
+                if columnPlacement is not None:
+                    cell.setXPlacement_(columnPlacements[columnPlacement])
+                if rowPlacement is not None:
+                    cell.setYPlacement_(rowPlacements[rowPlacement])
+                if alignment is not None:
+                    cell.setRowAlignment_(rowAlignments[alignment])
+                constraints = []
                 if width is not None:
                     constraint = AppKit.NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
                         view,
@@ -289,14 +307,21 @@ class Test:
                 height=100,
                 views=(
                     vanilla.TextBox("auto", "RadioGroup:"),
-                    vanilla.RadioGroup("auto", ["One", "Two", "Three"])
+                    dict(
+                        alignment="none",
+                        view=vanilla.RadioGroup("auto", ["One", "Two", "Three"])
+                    )
                 )
             ),
             dict(
                 height=100,
                 views=(
                     vanilla.TextBox("auto", "ColorWell:"),
-                    vanilla.ColorWell("auto", color=AppKit.NSColor.redColor())
+                    dict(
+                        width=50,
+                        height=75,
+                        view=vanilla.ColorWell("auto", color=AppKit.NSColor.redColor())
+                    )
                 )
             ),
             dict(
