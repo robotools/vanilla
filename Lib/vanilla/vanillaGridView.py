@@ -27,6 +27,9 @@ class GridView(VanillaBaseObject):
     """
     A view that allows the placement of other views within a grid.
 
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
+    the position and size of the grid view.
+
     **contents** The contents to display within the grid. See below for structure.
 
     **columnWidth** The width for columns.
@@ -35,17 +38,12 @@ class GridView(VanillaBaseObject):
 
     **columnPadding** The (left, right) padding for columns.
 
-    **columnPlacement** The horizontal placement of content within columns.
+    **columnPlacement** The horizontal placement of content within columns. Options:
 
-    +------------+
-    | "leading"  |
-    +------------+
-    | "center"   |
-    +------------+
-    | "trailing" |
-    +------------+
-    | "fill"     |
-    +------------+
+    * "leading"
+    * "center"
+    * "trailing"
+    * "fill"
 
     **rowHeight** The height for rows.
 
@@ -53,38 +51,25 @@ class GridView(VanillaBaseObject):
 
     **rowPadding** The (top, bottom) padding for rows.
 
-    **rowPlacement** The vertical placement of content within rows.
+    **rowPlacement** The vertical placement of content within rows. Options:
 
-    +----------+
-    | "top"    |
-    +----------+
-    | "center" |
-    +----------+
-    | "bottom" |
-    +----------+
-    | "fill"   |
-    +----------+
+    * "top"
+    * "center"
+    * "bottom"
+    * "fill"
 
-    **rowAlignment** The alignment of the row.
+    **rowAlignment** The alignment of the row. Options:
 
-    +-----------------+
-    | "firstBaseline" |
-    +-----------------+
-    | "lastBaseline"  |
-    +-----------------+
-    | "none"          |
-    +-----------------+
+    * "firstBaseline"
+    * "lastBaseline"
+    * "none"
 
     **columnDescriptions** An optional list of dictionaries
-    defining specific attributes for the columns. 
+    defining specific attributes for the columns. Options:
 
-    +---------------------+
-    | *"width"*           |
-    +---------------------+
-    | *"columnPadding"*   |
-    +---------------------+
-    | *"columnPlacement"* |
-    +---------------------+
+    * "width"
+    * "columnPadding"
+    * "columnPlacement"
 
 
     **Contents Definition Structure**
@@ -93,28 +78,28 @@ class GridView(VanillaBaseObject):
     A row definition is a list of cell definitions or a
     dictionary with this structure:
 
-    - *cells* A list of cell definitions.
-    - *rowHeight* (optional) A height for the row that overrides
+    * **cells** A list of cell definitions.
+    * **rowHeight** (optional) A height for the row that overrides
       the GridView level row height.
-    - *rowPadding* (optional) A (top, bottom) padding definition
+    * **rowPadding** (optional) A (top, bottom) padding definition
       for the row that overrides the GridView level row padding.
-    - *rowPlacement* (optional) A placement for the row that
+    * **rowPlacement** (optional) A placement for the row that
       overrides the GridView level row placement.
-    - *rowAlignment* (optional) An alignment for the row that
+    * **rowAlignment** (optional) An alignment for the row that
       overrides the GridView level row placement.
 
     Cells are defined with either a Vanilla object, a NSView
     (or NSView subclass) object, None, or a dictionary with
     this structure:
 
-    - *view* A Vanilla object or NSView (or NSView subclass) object.
-    - *width* (optional) A width to apply to the view.
-    - *height* (optional) A height to apply to the view.
-    - *columnPlacement* (optional) A horizontal placement for the
+    * **view** A Vanilla object or NSView (or NSView subclass) object.
+    * **width** (optional) A width to apply to the view.
+    * **height** (optional) A height to apply to the view.
+    * **columnPlacement** (optional) A horizontal placement for the
       cell that overrides the row level or GridView level placement.
-    - *rowPlacement* (optional) A vertical placement for the cell
+    * **rowPlacement** (optional) A vertical placement for the cell
       that overrides the row level or GridView level placement.
-    - *rowAlignment* (optional) A row alignment for the cell that
+    * **rowAlignment** (optional) A row alignment for the cell that
       overrides the row level or GridView level alignment.
 
     If a cell is defined as None, the cell will be merged with the

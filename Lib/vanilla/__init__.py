@@ -24,6 +24,7 @@ from vanilla.vanillaSegmentedButton import SegmentedButton
 from vanilla.vanillaSlider import Slider
 from vanilla.vanillaSplitView import SplitView, SplitView2
 from vanilla.vanillaStackGroup import HorizontalStackGroup, VerticalStackGroup
+from vanilla.vanillaStackView import HorizontalStackView, VerticalStackView
 from vanilla.vanillaTabs import Tabs
 from vanilla.vanillaTextBox import TextBox
 from vanilla.vanillaTextEditor import TextEditor
@@ -58,6 +59,7 @@ __all__ = [
     "SplitView",
     "SplitView2",
     "HorizontalStackGroup", "VerticalStackGroup",
+    "HorizontalStackView", "VerticalStackView",
     "Tabs",
     "TextBox",
     "TextEditor",
