@@ -1,5 +1,5 @@
 from warnings import warn
-from vanillaStackView import HorizontalStackView, VerticalStackView
+from vanilla.vanillaStackView import HorizontalStackView, VerticalStackView
 
 class HorizontalStackGroup(HorizontalStackView):
 
