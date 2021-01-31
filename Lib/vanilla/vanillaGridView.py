@@ -1,5 +1,4 @@
 import AppKit
-import vanilla
 from vanilla import VanillaBaseObject
 
 import objc
@@ -781,5 +780,6 @@ class Test:
 
 
 if __name__ == "__main__":
+    import vanilla
     from vanilla.test.testTools import executeVanillaTest
     executeVanillaTest(Test)
