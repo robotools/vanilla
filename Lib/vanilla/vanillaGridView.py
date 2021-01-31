@@ -23,25 +23,103 @@ rowAlignments = dict(
 class GridView(VanillaBaseObject):
 
     """
+    A view that allows the placement of other views within a grid.
+
+    **contents** The contents to display within the grid. See below for structure.
+
+    **columnWidth** The width for columns.
+
+    **columnSpacing** The amount of spacing between columns.
+
+    **columnPadding** The (left, right) padding for columns.
+
+    **columnPlacement** The horizontal placement of content within columns.
+
+    +------------+
+    | "leading"  |
+    +------------+
+    | "center"   |
+    +------------+
+    | "trailing" |
+    +------------+
+    | "fill"     |
+    +------------+
+
+    **rowHeight** The height for rows.
+
+    **rowSpacing** The amount of spacing between rows.
+
+    **rowPadding** The (top, bottom) padding for rows.
+
+    **rowPlacement** The vertical placement of content within rows.
+
+    +----------+
+    | "top"    |
+    +----------+
+    | "center" |
+    +----------+
+    | "bottom" |
+    +----------+
+    | "fill"   |
+    +----------+
+
+    **rowAlignment** The alignment of the row.
+
+    +-----------------+
+    | "firstBaseline" |
+    +-----------------+
+    | "lastBaseline"  |
+    +-----------------+
+    | "none"          |
+    +-----------------+
 
     **columnDescriptions** An optional list of dictionaries
     defining specific attributes for the columns. 
 
-    +--------------------------+-------------------------------+
-    | *"width"* (optional)     | The width of the column.      |
-    +--------------------------+-------------------------------+
-    | *"padding"* (optional)   | The padding for the column.   |
-    +--------------------------+-------------------------------+
-    | *"placement"* (optional) | The placement for the column. |
-    +--------------------------+-------------------------------+
+    +---------------------+
+    | *"width"*           |
+    +---------------------+
+    | *"columnPadding"*   |
+    +---------------------+
+    | *"columnPlacement"* |
+    +---------------------+
+
+
+    **Contents Definition Structure**
+
+    Contents are defined as with a list of row definitions.
+    A row definition is a list of cell definitions or a
+    dictionary with this structure:
+
+    - *cells* A list of cell definitions.
+    - *rowHeight* (optional) A height for the row that overrides
+      the GridView level row height.
+    - *rowPadding* (optional) A (top, bottom) padding definition
+      for the row that overrides the GridView level row padding.
+    - *rowPlacement* (optional) A placement for the row that
+      overrides the GridView level row placement.
+    - *rowAlignment* (optional) An alignment for the row that
+      overrides the GridView level row placement.
+
+    Cells are defined with either a Vanilla object, a NSView
+    (or NSView subclass) object or a dictionary with this structure:
+
+    - *view* A Vanilla object or NSView (or NSView subclass) object.
+    - *width* (optional) A width to apply to the view.
+    - *height* (optional) A height to apply to the view.
+    - *columnPlacement* (optional) A horizontal placement for the
+      cell that overrides the row level or GridView level placement.
+    - *rowPlacement* (optional) A vertical placement for the cell
+      that overrides the row level or GridView level placement.
+    - *rowAlignment* (optional) A row alignment for the cell that
+      overrides the row level or GridView level alignment.
     """
 
     nsGridViewClass = AppKit.NSGridView
 
     def __init__(self,
         posSize,
-        rows,
-        columnDescriptions=None,
+        contents,
         columnWidth=None,
         columnSpacing=0,
         columnPadding=(0, 0),
@@ -50,7 +128,8 @@ class GridView(VanillaBaseObject):
         rowSpacing=0,
         rowPadding=(0, 0),
         rowPlacement="top",
-        rowAlignment="firstBaseline"
+        rowAlignment="firstBaseline",
+        columnDescriptions=None
     ):
         self._setupView(self.nsGridViewClass, posSize)
         gridView = self._getContentView()
@@ -60,7 +139,7 @@ class GridView(VanillaBaseObject):
         gridView.setYPlacement_(rowPlacements[rowPlacement])
         gridView.setRowAlignment_(rowAlignments[rowAlignment])
         self._buildColumns(columnDescriptions, columnWidth, columnPadding)
-        self._buildRows(rows, rowHeight, rowPadding)
+        self._buildRows(contents, rowHeight, rowPadding)
 
     def getNSGridView(self):
         return self._getContentView()
@@ -275,14 +354,14 @@ class Test:
             ),
             dict(
                 rowPadding=(0, 0),
-                views=(
+                cells=(
                     None,
                     vanilla.CheckBox("auto", "CheckBox 2")
                 )
             ),
             dict(
                 rowPadding=(0, 0),
-                views=(
+                cells=(
                     None,
                     vanilla.CheckBox("auto", "CheckBox 3")
                 )
@@ -305,7 +384,7 @@ class Test:
             ),
             dict(
                 height=100,
-                views=(
+                cells=(
                     vanilla.TextBox("auto", "RadioGroup:"),
                     dict(
                         rowAlignment="none",
@@ -315,7 +394,7 @@ class Test:
             ),
             dict(
                 height=100,
-                views=(
+                cells=(
                     vanilla.TextBox("auto", "ColorWell:"),
                     dict(
                         width=50,
@@ -326,7 +405,7 @@ class Test:
             ),
             dict(
                 height=100,
-                views=(
+                cells=(
                     vanilla.TextBox("auto", "List:"),
                     dict(
                         columnPlacement="fill",
@@ -337,7 +416,7 @@ class Test:
             ),
             dict(
                 height=100,
-                views=(
+                cells=(
                     vanilla.TextBox("auto", "TextEditor:"),
                     vanilla.TextEditor("auto", "TextEditor")
                 )
@@ -346,7 +425,7 @@ class Test:
         self.w.gridView = GridView(
             "auto",
             rows,
-            columnDescriptions,
+            columnDescriptions=columnDescriptions,
             columnWidth=150,
             columnSpacing=10,
             rowHeight=25,
