@@ -44,7 +44,7 @@ class Box(VanillaBaseObject):
 
     nsBoxClass = NSBox
 
-    def __init__(self, posSize, title=None):
+    def __init__(self, posSize, title=None, fillColor=None, borderColor=None, borderWidth=None, cornerRadius=None):
         self._setupView(self.nsBoxClass, posSize)
         if title:
             self._nsObject.setTitle_(title)
@@ -54,6 +54,14 @@ class Box(VanillaBaseObject):
             self._nsObject.setTitleFont_(font)
         else:
             self._nsObject.setTitlePosition_(NSNoTitle)
+        if fillColor is not None:
+            self.setFillColor(fillColor)
+        if borderColor is not None:
+            self.setBorderColor(borderColor)
+        if borderWidth is not None:
+            self.setBorderWidth(borderWidth)
+        if cornerRadius is not None:
+            self.setCornerRadius(cornerRadius)
 
     def getNSBox(self):
         """
