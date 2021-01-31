@@ -1,4 +1,4 @@
-from AppKit import NSBox, NSColor, NSFont, NSSmallControlSize, NSNoTitle, NSLineBorder, NSBoxSeparator
+from AppKit import NSBox, NSColor, NSFont, NSSmallControlSize, NSNoTitle, NSLineBorder, NSBoxSeparator, NSBoxCustom
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, osVersionCurrent, osVersion10_10
 
 
@@ -95,6 +95,34 @@ class Box(VanillaBaseObject):
         Get the title of the box.
         """
         return self._nsObject.title()
+
+    def setFillColor(self, color):
+        """
+        Set the fill color of the box.
+        """
+        self._nsObject.setBoxType_(NSBoxCustom)
+        self._nsObject.setFillColor_(color)
+
+    def setBorderColor(self, color):
+        """
+        Set the border color of the box.
+        """
+        self._nsObject.setBoxType_(NSBoxCustom)
+        self._nsObject.setBorderColor_(color)
+
+    def setBorderWidth(self, value):
+        """
+        Set the border width of the box.
+        """
+        self._nsObject.setBoxType_(NSBoxCustom)
+        self._nsObject.setBorderWidth_(value)
+
+    def setCornerRadius(self, value):
+        """
+        Set the corner radius of the box.
+        """
+        self._nsObject.setBoxType_(NSBoxCustom)
+        self._nsObject.setCornerRadius_(value)
 
 
 class _Line(Box):
