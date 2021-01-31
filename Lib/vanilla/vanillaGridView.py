@@ -2,6 +2,9 @@ import AppKit
 import vanilla
 from vanilla import VanillaBaseObject
 
+import objc
+objc.setVerbose(True)
+
 columnPlacements = dict(
     leading=AppKit.NSGridCellPlacementLeading,
     center=AppKit.NSGridCellPlacementCenter,
@@ -118,19 +121,21 @@ class GridView(VanillaBaseObject):
     nsGridViewClass = AppKit.NSGridView
 
     def __init__(self,
-        posSize,
-        contents,
-        columnWidth=None,
-        columnSpacing=0,
-        columnPadding=(0, 0),
-        columnPlacement="leading",
-        rowHeight=None,
-        rowSpacing=0,
-        rowPadding=(0, 0),
-        rowPlacement="top",
-        rowAlignment="firstBaseline",
-        columnDescriptions=None
-    ):
+            posSize,
+            contents,
+            columnWidth=None,
+            columnSpacing=0,
+            columnPadding=(0, 0),
+            columnPlacement="leading",
+            rowHeight=None,
+            rowSpacing=0,
+            rowPadding=(0, 0),
+            rowPlacement="top",
+            rowAlignment="firstBaseline",
+            columnDescriptions=None
+        ):
+        if columnDescriptions is None:
+            columnDescriptions = [{} for i in range(len(contents[0]))]
         self._setupView(self.nsGridViewClass, posSize)
         gridView = self._getContentView()
         gridView.setColumnSpacing_(columnSpacing)
@@ -138,48 +143,74 @@ class GridView(VanillaBaseObject):
         gridView.setXPlacement_(columnPlacements[columnPlacement])
         gridView.setYPlacement_(rowPlacements[rowPlacement])
         gridView.setRowAlignment_(rowAlignments[rowAlignment])
-        self._buildColumns(columnDescriptions, columnWidth, columnPadding)
+        self._columnWidth = columnWidth
+        self._columnPadding = columnPadding
+        self._rowHeight = rowHeight
+        self._rowPadding = rowPadding
+        self._buildColumns(columnDescriptions)    
         self._buildRows(contents, rowHeight, rowPadding)
 
     def getNSGridView(self):
         return self._getContentView()
 
+    # Input Normalizing
+
+    def _normalizeRows(self, rows):
+        rows = [
+            self._normalizeRow(row)
+            for row in rows
+        ]
+        return rows
+
+    def _normalizeRow(self, row):
+        if not isinstance(row, dict):
+            row = dict(cells=row)
+        if "height" not in row:
+            row["height"] = self._rowHeight
+        if "rowPadding" not in row:
+            row["rowPadding"] = self._rowPadding
+        row["cells"] = self._normalizeCells(row["cells"])
+        return row
+
+    def _normalizeCells(self, cells):
+        cells = [
+            self._normalizeCell(cell)
+            for cell in cells
+        ]
+        return cells
+
+    def _normalizeCell(self, cell):
+        if cell is None:
+            return None
+        if not isinstance(cell, dict):
+            cell = dict(view=cell)
+        return cell
+
     # Building
 
-    def _buildColumns(self, columnDescriptions, globalWidth, globalPadding):
+    def _buildColumns(self, columnDescriptions):
         gridView = self._getContentView()
         for columnDescription in columnDescriptions:
-            width = columnDescription.get("width", globalWidth)
-            columnPadding = columnDescription.get("columnPadding", globalPadding)
-            columnPlacement = columnDescription.get("columnPlacement")
             column = gridView.addColumnWithViews_([])
+            self._setColumnAttributes(column, columnDescription)
+
+    def _setColumnAttributes(self, column, columnDescription):
+        width = columnDescription.get("width", self._columnWidth)
+        columnPadding = columnDescription.get("columnPadding", self._columnPadding)
+        columnPlacement = columnDescription.get("columnPlacement")
+        if width is not None:
             column.setWidth_(width)
-            column.setLeadingPadding_(columnPadding[0])
-            column.setTrailingPadding_(columnPadding[1])
-            if columnPlacement is not None:
-                column.setXPlacement_(columnPlacements[columnPlacement])
+        column.setLeadingPadding_(columnPadding[0])
+        column.setTrailingPadding_(columnPadding[1])
+        if columnPlacement is not None:
+            column.setXPlacement_(columnPlacements[columnPlacement])
 
     def _buildRows(self, rows, globalHeight, globalPadding):
         gridView = self._getContentView()
         for rowIndex in range(len(rows)):
             gridView.addRowWithViews_([])
         # normalize the data
-        r = []
-        for row in rows:
-            if not isinstance(row, dict):
-                row = dict(views=row)
-            if "height" not in row:
-                row["height"] = globalHeight
-            if "rowPadding" not in row:
-                row["rowPadding"] = globalPadding
-            v = []
-            for view in row["views"]:
-                if not isinstance(view, dict):
-                    view = dict(view=view)
-                v.append(view)
-            row["views"] = v
-            r.append(row)
-        rows = r
+        rows = self._normalizeRows(rows)
         # set row sizing
         for rowIndex, rowData in enumerate(rows):
             height = rowData["height"]
@@ -187,7 +218,8 @@ class GridView(VanillaBaseObject):
             rowPlacement = rowData.get("rowPlacement")
             rowAlignment = rowData.get("rowAlignment")
             row = gridView.rowAtIndex_(rowIndex)
-            row.setHeight_(height)
+            if height is not None:
+                row.setHeight_(height)
             row.setTopPadding_(rowPadding[0])
             row.setBottomPadding_(rowPadding[1])
             if rowPlacement is not None:
@@ -197,110 +229,204 @@ class GridView(VanillaBaseObject):
         # populate columns
         columns = {}
         for rowData in rows:
-            views = rowData["views"]
-            for columnIndex, view in enumerate(views):
+            cells = rowData["cells"]
+            for columnIndex, view in enumerate(cells):
                 if columnIndex not in columns:
                     columns[columnIndex] = []
                 columns[columnIndex].append(view)
-        columns = [views for columnIndex, views in sorted(columns.items())]
+        columns = [cells for columnIndex, cells in sorted(columns.items())]
         self._populateColumns(columns)
 
     def _populateColumns(self, columns):
         gridView = self._getContentView()
-        for columnIndex, views in enumerate(columns):
-            # merge cells
-            if None in views:
-                mergers = [[]]
-                for rowIndex, view in enumerate(views):
-                    if view is None:
-                        mergers[-1].append(rowIndex)
-                    else:
-                        if mergers[-1]:
-                            mergers.append([])
-                for merger in mergers:
-                    if not merger:
-                        continue
-                    start = merger[0] - 1
-                    # can't merge first row with a nonexistent previous row
-                    if start == -1:
-                        continue
-                    end = merger[-1]
-                    length = end - start
-                    gridView.mergeCellsInHorizontalRange_verticalRange_(
-                        AppKit.NSMakeRange(columnIndex, 1),
-                        AppKit.NSMakeRange(start, length)
-                    )
-            # place the views
-            for rowIndex, viewData in enumerate(views):
-                view = viewData["view"]
-                if view is None:
+        for columnIndex, cells in enumerate(columns):
+            column = gridView.columnAtIndex_(columnIndex)
+            self._populateColumn(column, cells)
+
+    def _populateColumn(self, column, cells):
+        gridView = self._getContentView()
+        columnIndex = gridView.indexOfColumn_(column)
+        # merge cells
+        if None in cells:
+            mergers = [[]]
+            for rowIndex, cell in enumerate(cells):
+                if cell is None:
+                    mergers[-1].append(rowIndex)
+                else:
+                    if mergers[-1]:
+                        mergers.append([])
+            for merger in mergers:
+                if not merger:
                     continue
-                if isinstance(view, VanillaBaseObject):
-                    view = view._getContentView()
-                cell = gridView.cellAtColumnIndex_rowIndex_(columnIndex, rowIndex)
-                cell.setContentView_(view)
-                columnPlacement = viewData.get("columnPlacement")
-                rowPlacement = viewData.get("rowPlacement")
-                rowAlignment = viewData.get("rowAlignment")
-                width = viewData.get("width")
-                height = viewData.get("height")
-                # special handling and defaults for
-                # views without an intrinsic size
-                if view.intrinsicContentSize() == (-1, -1):
-                    if width is None:
-                        width = gridView.columnAtIndex_(columnIndex).width()
-                    if height is None:
-                        height = gridView.rowAtIndex_(rowIndex).height()
-                    if rowAlignment is None:
-                        rowAlignment = "none"
-                    if columnPlacement is None:
-                        columnPlacement = "leading"
-                    if rowPlacement is None:
-                        rowPlacement = "top"
-                if columnPlacement is not None:
-                    cell.setXPlacement_(columnPlacements[columnPlacement])
-                if rowPlacement is not None:
-                    cell.setYPlacement_(rowPlacements[rowPlacement])
-                if rowAlignment is not None:
-                    cell.setRowAlignment_(rowAlignments[rowAlignment])
-                constraints = []
-                if width is not None:
-                    constraint = AppKit.NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                        view,
-                        AppKit.NSLayoutAttributeWidth,
-                        AppKit.NSLayoutRelationEqual,
-                        None,
-                        AppKit.NSLayoutAttributeWidth,
-                        1.0,
-                        width
-                    )
-                    constraints.append(constraint)
-                if height is not None:
-                    constraint = AppKit.NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                        view,
-                        AppKit.NSLayoutAttributeHeight,
-                        AppKit.NSLayoutRelationEqual,
-                        None,
-                        AppKit.NSLayoutAttributeHeight,
-                        1.0,
-                        height
-                    )
-                    constraints.append(constraint)
-                if constraints:
-                    cell.setCustomPlacementConstraints_(constraints)
+                start = merger[0] - 1
+                # can't merge first row with a nonexistent previous row
+                if start == -1:
+                    continue
+                end = merger[-1]
+                length = end - start
+                gridView.mergeCellsInHorizontalRange_verticalRange_(
+                    AppKit.NSMakeRange(columnIndex, 1),
+                    AppKit.NSMakeRange(start, length)
+                )
+        # place the views
+        for rowIndex, cellData in enumerate(cells):
+            if cellData is None:
+                continue
+            view = cellData["view"]
+            if isinstance(view, VanillaBaseObject):
+                view = view._getContentView()
+            cell = column.cellAtIndex_(rowIndex)
+            cell.setContentView_(view)
+            columnPlacement = cellData.get("columnPlacement")
+            rowPlacement = cellData.get("rowPlacement")
+            rowAlignment = cellData.get("rowAlignment")
+            width = cellData.get("width")
+            height = cellData.get("height")
+            # special handling and defaults for
+            # views without an intrinsic size
+            if view.intrinsicContentSize() == (-1, -1):
+                if width is None:
+                    width = column.width()
+                if height is None:
+                    height = gridView.rowAtIndex_(rowIndex).height()
+                if rowAlignment is None:
+                    rowAlignment = "none"
+                if columnPlacement is None:
+                    columnPlacement = "leading"
+                if rowPlacement is None:
+                    rowPlacement = "top"
+            if columnPlacement is not None:
+                cell.setXPlacement_(columnPlacements[columnPlacement])
+            if rowPlacement is not None:
+                cell.setYPlacement_(rowPlacements[rowPlacement])
+            if rowAlignment is not None:
+                cell.setRowAlignment_(rowAlignments[rowAlignment])
+            constraints = []
+            if width is not None:
+                constraint = AppKit.NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                    view,
+                    AppKit.NSLayoutAttributeWidth,
+                    AppKit.NSLayoutRelationEqual,
+                    None,
+                    AppKit.NSLayoutAttributeWidth,
+                    1.0,
+                    width
+                )
+                constraints.append(constraint)
+            if height is not None:
+                constraint = AppKit.NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                    view,
+                    AppKit.NSLayoutAttributeHeight,
+                    AppKit.NSLayoutRelationEqual,
+                    None,
+                    AppKit.NSLayoutAttributeHeight,
+                    1.0,
+                    height
+                )
+                constraints.append(constraint)
+            if constraints:
+                cell.setCustomPlacementConstraints_(constraints)
 
+    # Columns
 
-    # Columns & Rows
+    def getColumnCount(self):
+        """
+        Get the number of columns.
+        """
+        gridView = self._getContentView()
+        return gridView.numberOfColumns()
+
+    def columnIsVisible(self, index):
+        """
+        Get the visibility of column at *index*.
+        """
+        gridView = self._getContentView()
+        column = gridView.columnAtIndex_(index)
+        return not column.isHidden()
 
     def showColumn(self, index, value):
+        """
+        Set the visibility of column at *index*.
+        """
         gridView = self._getContentView()
         column = gridView.columnAtIndex_(index)
         column.setHidden_(not value)
+
+    def appendColumn(self, cells, columnWidth=None, columnPadding=None, columnPlacement=None):
+        """
+        Append a column and populate it with a list of cells.
+        The cells must have the same structure as defined in *__init__*.
+        """
+        gridView = self._getContentView()
+        column = gridView.addColumnWithViews_([])
+        columnDescription = {}
+        if columnWidth is not None:
+            columnDescription[columnWidth] = columnWidth
+        if columnPadding is not None:
+            columnDescription[columnPadding] = columnPadding
+        if columnPlacement is not None:
+            columnDescription[columnPlacement] = columnPlacement
+        self._setColumnAttributes(column, columnDescription)
+        cells = self._normalizeCells(cells)
+        self._populateColumn(column, cells)
+
+    def insertColumn(self, index, cells, columnWidth=None, columnPadding=None, columnPlacement=None):
+        """
+        Insert a column at *index* and populate it with a list of cells.
+        The cells must have the same structure as defined in *__init__*.
+        """
+        gridView = self._getContentView()
+        column = gridView.insertColumnAtIndex_withViews_(index, [])
+        columnDescription = {}
+        if columnWidth is not None:
+            columnDescription[columnWidth] = columnWidth
+        if columnPadding is not None:
+            columnDescription[columnPadding] = columnPadding
+        if columnPlacement is not None:
+            columnDescription[columnPlacement] = columnPlacement
+        self._setColumnAttributes(column, columnDescription)
+        cells = self._normalizeCells(cells)
+        self._populateColumn(column, cells)
+
+    def removeColumn(self, index):
+        """
+        Remove column at *index*.
+        """
+        gridView = self._getContentView()
+        gridView.removeColumnAtIndex_(index)
+
+    def moveColumn(self, fromIndex, toIndex):
+        """
+        Move column at *fromIndex* to *toIndex*.
+        """
+        gridView = self._getContentView()
+        gridView.moveColumnAtIndex_toIndex_(fromIndex, toIndex)
+
+    # Rows
 
     def showRow(self, index, value):
         gridView = self._getContentView()
         row = gridView.rowAtIndex_(index)
         row.setHidden_(not value)
+
+    def getRowCount(self):
+        """
+        Get the number of rows.
+        """
+        gridView = self._getContentView()
+        return gridView.numberOfRows()
+
+    def appendRow(self, row, rowHeight=None, rowSpacing=None, rowPadding=None, rowPlacement=None, rowAlignment=None):
+        pass
+
+    def insertRow(self, index, row, rowHeight=None, rowSpacing=None, rowPadding=None, rowPlacement=None, rowAlignment=None):
+        pass
+
+    def removeRow(self, index):
+        pass
+
+    def moveRow(self, fromIndex, toIndex):
+        pass
 
 
 # ----
@@ -431,10 +557,42 @@ class Test:
             rowHeight=25,
             rowPadding=(15, 0)
         )
+        self.columnCount = len(columnDescriptions)
+        self.rowCount = len(rows)
+
+        # append, insert, etc. buttons
+
+        self.appendColumnButton = vanilla.Button("auto", "Append", callback=self.appendColumnButtonCallback)
+        self.insertColumnButton = vanilla.Button("auto", "Insert", callback=self.insertColumnButtonCallback)
+        self.removeColumnButton = vanilla.Button("auto", "Remove", callback=self.removeColumnButtonCallback)
+        self.moveColumnButton = vanilla.Button("auto", "Move", callback=self.moveColumnButtonCallback)
+        self.showColumnButton = vanilla.Button("auto", "Show/Hide", callback=self.showColumnButtonCallback)
+
+        rows = [
+            [
+                self.appendColumnButton, self.insertColumnButton, self.removeColumnButton, self.moveColumnButton, self.showColumnButton
+            ]
+        ]
+
+        self.w.testButtonGrid = GridView(
+            "auto",
+            rows,
+            columnWidth=100,
+            columnSpacing=5,
+            columnPlacement="fill",
+            rowHeight=25
+        )
 
         rules = [
             "H:|-margin-[gridView]-margin-|",
-            "V:|-margin-[gridView]-margin-|"
+            "H:|-margin-[testButtonGrid]-margin-|",
+            "V:|"
+               "-margin-"
+               "[gridView]"
+               "-margin-"
+               "[testButtonGrid]"
+               "-margin-"
+              "|"
         ]
         metrics = dict(
             margin=15
@@ -444,6 +602,44 @@ class Test:
 
     def editTextCallback(self, sender):
         print("editTextCallback:", sender.get())
+
+    def _makeRows(self):
+        columnIndex = self.w.gridView.getColumnCount()
+        rowCount = self.w.gridView.getRowCount()
+        rows = [
+            vanilla.TextBox(
+                "auto",
+                "{columnIndex}-{rowIndex}".format(
+                    columnIndex=columnIndex,
+                    rowIndex=rowIndex
+                )
+            )
+            for rowIndex in range(rowCount)
+        ]
+        return rows
+
+    def appendColumnButtonCallback(self, sender):
+        rows = self._makeRows()
+        self.w.gridView.appendColumn(rows, columnWidth=50)
+
+    def insertColumnButtonCallback(self, sender):
+        rows = self._makeRows()
+        self.w.gridView.insertColumn(self.columnCount, rows, columnWidth=50)
+
+    def removeColumnButtonCallback(self, sender):
+        if self.w.gridView.getColumnCount() <= self.columnCount:
+            # not a limitation of GridView, just a limitation of this test
+            print("can't delete one of the main columns")
+        else:
+            self.w.gridView.removeColumn(self.columnCount)
+
+    def moveColumnButtonCallback(self, sender):
+        self.w.gridView.moveColumn(0, 1)
+
+    def showColumnButtonCallback(self, sender):
+        visible = self.w.gridView.columnIsVisible(1)
+        self.w.gridView.showColumn(1, not visible)
+
 
 
 if __name__ == "__main__":
