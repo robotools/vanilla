@@ -38,6 +38,7 @@ Layout Views
   objects/Popover
   objects/HorizontalLine
   objects/VerticalLine
+  objects/GridView
   objects/HorizontalStackGroup
   objects/VerticalStackGroup
 
