@@ -140,7 +140,7 @@ class GridView(VanillaBaseObject):
         if columnDescriptions is None:
             columnDescriptions = [{} for i in range(len(contents[0]))]
         self._setupView(self.nsGridViewClass, posSize)
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         gridView.setColumnSpacing_(columnSpacing)
         gridView.setRowSpacing_(rowSpacing)
         gridView.setXPlacement_(columnPlacements[columnPlacement])
@@ -192,7 +192,7 @@ class GridView(VanillaBaseObject):
     # Building
 
     def _buildColumns(self, columnDescriptions):
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         for columnDescription in columnDescriptions:
             column = gridView.addColumnWithViews_([])
             self._setColumnAttributes(column, columnDescription)
@@ -209,13 +209,13 @@ class GridView(VanillaBaseObject):
             column.setXPlacement_(columnPlacements[columnPlacement])
 
     def _populateColumns(self, columns):
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         for columnIndex, cells in enumerate(columns):
             column = gridView.columnAtIndex_(columnIndex)
             self._populateColumn(column, cells)
 
     def _populateColumn(self, column, cells):
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         columnIndex = gridView.indexOfColumn_(column)
         # merge cells
         if None in cells:
@@ -244,7 +244,7 @@ class GridView(VanillaBaseObject):
             self._populateCell(columnIndex, rowIndex, cellData)
 
     def _buildRows(self, rows):
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         rows = self._normalizeRows(rows)
         for rowIndex in range(len(rows)):
             gridView.addRowWithViews_([])
@@ -278,7 +278,7 @@ class GridView(VanillaBaseObject):
             row.setRowAlignment_(rowAlignments[rowAlignment])
 
     def _populateRow(self, row, cells):
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         rowIndex = gridView.indexOfRow_(row)
         for columnIndex, cellData in enumerate(cells):
             self._populateCell(columnIndex, rowIndex, cellData)
@@ -286,10 +286,10 @@ class GridView(VanillaBaseObject):
     def _populateCell(self, columnIndex, rowIndex, cellData):
         if cellData is None:
             return
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         view = cellData["view"]
         if isinstance(view, VanillaBaseObject):
-            view = view._getContentView()
+            view = view._nsObject
         cell = gridView.cellAtColumnIndex_rowIndex_(columnIndex, rowIndex)
         cell.setContentView_(view)
         columnPlacement = cellData.get("columnPlacement")
@@ -350,14 +350,14 @@ class GridView(VanillaBaseObject):
         """
         Get the number of columns.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         return gridView.numberOfColumns()
 
     def columnIsVisible(self, index):
         """
         Get the visibility of column at *index*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         column = gridView.columnAtIndex_(index)
         return not column.isHidden()
 
@@ -365,7 +365,7 @@ class GridView(VanillaBaseObject):
         """
         Set the visibility of column at *index*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         column = gridView.columnAtIndex_(index)
         column.setHidden_(not value)
 
@@ -374,7 +374,7 @@ class GridView(VanillaBaseObject):
         Append a column and populate it with a list of cells.
         The cells must have the same structure as defined in *__init__*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         column = gridView.addColumnWithViews_([])
         columnDescription = {}
         if columnWidth is not None:
@@ -392,7 +392,7 @@ class GridView(VanillaBaseObject):
         Insert a column at *index* and populate it with a list of cells.
         The cells must have the same structure as defined in *__init__*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         column = gridView.insertColumnAtIndex_withViews_(index, [])
         columnDescription = {}
         if columnWidth is not None:
@@ -409,14 +409,14 @@ class GridView(VanillaBaseObject):
         """
         Remove column at *index*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         gridView.removeColumnAtIndex_(index)
 
     def moveColumn(self, fromIndex, toIndex):
         """
         Move column at *fromIndex* to *toIndex*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         gridView.moveColumnAtIndex_toIndex_(fromIndex, toIndex)
 
     # ----
@@ -427,14 +427,14 @@ class GridView(VanillaBaseObject):
         """
         Get the number of rows.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         return gridView.numberOfRows()
 
     def showRow(self, index, value):
         """
         Set the visibility of row at *index*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         row = gridView.rowAtIndex_(index)
         row.setHidden_(not value)
 
@@ -442,7 +442,7 @@ class GridView(VanillaBaseObject):
         """
         Get the visibility of row at *index*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         row = gridView.rowAtIndex_(index)
         return not row.isHidden()
 
@@ -453,7 +453,7 @@ class GridView(VanillaBaseObject):
 
         Merging is not possible with this method.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         rowDescription = dict(cells=cells)
         if rowHeight is not None:
             rowDescription["rowHeight"] = rowHeight
@@ -477,7 +477,7 @@ class GridView(VanillaBaseObject):
 
         Merging is not possible with this method.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         rowDescription = dict(cells=cells)
         if rowHeight is not None:
             rowDescription["rowHeight"] = rowHeight
@@ -498,14 +498,14 @@ class GridView(VanillaBaseObject):
         """
         Remove row at *index*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         gridView.removeRowAtIndex_(index)
 
     def moveRow(self, fromIndex, toIndex):
         """
         Move row at *fromIndex* to *toIndex*.
         """
-        gridView = self._getContentView()
+        gridView = self.getNSGridView()
         gridView.moveRowAtIndex_toIndex_(fromIndex, toIndex)
 
 
@@ -625,6 +625,13 @@ class Test:
                 cells=(
                     vanilla.TextBox("auto", "TextEditor:"),
                     vanilla.TextEditor("auto", "TextEditor")
+                )
+            ),
+            dict(
+                height=100,
+                cells=(
+                    vanilla.TextBox("auto", "Box:"),
+                    vanilla.Box("auto", fillColor=AppKit.NSColor.blueColor(), cornerRadius=20)
                 )
             ),
         ]
