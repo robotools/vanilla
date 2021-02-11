@@ -9,6 +9,7 @@ from vanilla.vanillaDatePicker import DatePicker
 from vanilla.vanillaDrawer import Drawer
 from vanilla.vanillaEditText import EditText, SecureEditText
 from vanilla.vanillaGradientButton import GradientButton
+from vanilla.vanillaGridView import GridView
 from vanilla.vanillaGroup import Group
 from vanilla.vanillaImageView import ImageView
 from vanilla.vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
@@ -24,6 +25,7 @@ from vanilla.vanillaSegmentedButton import SegmentedButton
 from vanilla.vanillaSlider import Slider
 from vanilla.vanillaSplitView import SplitView, SplitView2
 from vanilla.vanillaStackGroup import HorizontalStackGroup, VerticalStackGroup
+from vanilla.vanillaStackView import HorizontalStackView, VerticalStackView
 from vanilla.vanillaTabs import Tabs
 from vanilla.vanillaTextBox import TextBox
 from vanilla.vanillaTextEditor import TextEditor
@@ -57,7 +59,9 @@ __all__ = [
     "Slider",
     "SplitView",
     "SplitView2",
+    "GridView",
     "HorizontalStackGroup", "VerticalStackGroup",
+    "HorizontalStackView", "VerticalStackView",
     "Tabs",
     "TextBox",
     "TextEditor",

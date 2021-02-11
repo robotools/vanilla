@@ -12,6 +12,8 @@ except NameError:
     from importlib import reload
     reload(vanilla)
 from vanilla import *
+from vanilla.test.testStackView import TestStackView
+from vanilla.test.testGridView import TestGridView
 
 import objc
 objc.setVerbose(True)
@@ -576,7 +578,7 @@ class TestSplitView(BaseTest):
 class Test(object):
 
     def __init__(self):
-        self.w = FloatingWindow((200, 300, 120, 340))
+        self.w = FloatingWindow((200, 300, 120, 400))
         self.w.drawGrid = CheckBox((10, 10, -10, 22), "Draw Grid", value=False)
         self.w.windows = Button((10, 40, -10, 20), "Windows", callback=self.openTestCallback)
         self.w.geometry = Button((10, 70, -10, 20), "Geometry", callback=self.openTestCallback)
@@ -588,6 +590,8 @@ class Test(object):
         self.w.toolbar = Button((10, 250, -10, 20), "Toolbar", callback=self.openTestCallback)
         self.w.misc = Button((10, 280, -10, 20), "Misc.", callback=self.openTestCallback)
         self.w.split = Button((10, 310, -10, 20), "SplitView", callback=self.openTestCallback)
+        self.w.stack = Button((10, 340, -10, 20), "StackView", callback=self.openTestCallback)
+        self.w.grid = Button((10, 370, -10, 20), "GridView", callback=self.openTestCallback)
         self.w.open()
 
     def openTestCallback(self, sender):
@@ -614,6 +618,10 @@ class Test(object):
                 MiscTest(self.w.drawGrid.get())
             elif title == "SplitView":
                 TestSplitView(self.w.drawGrid.get())
+            elif title == "StackView":
+                TestStackView()
+            elif title == "GridView":
+                TestGridView()
         except:
             import traceback
             print(traceback.format_exc())
