@@ -36,8 +36,8 @@ class BaseMessageDialog(BasePanel):
 
     def initWithWindow_resultCallback_(self, parentWindow=None, resultCallback=None):
         self = super().initWithWindow_resultCallback_(parentWindow, resultCallback)
-        self.messageText = None
-        self.informativeText = None
+        self.messageText = ""
+        self.informativeText = ""
         self.alertStyle = NSAlertStyleInformational
         self.buttonTitlesValues = []
         self.accessoryView = None
@@ -48,6 +48,12 @@ class BaseMessageDialog(BasePanel):
     def initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(self,
             messageText="", informativeText="", alertStyle=None, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
         # make it backwards compatible
+        import warnings
+        warnings.warn(
+            "'BaseMessageDiaglog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_' hass been deprecated and will be removed."
+            "Please update your code.",
+            DeprecationWarning
+        )
         self = super().initWithWindow_resultCallback_(parentWindow, resultCallback)
         self.messageText = messageText
         self.informativeText = informativeText
