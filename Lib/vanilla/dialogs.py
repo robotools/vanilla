@@ -181,6 +181,7 @@ class GetFileOrFolderPanel(BasePutGetPanel):
         self.canChooseDirectories = True
         self.canChooseFiles = True
         self.resolvesAliases = True
+        self.accessoryView = None
         self._result = None
         return self
 
@@ -200,6 +201,7 @@ class GetFileOrFolderPanel(BasePutGetPanel):
         self.panel.setCanChooseFiles_(self.canChooseFiles)
         self.panel.setAllowsMultipleSelection_(self.allowsMultipleSelection)
         self.panel.setResolvesAliases_(self.resolvesAliases)
+        self.panel.setAccessoryView_(self.accessoryView)
         if self._parentWindow is not None:
             self.panel.beginSheetModalForWindow_completionHandler_(self._parentWindow, self.completionHandler_)
         else:
@@ -314,8 +316,9 @@ def askYesNo(messageText="", informativeText="", alertStyle="informational",
 
 
 def getFile(messageText=None, title=None, directory=None, fileName=None,
-        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None):
+        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None, accessoryView=None):
     parentWindow = _unwrapWindow(parentWindow)
+    accessoryView = _unwrapView(accessoryView)
 
     basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
@@ -326,6 +329,7 @@ def getFile(messageText=None, title=None, directory=None, fileName=None,
     basePanel.allowsMultipleSelection = allowsMultipleSelection
     basePanel.canChooseDirectories = False
     basePanel.canChooseFiles = True
+    basePanel.accessoryView = accessoryView
     basePanel.run()
 
     if resultCallback is None:
@@ -333,8 +337,9 @@ def getFile(messageText=None, title=None, directory=None, fileName=None,
 
 
 def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelection=False,
-        parentWindow=None, resultCallback=None):
+        parentWindow=None, resultCallback=None, accessoryView=None):
     parentWindow = _unwrapWindow(parentWindow)
+    accessoryView = _unwrapView(accessoryView)
 
     basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
@@ -343,6 +348,7 @@ def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelect
     basePanel.allowsMultipleSelection = allowsMultipleSelection
     basePanel.canChooseDirectories = True
     basePanel.canChooseFiles = False
+    basePanel.accessoryView = accessoryView
     basePanel.run()
 
     if resultCallback is None:
@@ -350,8 +356,9 @@ def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelect
 
 
 def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None,
-        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None):
+        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None, accessoryView=None):
     parentWindow = _unwrapWindow(parentWindow)
+    accessoryView = _unwrapView(accessoryView)
 
     basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
@@ -362,6 +369,7 @@ def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None,
     basePanel.allowsMultipleSelection = allowsMultipleSelection
     basePanel.canChooseDirectories = True
     basePanel.canChooseFiles = True
+    basePanel.accessoryView = accessoryView
     basePanel.run()
 
     if resultCallback is None:
@@ -371,6 +379,7 @@ def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None,
 def putFile(messageText=None, title=None, directory=None, fileName=None, canCreateDirectories=True,
         fileTypes=None, parentWindow=None, resultCallback=None, accessoryView=None):
     parentWindow = _unwrapWindow(parentWindow)
+    accessoryView = _unwrapView(accessoryView)
 
     basePanel = PutFilePanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText

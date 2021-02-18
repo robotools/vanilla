@@ -28,6 +28,7 @@ class Test(object):
             "getFolderSheet",
             "getFileOrFolder",
             "getFileOrFolderSheet",
+            "getFileAccessoryView"
         ]
 
         self.w = vanilla.Window((200, (len(buttons) + 1) * 20))
@@ -114,6 +115,13 @@ class Test(object):
 
     def getFileOrFolderSheet(self, sender):
         dialogs.getFileOrFolder(parentWindow=self.w, resultCallback=self.dummyCallback)
+
+    def getFileAccessoryView(self, sender):
+        import vanilla
+        view = vanilla.Box((0, 0, 200, 75))
+        view.checkBox = vanilla.CheckBox((10, 10, 100, 22), "checked")
+        print("result", dialogs.getFile(accessoryView=view))
+
 
 if __name__ == "__main__":
     from vanilla.test.testTools import executeVanillaTest
