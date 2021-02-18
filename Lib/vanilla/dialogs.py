@@ -1,36 +1,85 @@
 from objc import selector
 from objc import python_method
 from Foundation import NSObject
-from AppKit import NSAlert, NSSavePanel, NSOpenPanel, NSInformationalAlertStyle, NSAlertFirstButtonReturn, NSAlertSecondButtonReturn, NSAlertThirdButtonReturn, NSOKButton, NSURL
+from AppKit import NSAlert, NSSavePanel, NSOpenPanel, NSAlertStyleCritical, NSAlertStyleInformational, NSAlertStyleWarning, NSAlertFirstButtonReturn, NSAlertSecondButtonReturn, NSAlertThirdButtonReturn, NSOKButton, NSURL, NSImage
 
 
 __all__ = ["message", "askYesNoCancel", "askYesNo", "getFile", "getFolder", "getFileOrFolder", "putFile"]
 
 
-class BaseMessageDialog(NSObject):
+alertStyleMap = {
+    None : NSAlertStyleInformational,
+    "informational" : NSAlertStyleInformational,
+    "critical" : NSAlertStyleCritical,
+    # "warning" : NSAlertStyleWarning,  # no difference with
+    # backwards compatible keys
+    NSAlertStyleInformational : NSAlertStyleInformational,
+    NSAlertStyleCritical : NSAlertStyleCritical,
+    NSAlertStyleWarning : NSAlertStyleWarning
+}
+
+
+class BasePanel(NSObject):
+
+    def initWithWindow_resultCallback_(self, parentWindow=None, resultCallback=None):
+        self = super().init()
+        self.retain()
+        self._parentWindow = parentWindow
+        self._resultCallback = resultCallback
+        return self
+
+    def windowWillClose_(self, notification):
+        self.autorelease()
+
+
+class BaseMessageDialog(BasePanel):
+
+    def initWithWindow_resultCallback_(self, parentWindow=None, resultCallback=None):
+        self = super().initWithWindow_resultCallback_(parentWindow, resultCallback)
+        self.messageText = None
+        self.informativeText = None
+        self.alertStyle = NSAlertStyleInformational
+        self.buttonTitlesValues = []
+        self.accessoryView = None
+        self.icon = None
+        self.showsHelpCallback = None
+        return self
 
     def initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(self,
-            messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
-        self = super(BaseMessageDialog, self).init()
-        self.retain()
-        self._resultCallback = resultCallback
-        self._buttonTitlesValues = buttonTitlesValues
-        #
+            messageText="", informativeText="", alertStyle=None, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
+        # make it backwards compatible
+        self = super().initWithWindow_resultCallback_(parentWindow, resultCallback)
+        self.messageText = messageText
+        self.informativeText = informativeText
+        self.alertStyle = alertStyle
+        self.buttonTitlesValues = buttonTitlesValues
+        self.run()
+        return self
+
+    def run(self):
         self.alert = NSAlert.alloc().init()
-        self.alert.setMessageText_(messageText)
-        self.alert.setInformativeText_(informativeText)
-        self.alert.setAlertStyle_(alertStyle)
-        for buttonTitle, value in buttonTitlesValues:
-            self.alert.addButtonWithTitle_(buttonTitle)
+        self.alert.setDelegate_(self)
+        self.alert.setMessageText_(self.messageText)
+        self.alert.setInformativeText_(self.informativeText)
+        self.alert.setAlertStyle_(self.alertStyle)
+
+        if self.accessoryView:
+            self.alert.setAccessoryView_(self.accessoryView)
+        if self.icon:
+            self.alert.setIcon_(self.icon)
+        if self.showsHelpCallback:
+            self.alert.setShowsHelp_(True)
+
+        for buttonTitle in self.buttonTitlesValues:
+            self.alert.addButtonWithTitle_(buttonTitle["title"])
         self._value = None
-        if parentWindow is None:
+        if self._parentWindow is None:
             code = self.alert.runModal()
             self._translateValue(code)
             if self._resultCallback is not None:
                 self._resultCallback(self._value)
         else:
-            self.alert.beginSheetModalForWindow_completionHandler_(parentWindow, self.completionHandler_)
-        return self
+            self.alert.beginSheetModalForWindow_completionHandler_(self._parentWindow, self.completionHandler_)
 
     def completionHandler_(self, returnCode):
         self.alert.window().close()
@@ -48,20 +97,18 @@ class BaseMessageDialog(NSObject):
             value = 3
         else:
             value = code - NSAlertThirdButtonReturn + 3
-        self._value = self._buttonTitlesValues[value-1][1]
+        result = self.buttonTitlesValues[value - 1]
+        if "callback" in result:
+            result["callback"]()
+        self._value = result.get("returnCode")
 
-    def windowWillClose_(self, notification):
-        self.autorelease()
+    # delegate method
+
+    def alertShowHelp_(self, sender):
+        self.showsHelpCallback()
 
 
-class BasePutGetPanel(NSObject):
-
-    def initWithWindow_resultCallback_(self, parentWindow=None, resultCallback=None):
-        self = super(BasePutGetPanel, self).init()
-        self.retain()
-        self._parentWindow = parentWindow
-        self._resultCallback = resultCallback
-        return self
+class BasePutGetPanel(BasePanel):
 
     def completionHandler_(self, returnCode):
         self.panel.close()
@@ -69,9 +116,6 @@ class BasePutGetPanel(NSObject):
             self._result = self.panel.filenames()
             if self._resultCallback is not None:
                 self._resultCallback(self._result)
-
-    def windowWillClose_(self, notification):
-        self.autorelease()
 
 
 class PutFilePanel(BasePutGetPanel):
@@ -166,29 +210,107 @@ def _unwrapWindow(window):
         window = window.getNSWindow()
     return window
 
-def message(messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
+
+def _unwrapView(view):
+    from vanilla.vanillaBase import VanillaBaseObject
+    if view is None:
+        return view
+    if isinstance(view, VanillaBaseObject):
+        l, t, w, h = view.getPosSize()
+        view = view._getContentView()
+        view.setFrame_(((0, 0), (w, h)))
+    return view
+
+
+def _mapButtonTitles(titles):
+    """
+    Convert key
+    """
+    buttonTitles = []
+    for buttonTitle in titles:
+        if isinstance(buttonTitle, tuple):
+            title, returnCode = buttonTitle
+            buttonTitle = dict(title=title, returnCode=returnCode)
+        buttonTitles.append(buttonTitle)
+    return buttonTitles
+
+
+def message(messageText="", informativeText="", alertStyle="informational", parentWindow=None, resultCallback=None, icon=None, accessoryView=None, showsHelpCallback=None):
+    assert icon is None or isinstance(icon, NSImage)
+
     parentWindow = _unwrapWindow(parentWindow)
-    alert = BaseMessageDialog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(
-        messageText=messageText, informativeText=informativeText, alertStyle=alertStyle, buttonTitlesValues=[("OK", 1)], parentWindow=parentWindow, resultCallback=resultCallback)
+    accessoryView = _unwrapView(accessoryView)
+
+    alert = BaseMessageDialog.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
+    alert.messageText = messageText
+    alert.informativeText = informativeText
+    alert.alertStyle = alertStyleMap[alertStyle]
+    alert.accessoryView = accessoryView
+    alert.icon = icon
+    alert.showsHelpCallback = showsHelpCallback
+    alert.run()
+
     if resultCallback is None:
         return 1
 
-def askYesNoCancel(messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
+
+def ask(messageText="", informativeText="", alertStyle="informational", buttonTitles=[],
+        parentWindow=None, resultCallback=None, icon=None, accessoryView=None, showsHelpCallback=None):
+    assert buttonTitles, "Button titles are required"
+    assert icon is None or isinstance(icon, NSImage)
+
     parentWindow = _unwrapWindow(parentWindow)
-    alert = BaseMessageDialog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(
-        messageText=messageText, informativeText=informativeText, alertStyle=alertStyle, buttonTitlesValues=[("Cancel", -1), ("Yes", 1), ("No", 0)], parentWindow=parentWindow, resultCallback=resultCallback)
+    accessoryView = _unwrapView(accessoryView)
+    buttonTitles = _mapButtonTitles(buttonTitles)
+
+    alert = BaseMessageDialog.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
+    alert.messageText = messageText
+    alert.informativeText = informativeText
+    alert.alertStyle = alertStyleMap[alertStyle]
+    alert.buttonTitlesValues = buttonTitles
+    alert.accessoryView = accessoryView
+    alert.icon = icon
+    alert.showsHelpCallback = showsHelpCallback
+    alert.run()
+
     if resultCallback is None:
         return alert._value
 
-def askYesNo(messageText="", informativeText="", alertStyle=NSInformationalAlertStyle, parentWindow=None, resultCallback=None):
-    parentWindow = _unwrapWindow(parentWindow)
-    alert = BaseMessageDialog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(
-        messageText=messageText, informativeText=informativeText, alertStyle=alertStyle, buttonTitlesValues=[("Yes", 1), ("No", 0)], parentWindow=parentWindow, resultCallback=resultCallback)
-    if resultCallback is None:
-        return alert._value
 
-def getFile(messageText=None, title=None, directory=None, fileName=None, allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None):
+def askYesNoCancel(messageText="", informativeText="", alertStyle="informational",
+        parentWindow=None, resultCallback=None, icon=None, accessoryView=None, showsHelpCallback=None):
+    return ask(
+        messageText=messageText,
+        informativeText=informativeText,
+        alertStyle=alertStyle,
+        buttonTitles=[("Cancel", -1), ("Yes", 1), ("No", 0)],
+        parentWindow=parentWindow,
+        resultCallback=resultCallback,
+        icon=icon,
+        accessoryView=accessoryView,
+        showsHelpCallback=showsHelpCallback
+    )
+
+
+def askYesNo(messageText="", informativeText="", alertStyle="informational",
+        parentWindow=None, resultCallback=None, icon=None, accessoryView=None, showsHelpCallback=None):
+    return ask(
+        messageText=messageText,
+        informativeText=informativeText,
+        alertStyle=alertStyle,
+        buttonTitles=[("Yes", 1), ("No", 0)],
+        parentWindow=parentWindow,
+        resultCallback=resultCallback,
+        icon=icon,
+        accessoryView=accessoryView,
+        showsHelpCallback=showsHelpCallback
+    )
+
+
+def getFile(messageText=None, title=None, directory=None, fileName=None,
+        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None):
     parentWindow = _unwrapWindow(parentWindow)
+
     basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
     basePanel.title = title
@@ -199,11 +321,15 @@ def getFile(messageText=None, title=None, directory=None, fileName=None, allowsM
     basePanel.canChooseDirectories = False
     basePanel.canChooseFiles = True
     basePanel.run()
+
     if resultCallback is None:
         return basePanel._result
 
-def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelection=False, parentWindow=None, resultCallback=None):
+
+def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelection=False,
+        parentWindow=None, resultCallback=None):
     parentWindow = _unwrapWindow(parentWindow)
+
     basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
     basePanel.title = title
@@ -212,11 +338,15 @@ def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelect
     basePanel.canChooseDirectories = True
     basePanel.canChooseFiles = False
     basePanel.run()
+
     if resultCallback is None:
         return basePanel._result
 
-def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None, allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None):
+
+def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None,
+        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None):
     parentWindow = _unwrapWindow(parentWindow)
+
     basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
     basePanel.title = title
@@ -227,11 +357,15 @@ def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None,
     basePanel.canChooseDirectories = True
     basePanel.canChooseFiles = True
     basePanel.run()
+
     if resultCallback is None:
         return basePanel._result
 
-def putFile(messageText=None, title=None, directory=None, fileName=None, canCreateDirectories=True, fileTypes=None, parentWindow=None, resultCallback=None, accessoryView=None):
+
+def putFile(messageText=None, title=None, directory=None, fileName=None, canCreateDirectories=True,
+        fileTypes=None, parentWindow=None, resultCallback=None, accessoryView=None):
     parentWindow = _unwrapWindow(parentWindow)
+
     basePanel = PutFilePanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     basePanel.messageText = messageText
     basePanel.title = title
@@ -241,6 +375,6 @@ def putFile(messageText=None, title=None, directory=None, fileName=None, canCrea
     basePanel.canCreateDirectories = canCreateDirectories
     basePanel.accessoryView = accessoryView
     basePanel.run()
+
     if resultCallback is None:
         return basePanel._result
-
