@@ -22,7 +22,7 @@ alertStyleMap = {
 class BasePanel(NSObject):
 
     def initWithWindow_resultCallback_(self, parentWindow=None, resultCallback=None):
-        self = super().init()
+        self = self.init()
         self.retain()
         self._parentWindow = parentWindow
         self._resultCallback = resultCallback
@@ -34,7 +34,7 @@ class BasePanel(NSObject):
 
 class BaseMessageDialog(BasePanel):
 
-    def initWithWindow_resultCallback_(self, parentWindow=None, resultCallback=None):
+    def initWithWindow_resultCallback_(cls, parentWindow=None, resultCallback=None):
         self = super().initWithWindow_resultCallback_(parentWindow, resultCallback)
         self.messageText = ""
         self.informativeText = ""
@@ -50,15 +50,15 @@ class BaseMessageDialog(BasePanel):
         # make it backwards compatible
         import warnings
         warnings.warn(
-            "'BaseMessageDiaglog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_' hass been deprecated and will be removed."
+            "'BaseMessageDiaglog.alloc().initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_' has been deprecated and will be removed."
             "Please update your code.",
             DeprecationWarning
         )
-        self = super().initWithWindow_resultCallback_(parentWindow, resultCallback)
+        self = self.initWithWindow_resultCallback_(parentWindow, resultCallback)
         self.messageText = messageText
         self.informativeText = informativeText
         self.alertStyle = alertStyle
-        self.buttonTitlesValues = buttonTitlesValues
+        self.buttonTitlesValues = _mapButtonTitles(buttonTitlesValues)
         self.run()
         return self
 
@@ -269,7 +269,6 @@ def ask(messageText="", informativeText="", alertStyle="informational", buttonTi
 
     parentWindow = _unwrapWindow(parentWindow)
     accessoryView = _unwrapView(accessoryView)
-    buttonTitles = _mapButtonTitles(buttonTitles)
 
     alert = BaseMessageDialog.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     alert.messageText = messageText
