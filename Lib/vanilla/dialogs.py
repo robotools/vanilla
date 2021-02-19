@@ -46,7 +46,7 @@ class BaseMessageDialog(BasePanel):
         return self
 
     def initWithMessageText_informativeText_alertStyle_buttonTitlesValues_window_resultCallback_(self,
-            messageText="", informativeText="", alertStyle=None, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
+            messageText="", informativeText="", alertStyle=NSAlertStyleInformational, buttonTitlesValues=[], parentWindow=None, resultCallback=None):
         # make it backwards compatible
         import warnings
         warnings.warn(
