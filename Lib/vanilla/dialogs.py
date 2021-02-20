@@ -21,8 +21,8 @@ alertStyleMap = {
 
 class BasePanel(NSObject):
 
-    def initWithWindow_resultCallback_(self, parentWindow=None, resultCallback=None):
-        self = self.init()
+    def initWithWindow_resultCallback_(cls, parentWindow=None, resultCallback=None):
+        self = cls.init()
         self.retain()
         self._parentWindow = parentWindow
         self._resultCallback = resultCallback
@@ -35,7 +35,7 @@ class BasePanel(NSObject):
 class BaseMessageDialog(BasePanel):
 
     def initWithWindow_resultCallback_(cls, parentWindow=None, resultCallback=None):
-        self = super().initWithWindow_resultCallback_(parentWindow, resultCallback)
+        self = super(BaseMessageDialog, cls).initWithWindow_resultCallback_(parentWindow, resultCallback)
         self.messageText = ""
         self.informativeText = ""
         self.alertStyle = NSAlertStyleInformational
@@ -103,10 +103,11 @@ class BaseMessageDialog(BasePanel):
             value = 3
         else:
             value = code - NSAlertThirdButtonReturn + 3
-        result = self.buttonTitlesValues[value - 1]
-        if "callback" in result:
-            result["callback"]()
-        self._value = result.get("returnCode")
+        if self.buttonTitlesValues:
+            result = self.buttonTitlesValues[value - 1]
+            if "callback" in result:
+                result["callback"]()
+            self._value = result.get("returnCode")
 
     # delegate method
 
@@ -269,6 +270,7 @@ def ask(messageText="", informativeText="", alertStyle="informational", buttonTi
 
     parentWindow = _unwrapWindow(parentWindow)
     accessoryView = _unwrapView(accessoryView)
+    buttonTitles = _mapButtonTitles(buttonTitles)
 
     alert = BaseMessageDialog.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
     alert.messageText = messageText
@@ -290,7 +292,11 @@ def askYesNoCancel(messageText="", informativeText="", alertStyle="informational
         messageText=messageText,
         informativeText=informativeText,
         alertStyle=alertStyle,
-        buttonTitles=[("Cancel", -1), ("Yes", 1), ("No", 0)],
+        buttonTitles=[
+            dict(title="Cancel", returnCode=-1),
+            dict(title="Yes", returnCode=1),
+            dict(title="No", returnCode=0)
+        ],
         parentWindow=parentWindow,
         resultCallback=resultCallback,
         icon=icon,
@@ -305,7 +311,10 @@ def askYesNo(messageText="", informativeText="", alertStyle="informational",
         messageText=messageText,
         informativeText=informativeText,
         alertStyle=alertStyle,
-        buttonTitles=[("Yes", 1), ("No", 0)],
+        buttonTitles=[
+            dict(title="Yes", returnCode=1),
+            dict(title="No", returnCode=0)
+        ],
         parentWindow=parentWindow,
         resultCallback=resultCallback,
         icon=icon,
