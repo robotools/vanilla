@@ -62,6 +62,11 @@ Views are defined with either a Vanilla object, a NSView
 * **padding** A tuple of two numbers defining (before, after)
   padding between the view and surrounding views.
 
+Size Constants:
+
+* "fill" Stretch the view to fit the width or height of
+  the stack view.
+
 Size Syntax:
 
 * "==value" where value can be coerced to an integer or float
@@ -130,17 +135,10 @@ class _StackView(VanillaBaseObject):
         gravity = self._gravities.get(gravity, gravity)
         if isinstance(view, VanillaBaseObject):
             view = view._nsObject
-        if width is not None:
-            _applyStackViewConstantToAnchor(view.widthAnchor(), width)
-        if height is not None:
-            _applyStackViewConstantToAnchor(view.heightAnchor(), height)
         stackView = self.getNSStackView()
         stackView.insertView_atIndex_inGravity_(view, index, gravity)
-        before, after = padding
-        if before:
-            stackView.setCustomSpacing_beforeView_(before, view)
-        if after:
-            stackView.setCustomSpacing_afterView_(after, view)
+        self.setViewSettings(view=view, width=width, height=height, padding=padding)
+
 
     def removeView(self, view):
         """
@@ -149,6 +147,32 @@ class _StackView(VanillaBaseObject):
         if isinstance(view, VanillaBaseObject):
             view = view._nsObject
         self.getNSStackView().removeView_(view)
+
+    def setViewSettings(self, view, width=None, height=None, padding=None):
+        """
+        Set properties for a view.
+        """
+        if isinstance(view, VanillaBaseObject):
+            view = view._nsObject
+        stackView = self.getNSStackView()
+        if width is not None:
+            if width == "fill":
+                constraint = view.widthAnchor().constraintEqualToAnchor_(stackView.widthAnchor())
+                constraint.setActive_(True)
+            else:
+                _applyStackViewConstantToAnchor(view.widthAnchor(), width)
+        if height is not None:
+            if height == "fill":
+                constraint = view.heightAnchor().constraintEqualToAnchor_(stackView.heightAnchor())
+                constraint.setActive_(True)
+            else:
+                _applyStackViewConstantToAnchor(view.heightAnchor(), height)
+        if padding is not None:
+            before, after = padding
+            if before:
+                stackView.setCustomSpacing_beforeView_(before, view)
+            if after:
+                stackView.setCustomSpacing_afterView_(after, view)
 
 
 class HorizontalStackView(_StackView):
@@ -185,6 +209,8 @@ class VerticalStackView(_StackView):
 
 
 def _applyStackViewConstantToAnchor(anchor, value):
+    for existing in anchor.constraintsAffectingLayout():
+        existing.setActive_(False)
     if isinstance(value, str) and "," in value:
         for v in value.split(","):
             v = v.strip()
@@ -201,4 +227,5 @@ def _applyStackViewConstantToAnchor(anchor, value):
         relation = value[:2]
         value = float(value[2:])
         method = methods[relation]
-    method(value).setActive_(True)
+    constraint = method(value)
+    constraint.setActive_(True)
