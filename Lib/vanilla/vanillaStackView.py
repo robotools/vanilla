@@ -137,21 +137,6 @@ class _StackView(VanillaBaseObject):
             view = view._nsObject
         stackView = self.getNSStackView()
         stackView.insertView_atIndex_inGravity_(view, index, gravity)
-        self.setViewSettings(view=view, width=width, height=height, padding=padding)
-
-
-    def removeView(self, view):
-        """
-        Remove a view.
-        """
-        if isinstance(view, VanillaBaseObject):
-            view = view._nsObject
-        self.getNSStackView().removeView_(view)
-
-    def setViewSettings(self, view, width=None, height=None, padding=None):
-        """
-        Set properties for a view.
-        """
         if isinstance(view, VanillaBaseObject):
             view = view._nsObject
         stackView = self.getNSStackView()
@@ -173,6 +158,15 @@ class _StackView(VanillaBaseObject):
                 stackView.setCustomSpacing_beforeView_(before, view)
             if after:
                 stackView.setCustomSpacing_afterView_(after, view)
+
+
+    def removeView(self, view):
+        """
+        Remove a view.
+        """
+        if isinstance(view, VanillaBaseObject):
+            view = view._nsObject
+        self.getNSStackView().removeView_(view)
 
 
 class HorizontalStackView(_StackView):
