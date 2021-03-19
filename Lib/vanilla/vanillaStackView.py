@@ -111,14 +111,42 @@ class _StackView(VanillaBaseObject):
         stackView.setSpacing_(spacing)
         stackView.setAlignment_(alignment)
         stackView.setDistribution_(distribution)
-        stackView.setEdgeInsets_(edgeInsets)
+        self._fillWidthViews = []
+        self._fillHeightViews = []
         for view in views:
             if not isinstance(view, dict):
                 view = dict(view=view)
             self.appendView(**view)
+        self.setEdgeInsets(edgeInsets)
 
     def getNSStackView(self):
         return self._nsObject
+
+    def setEdgeInsets(self, value):
+        """
+        Set the edge insets.
+        """
+        stackView = self.getNSStackView()
+        stackView.setEdgeInsets_(value)
+        bottomInset, leftInset, rightInset, topInset = value
+        for view in self._fillWidthViews:
+            for oldConstraint in view.leftAnchor().constraintsAffectingLayout():
+                oldConstraint.setActive_(False)
+            for oldConstraint in view.rightAnchor().constraintsAffectingLayout():
+                oldConstraint.setActive_(False)
+            constraint = view.leftAnchor().constraintEqualToAnchor_constant_(stackView.leftAnchor(), leftInset)
+            constraint.setActive_(True)
+            constraint = view.rightAnchor().constraintEqualToAnchor_constant_(stackView.rightAnchor(), -rightInset)
+            constraint.setActive_(True)
+        for view in self._fillHeightViews:
+            for oldConstraint in view.topAnchor().constraintsAffectingLayout():
+                oldConstraint.setActive_(False)
+            for oldConstraint in view.bottomAnchor().constraintsAffectingLayout():
+                oldConstraint.setActive_(False)
+            constraint = view.topAnchor().constraintEqualToAnchor_constant_(stackView.topAnchor(), topInset)
+            constraint.setActive_(True)
+            constraint = view.bottomAnchor().constraintEqualToAnchor_constant_(stackView.bottomAnchor(), -bottomInset)
+            constraint.setActive_(True)
 
     def appendView(self, view, width=None, height=None, spacing=None, gravity="center"):
         """
@@ -141,19 +169,16 @@ class _StackView(VanillaBaseObject):
         stackView = self.getNSStackView()
         if width is not None:
             if width == "fill":
-                constraint = view.widthAnchor().constraintEqualToAnchor_(stackView.widthAnchor())
-                constraint.setActive_(True)
+                self._fillWidthViews.append(view)
             else:
                 _applyStackViewConstantToAnchor(view.widthAnchor(), width)
         if height is not None:
             if height == "fill":
-                constraint = view.heightAnchor().constraintEqualToAnchor_(stackView.heightAnchor())
-                constraint.setActive_(True)
+                self._fillHeightViews.append(view)
             else:
                 _applyStackViewConstantToAnchor(view.heightAnchor(), height)
         if spacing is not None:
             stackView.setCustomSpacing_afterView_(spacing, view)
-
 
     def removeView(self, view):
         """
@@ -161,6 +186,10 @@ class _StackView(VanillaBaseObject):
         """
         if isinstance(view, VanillaBaseObject):
             view = view._nsObject
+        if view in self._fillWidthViews:
+            self._fillWidthViews.remove(view)
+        if view in self._fillHeightViews:
+            self._fillHeightViews.remove(view)
         self.getNSStackView().removeView_(view)
 
 
