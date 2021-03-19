@@ -428,7 +428,7 @@ class GridView(VanillaBaseObject):
         row = gridView.rowAtIndex_(index)
         return not row.isHidden()
 
-    def appendRow(self, cells, rowHeight=None, rowSpacing=None, rowPadding=None, rowPlacement=None, rowAlignment=None):
+    def appendRow(self, cells, rowHeight=None, rowPadding=None, rowPlacement=None, rowAlignment=None):
         """
         Append a row and populate it with a list of cells.
         The cells must have the same structure as defined in *__init__*.
@@ -439,8 +439,6 @@ class GridView(VanillaBaseObject):
         rowDescription = dict(cells=cells)
         if rowHeight is not None:
             rowDescription["rowHeight"] = rowHeight
-        if rowSpacing is not None:
-            rowDescription["rowSpacing"] = rowSpacing
         if rowPadding is not None:
             rowDescription["rowPadding"] = rowPadding
         if rowPlacement is not None:
@@ -452,7 +450,7 @@ class GridView(VanillaBaseObject):
         self._setRowAttributes(row, rowDescription)
         self._populateRow(row, rowDescription["cells"])
 
-    def insertRow(self, index, cells, rowHeight=None, rowSpacing=None, rowPadding=None, rowPlacement=None, rowAlignment=None):
+    def insertRow(self, index, cells, rowHeight=None, rowPadding=None, rowPlacement=None, rowAlignment=None):
         """
         Insert a row at *index* and populate it with a list of cells.
         The cells definition must have the same structure as defined in *__init__*.
@@ -463,8 +461,6 @@ class GridView(VanillaBaseObject):
         rowDescription = dict(cells=cells)
         if rowHeight is not None:
             rowDescription["rowHeight"] = rowHeight
-        if rowSpacing is not None:
-            rowDescription["rowSpacing"] = rowSpacing
         if rowPadding is not None:
             rowDescription["rowPadding"] = rowPadding
         if rowPlacement is not None:

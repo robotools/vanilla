@@ -59,8 +59,7 @@ Views are defined with either a Vanilla object, a NSView
 * **height** A  number, string (using the size syntax below)
   or None (indicating auto height) defining the height.
 * **gravity** The gravity that this view should be attracted to.
-* **padding** A tuple of two numbers defining (before, after)
-  padding between the view and surrounding views.
+* **spacing** A number defining custom spacing after the view.
 
 Size Constants:
 
@@ -121,14 +120,14 @@ class _StackView(VanillaBaseObject):
     def getNSStackView(self):
         return self._nsObject
 
-    def appendView(self, view, width=None, height=None, padding=(0, 0), gravity="center"):
+    def appendView(self, view, width=None, height=None, spacing=None, gravity="center"):
         """
         Append a view.
         """
         index = len(self._nsObject.viewsInGravity_(self._gravities.get(gravity, gravity)))
-        self.insertView(index, view=view, width=width, height=height, padding=padding, gravity=gravity)
+        self.insertView(index, view=view, width=width, height=height, spacing=spacing, gravity=gravity)
 
-    def insertView(self, index, view, width=None, height=None, padding=(0, 0), gravity="center"):
+    def insertView(self, index, view, width=None, height=None, spacing=None, gravity="center"):
         """
         Insert a view.
         """
@@ -152,12 +151,8 @@ class _StackView(VanillaBaseObject):
                 constraint.setActive_(True)
             else:
                 _applyStackViewConstantToAnchor(view.heightAnchor(), height)
-        if padding is not None:
-            before, after = padding
-            if before:
-                stackView.setCustomSpacing_beforeView_(before, view)
-            if after:
-                stackView.setCustomSpacing_afterView_(after, view)
+        if spacing is not None:
+            stackView.setCustomSpacing_afterView_(spacing, view)
 
 
     def removeView(self, view):
