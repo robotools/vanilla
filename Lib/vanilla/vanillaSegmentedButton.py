@@ -172,7 +172,8 @@ class SegmentedButton(VanillaBaseControl):
         """
         Get the selected segment. If this control is set to
         `any` mode, the returned value will be a list of integers.
-        Otherwise the returned value will be a single integer.
+        Otherwise the returned value will be a single integer or
+        `None` if no segment is selected.
         """
         states = []
         for index in range(self._nsObject.segmentCount()):
@@ -180,6 +181,8 @@ class SegmentedButton(VanillaBaseControl):
             if state:
                 states.append(index)
         if self._nsObject.cell().trackingMode() != _trackingModeMap["any"]:
-            return states[0]
+            if states:
+                return states[0]
+            return None
         return states
 
