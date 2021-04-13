@@ -1,3 +1,4 @@
+import operator
 import weakref
 from objc import python_method
 import AppKit
@@ -35,9 +36,9 @@ column descriptions:
 
 class List2DataSourceAndDelegate(AppKit.NSObject):
 
-    def initWithItemContainer_tableView_(self, itemContainer, tableView):
+    def initWithItems_tableView_(self, items, tableView):
         self = List2DataSourceAndDelegate.alloc().init()
-        self._itemContainer = itemContainer
+        self._items = items
         self._tableView = tableView
         self._cellClasses = {} # { identifier : class }
         self._cellWrappers = {} # { nsView : vanilla wrapper } for view + wrapper reuse purposes
@@ -60,7 +61,7 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
         self._valueSetters = setters
 
     def getObjectValueForColumn_row_(self, identifier, row):
-        item = self._itemContainer[row]
+        item = self._items[row]
         getters = self._valueGetters.get(identifier, {})
         property = getters.get("property")
         method = getters.get("method")
@@ -74,7 +75,7 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
         return item[identifier]
 
     def setObjectValue_forColumn_row_(self, value, identifier, row):
-        item = self._itemContainer[row]
+        item = self._items[row]
         setters = self._valueSetters.get(identifier, {})
         property = setters.get("property")
         method = setters.get("method")
@@ -91,11 +92,38 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
     # Data Source
 
     def numberOfRowsInTableView_(self, tableView):
-        return len(self._itemContainer)
+        return len(self._items)
 
     def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
         identifier = column.identifier()
         return self.getObjectValueForColumn_row_(identifier, row)
+
+    def tableView_sortDescriptorsDidChange_(self, tableView, sortDescriptors):
+        sortDescriptors = tableView.sortDescriptors()
+        items = self._items
+        for sortDescriptor in reversed(sortDescriptors):
+            identifier = sortDescriptor.key()
+            ascending = sortDescriptor.ascending()
+            reverse = not ascending
+            getters = self._valueGetters.get(identifier, {})
+            property = getters.get("property")
+            method = getters.get("method")
+            function = getters.get("function")
+            if property is not None:
+                key = operator.attrgetter(property)
+            elif method is not None:
+                key = operator.methodcaller(method)
+            elif function is not None:
+                key = function
+            else:
+                key = operator.itemgetter(identifier)
+            items = sorted(
+                items,
+                key=key,
+                reverse=reverse
+            )
+        self._items = list(items)
+        tableView.reloadData()
 
     # Delegate
 
@@ -161,7 +189,7 @@ class List2(vanilla.ScrollView):
                 )
             ]
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
-        self._tableViewDataSourceAndDelegate = List2DataSourceAndDelegate.alloc().initWithItemContainer_tableView_(
+        self._tableViewDataSourceAndDelegate = List2DataSourceAndDelegate.alloc().initWithItems_tableView_(
             items,
             self._tableView
         )
@@ -208,6 +236,7 @@ class List2(vanilla.ScrollView):
             width = columnDescription.get("width")
             minWidth = columnDescription.get("minWidth", width)
             maxWidth = columnDescription.get("maxWidth", width)
+            sortable = columnDescription.get("sortable", True)
             cellClass = columnDescription.get("cellClass", TextFieldTableCell)
             cellKwargs = columnDescription.get("cellClassArguments", {})
             editable = columnDescription.get("editable", False)
@@ -246,6 +275,13 @@ class List2(vanilla.ScrollView):
                 column.setWidth_(width)
                 column.setMinWidth_(minWidth)
                 column.setMaxWidth_(maxWidth)
+            if sortable:
+                sortDescriptor = AppKit.NSSortDescriptor.sortDescriptorWithKey_ascending_selector_(
+                    identifier,
+                    True,
+                    "compare:"
+                )
+                column.setSortDescriptorPrototype_(sortDescriptor)
             self._tableView.addTableColumn_(column)
             # measure the cell to get the row height
             cell = cellClass(**cellKwargs)
