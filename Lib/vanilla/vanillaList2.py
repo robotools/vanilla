@@ -70,6 +70,9 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
         self._valueGetters = getters
         self._valueSetters = setters
 
+    def vanillaWrapper(self):
+        return self._tableView.vanillaWrapper()
+
     def items(self):
         return self._items
 
@@ -170,7 +173,7 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
         return nsView
 
     def tableViewSelectionDidChange_(self, notification):
-        wrapper = self._tableView.vanillaWrapper()
+        wrapper = self.vanillaWrapper()
         if wrapper._selectionCallback is not None:
             wrapper._selectionCallback(wrapper)
 
@@ -181,7 +184,9 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
         identifier, row = sender._representedColumnRow
         value = sender.get()
         self.setObjectValue_forColumn_row_(value, identifier, row)
-        # XXX call editCallback
+        wrapper = self.vanillaWrapper()
+        if wrapper._editCallback is not None:
+            wrapper._editCallback(wrapper)
 
 
 class List2TableCellView(AppKit.NSTableCellView): pass
@@ -216,8 +221,11 @@ class List2(vanilla.ScrollView):
         self._tableView.setDelegate_(self._tableViewDataSourceAndDelegate)
         # callbacks
         self._selectionCallback = selectionCallback
-        self._doubleClickCallback = doubleClickCallback
         self._editCallback = editCallback
+        if doubleClickCallback is not None:
+            self._doubleClickTarget = VanillaCallbackWrapper(doubleClickCallback)
+            self._tableView.setTarget_(self._doubleClickTarget)
+            self._tableView.setDoubleAction_("action:")
         # visual attributes
         if not showColumnTitles:
             self._tableView.setHeaderView_(None)
@@ -240,7 +248,6 @@ class List2(vanilla.ScrollView):
     def _breakCycles(self):
         super()._breakCycles()
         self._selectionCallback = None
-        self._doubleClickCallback = None
         self._editCallback = None
 
     def _buildColumns(self, columnDescriptions):
@@ -516,7 +523,9 @@ class Test:
             (10, 10, -10, -40),
             self.items,
             columnDescriptions=columnDescriptions,
-            selectionCallback=self.selectionCallback
+            editCallback=self.editCallback,
+            selectionCallback=self.selectionCallback,
+            doubleClickCallback=self.doubleClickCallback
         )
         self.w.getButton = vanilla.Button(
             (10, -30, 100, 20),
@@ -530,8 +539,14 @@ class Test:
         )
         self.w.open()
 
+    def editCallback(self, sender):
+        print("editCallback")
+
     def selectionCallback(self, sender):
         print("selectionCallback")
+
+    def doubleClickCallback(self, sender):
+        print("doubleClickCallback")
 
     def getButtonCallback(self, sender):
         print(self.w.l.get())
