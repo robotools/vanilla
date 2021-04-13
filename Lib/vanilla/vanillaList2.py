@@ -201,6 +201,8 @@ class List2(vanilla.ScrollView):
             posSize,
             items=[],
             columnDescriptions=[],
+            allowsMultipleSelection=True,
+            allowsEmptySelection=True,
             showColumnTitles=True,
             drawFocusRing=True,
             autohidesScrollers=False,
@@ -227,6 +229,9 @@ class List2(vanilla.ScrollView):
             self._doubleClickTarget = VanillaCallbackWrapper(doubleClickCallback)
             self._tableView.setTarget_(self._doubleClickTarget)
             self._tableView.setDoubleAction_("action:")
+        # behavior attributes
+        self._tableView.setAllowsEmptySelection_(allowsEmptySelection)
+        self._tableView.setAllowsMultipleSelection_(allowsMultipleSelection)
         # visual attributes
         if not showColumnTitles:
             self._tableView.setHeaderView_(None)
