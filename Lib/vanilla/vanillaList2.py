@@ -205,6 +205,8 @@ class List2(vanilla.ScrollView):
             allowsEmptySelection=True,
             showColumnTitles=True,
             drawFocusRing=True,
+            drawVerticalLines=False,
+            drawHorizontalLines=False,
             autohidesScrollers=False,
             selectionCallback=None,
             doubleClickCallback=None,
@@ -239,8 +241,17 @@ class List2(vanilla.ScrollView):
         self._tableView.setUsesAlternatingRowBackgroundColors_(True)
         if not drawFocusRing:
             self._tableView.setFocusRingType_(NSFocusRingTypeNone)
+        if drawVerticalLines or drawHorizontalLines:
+            if drawVerticalLines and drawHorizontalLines:
+                lineType = NSTableViewSolidVerticalGridLineMask | NSTableViewSolidHorizontalGridLineMask
+            elif drawVerticalLines:
+                lineType = NSTableViewSolidVerticalGridLineMask
+            else:
+                lineType = NSTableViewSolidHorizontalGridLineMask
+            self._tableView.setGridStyleMask_(lineType)
         if osVersionCurrent >= osVersion10_16:
             self._tableView.setStyle_(AppKit.NSTableViewStyleInset)
+        # columns
         self._buildColumns(columnDescriptions)
         # self._tableView.setRowSizeStyle_(AppKit.NSTableViewRowSizeStyleDefault)
         super().__init__(
@@ -248,6 +259,7 @@ class List2(vanilla.ScrollView):
             nsView=self._tableView,
             autohidesScrollers=autohidesScrollers
         )
+        # populate
         self._itemsWereDict = True
         self.set(items)
 
@@ -329,6 +341,22 @@ class List2(vanilla.ScrollView):
             self._itemsWereDict = False
             item = dict(value=item)
         return item
+
+    def getNSScrollView(self):
+        """
+        Return the `NSScrollView`_ that this object wraps.
+    
+        .. _NSScrollView: https://developer.apple.com/documentation/appkit/nsscrollview?language=objc
+        """
+        return self._nsObject
+    
+    def getNSTableView(self):
+        """
+        Return the `NSTableView`_ that this object wraps.
+    
+        .. _NSTableView: https://developer.apple.com/documentation/appkit/nstableview?language=objc
+        """
+        return self._tableView
 
     def set(self, items):
         """
