@@ -3,7 +3,7 @@ from objc import python_method
 import AppKit
 import vanilla
 from vanilla.nsSubclasses import getNSSubclass
-from vanilla.vanillaBase import osVersionCurrent, osVersion10_16
+from vanilla.vanillaBase import VanillaCallbackWrapper, osVersionCurrent, osVersion10_16
 
 import objc
 objc.setVerbose(True)
@@ -118,6 +118,13 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
         view.set(value)
         return nsView
 
+    def tableViewSelectionDidChange_(self, notification):
+        wrapper = self._tableView.vanillaWrapper()
+        if wrapper._selectionCallback is not None:
+            wrapper._selectionCallback(wrapper)
+
+    # Editing
+
     @python_method
     def cellEditCallback(self, sender):
         identifier, row = sender._representedColumnRow
@@ -140,10 +147,9 @@ class List2(vanilla.ScrollView):
             showColumnTitles=True,
             drawFocusRing=True,
             autohidesScrollers=False,
-            # selectionCallback=None,
-            # doubleClickCallback=None,
-            # editCallback=None,
-            # menuCallback=None
+            selectionCallback=None,
+            doubleClickCallback=None,
+            editCallback=None,
         ):
         if not columnDescriptions:
             showColumnTitles = False
@@ -161,6 +167,11 @@ class List2(vanilla.ScrollView):
         )
         self._tableView.setDataSource_(self._tableViewDataSourceAndDelegate)
         self._tableView.setDelegate_(self._tableViewDataSourceAndDelegate)
+        # callbacks
+        self._selectionCallback = selectionCallback
+        self._doubleClickCallback = doubleClickCallback
+        self._editCallback = editCallback
+        # visual attributes
         if not showColumnTitles:
             self._tableView.setHeaderView_(None)
             self._tableView.setCornerView_(None)
@@ -176,6 +187,12 @@ class List2(vanilla.ScrollView):
             nsView=self._tableView,
             autohidesScrollers=autohidesScrollers
         )
+
+    def _breakCycles(self):
+        super()._breakCycles()
+        self._selectionCallback = None
+        self._doubleClickCallback = None
+        self._editCallback = None
 
     def _buildColumns(self, columnDescriptions):
         getters = {}
@@ -413,7 +430,8 @@ class Test:
         self.w.l = List2(
             (10, 10, -10, -40),
             self.items,
-            columnDescriptions=columnDescriptions
+            columnDescriptions=columnDescriptions,
+            selectionCallback=self.selectionCallback
         )
         self.w.getButton = vanilla.Button(
             (10, -30, 100, 20),
@@ -426,6 +444,9 @@ class Test:
             callback=self.setButtonCallback
         )
         self.w.open()
+
+    def selectionCallback(self, sender):
+        print("selectionCallback")
 
     def getButtonCallback(self, sender):
         import pprint
