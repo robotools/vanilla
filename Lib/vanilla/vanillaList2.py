@@ -1,5 +1,6 @@
 import operator
 import weakref
+import types
 from objc import python_method
 import AppKit
 import vanilla
@@ -33,12 +34,20 @@ column descriptions:
 - setFunction (optional)
 """
 
+simpleDataTypes = (
+    str,
+    int,
+    float,
+    complex,
+    bool,
+    type(None)
+)
 
 class List2DataSourceAndDelegate(AppKit.NSObject):
 
-    def initWithItems_tableView_(self, items, tableView):
+    def initWithTableView_(self, tableView):
         self = List2DataSourceAndDelegate.alloc().init()
-        self._items = items
+        self._items = []
         self._tableView = tableView
         self._cellClasses = {} # { identifier : class }
         self._cellWrappers = {} # { nsView : vanilla wrapper } for view + wrapper reuse purposes
@@ -50,6 +59,13 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
         #     function : func
         # }
         return self
+
+    def items(self):
+        return self._items
+
+    def setItems_(self, items):
+        self._items = items
+        self._tableView.reloadData()
 
     def setCellClass_withKwargs_forColumn_(self, cls, kwargs, identifier):
         if "callback" in kwargs:
@@ -183,16 +199,12 @@ class List2(vanilla.ScrollView):
             showColumnTitles = False
             columnDescriptions = [
                 dict(
-                    type="TextField",
-                    title="Value",
-                    key="value"
+                    identifier="value",
+                    cellClass=TextFieldTableCell
                 )
             ]
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
-        self._tableViewDataSourceAndDelegate = List2DataSourceAndDelegate.alloc().initWithItems_tableView_(
-            items,
-            self._tableView
-        )
+        self._tableViewDataSourceAndDelegate = List2DataSourceAndDelegate.alloc().initWithTableView_(self._tableView)
         self._tableView.setDataSource_(self._tableViewDataSourceAndDelegate)
         self._tableView.setDelegate_(self._tableViewDataSourceAndDelegate)
         # callbacks
@@ -215,6 +227,8 @@ class List2(vanilla.ScrollView):
             nsView=self._tableView,
             autohidesScrollers=autohidesScrollers
         )
+        self._itemsWereDict = True
+        self.set(items)
 
     def _breakCycles(self):
         super()._breakCycles()
@@ -236,7 +250,7 @@ class List2(vanilla.ScrollView):
             width = columnDescription.get("width")
             minWidth = columnDescription.get("minWidth", width)
             maxWidth = columnDescription.get("maxWidth", width)
-            sortable = columnDescription.get("sortable", True)
+            sortable = columnDescription.get("sortable")
             cellClass = columnDescription.get("cellClass", TextFieldTableCell)
             cellKwargs = columnDescription.get("cellClassArguments", {})
             editable = columnDescription.get("editable", False)
@@ -257,7 +271,6 @@ class List2(vanilla.ScrollView):
             )
             if editable:
                 cellKwargs["callback"] = True
-            # allowsSorting = columnDescription.get("allowsSorting", True)
             self._tableViewDataSourceAndDelegate.setCellClass_withKwargs_forColumn_(
                 cellClass, cellKwargs, identifier
             )
@@ -290,6 +303,30 @@ class List2(vanilla.ScrollView):
             rowHeights.append(height)
         self._tableViewDataSourceAndDelegate.setGetters_setters_(getters, setters)
         self._tableView.setRowHeight_(max(rowHeights))
+
+    def _wrapItem(self, item):
+        if isinstance(item, simpleDataTypes):
+            self._itemsWereDict = False
+            item = dict(value=item)
+        return item
+
+    def set(self, items):
+        """
+        Set the items in the list.
+
+        **items** should follow the same format as described in the constructor.
+        """
+        items = [self._wrapItem(item) for item in items]
+        self._tableViewDataSourceAndDelegate.setItems_(items)
+
+    def get(self):
+        """
+        Get the list of items in the list.
+        """
+        items = list(self._tableViewDataSourceAndDelegate.items())
+        if not self._itemsWereDict:
+            items = [item["value"] for item in items]
+        return items
 
     def reloadData(self, indexes=None):
         tableView = self._tableView
@@ -463,6 +500,8 @@ class Test:
                 editable=False
             ),
         ]
+        self.items = list(range(5))
+        columnDescriptions = None
         self.w.l = List2(
             (10, 10, -10, -40),
             self.items,
@@ -485,8 +524,9 @@ class Test:
         print("selectionCallback")
 
     def getButtonCallback(self, sender):
-        import pprint
-        pprint.pprint([i.getValues() for i in self.items])
+        print(self.w.l.get())
+        # import pprint
+        # pprint.pprint([i.getValues() for i in self.items])
 
     def setButtonCallback(self, sender):
         for i in self.items:
