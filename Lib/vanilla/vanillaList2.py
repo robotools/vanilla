@@ -48,6 +48,7 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
     def initWithTableView_(self, tableView):
         self = List2DataSourceAndDelegate.alloc().init()
         self._items = []
+        self._presentedItems = []
         self._tableView = tableView
         self._cellClasses = {} # { identifier : class }
         self._cellWrappers = {} # { nsView : vanilla wrapper } for view + wrapper reuse purposes
@@ -60,13 +61,6 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
         # }
         return self
 
-    def items(self):
-        return self._items
-
-    def setItems_(self, items):
-        self._items = items
-        self._tableView.reloadData()
-
     def setCellClass_withKwargs_forColumn_(self, cls, kwargs, identifier):
         if "callback" in kwargs:
             kwargs["callback"] = self.cellEditCallback
@@ -76,45 +70,15 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
         self._valueGetters = getters
         self._valueSetters = setters
 
-    def getObjectValueForColumn_row_(self, identifier, row):
-        item = self._items[row]
-        getters = self._valueGetters.get(identifier, {})
-        property = getters.get("property")
-        method = getters.get("method")
-        function = getters.get("function")
-        if property is not None:
-            return getattr(item, property)
-        elif method is not None:
-            return getattr(item, method)()
-        elif function is not None:
-            return function(item)
-        return item[identifier]
+    def items(self):
+        return self._items
 
-    def setObjectValue_forColumn_row_(self, value, identifier, row):
-        item = self._items[row]
-        setters = self._valueSetters.get(identifier, {})
-        property = setters.get("property")
-        method = setters.get("method")
-        function = setters.get("function")
-        if property is not None:
-            return setattr(item, property, value)
-        elif method is not None:
-            return getattr(item, method)(value)
-        elif function is not None:
-            return function(item, value)
-        elif isinstance(item, dict):
-            item[identifier] = value
+    def setItems_(self, items):
+        self._items = items
+        self._updatePresentedItems()
 
-    # Data Source
-
-    def numberOfRowsInTableView_(self, tableView):
-        return len(self._items)
-
-    def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
-        identifier = column.identifier()
-        return self.getObjectValueForColumn_row_(identifier, row)
-
-    def tableView_sortDescriptorsDidChange_(self, tableView, sortDescriptors):
+    def _updatePresentedItems(self):
+        tableView = self._tableView
         sortDescriptors = tableView.sortDescriptors()
         items = self._items
         for sortDescriptor in reversed(sortDescriptors):
@@ -138,8 +102,51 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
                 key=key,
                 reverse=reverse
             )
-        self._items = list(items)
+        self._presentedItems = list(items)
         tableView.reloadData()
+
+    # Data Editing Via Cells
+
+    def getObjectValueForColumn_row_(self, identifier, row):
+        item = self._presentedItems[row]
+        getters = self._valueGetters.get(identifier, {})
+        property = getters.get("property")
+        method = getters.get("method")
+        function = getters.get("function")
+        if property is not None:
+            return getattr(item, property)
+        elif method is not None:
+            return getattr(item, method)()
+        elif function is not None:
+            return function(item)
+        return item[identifier]
+
+    def setObjectValue_forColumn_row_(self, value, identifier, row):
+        item = self._presentedItems[row]
+        setters = self._valueSetters.get(identifier, {})
+        property = setters.get("property")
+        method = setters.get("method")
+        function = setters.get("function")
+        if property is not None:
+            return setattr(item, property, value)
+        elif method is not None:
+            return getattr(item, method)(value)
+        elif function is not None:
+            return function(item, value)
+        elif isinstance(item, dict):
+            item[identifier] = value
+
+    # Data Source
+
+    def numberOfRowsInTableView_(self, tableView):
+        return len(self._presentedItems)
+
+    def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
+        identifier = column.identifier()
+        return self.getObjectValueForColumn_row_(identifier, row)
+
+    def tableView_sortDescriptorsDidChange_(self, tableView, sortDescriptors):
+        self._updatePresentedItems()
 
     # Delegate
 
@@ -473,7 +480,8 @@ class Test:
                 title="String",
                 identifier="stringValue",
                 cellClass=TextFieldTableCell,
-                editable=False
+                editable=False,
+                sortable=True
             ),
             dict(
                 title="Number",
@@ -484,13 +492,15 @@ class Test:
                     maxValue=5,
                     tickMarkCount=10
                 ),
-                editable=True
+                editable=True,
+                sortable=True
             ),
             dict(
                 title="Property",
                 identifier="propertyValue",
                 property="propertyValue",
-                editable=True
+                editable=True,
+                sortable=True
             ),
             dict(
                 title="Method",
@@ -500,8 +510,8 @@ class Test:
                 editable=False
             ),
         ]
-        self.items = list(range(5))
-        columnDescriptions = None
+        # self.items = list(range(5))
+        # columnDescriptions = None
         self.w.l = List2(
             (10, 10, -10, -40),
             self.items,
@@ -534,6 +544,9 @@ class Test:
             i["numberValue"] = 2.5
             i.propertyValue = "123"
         self.w.l.reloadData()
+        # items = list(range(100, 150))
+        # self.w.l.set(items)
 
 from vanilla.test.testTools import executeVanillaTest
 executeVanillaTest(Test)
+
