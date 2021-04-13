@@ -43,10 +43,10 @@ simpleDataTypes = (
     type(None)
 )
 
-class List2DataSourceAndDelegate(AppKit.NSObject):
+class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 
     def initWithTableView_(self, tableView):
-        self = List2DataSourceAndDelegate.alloc().init()
+        self = VanillaList2DataSourceAndDelegate.alloc().init()
         self._items = []
         self._presentedItems = []
         self._tableView = tableView
@@ -189,12 +189,13 @@ class List2DataSourceAndDelegate(AppKit.NSObject):
             wrapper._editCallback(wrapper)
 
 
-class List2TableCellView(AppKit.NSTableCellView): pass
+class VanillaList2TableViewSubclass(AppKit.NSTableView): pass
 
 
 class List2(vanilla.ScrollView):
 
-    nsTableViewClass = AppKit.NSTableView
+    nsTableViewClass = VanillaList2TableViewSubclass
+    dataSourceAndDelegateClass = VanillaList2DataSourceAndDelegate
 
     def __init__(self,
             posSize,
@@ -216,7 +217,7 @@ class List2(vanilla.ScrollView):
                 )
             ]
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
-        self._tableViewDataSourceAndDelegate = List2DataSourceAndDelegate.alloc().initWithTableView_(self._tableView)
+        self._tableViewDataSourceAndDelegate = self.dataSourceAndDelegateClass.alloc().initWithTableView_(self._tableView)
         self._tableView.setDataSource_(self._tableViewDataSourceAndDelegate)
         self._tableView.setDelegate_(self._tableViewDataSourceAndDelegate)
         # callbacks
