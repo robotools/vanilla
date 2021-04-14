@@ -139,6 +139,22 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         elif isinstance(item, dict):
             item[identifier] = value
 
+    # Selection
+
+    def selectedItems(self):
+        indexes = self._tableView.selectedRowIndexes()
+        items = [self._presentedItems[i] for i in indexes]
+        return items
+
+    def setSelectedItems_(self, items):
+        indexes = [
+            self._presentedItems.index(item)
+            for item in items
+            if item in self._presentedItems
+        ]
+        indexes = makeIndexSet(indexes)
+        self._tableView.setSelectedRows_(indexes)
+
     # Data Source
 
     def numberOfRowsInTableView_(self, tableView):
@@ -358,6 +374,8 @@ class List2(vanilla.ScrollView):
         """
         return self._tableView
 
+    # Data
+
     def set(self, items):
         """
         Set the items in the list.
@@ -381,17 +399,42 @@ class List2(vanilla.ScrollView):
         if indexes is None:
             tableView.reloadData()
         else:
-            rowIndexes = AppKit.NSMutableIndexSet.indexSet()
-            for i in indexes:
-                rowIndexes.addIndex_(i)
-            columnIndexes = AppKit.NSMutableIndexSet.indexSet()
-            for i in range(len(tableView.tableColumns())):
-                columnIndexes.addIndex_(i)
+            rowIndexes = makeIndexSet(indexes)
+            columnIndexes = range(len(tableView.tableColumns()))
+            columnIndexes = makeIndexSet(columnIndexes)
             tableView.reloadDataForRowIndexes_columnIndexes_(
                 rowIndexes,
                 columnIndexes
             )
 
+    # Selection
+
+    def getSelection(self):
+        pass
+
+    def setSelection(self, indexes):
+        pass
+
+    def getSelectedItems(self):
+        pass
+
+    def setSelectedItems(self, items):
+        pass
+
+
+# -----
+# Tools
+# -----
+
+def makeIndexSet(indexes):
+    indexSet = AppKit.NSMutableIndexSet.indexSet()
+    for i in indexes:
+        indexSet.addIndex_(i)
+    return indexSet
+
+# -----
+# Cells
+# -----
 
 class TextFieldTableCell(vanilla.EditText):
 
