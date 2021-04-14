@@ -6,6 +6,7 @@ import AppKit
 import vanilla
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaCallbackWrapper, osVersionCurrent, osVersion10_16
+from vanilla.vanillaScrollView import ScrollView
 
 import objc
 objc.setVerbose(True)
@@ -48,7 +49,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
     def initWithTableView_(self, tableView):
         self = VanillaList2DataSourceAndDelegate.alloc().init()
         self._items = []
-        self._presentedItems = []
+        self._arrangedItems = []
         self._tableView = tableView
         self._cellClasses = {} # { identifier : class }
         self._cellWrappers = {} # { nsView : vanilla wrapper } for view + wrapper reuse purposes
@@ -78,9 +79,12 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 
     def setItems_(self, items):
         self._items = items
-        self._updatePresentedItems()
+        self._updatearrangedItems()
 
-    def _updatePresentedItems(self):
+    def arrangedItems(self):
+        return list(self._arrangedItems)
+
+    def _updatearrangedItems(self):
         tableView = self._tableView
         sortDescriptors = tableView.sortDescriptors()
         items = self._items
@@ -105,13 +109,13 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
                 key=key,
                 reverse=reverse
             )
-        self._presentedItems = list(items)
+        self._arrangedItems = list(items)
         tableView.reloadData()
 
     # Data Editing Via Cells
 
     def getObjectValueForColumn_row_(self, identifier, row):
-        item = self._presentedItems[row]
+        item = self._arrangedItems[row]
         getters = self._valueGetters.get(identifier, {})
         property = getters.get("property")
         method = getters.get("method")
@@ -125,7 +129,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         return item[identifier]
 
     def setObjectValue_forColumn_row_(self, value, identifier, row):
-        item = self._presentedItems[row]
+        item = self._arrangedItems[row]
         setters = self._valueSetters.get(identifier, {})
         property = setters.get("property")
         method = setters.get("method")
@@ -139,33 +143,17 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         elif isinstance(item, dict):
             item[identifier] = value
 
-    # Selection
-
-    def selectedItems(self):
-        indexes = self._tableView.selectedRowIndexes()
-        items = [self._presentedItems[i] for i in indexes]
-        return items
-
-    def setSelectedItems_(self, items):
-        indexes = [
-            self._presentedItems.index(item)
-            for item in items
-            if item in self._presentedItems
-        ]
-        indexes = makeIndexSet(indexes)
-        self._tableView.setSelectedRows_(indexes)
-
     # Data Source
 
     def numberOfRowsInTableView_(self, tableView):
-        return len(self._presentedItems)
+        return len(self._arrangedItems)
 
     def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
         identifier = column.identifier()
         return self.getObjectValueForColumn_row_(identifier, row)
 
     def tableView_sortDescriptorsDidChange_(self, tableView, sortDescriptors):
-        self._updatePresentedItems()
+        self._updatearrangedItems()
 
     # Delegate
 
@@ -208,7 +196,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 class VanillaList2TableViewSubclass(AppKit.NSTableView): pass
 
 
-class List2(vanilla.ScrollView):
+class List2(ScrollView):
 
     nsTableViewClass = VanillaList2TableViewSubclass
     dataSourceAndDelegateClass = VanillaList2DataSourceAndDelegate
@@ -357,14 +345,6 @@ class List2(vanilla.ScrollView):
             self._itemsWereDict = False
             item = dict(value=item)
         return item
-
-    def getNSScrollView(self):
-        """
-        Return the `NSScrollView`_ that this object wraps.
-    
-        .. _NSScrollView: https://developer.apple.com/documentation/appkit/nsscrollview?language=objc
-        """
-        return self._nsObject
     
     def getNSTableView(self):
         """
@@ -394,6 +374,12 @@ class List2(vanilla.ScrollView):
             items = [item["value"] for item in items]
         return items
 
+    def getArrangedItems(self):
+        """
+        Get the items as they appear to the user in the list.
+        """
+        return self._tableViewDataSourceAndDelegate.arrangedItems()
+
     def reloadData(self, indexes=None):
         tableView = self._tableView
         if indexes is None:
@@ -416,10 +402,20 @@ class List2(vanilla.ScrollView):
         pass
 
     def getSelectedItems(self):
-        pass
+        indexes = self._tableView.selectedRowIndexes()
+        arrangedItems = self._tableViewDataSourceAndDelegate.arrangedItems()
+        items = [arrangedItems[i] for i in indexes]
+        return items
 
     def setSelectedItems(self, items):
-        pass
+        arrangedItems = self._tableViewDataSourceAndDelegate.arrangedItems()
+        indexes = [
+            arrangedItems.index(item)
+            for item in items
+            if item in arrangedItems
+        ]
+        indexes = makeIndexSet(indexes)
+        self._tableView.selectRowIndexes_byExtendingSelection_(indexes, False)
 
 
 # -----
@@ -436,7 +432,9 @@ def makeIndexSet(indexes):
 # Cells
 # -----
 
-class TextFieldTableCell(vanilla.EditText):
+from vanilla.vanillaEditText import EditText
+
+class TextFieldTableCell(EditText):
 
     def __init__(self,
             callback=None
@@ -450,7 +448,9 @@ class TextFieldTableCell(vanilla.EditText):
         textField.setBezeled_(False)
 
 
-class SliderTableCell(vanilla.Slider):
+from vanilla.vanillaSlider import Slider
+
+class SliderTableCell(Slider):
 
     def __init__(self,
             minValue=0,
@@ -470,175 +470,3 @@ class SliderTableCell(vanilla.Slider):
             sizeStyle="small",
             callback=callback
         )
-
-
-# ----
-# Test
-# ----
-
-class CustomTableCell(vanilla.Box):
-
-    def __init__(self):
-        super().__init__(
-            "auto",
-            cornerRadius=10
-        )
-        self.button1 = vanilla.Button(
-            "auto",
-            "Hello"
-        )
-        self.button2 = vanilla.CheckBox(
-            "auto",
-            "World"
-        )
-        self.button3 = vanilla.Button(
-            "auto",
-            "!?!?!?!?!?!"
-        )
-        rules = [
-            "H:|-border-[button1]-border-|",
-            "H:|-border-[button2]-border-|",
-            "H:|-border-[button3]-border-|",
-            "V:|-border-[button1]-border-[button2]-border-[button3]-border-|",
-        ]
-        metrics = dict(
-            border=10
-        )
-        self.addAutoPosSizeRules(rules, metrics)
-
-    def get(self):
-        return self.getNSBox().backgroundColor()
-
-    def set(self, value):
-        self.getNSBox().setBackgroundColor_(value)
-
-
-class TestObject(dict):
-
-    def __init__(self, propertyValue="", color=AppKit.NSColor.blackColor(), **kwargs):
-        super().__init__()
-        self.update(kwargs)
-        self.propertyValue = propertyValue
-        self._color = color
-
-    def getColor(self):
-        return self._color
-
-    def setColor(self, color):
-        self._color = color
-
-    def getValues(self):
-        values = list(self.items())
-        values.append(("propertyValue", self.propertyValue))
-        return values
-
-
-class Test:
-
-    def __init__(self):
-        self.w = vanilla.Window((500, 500))
-        self.items = []
-        for i in range(1):
-            self.items += [
-                TestObject(
-                    stringValue="AAA",
-                    numberValue=1,
-                    propertyValue="one",
-                    color=AppKit.NSColor.redColor()
-                ),
-                TestObject(
-                    stringValue="BBB",
-                    numberValue=2,
-                    propertyValue="two",
-                    color=AppKit.NSColor.greenColor()
-                ),
-                TestObject(
-                    stringValue="CCC",
-                    numberValue=3,
-                    propertyValue="three",
-                    color=AppKit.NSColor.blueColor()
-                ),
-            ]
-        columnDescriptions = [
-            dict(
-                title="String",
-                identifier="stringValue",
-                cellClass=TextFieldTableCell,
-                editable=False,
-                sortable=True
-            ),
-            dict(
-                title="Number",
-                identifier="numberValue",
-                cellClass=SliderTableCell,
-                cellClassArguments=dict(
-                    minValue=0,
-                    maxValue=5,
-                    tickMarkCount=10
-                ),
-                editable=True,
-                sortable=True
-            ),
-            dict(
-                title="Property",
-                identifier="propertyValue",
-                property="propertyValue",
-                editable=True,
-                sortable=True
-            ),
-            dict(
-                title="Method",
-                identifier="method",
-                cellClass=CustomTableCell,
-                getMethod="getColor",
-                editable=False
-            ),
-        ]
-        # self.items = list(range(5))
-        # columnDescriptions = None
-        self.w.l = List2(
-            (10, 10, -10, -40),
-            self.items,
-            columnDescriptions=columnDescriptions,
-            editCallback=self.editCallback,
-            selectionCallback=self.selectionCallback,
-            doubleClickCallback=self.doubleClickCallback
-        )
-        self.w.getButton = vanilla.Button(
-            (10, -30, 100, 20),
-            "get values",
-            callback=self.getButtonCallback
-        )
-        self.w.setButton = vanilla.Button(
-            (120, -30, 100, 20),
-            "set values",
-            callback=self.setButtonCallback
-        )
-        self.w.open()
-
-    def editCallback(self, sender):
-        print("editCallback")
-
-    def selectionCallback(self, sender):
-        print("selectionCallback")
-
-    def doubleClickCallback(self, sender):
-        print("doubleClickCallback")
-
-    def getButtonCallback(self, sender):
-        print(self.w.l.get())
-        # import pprint
-        # pprint.pprint([i.getValues() for i in self.items])
-
-    def setButtonCallback(self, sender):
-        for i in self.items:
-            i["stringValue"] = "XXX"
-            i["numberValue"] = 2.5
-            i.propertyValue = "123"
-        self.w.l.reloadData()
-        # items = list(range(100, 150))
-        # self.w.l.set(items)
-
-from vanilla.test.testTools import executeVanillaTest
-executeVanillaTest(Test)
-
