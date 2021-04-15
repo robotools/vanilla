@@ -24,7 +24,8 @@ with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
 
 
-setup(name="vanilla",
+setup(
+    name="cocoa-vanilla",
     use_scm_version={"write_to": "Lib/vanilla/_version.py"},
     description="A Pythonic wrapper around Cocoa.",
     long_description=long_description,
