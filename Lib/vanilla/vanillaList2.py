@@ -556,3 +556,19 @@ class SegmentedButtonListCell(SegmentedButton):
             callback=callback
         )
         self.enable(editable)
+
+
+from vanilla.vanillaColorWell import ColorWell
+
+class ColorWellListCell(ColorWell):
+
+    def __init__(self,
+            editable=False,
+            callback=None
+        ):
+        super().__init__(
+            "auto",
+            callback=callback
+        )
+        colorWell = self.getNSColorWell()
+        self.enable(editable)

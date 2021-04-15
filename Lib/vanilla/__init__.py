@@ -14,7 +14,7 @@ from vanilla.vanillaGroup import Group
 from vanilla.vanillaImageView import ImageView
 from vanilla.vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
 from vanilla.vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell, ImageListCell, SegmentedButtonListCell
-from vanilla.vanillaList2 import List2, EditTextListCell, SliderListCell, CheckBoxListCell, PopUpButtonListCell, ImageListCell, SegmentedButtonListCell
+from vanilla.vanillaList2 import List2, EditTextListCell, SliderListCell, CheckBoxListCell, PopUpButtonListCell, ImageListCell, SegmentedButtonListCell, ColorWellListCell
 from vanilla.vanillaPathControl import PathControl
 from vanilla.vanillaPopUpButton import PopUpButton, ActionButton
 from vanilla.vanillaProgressBar import ProgressBar
@@ -47,7 +47,7 @@ __all__ = [
     "ImageView",
     "LevelIndicator", "LevelIndicatorListCell",
     "List", "CheckBoxListCell", "SliderListCell", "PopUpButtonListCell", "ImageListCell", "SegmentedButtonListCell",
-    "List2", "EditTextListCell", "SliderListCell", "CheckBoxListCell", "PopUpButtonListCell", "ImageListCell", "SegmentedButtonListCell",
+    "List2", "EditTextListCell", "SliderListCell", "CheckBoxListCell", "PopUpButtonListCell", "ImageListCell", "SegmentedButtonListCell", "ColorWellListCell",
     "ObjectBrowser",
     "PathControl",
     "PopUpButton", "ActionButton",

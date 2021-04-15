@@ -19,11 +19,11 @@ class Test:
                 editableCheckBox=False,
                 popUpButton=1,
                 editablePopUpButton=2,
-                colorWell=AppKit.NSColor.redColor(),
-                editableColorWell=AppKit.NSColor.greenColor(),
                 image=AppKit.NSImage.imageNamed_(AppKit.NSImageNameTrashFull),
                 segmentedButton=1,
                 editableSegmentedButton=2,
+                colorWell=AppKit.NSColor.redColor(),
+                editableColorWell=AppKit.NSColor.greenColor(),
                 custom=dict(
                     c=AppKit.NSColor.yellowColor(),
                     pub=1,
@@ -137,6 +137,20 @@ class Test:
                 editable=True,
             ),
             dict(
+                identifier="colorWell",
+                title="ColorWell",
+                width=50,
+                cellClass=vanilla.ColorWellListCell,
+                editable=False,
+            ),
+            dict(
+                identifier="editableColorWell",
+                title="ColorWell-E",
+                width=50,
+                cellClass=vanilla.ColorWellListCell,
+                editable=True,
+            ),
+            dict(
                 identifier="custom",
                 title="Custom",
                 width=100,
@@ -168,8 +182,8 @@ class Test:
 
     def getButtonCallback(self, sender):
         for i, item in enumerate(self.w.list.get()):
-            print(f"--- {i}")
-            for k, v in sorted(item.items()):
+            print(f"{i} ----------")
+            for k, v in item.items():
                 if k == "image":
                     continue
                 v = pprint.pformat(v)
