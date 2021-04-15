@@ -79,12 +79,12 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 
     def setItems_(self, items):
         self._items = items
-        self._updatearrangedItems()
+        self._updateArrangedItems()
 
     def arrangedItems(self):
         return list(self._arrangedItems)
 
-    def _updatearrangedItems(self):
+    def _updateArrangedItems(self):
         tableView = self._tableView
         sortDescriptors = tableView.sortDescriptors()
         items = self._items
@@ -153,7 +153,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         return self.getObjectValueForColumn_row_(identifier, row)
 
     def tableView_sortDescriptorsDidChange_(self, tableView, sortDescriptors):
-        self._updatearrangedItems()
+        self._updateArrangedItems()
 
     # Delegate
 
@@ -221,7 +221,7 @@ class List2(ScrollView):
             columnDescriptions = [
                 dict(
                     identifier="value",
-                    cellClass=TextFieldTableCell
+                    cellClass=EditTextListCell
                 )
             ]
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
@@ -287,7 +287,7 @@ class List2(ScrollView):
             minWidth = columnDescription.get("minWidth", width)
             maxWidth = columnDescription.get("maxWidth", width)
             sortable = columnDescription.get("sortable")
-            cellClass = columnDescription.get("cellClass", TextFieldTableCell)
+            cellClass = columnDescription.get("cellClass", EditTextListCell)
             cellKwargs = columnDescription.get("cellClassArguments", {})
             editable = columnDescription.get("editable", False)
             property = columnDescription.get("property")
@@ -305,6 +305,7 @@ class List2(ScrollView):
                 method=setMethod,
                 function=setFunction
             )
+            cellKwargs["editable"] = editable
             if editable:
                 cellKwargs["callback"] = True
             self._tableViewDataSourceAndDelegate.setCellClass_withKwargs_forColumn_(
@@ -434,9 +435,10 @@ def makeIndexSet(indexes):
 
 from vanilla.vanillaEditText import EditText
 
-class TextFieldTableCell(EditText):
+class EditTextListCell(EditText):
 
     def __init__(self,
+            editable=False,
             callback=None
         ):
         super().__init__(
@@ -446,11 +448,12 @@ class TextFieldTableCell(EditText):
         textField = self.getNSTextField()
         textField.setDrawsBackground_(False)
         textField.setBezeled_(False)
+        textField.setEditable_(editable)
 
 
 from vanilla.vanillaSlider import Slider
 
-class SliderTableCell(Slider):
+class SliderListCell(Slider):
 
     def __init__(self,
             minValue=0,
@@ -458,6 +461,7 @@ class SliderTableCell(Slider):
             value=50,
             tickMarkCount=0,
             stopOnTickMarks=False,
+            editable=False,
             callback=None
         ):
         super().__init__(
@@ -470,3 +474,85 @@ class SliderTableCell(Slider):
             sizeStyle="small",
             callback=callback
         )
+        self.enable(editable)
+
+
+from vanilla.vanillaCheckBox import CheckBox
+
+class CheckBoxListCell(CheckBox):
+
+    def __init__(self,
+            title=None,
+            editable=False,
+            callback=None
+        ):
+        super().__init__(
+            "auto",
+            title=title,
+            sizeStyle="small",
+            callback=callback
+        )
+        self.enable(editable)
+
+
+from vanilla.vanillaPopUpButton import PopUpButton
+
+class PopUpButtonListCell(PopUpButton):
+
+    def __init__(self,
+            items=[],
+            editable=False,
+            callback=None
+        ):
+        super().__init__(
+            "auto",
+            items=items,
+            sizeStyle="small",
+            callback=callback
+        )
+        self.enable(editable)
+
+
+from vanilla.vanillaImageView import ImageView
+
+class ImageListCell(ImageView):
+
+    def __init__(self,
+            horizontalAlignment="center",
+            verticalAlignment="center",
+            scale="proportional",
+            editable=False,
+            callback=None
+        ):
+        super().__init__(
+            "auto",
+            horizontalAlignment=horizontalAlignment,
+            verticalAlignment=verticalAlignment,
+            scale=scale
+        )
+
+    def set(self, image):
+        self.setImage(imageObject=image)
+
+    def get(self):
+        return self.getNSImageView().image()
+
+
+from vanilla.vanillaSegmentedButton import SegmentedButton
+
+class SegmentedButtonListCell(SegmentedButton):
+
+    def __init__(self,
+            segmentDescriptions=[],
+            selectionStyle="one",
+            editable=False,
+            callback=None
+        ):
+        super().__init__(
+            "auto",
+            segmentDescriptions=segmentDescriptions,
+            selectionStyle=selectionStyle,
+            sizeStyle="small",
+            callback=callback
+        )
+        self.enable(editable)
