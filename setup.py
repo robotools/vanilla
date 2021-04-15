@@ -20,13 +20,20 @@ from setuptools import setup
 #     shutil.rmtree(doctrees)
 
 
+with open("README.md", encoding="utf-8") as f:
+    long_description = f.read()
+
+
 setup(name="vanilla",
-    version="0.1",
+    use_scm_version={"write_to": "Lib/vanilla/_version.py"},
     description="A Pythonic wrapper around Cocoa.",
+    long_description=long_description,
     author="Tal Leming",
     author_email="tal@typesupply.com",
     maintainer="Just van Rossum, Frederik Berlaen",
     maintainer_email="justvanrossum@gmail.com",
+    install_requires=["pyobjc"],
+    setup_requires=["setuptools_scm"],
     url="https://github.com/robotools/vanilla",
     license="MIT",
     packages=["vanilla", "vanilla.test"],
