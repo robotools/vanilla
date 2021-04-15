@@ -1,5 +1,10 @@
 
 *.pyc
+.eggs/
+*.egg-info
+/build/
+/dist/
+/venv/
 
 Documentation/build
 
