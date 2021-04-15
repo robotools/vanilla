@@ -6,6 +6,6 @@ Documentation is at [vanilla.robotools.dev](http://vanilla.robotools.dev/en/late
 
 It comes bundled with RoboFont and DrawBot.
 
-Install for you own use with pip:
+Install for your own use with pip:
 
     $ pip install cocoa-vanilla
