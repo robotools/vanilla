@@ -38,5 +38,7 @@ setup(
     url="https://github.com/robotools/vanilla",
     license="MIT",
     packages=["vanilla", "vanilla.test"],
-    package_dir={"":"Lib"}
+    package_dir={"": "Lib"},
+    platforms=["macOS"],
+    python_requires=">=3.6",
 )
