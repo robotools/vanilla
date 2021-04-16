@@ -59,8 +59,8 @@ class Test:
         self.w.open()
 
     def itemList1SelectionCallback(self, sender):
-        items = self.w.itemList1.getSelectedItems()
-        self.w.itemList2.setSelectedItems(items)
+        indexes = self.w.itemList1.getSelectedIndexes()
+        self.w.itemList2.setSelectedIndexes(indexes)
 
 
 if __name__ == "__main__":

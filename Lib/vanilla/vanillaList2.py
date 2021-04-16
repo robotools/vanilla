@@ -49,7 +49,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
     def initWithTableView_(self, tableView):
         self = VanillaList2DataSourceAndDelegate.alloc().init()
         self._items = []
-        self._arrangedItems = []
+        self._arrangedIndexes = []
         self._tableView = tableView
         self._cellClasses = {} # { identifier : class }
         self._cellWrappers = {} # { nsView : vanilla wrapper } for view + wrapper reuse purposes
@@ -79,15 +79,24 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 
     def setItems_(self, items):
         self._items = items
-        self._updateArrangedItems()
+        self._updateArrangedIndexes()
+
+    def arrangedIndexes(self):
+        return self._arrangedIndexes
 
     def arrangedItems(self):
-        return list(self._arrangedItems)
+        items = [
+            self._items[index]
+            for index in self._arrangedIndexes
+        ]
+        return items
 
-    def _updateArrangedItems(self):
+    @python_method
+    def _updateArrangedIndexes(self):
         tableView = self._tableView
         sortDescriptors = tableView.sortDescriptors()
         items = self._items
+        indexes = range(len(items))
         for sortDescriptor in reversed(sortDescriptors):
             identifier = sortDescriptor.key()
             ascending = sortDescriptor.ascending()
@@ -104,18 +113,23 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
                 key = function
             else:
                 key = operator.itemgetter(identifier)
-            items = sorted(
-                items,
-                key=key,
-                reverse=reverse
-            )
-        self._arrangedItems = list(items)
+
+            def valueGetter(index):
+                return key(items[index])
+
+            indexes = sorted(indexes, key=valueGetter, reverse=reverse)
+        self._arrangedIndexes = list(indexes)
         tableView.reloadData()
+
+    @python_method
+    def _getItemForRow(self, index):
+        itemIndex = self._arrangedIndexes[index]
+        return self._items[itemIndex]
 
     # Data Editing Via Cells
 
-    def getObjectValueForColumn_row_(self, identifier, row):
-        item = self._arrangedItems[row]
+    def getItemValueForColumn_row_(self, identifier, row):
+        item = self._getItemForRow(row)
         getters = self._valueGetters.get(identifier, {})
         property = getters.get("property")
         method = getters.get("method")
@@ -128,8 +142,8 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
             return function(item)
         return item[identifier]
 
-    def setObjectValue_forColumn_row_(self, value, identifier, row):
-        item = self._arrangedItems[row]
+    def setItemValue_forColumn_row_(self, value, identifier, row):
+        item = self._getItemForRow(row)
         setters = self._valueSetters.get(identifier, {})
         property = setters.get("property")
         method = setters.get("method")
@@ -146,20 +160,20 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
     # Data Source
 
     def numberOfRowsInTableView_(self, tableView):
-        return len(self._arrangedItems)
+        return len(self._arrangedIndexes)
 
     def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
         identifier = column.identifier()
-        return self.getObjectValueForColumn_row_(identifier, row)
+        return self.getItemValueForColumn_row_(identifier, row)
 
     def tableView_sortDescriptorsDidChange_(self, tableView, sortDescriptors):
-        self._updateArrangedItems()
+        self._updateArrangedIndexes()
 
     # Delegate
 
     def tableView_viewForTableColumn_row_(self, tableView, column, row):
         identifier = column.identifier()
-        value = self.getObjectValueForColumn_row_(identifier, row)
+        value = self.getItemValueForColumn_row_(identifier, row)
         nsView = tableView.makeViewWithIdentifier_owner_(
             column.identifier(),
             self
@@ -187,7 +201,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
     def cellEditCallback(self, sender):
         identifier, row = sender._representedColumnRow
         value = sender.get()
-        self.setObjectValue_forColumn_row_(value, identifier, row)
+        self.setItemValue_forColumn_row_(value, identifier, row)
         wrapper = self.vanillaWrapper()
         if wrapper._editCallback is not None:
             wrapper._editCallback(wrapper)
@@ -225,9 +239,9 @@ class List2(ScrollView):
                 )
             ]
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
-        self._tableViewDataSourceAndDelegate = self.dataSourceAndDelegateClass.alloc().initWithTableView_(self._tableView)
-        self._tableView.setDataSource_(self._tableViewDataSourceAndDelegate)
-        self._tableView.setDelegate_(self._tableViewDataSourceAndDelegate)
+        self._dataSourceAndDelegate = self.dataSourceAndDelegateClass.alloc().initWithTableView_(self._tableView)
+        self._tableView.setDataSource_(self._dataSourceAndDelegate)
+        self._tableView.setDelegate_(self._dataSourceAndDelegate)
         # callbacks
         self._selectionCallback = selectionCallback
         self._editCallback = editCallback
@@ -308,7 +322,7 @@ class List2(ScrollView):
             cellKwargs["editable"] = editable
             if editable:
                 cellKwargs["callback"] = True
-            self._tableViewDataSourceAndDelegate.setCellClass_withKwargs_forColumn_(
+            self._dataSourceAndDelegate.setCellClass_withKwargs_forColumn_(
                 cellClass, cellKwargs, identifier
             )
             if width is not None:
@@ -338,7 +352,7 @@ class List2(ScrollView):
             height = cell._nsObject.fittingSize().height
             del cell
             rowHeights.append(height)
-        self._tableViewDataSourceAndDelegate.setGetters_setters_(getters, setters)
+        self._dataSourceAndDelegate.setGetters_setters_(getters, setters)
         self._tableView.setRowHeight_(max(rowHeights))
 
     def _wrapItem(self, item):
@@ -364,22 +378,29 @@ class List2(ScrollView):
         **items** should follow the same format as described in the constructor.
         """
         items = [self._wrapItem(item) for item in items]
-        self._tableViewDataSourceAndDelegate.setItems_(items)
+        self._dataSourceAndDelegate.setItems_(items)
 
     def get(self):
         """
         Get the list of items in the list.
         """
-        items = list(self._tableViewDataSourceAndDelegate.items())
+        items = list(self._dataSourceAndDelegate.items())
         if not self._itemsWereDict:
             items = [item["value"] for item in items]
         return items
+
+    def getArrangedIndexes(self):
+        """
+        Get the indexes of the items as they appear
+        to the user in the list.
+        """
+        return self._dataSourceAndDelegate.arrangedIndexes()
 
     def getArrangedItems(self):
         """
         Get the items as they appear to the user in the list.
         """
-        return self._tableViewDataSourceAndDelegate.arrangedItems()
+        return self._dataSourceAndDelegate.arrangedItems()
 
     def reloadData(self, indexes=None):
         tableView = self._tableView
@@ -396,28 +417,45 @@ class List2(ScrollView):
 
     # Selection
 
-    def getSelection(self):
-        pass
-
-    def setSelection(self, indexes):
-        pass
-
     def getSelectedItems(self):
         indexes = self._tableView.selectedRowIndexes()
-        arrangedItems = self._tableViewDataSourceAndDelegate.arrangedItems()
-        items = [arrangedItems[i] for i in indexes]
+        items = self.get()
+        indexes = self.getArrangedIndexes()
+        items = [items[i] for i in indexes]
         return items
 
     def setSelectedItems(self, items):
-        arrangedItems = self._tableViewDataSourceAndDelegate.arrangedItems()
+        """
+        XXX note performance issues and issue with duplicate items
+        """
+        items = self.get()
         indexes = [
-            arrangedItems.index(item)
+            items.index(item)
             for item in items
-            if item in arrangedItems
         ]
-        indexes = makeIndexSet(indexes)
-        self._tableView.selectRowIndexes_byExtendingSelection_(indexes, False)
+        self.setSelectedIndexes(indexes)
 
+    def getSelectedIndexes(self):
+        rowIndexes = self._tableView.selectedRowIndexes()
+        arrangedIndexes = self.getArrangedIndexes()
+        itemIndexes = [
+            arrangedIndexes[i]
+            for i in rowIndexes
+        ]
+        return itemIndexes
+
+    def setSelectedIndexes(self, indexes):
+        itemIndexToRowIndexes = {
+            itemIndex : rowIndex
+            for rowIndex, itemIndex
+            in enumerate(self.getArrangedIndexes())
+        }
+        rowIndexes = [
+            itemIndexToRowIndexes[itemIndex]
+            for itemIndex in indexes
+        ]
+        rowIndexes = makeIndexSet(rowIndexes)
+        self._tableView.selectRowIndexes_byExtendingSelection_(rowIndexes, False)
 
 # -----
 # Tools
