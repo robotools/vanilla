@@ -428,12 +428,16 @@ class List2(ScrollView):
         """
         XXX note performance issues and issue with duplicate items
         """
-        items = self.get()
-        indexes = [
-            items.index(item)
+        allItems = self.get()
+        indexMapping = {
+            id(item) : index
+            for index, item in enumerate(allItems)
+        }
+        selectionIndexes = [
+            indexMapping[id(item)]
             for item in items
         ]
-        self.setSelectedIndexes(indexes)
+        self.setSelectedIndexes(selectionIndexes)
 
     def getSelectedIndexes(self):
         rowIndexes = self._tableView.selectedRowIndexes()
