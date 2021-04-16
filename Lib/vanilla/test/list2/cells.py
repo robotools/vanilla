@@ -50,7 +50,7 @@ class Test:
                 identifier="slider",
                 title="Slider",
                 width=100,
-                cellClass=vanilla.SliderListCell,
+                cellClass=vanilla.SliderList2Cell,
                 cellClassArguments=dict(
                     minValue=0,
                     maxValue=100
@@ -61,7 +61,7 @@ class Test:
                 identifier="editableSlider",
                 title="Slider-E",
                 width=100,
-                cellClass=vanilla.SliderListCell,
+                cellClass=vanilla.SliderList2Cell,
                 cellClassArguments=dict(
                     minValue=0,
                     maxValue=100
@@ -72,21 +72,21 @@ class Test:
                 identifier="checkBox",
                 title="CheckBox",
                 width=20,
-                cellClass=vanilla.CheckBoxListCell,
+                cellClass=vanilla.CheckBoxList2Cell,
                 editable=False,
             ),
             dict(
                 identifier="editableCheckBox",
                 title="CheckBox-E",
                 width=20,
-                cellClass=vanilla.CheckBoxListCell,
+                cellClass=vanilla.CheckBoxList2Cell,
                 editable=True,
             ),
             dict(
                 identifier="popUpButton",
                 title="PopUpButton",
                 width=100,
-                cellClass=vanilla.PopUpButtonListCell,
+                cellClass=vanilla.PopUpButtonList2Cell,
                 cellClassArguments=dict(
                     items=list("ABCDE")
                 ),
@@ -96,7 +96,7 @@ class Test:
                 identifier="editablePopUpButton",
                 title="PopUpButton-E",
                 width=100,
-                cellClass=vanilla.PopUpButtonListCell,
+                cellClass=vanilla.PopUpButtonList2Cell,
                 cellClassArguments=dict(
                     items=list("ABCDE")
                 ),
@@ -106,13 +106,13 @@ class Test:
                 identifier="image",
                 title="Image",
                 width=35,
-                cellClass=vanilla.ImageListCell
+                cellClass=vanilla.ImageList2Cell
             ),
             dict(
                 identifier="segmentedButton",
                 title="SegmentedButton",
                 width=100,
-                cellClass=vanilla.SegmentedButtonListCell,
+                cellClass=vanilla.SegmentedButtonList2Cell,
                 cellClassArguments=dict(
                     segmentDescriptions=[
                         dict(title="A"),
@@ -126,7 +126,7 @@ class Test:
                 identifier="editableSegmentedButton",
                 title="SegmentedButton-E",
                 width=100,
-                cellClass=vanilla.SegmentedButtonListCell,
+                cellClass=vanilla.SegmentedButtonList2Cell,
                 cellClassArguments=dict(
                     segmentDescriptions=[
                         dict(title="A"),
@@ -140,21 +140,21 @@ class Test:
                 identifier="colorWell",
                 title="ColorWell",
                 width=50,
-                cellClass=vanilla.ColorWellListCell,
+                cellClass=vanilla.ColorWellList2Cell,
                 editable=False,
             ),
             dict(
                 identifier="editableColorWell",
                 title="ColorWell-E",
                 width=50,
-                cellClass=vanilla.ColorWellListCell,
+                cellClass=vanilla.ColorWellList2Cell,
                 editable=True,
             ),
             dict(
                 identifier="custom",
                 title="Custom",
                 width=100,
-                cellClass=CustomListCell,
+                cellClass=CustomList2Cell,
                 editable=True,
             ),
         ]
@@ -191,7 +191,7 @@ class Test:
             print("\n")
 
 
-class CustomListCell(vanilla.Box):
+class CustomList2Cell(vanilla.Box):
 
     def __init__(self, editable=True, callback=None):
         self.callback = callback
