@@ -49,6 +49,7 @@ Data Views
   :maxdepth: 1
 
   objects/List
+  objects/List2
   objects/ImageView
   objects/LevelIndicator
 

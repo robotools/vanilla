@@ -8,33 +8,6 @@ from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaCallbackWrapper, osVersionCurrent, osVersion10_16
 from vanilla.vanillaScrollView import ScrollView
 
-import objc
-objc.setVerbose(True)
-
-
-"""
-items must be a list of:
-- strings: we make a dict for each
-- dicts: d[x] = y and y = d[x] are used for get/set
-- objects: need to define get/set on a value by value basis
-
-column descriptions:
-
-- identifier
-- title (optional)
-- width (optional)
-- minWidth (optional)
-- maxWidth (optional)
-- cellClass (optional, text cell if not given)
-- cellClassArguments (optional)
-- editable (optional)
-- property (optional)
-- getMethod (optional)
-- setMethod (optional)
-- getFunction (optional)
-- setFunction (optional)
-"""
-
 simpleDataTypes = (
     str,
     int,
@@ -212,6 +185,157 @@ class VanillaList2TableViewSubclass(AppKit.NSTableView): pass
 
 class List2(ScrollView):
 
+    """
+    A control that shows a list of items. These lists can contain one or more columns.
+
+    **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
+    representing the position and size of the list.
+
+    **items** The items to be displayed in the list. This can be a simple list of
+    basic object types:
+
+    - str
+    - int
+    - float
+    - complex
+    - bool
+    - None
+
+    It may also be a list of dictionaries or other Python objects. The values will
+    be retrieved and set with the provided value and getter and setter defined in the
+    column description. If no getter or setter is given, the column identifier will be
+    used to get and set the value in the item as if the item were a dictionary::
+
+        value = item[columnIdentifier]
+        item[columnIdentifier] = value
+
+    **columnDescriptions** An ordered list of dictionaries describing the
+    columns. This is only necessary for multiple column lists.
+
+    +-----------------------------------+-----------------------------------------------------------+
+    | *"identifier"*                    | The unique identifier for this column.                    |
+    +-----------------------------------+-----------------------------------------------------------+
+    | *"title"* (optional)              | The title to appear in the column header.                 |
+    +-----------------------------------+-----------------------------------------------------------+
+    | *"cellClass"* (optional)          | A cell class to be displayed in the column.               |
+    |                                   | If nothing is given, a text cell is used.                 |
+    +-----------------------------------+-----------------------------------------------------------+
+    | *"cellClassArguments"* (optional) | A dictionary of keyword arguments to be used when         |
+    |                                   | *cellClass* is instantiated.                              |
+    +-----------------------------------+-----------------------------------------------------------+
+    | *"editable"* (optional)           | Enable or disable editing in the column. If               |
+    |                                   | nothing is given, it will follow the                      |
+    |                                   | editability of the rest of the list.                      |
+    +-----------------------------------+-----------------------------------------------------------+
+    | *"width"* (optional)              | The width of the column.                                  |
+    +-----------------------------------+-----------------------------------------------------------+
+    | *"minWidth"* (optional)           | The minimum width of the column. The fallback is `width`. |
+    +-----------------------------------+-----------------------------------------------------------+
+    | *"maxWidth"* (optional)           | The maximum width of the column. The fallback is `width`. |
+    +-----------------------------------+-----------------------------------------------------------+
+    | *"sortable"* (optional)           | A boolean representing that this column allows the user   |
+    |                                   | to sort the table by clicking the column's header.        |
+    |                                   | The fallback is `True`. If a List is set to disallow      |
+    |                                   | sorting the column level settings will be ignored.        |
+    +-----------------------------------+-----------------------------------------------------------+
+    | property (optional)               | A property name for getting and setting the item value.   |
+    +-----------------------------------+-----------------------------------------------------------+
+    | getMethod (optional)              | A method name for getting the item value.                 |
+    +-----------------------------------+-----------------------------------------------------------+
+    | setMethod (optional)              | A method name for setting the item value.                 |
+    +-----------------------------------+-----------------------------------------------------------+
+    | getFunction (optional)            | A function for getting the item value.                    |
+    +-----------------------------------+-----------------------------------------------------------+
+    | setFunction (optional)            | A function for getting the item value.                    |
+    +-----------------------------------+-----------------------------------------------------------+
+
+    **showColumnTitles** Boolean representing if the column titles should be shown or not.
+    Column titles will not be shown in single column lists.
+
+    **selectionCallback** Callback to be called when the selection in the list changes.
+
+    **doubleClickCallback** Callback to be called when an item is double clicked.
+
+    **editCallback** Callback to be called after an item has been edited.
+
+    # **menuCallback** Callback to be called when a contextual menu is requested.
+
+    # **enableDelete** A boolean representing if items in the list can be deleted via the interface.
+
+    # **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
+    # closest match as the entered keystrokes. *Available only in single column lists.*
+
+    **allowsMultipleSelection** A boolean representing if the list allows more than one item to be selected.
+
+    **allowsEmptySelection** A boolean representing if the list allows zero items to be selected.
+
+    # **allowsSorting** A boolean indicating if the list allows user sorting by clicking column headers.
+
+    **drawVerticalLines** Boolean representing if vertical lines should be drawn in the list.
+
+    **drawHorizontalLines** Boolean representing if horizontal lines should be drawn in the list.
+
+    **drawFocusRing** Boolean representing if the standard focus ring should be drawn when the list is selected.
+
+    **autohidesScrollers** Boolean representing if scrollbars should automatically be hidden if possible.
+
+#     **selfDropSettings** A dictionary defining the drop settings when the source of the drop
+#     is this list. The dictionary form is described below.
+# 
+#     **selfWindowDropSettings** A dictionary defining the drop settings when the source of the drop
+#     is contained the same window as this list. The dictionary form is described below.
+# 
+#     **selfDocumentDropSettings** A dictionary defining the drop settings when the source of the drop
+#     is contained the same document as this list. The dictionary form is described below.
+# 
+#     **selfApplicationDropSettings** A dictionary defining the drop settings when the source of the drop
+#     is contained the same application as this list. The dictionary form is described below.
+# 
+#     **otherApplicationDropSettings** A dictionary defining the drop settings when the source of the drop
+#     is contained an application other than the one that contains this list. The dictionary form is described below.
+# 
+#     The drop settings dictionaries should be of this form:
+# 
+#     +-----------------------------------+--------------------------------------------------------------------+
+#     | *type*                            | A single drop type indicating what drop types the list accepts.    |
+#     |                                   | For example, "NSFilenamesPboardType" or "MyCustomPboardType".      |
+#     +-----------------------------------+--------------------------------------------------------------------+
+#     | *operation* (optional)            | A `drag operation`_ that the list accepts.                         |
+#     |                                   | The default is *NSDragOperationCopy*.                              |
+#     +-----------------------------------+--------------------------------------------------------------------+
+#     | *allowDropBetweenRows* (optional) | A boolean indicating if the list accepts drops between rows.       |
+#     |                                   | The default is *True*.                                             |
+#     +-----------------------------------+--------------------------------------------------------------------+
+#     | *allowDropOnRow* (optional)       | A boolean indicating if the list accepts drops on rows.            |
+#     |                                   | The default is *False*.                                            |
+#     +-----------------------------------+--------------------------------------------------------------------+
+#     | *callback*                        | Callback to be called when a drop is proposed and when a drop      |
+#     |                                   | is to occur. This method should return a boolean representing      |
+#     |                                   | if the drop is acceptable or not. This method must accept *sender* |
+#     |                                   | and *dropInfo* arguments. The *dropInfo* will be a dictionary as   |
+#     |                                   | described below.                                                   |
+#     +-----------------------------------+--------------------------------------------------------------------+
+# 
+#     .. _drag operation: https://developer.apple.com/documentation/appkit/nsdragginginfo?language=objc
+# 
+#     The *dropInfo* dictionary passed to drop callbacks will be of this form:
+# 
+#     +--------------+----------------------------------------------------------------------------------------------+
+#     | *data*       | The data proposed for the drop. This data will be of the type specified by *dropDataFormat*. |
+#     +--------------+----------------------------------------------------------------------------------------------+
+#     | *rowIndex*   | The row where the drop is proposed.                                                          |
+#     +--------------+----------------------------------------------------------------------------------------------+
+#     | *source*     | The source from which items are being dragged. If this object is wrapped by Vanilla, the     |
+#     |              | Vanilla object will be passed as the source.                                                 |
+#     +--------------+----------------------------------------------------------------------------------------------+
+#     | *dropOnRow*  | A boolean representing if the row is being dropped on. If this is *False*, the drop should   |
+#     |              | occur between rows.                                                                          |
+#     +--------------+----------------------------------------------------------------------------------------------+
+#     | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to         |
+#     |              | accept the drop.                                                                             |
+#     +--------------+----------------------------------------------------------------------------------------------+
+    """
+
     nsTableViewClass = VanillaList2TableViewSubclass
     dataSourceAndDelegateClass = VanillaList2DataSourceAndDelegate
 
@@ -235,7 +359,7 @@ class List2(ScrollView):
             columnDescriptions = [
                 dict(
                     identifier="value",
-                    cellClass=EditTextListCell
+                    cellClass=EditTextList2Cell
                 )
             ]
         self._tableView = getNSSubclass(self.nsTableViewClass)(self)
@@ -301,7 +425,7 @@ class List2(ScrollView):
             minWidth = columnDescription.get("minWidth", width)
             maxWidth = columnDescription.get("maxWidth", width)
             sortable = columnDescription.get("sortable")
-            cellClass = columnDescription.get("cellClass", EditTextListCell)
+            cellClass = columnDescription.get("cellClass", EditTextList2Cell)
             cellKwargs = columnDescription.get("cellClassArguments", {})
             editable = columnDescription.get("editable", False)
             property = columnDescription.get("property")
@@ -409,6 +533,14 @@ class List2(ScrollView):
         return self._dataSourceAndDelegate.arrangedItems()
 
     def reloadData(self, indexes=None):
+        """
+        Reload the data on display. This is needed when
+        the items have changed values and the presentation
+        of the items in the list needs to be updated.
+
+        **indexes** may be provided to indicate that only
+        specific items need to be reloaded.
+        """
         tableView = self._tableView
         if indexes is None:
             tableView.reloadData()
@@ -437,14 +569,14 @@ class List2(ScrollView):
         """
         Set the selected items in the list.
 
-        Note:
-        `setSelectedIndexes` is the recommended method
-        for setting selection. `setSelectedItems` is
-        a convenience method that relies on iteration
-        to find the item indexes, which are then sent
-        to `setSelectedIndexes`. If the list contains
-        a large number of items this iteration can create
-        a performance problem.
+        .. note::
+           `setSelectedIndexes` is the recommended method
+           for setting selection. `setSelectedItems` is
+           a convenience method that relies on iteration
+           and comparing object ids to find the item indexes,
+           which are then sent to `setSelectedIndexes`. If
+           the list contains a large number of items this
+           iteration can create a performance problem.
         """
         allItems = self.get()
         indexMapping = {
@@ -503,7 +635,18 @@ def makeIndexSet(indexes):
 
 from vanilla.vanillaEditText import EditText
 
-class EditTextListCell(EditText):
+class EditTextList2Cell(EditText):
+
+    """
+    An object that displays a check box in a List2 column.
+
+    **title** The title to be set in *all* items in the List column.
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
 
     def __init__(self,
             editable=False,
@@ -521,7 +664,26 @@ class EditTextListCell(EditText):
 
 from vanilla.vanillaSlider import Slider
 
-class SliderListCell(Slider):
+class SliderList2Cell(Slider):
+
+    """
+    An object that displays a slider in a List2 column.
+
+    **minValue** The minimum value for the slider.
+
+    **maxValue** The maximum value for the slider.
+
+    **tickMarkCount** The number of tick marks to be displayed on the slider.
+    If *None* is given, no tick marks will be displayed.
+
+    **stopOnTickMarks** Boolean representing if the slider knob should only
+    stop on the tick marks.
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
 
     def __init__(self,
             minValue=0,
@@ -547,7 +709,18 @@ class SliderListCell(Slider):
 
 from vanilla.vanillaCheckBox import CheckBox
 
-class CheckBoxListCell(CheckBox):
+class CheckBoxList2Cell(CheckBox):
+
+    """
+    An object that displays a check box in a List2 column.
+
+    **title** The title to be set in *all* items in the List column.
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
 
     def __init__(self,
             title=None,
@@ -565,7 +738,18 @@ class CheckBoxListCell(CheckBox):
 
 from vanilla.vanillaPopUpButton import PopUpButton
 
-class PopUpButtonListCell(PopUpButton):
+class PopUpButtonList2Cell(PopUpButton):
+
+    """
+    An object that displays a pop up list in a List2 column.
+
+    **items** The items that should appear in the pop up list.
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
 
     def __init__(self,
             items=[],
@@ -583,7 +767,51 @@ class PopUpButtonListCell(PopUpButton):
 
 from vanilla.vanillaImageView import ImageView
 
-class ImageListCell(ImageView):
+class ImageList2Cell(ImageView):
+
+    """
+    An object that displays an image in a List2 column.
+
+    **horizontalAlignment** A string representing the desired horizontal
+    alignment of the image in the view. The options are:
+
+    +-------------+-------------------------+
+    | "left"      | Image is aligned left.  |
+    +-------------+-------------------------+
+    | "right"     | Image is aligned right. |
+    +-------------+-------------------------+
+    | "center"    | Image is centered.      |
+    +-------------+-------------------------+
+
+    **verticalAlignment** A string representing the desired vertical alignment
+    of the image in the view. The options are:
+
+    +-------------+--------------------------+
+    | "top"       | Image is aligned top.    |
+    +-------------+--------------------------+
+    | "bottom"    | Image is aligned bottom. |
+    +-------------+--------------------------+
+    | "center"    | Image is centered.       |
+    +-------------+--------------------------+
+
+    **scale** A string representing the desired scale style of the image in the
+    view. The options are:
+
+    +----------------+----------------------------------------------+
+    | "proportional" | Proportionally scale the image to fit in the |
+    |                | view if it is larger than the view.          |
+    +----------------+----------------------------------------------+
+    | "fit"          | Distort the proportions of the image until   |
+    |                | it fits exactly in the view.                 |
+    +----------------+----------------------------------------------+
+    | "none"         | Do not scale the image.                      |
+    +----------------+----------------------------------------------+
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
 
     def __init__(self,
             horizontalAlignment="center",
@@ -608,7 +836,31 @@ class ImageListCell(ImageView):
 
 from vanilla.vanillaSegmentedButton import SegmentedButton
 
-class SegmentedButtonListCell(SegmentedButton):
+class SegmentedButtonList2Cell(SegmentedButton):
+
+    """
+    An object that displays a segmented button in a List2 column.
+
+    **segmentDescriptions** An ordered list of dictionaries describing the segments.
+
+    +------------------------+-----------------------------------------------------+
+    | title (optional)       | The title of the segment.                           |
+    +------------------------+-----------------------------------------------------+
+    | imagePath (optional)   | A file path to an image to display in the segment.  |
+    +------------------------+-----------------------------------------------------+
+    | imageNamed (optional)  | The name of an image already loaded as a `NSImage`_ |
+    |                        | by the application to display in the segment.       |
+    +------------------------+-----------------------------------------------------+
+    | imageObject (optional) | A `NSImage`_ object to display in the segment.      |
+    +------------------------+-----------------------------------------------------+
+
+    .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
 
     def __init__(self,
             segmentDescriptions=[],
@@ -628,7 +880,18 @@ class SegmentedButtonListCell(SegmentedButton):
 
 from vanilla.vanillaColorWell import ColorWell
 
-class ColorWellListCell(ColorWell):
+class ColorWellList2Cell(ColorWell):
+
+    """
+    An object that displays a color well in a List2 column.
+
+    **title** The title to be set in *all* items in the List column.
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
 
     def __init__(self,
             editable=False,
