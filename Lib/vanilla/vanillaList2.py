@@ -369,6 +369,12 @@ class List2(ScrollView):
         """
         return self._tableView
 
+    def enable(self, onOff):
+        """
+        Enable or disable the object. **onOff** should be a boolean.
+        """
+        self._tableView.setEnabled_(onOff)
+
     # Data
 
     def set(self, items):
@@ -418,6 +424,9 @@ class List2(ScrollView):
     # Selection
 
     def getSelectedItems(self):
+        """
+        Get a list of selected items in the list.
+        """
         indexes = self._tableView.selectedRowIndexes()
         items = self.get()
         indexes = self.getArrangedIndexes()
@@ -426,7 +435,16 @@ class List2(ScrollView):
 
     def setSelectedItems(self, items):
         """
-        XXX note performance issues and issue with duplicate items
+        Set the selected items in the list.
+
+        Note:
+        `setSelectedIndexes` is the recommended method
+        for setting selection. `setSelectedItems` is
+        a convenience method that relies on iteration
+        to find the item indexes, which are then sent
+        to `setSelectedIndexes`. If the list contains
+        a large number of items this iteration can create
+        a performance problem.
         """
         allItems = self.get()
         indexMapping = {
@@ -440,6 +458,9 @@ class List2(ScrollView):
         self.setSelectedIndexes(selectionIndexes)
 
     def getSelectedIndexes(self):
+        """
+        Get a list of indexes of selected items in the list.
+        """
         rowIndexes = self._tableView.selectedRowIndexes()
         arrangedIndexes = self.getArrangedIndexes()
         itemIndexes = [
@@ -449,6 +470,11 @@ class List2(ScrollView):
         return itemIndexes
 
     def setSelectedIndexes(self, indexes):
+        """
+        Set the selected indexes in the list.
+
+        **indexes** should be a list of indexes.
+        """
         itemIndexToRowIndexes = {
             itemIndex : rowIndex
             for rowIndex, itemIndex
