@@ -23,8 +23,11 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         self = VanillaList2DataSourceAndDelegate.alloc().init()
         self._items = []
         self._arrangedIndexes = []
+        self._groupRowIndexes = []
         self._tableView = tableView
         self._cellClasses = {} # { identifier : class }
+        self._groupRowCellClass = None
+        self._groupRowCellClassKwargs = {}
         self._cellWrappers = {} # { nsView : vanilla wrapper } for view + wrapper reuse purposes
         self._valueGetters = {} # { identifier : options (see below) }
         self._valueSetters = {} # { identifier : options (see below) }
@@ -35,28 +38,44 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         # }
         return self
 
-    def setCellClass_withKwargs_forColumn_(self, cls, kwargs, identifier):
+    @python_method
+    def setCellClassWithKwargsForColumn(self, cls, kwargs, identifier):
         if "callback" in kwargs:
             kwargs["callback"] = self.cellEditCallback
         self._cellClasses[identifier] = (cls, kwargs)
 
-    def setGetters_setters_(self, getters, setters):
+    @python_method
+    def setGroupCellClassWithKwargs(self, cls, kwargs):
+        self._groupRowCellClass = cls
+        self._groupRowCellClassKwargs = kwargs
+
+    @python_method
+    def setGettersAndSetters(self, getters, setters):
         self._valueGetters = getters
         self._valueSetters = setters
 
+    @python_method
     def vanillaWrapper(self):
         return self._tableView.vanillaWrapper()
 
+    @python_method
     def items(self):
         return self._items
 
-    def setItems_(self, items):
+    @python_method
+    def setItems(self, items):
         self._items = items
+        self._groupRowIndexes = []
+        for index, item in enumerate(items):
+            if isinstance(item, List2GroupRow):
+                self._groupRowIndexes.append(index)
         self._updateArrangedIndexes()
 
+    @python_method
     def arrangedIndexes(self):
         return self._arrangedIndexes
 
+    @python_method
     def arrangedItems(self):
         items = [
             self._items[index]
@@ -99,9 +118,15 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         itemIndex = self._arrangedIndexes[index]
         return self._items[itemIndex]
 
+    @python_method
+    def getGroupValueForRow(self, index):
+        itemIndex = self._arrangedIndexes[index]
+        return self._items[itemIndex].value
+
     # Data Editing Via Cells
 
-    def getItemValueForColumn_row_(self, identifier, row):
+    @python_method
+    def getItemValueForColumnAndRow(self, identifier, row):
         item = self._getItemForRow(row)
         getters = self._valueGetters.get(identifier, {})
         property = getters.get("property")
@@ -115,7 +140,8 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
             return function(item)
         return item[identifier]
 
-    def setItemValue_forColumn_row_(self, value, identifier, row):
+    @python_method
+    def setItemValueForColumnAndRow(self, value, identifier, row):
         item = self._getItemForRow(row)
         setters = self._valueSetters.get(identifier, {})
         property = setters.get("property")
@@ -136,8 +162,11 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         return len(self._arrangedIndexes)
 
     def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
+        isGroupRow = column is None
+        if isGroupRow:
+            return self.getGroupValueForRow(row)
         identifier = column.identifier()
-        return self.getItemValueForColumn_row_(identifier, row)
+        return self.getItemValueForColumnAndRow(identifier, row)
 
     def tableView_sortDescriptorsDidChange_(self, tableView, sortDescriptors):
         self._updateArrangedIndexes()
@@ -145,8 +174,12 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
     # Delegate
 
     def tableView_viewForTableColumn_row_(self, tableView, column, row):
+        isGroupRow = column is None
+        if isGroupRow:
+            view = self._groupRowCellClass(**self._groupRowCellClassKwargs)
+            return view._nsObject
         identifier = column.identifier()
-        value = self.getItemValueForColumn_row_(identifier, row)
+        value = self.getItemValueForColumnAndRow(identifier, row)
         nsView = tableView.makeViewWithIdentifier_owner_(
             column.identifier(),
             self
@@ -168,13 +201,17 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         if wrapper._selectionCallback is not None:
             wrapper._selectionCallback(wrapper)
 
+    def tableView_isGroupRow_(self, tableView, row):
+        itemIndex = self._arrangedIndexes[row]
+        return itemIndex in self._groupRowIndexes
+
     # Editing
 
     @python_method
     def cellEditCallback(self, sender):
         identifier, row = sender._representedColumnRow
         value = sender.get()
-        self.setItemValue_forColumn_row_(value, identifier, row)
+        self.setItemValueForColumnAndRow(value, identifier, row)
         wrapper = self.vanillaWrapper()
         if wrapper._editCallback is not None:
             wrapper._editCallback(wrapper)
@@ -262,8 +299,8 @@ class List2(ScrollView):
 
     # **enableDelete** A boolean representing if items in the list can be deleted via the interface.
 
-    # **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
-    # closest match as the entered keystrokes. *Available only in single column lists.*
+    **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
+    closest match as the entered keystrokes.
 
     **allowsMultipleSelection** A boolean representing if the list allows more than one item to be selected.
 
@@ -280,6 +317,49 @@ class List2(ScrollView):
     **drawFocusRing** Boolean representing if the standard focus ring should be drawn when the list is selected.
 
     **autohidesScrollers** Boolean representing if scrollbars should automatically be hidden if possible.
+
+    Group Rows:
+
+    It is possible to have rows that act as headers for a group of rows. To do this,
+    add an instance of `List2GroupRow` to your items.::
+
+        class Demo:
+
+            def __init__(self):
+                self.w = vanilla.Window((300, 150))        
+                items = [
+                    vanilla.List2GroupRow("Group 1"),
+                    "A",
+                    "B",
+                    "C",
+                    vanilla.List2GroupRow("Group 2"),
+                    "D",
+                    "E",
+                    "F"
+                ]
+                self.w.list = vanilla.List2(
+                    "auto",
+                    items=items,
+                    allowsGroupRows=True,
+                    floatsGroupRows=True,
+                    allowsSorting=False
+                )
+                rules = [
+                    "H:|[list]|",
+                    "V:|[list]|"
+                ]
+                self.w.addAutoPosSizeRules(rules)
+                self.w.open()
+
+    **allowsGroupRows** Boolean representing if the list allows allows group rows.
+
+    **floatsGroupRows** Boolean representing if the list floats the group rows.
+
+    **groupRowCellClass**  A cell class to be displayed in the column.
+    If nothing is given, a text cell is used.  
+
+    **groupRowCellClassArguments** A dictionary of keyword arguments to be used
+    when *groupRowCellClass* is instantiated.
 
 #     **selfDropSettings** A dictionary defining the drop settings when the source of the drop
 #     is this list. The dictionary form is described below.
@@ -358,6 +438,10 @@ class List2(ScrollView):
             selectionCallback=None,
             doubleClickCallback=None,
             editCallback=None,
+            allowsGroupRows=False,
+            floatsGroupRows=False,
+            groupRowCellClass=None,
+            groupRowCellClassArguments={}
         ):
         if not columnDescriptions:
             showColumnTitles = False
@@ -371,6 +455,13 @@ class List2(ScrollView):
         self._dataSourceAndDelegate = self.dataSourceAndDelegateClass.alloc().initWithTableView_(self._tableView)
         self._tableView.setDataSource_(self._dataSourceAndDelegate)
         self._tableView.setDelegate_(self._dataSourceAndDelegate)
+        # group rows
+        if allowsGroupRows:
+            assert not allowsSorting, "Group rows are not allowed in sortable lists."
+            if groupRowCellClass is None:
+                groupRowCellClass = EditTextList2Cell
+            self._dataSourceAndDelegate.setGroupCellClassWithKwargs(groupRowCellClass, groupRowCellClassArguments)
+            self._tableView.setFloatsGroupRows_(floatsGroupRows)
         # callbacks
         self._selectionCallback = selectionCallback
         self._editCallback = editCallback
@@ -454,7 +545,7 @@ class List2(ScrollView):
             cellKwargs["editable"] = editable
             if editable:
                 cellKwargs["callback"] = True
-            self._dataSourceAndDelegate.setCellClass_withKwargs_forColumn_(
+            self._dataSourceAndDelegate.setCellClassWithKwargsForColumn(
                 cellClass, cellKwargs, identifier
             )
             if width is not None:
@@ -484,7 +575,7 @@ class List2(ScrollView):
             height = cell._nsObject.fittingSize().height
             del cell
             rowHeights.append(height)
-        self._dataSourceAndDelegate.setGetters_setters_(getters, setters)
+        self._dataSourceAndDelegate.setGettersAndSetters(getters, setters)
         self._tableView.setRowHeight_(max(rowHeights))
 
     def _wrapItem(self, item):
@@ -516,7 +607,7 @@ class List2(ScrollView):
         **items** should follow the same format as described in the constructor.
         """
         items = [self._wrapItem(item) for item in items]
-        self._dataSourceAndDelegate.setItems_(items)
+        self._dataSourceAndDelegate.setItems(items)
 
     def get(self):
         """
@@ -627,9 +718,16 @@ class List2(ScrollView):
         rowIndexes = makeIndexSet(rowIndexes)
         self._tableView.selectRowIndexes_byExtendingSelection_(rowIndexes, False)
 
+
 # -----
 # Tools
 # -----
+
+class List2GroupRow:
+
+    def __init__(self, value=None):
+        self.value = value
+
 
 def makeIndexSet(indexes):
     indexSet = AppKit.NSMutableIndexSet.indexSet()
@@ -668,6 +766,8 @@ class EditTextList2Cell(EditText):
         textField.setDrawsBackground_(False)
         textField.setBezeled_(False)
         textField.setEditable_(editable)
+        if not editable:
+            textField.setSelectable_(False)
 
 
 from vanilla.vanillaSlider import Slider
