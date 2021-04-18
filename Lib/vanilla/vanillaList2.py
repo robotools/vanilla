@@ -727,6 +727,22 @@ class List2(ScrollView):
         rowIndexes = makeIndexSet(rowIndexes)
         self._tableView.selectRowIndexes_byExtendingSelection_(rowIndexes, False)
 
+    def scrollToSelection(self):
+        """
+        Scroll the selected rows to visible.
+        """
+        selection = self.getSelectedIndexes()
+        if not selection:
+            return
+        index = min(indexes)
+        self.scrollToIndex(index)
+
+    def scrollToIndex(self, row):
+        """
+        Scroll the row to visible.
+        """
+        self._tableView.scrollRowToVisible_(index)
+
 
 # -----
 # Tools
