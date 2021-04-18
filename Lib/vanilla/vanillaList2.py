@@ -269,7 +269,9 @@ class List2(ScrollView):
 
     **allowsEmptySelection** A boolean representing if the list allows zero items to be selected.
 
-    # **allowsSorting** A boolean indicating if the list allows user sorting by clicking column headers.
+    **allowsSorting** A boolean indicating if the list allows user sorting by clicking column headers.
+
+    **allowsColumnReordering** A boolean indicating if the list allows the user to reorder columns.
 
     **drawVerticalLines** Boolean representing if vertical lines should be drawn in the list.
 
@@ -345,6 +347,9 @@ class List2(ScrollView):
             columnDescriptions=[],
             allowsMultipleSelection=True,
             allowsEmptySelection=True,
+            allowsSorting=True,
+            allowColumnReordering=True,
+            enableTypingSensitivity=False,
             showColumnTitles=True,
             drawFocusRing=True,
             drawVerticalLines=False,
@@ -376,6 +381,9 @@ class List2(ScrollView):
         # behavior attributes
         self._tableView.setAllowsEmptySelection_(allowsEmptySelection)
         self._tableView.setAllowsMultipleSelection_(allowsMultipleSelection)
+        self._tableView.setAllowsColumnReordering_(allowColumnReordering)
+        self._allowsSorting = allowsSorting
+        self._tableView.setAllowsTypeSelect_(enableTypingSensitivity)
         # visual attributes
         if not showColumnTitles:
             self._tableView.setHeaderView_(None)
@@ -463,7 +471,7 @@ class List2(ScrollView):
                 column.setWidth_(width)
                 column.setMinWidth_(minWidth)
                 column.setMaxWidth_(maxWidth)
-            if sortable:
+            if self._allowsSorting and sortable:
                 sortDescriptor = AppKit.NSSortDescriptor.sortDescriptorWithKey_ascending_selector_(
                     identifier,
                     True,
