@@ -17,7 +17,8 @@ class Test:
             items=items,
             allowsGroupRows=True,
             floatsGroupRows=True,
-            allowsSorting=False
+            allowsSorting=False,
+            groupRowCellClass=CustomCell
         )
         rules = [
             "H:|[list]|",
@@ -26,6 +27,25 @@ class Test:
         self.w.addAutoPosSizeRules(rules)
         self.w.open()
 
+
+class CustomCell(vanilla.Box):
+
+    def __init__(self):
+        super().__init__(
+            (0, 0, 0, 0),
+            fillColor=AppKit.NSColor.colorWithCalibratedRed_green_blue_alpha_(
+                1, 0, 0, 0.25
+            ),
+            borderWidth=0,
+            cornerRadius=10
+        )
+        self.textBox = vanilla.TextBox(
+            (0, 0, 0, 0),
+            "Blah"
+        )
+
+    def set(self, value):
+        self.textBox.set(value)
 
 if __name__ == "__main__":
     from vanilla.test.testTools import executeVanillaTest
