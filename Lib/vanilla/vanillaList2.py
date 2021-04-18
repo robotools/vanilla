@@ -177,6 +177,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         isGroupRow = column is None
         if isGroupRow:
             view = self._groupRowCellClass(**self._groupRowCellClassKwargs)
+            view.set(self.getGroupValueForRow(row))
             return view._nsObject
         identifier = column.identifier()
         value = self.getItemValueForColumnAndRow(identifier, row)

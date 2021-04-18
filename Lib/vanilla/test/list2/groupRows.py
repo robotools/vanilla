@@ -40,8 +40,7 @@ class CustomCell(vanilla.Box):
             cornerRadius=10
         )
         self.textBox = vanilla.TextBox(
-            (0, 0, 0, 0),
-            "Blah"
+            (0, 0, 0, 0)
         )
 
     def set(self, value):
