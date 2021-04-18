@@ -361,6 +361,9 @@ class List2(ScrollView):
     **groupRowCellClassArguments** A dictionary of keyword arguments to be used
     when *groupRowCellClass* is instantiated.
 
+    **autosaveName** A string representing a unique name for the list. If given,
+    this name will be used to store the column states in the application preferences.
+
 #     **selfDropSettings** A dictionary defining the drop settings when the source of the drop
 #     is this list. The dictionary form is described below.
 # 
@@ -441,7 +444,8 @@ class List2(ScrollView):
             allowsGroupRows=False,
             floatsGroupRows=False,
             groupRowCellClass=None,
-            groupRowCellClassArguments={}
+            groupRowCellClassArguments={},
+            autosaveName=None
         ):
         if not columnDescriptions:
             showColumnTitles = False
@@ -492,6 +496,10 @@ class List2(ScrollView):
             self._tableView.setGridStyleMask_(lineType)
         if osVersionCurrent >= osVersion10_16:
             self._tableView.setStyle_(AppKit.NSTableViewStyleInset)
+        # auto save
+        if autosaveName is not None:
+            self._tableView.setAutosaveName_(autosaveName)
+            self._tableView.setAutosaveTableColumns_(True)
         # columns
         self._buildColumns(columnDescriptions)
         # self._tableView.setRowSizeStyle_(AppKit.NSTableViewRowSizeStyleDefault)
