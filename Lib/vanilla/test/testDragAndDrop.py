@@ -4,6 +4,9 @@ import vanilla
 
 objc.setVerbose(True)
 
+# To Do:
+# - abstract receiving file promises
+
 # -----------------
 # Vanilla Additions
 # -----------------
@@ -29,17 +32,53 @@ def startDraggingSession(
         items,
         source=None,
         formation="default",
-        location=(0, 0)
+        location=None
     ):
+    """
+    Start a dragging session.
+
+    `view` The view that is initiating the session.
+    This may be a vanilla object or an instance of NSView.
+
+    `event` The mouse event that is initiating the session.
+
+    `items` A list of item definition dictionaries.
+
+    - `typesAndValues` A dictionary of pasteboard types
+      as keys and the object value for the type as the value.
+    - `location` The location within the source view from
+      which the dragging image should originate. Optional.
+    - `size` The size to display the dragging image. Optional.
+    - `image` An image previewing the item. Optional.
+
+    `source` A source for the dragging data if it is something
+    other than the view that initiated the session. Optional.
+
+    `formation` The formation of the dragging images. Options:
+
+    - "default"
+    - "none"
+    - "pile"
+    - "stack"
+    - "list"
+
+    `location` A fallback in case `location` is not defined in
+    an item dictionary. Optional.
+    """
     if isinstance(view, vanilla.VanillaBaseObject):
         view = view._getContentView()
     if source is None:
         source = view
     draggingItems = []
+    if location is None:
+        rect = view.visibleRect()
+        x = AppKit.NSMidX(rect)
+        y = AppKit.NSMidY(rect)
+        location = (x, y)
     for item in items:
         if "location" not in item:
             item["location"] = location
-        draggingItem = makeDraggingItem(**item)
+        draggingItem = _makeDraggingItem(**item)
         draggingItems.append(draggingItem)
     session = view.beginDraggingSessionWithItems_event_source_(
         draggingItems,
@@ -50,10 +89,10 @@ def startDraggingSession(
     session.setDraggingFormation_(formation)
     return session
 
-def makeDraggingItem(
+def _makeDraggingItem(
         typesAndValues,
         location=(0, 0),
-        size=(50, 50),
+        size=None,
         image=None
     ):
     pasteboardItem = AppKit.NSPasteboardItem.alloc().init()
@@ -61,10 +100,15 @@ def makeDraggingItem(
         pasteboardType = pasteboardTypeMap.get(pasteboardType, pasteboardType)
         if isinstance(value, bytes):
             pasteboardItem.setData_forType_(value, pasteboardType)
-        elif isinstance(value, dict):
-            pasteboardItem.setPropertyList_forType_(value, pasteboardType)
-        else:
+        elif isinstance(value, str):
             pasteboardItem.setString_forType_(value, pasteboardType)
+        else:
+            pasteboardItem.setPropertyList_forType_(value, pasteboardType)
+    if size is None:
+        if image is not None:
+            size = image.size()
+        else:
+            size = (20, 20)
     draggingItem = AppKit.NSDraggingItem.alloc().initWithPasteboardWriter_(pasteboardItem)
     draggingItem.setDraggingFrame_contents_(
         (location, size),
@@ -75,7 +119,7 @@ def makeDraggingItem(
 
 # Drop Target
 
-dragOperationMap = dict(
+dropOperationMap = dict(
     none=AppKit.NSDragOperationNone,
     copy=AppKit.NSDragOperationCopy,
     link=AppKit.NSDragOperationLink,
@@ -86,12 +130,92 @@ dragOperationMap = dict(
     drag=AppKit.NSDragOperationEvery
 )
 
-class DropTargetProtocol:
+class DropTargetProtocolMixIn:
 
     """
-    - NSView subclass must implement the NSDraggingDestination protocol
-    - NSView subclass calls vanillaWrapper().<DropTargetMixIn method>
-    - DropTargetMixIn calls the external callbacks
+    # Drop Settings
+
+    `pasteboardTypes`
+
+    A list of `NSPasteboardType` values, convenience values
+    or custom strings defining the pasteboard types this
+    view will accept during drops.
+
+    - "string"
+    - "plist"
+
+    `dropCandidateCallback`
+
+    Optional. A method that will be called when one of the
+    other `dropCandidate` callbacks is not defined. This must
+    return one of the drop operations listed below.
+
+    `dropCandidateEnteredCallback`
+
+    Optional. A method that will be called when a drag
+    operation enters the view. This must return one of
+    the drop operations listed below.
+
+    `dropCandidateUpdatedCallback`
+
+    Optional. A method that will be called when a drag
+    operation updates within the view. This must return
+    one of the drop operations listed below.
+
+    `dropCandidateExitedCallback`
+
+    Optional. A method that will be called when a drag
+    operation exits the view.
+
+    `dropCandidateEndedCallback`
+
+    Optional. A method that will be called when a drag
+    operation that previously entered the view ends.
+
+    `prepareForDropCallback`
+
+    Optional. A method that will be called at the start of
+    a drop. This should not drop the incoming data. This
+    must return a boolean indicating if the drop is acceptable.
+
+    `performDropCallback`
+
+    A method that will be called when the drop is performed.
+    This must return a boolean indicating if the drop was accepted.
+
+    `finishDropCallback`
+
+    Optional. A method that will be called after the drop has
+    been performed.
+
+    ## Drop Operations:
+
+    These define the drop operation that the view will
+    perform if the drop candidate is actually dropped.
+
+    - "none"
+    - "copy"
+    - "link"
+    - "generic"
+    - "private"
+    - "move"
+    - "delete"
+    - "drag"
+
+    ## Dragging Info
+
+    The callbacks will be sent a single `draggingInfo` argument.
+    The value of this will be a dict with these key/value pairs:
+
+    - `sender` The vanilla wrapper of the view being targeted
+      for the drop.
+    - `source` The source view that initiated the dragging operation.
+      If this view is wrapped by vanilla, the vanilla wrapper
+      will be given as the source.
+    - `items` The list of NSPasteboardItem objects. Use the
+      `getDropItemValues` method to unpack these to Python objects.
+    - `location` The location of the drop.
+    - `draggingInfo` The underlying NSDraggingInfo object.
     """
 
     # Drop Setup
@@ -128,12 +252,17 @@ class DropTargetProtocol:
             unwrapped.append(pasteboardType)
         view.registerForDraggedTypes_(unwrapped)
 
-    def getItemValues(self, items, pasteboardType):
+    def getDropItemValues(self, items, pasteboardType=None):
         """
-        The drag protocol could also have a method for
-        getting the python objects without round tripping
-        through property list.
+        Get Python objects from the given NSPasteboardItem
+        objects for the given pasteboard type. If this view
+        is registered for only one pasteboard type, None may
+        be given as the pasteboard type.
         """
+        if pasteboardType is None:
+            pasteboardTypes = self._getContentView().registeredDraggedTypes()
+            assert len(pasteboardTypes) == 1
+            pasteboardType = pasteboardTypes[0]
         pasteboardType = pasteboardTypeMap.get(pasteboardType, pasteboardType)
         values = []
         for item in items:
@@ -175,42 +304,39 @@ class DropTargetProtocol:
         )
         return info
 
-    def dropCandidateEntered(self, draggingInfo):
+    def _dropCandidateEntered(self, draggingInfo):
         operation = self._dropCandidateCallbackCaller(
             draggingInfo,
             self._dropCandidateEnteredCallback,
             draggingEvent="entered"
         )
-        return dragOperationMap.get(operation, operation)
+        return dropOperationMap.get(operation, operation)
 
-    def dropCandidateUpdated(self, draggingInfo):
+    def _dropCandidateUpdated(self, draggingInfo):
         operation = self._dropCandidateCallbackCaller(
             draggingInfo,
             self._dropCandidateUpdatedCallback,
             draggingEvent="updated"
         )
-        return dragOperationMap.get(operation, operation)
+        return dropOperationMap.get(operation, operation)
 
-    def dropCandidateEnded(self, draggingInfo):
+    def _dropCandidateEnded(self, draggingInfo):
         self._dropCandidateCallbackCaller(
             draggingInfo,
             self._dropCandidateEndedCallback,
             draggingEvent="ended"
         )
 
-    def dropCandidateExited(self, draggingInfo):
+    def _dropCandidateExited(self, draggingInfo):
         self._dropCandidateCallbackCaller(
             draggingInfo,
             self._dropCandidateExitedCallback,
             draggingEvent="exited"
         )
 
-    def updateDropCandidateImages(self, draggingInfo):
+    def _updateDropCandidateImages(self, draggingInfo):
         """
         XXX
-
-        I'm not sure how enumerateDraggingItemsWithOptions_forView_classes_searchOptions_usingBlock_
-        works.
 
         What I'd like to do in the callback:
         - have a method for getting (item, image) pairs
@@ -244,52 +370,66 @@ class DropTargetProtocol:
             value = callback(info)
         return value
 
-    def prepareForDrop(self, draggingInfo):
+    def _prepareForDrop(self, draggingInfo):
         if self._prepareForDropCallback is None:
             return True
         info = self._unpackDropCandidateInfo(draggingInfo)
         return self._prepareForDropCallback(info)
 
-    def performDrop(self, draggingInfo):
+    def _performDrop(self, draggingInfo):
         info = self._unpackDropCandidateInfo(draggingInfo)
         return self._performDropCallback(info)
 
-    def finishDrop(self, draggingInfo):
+    def _finishDrop(self, draggingInfo):
         if self._finishDropCallback is None:
-            return True
+            return
         info = self._unpackDropCandidateInfo(draggingInfo)
         self._finishDropCallback(info)
 
 
+# --------------------
+# vanilla.Group update
+# --------------------
+
 class VanillaGroupView(AppKit.NSView):
 
+    # ------------------------------------
+    # Start dragging destination protocol.
+    #
+    # If this is changed, it must be changed
+    # in all other classes where this code has
+    # been duplicated
+
     def draggingEntered_(self, draggingInfo):
-        return self.vanillaWrapper().dropCandidateEntered(draggingInfo)
+        return self.vanillaWrapper()._dropCandidateEntered(draggingInfo)
 
     def draggingUpdated_(self, draggingInfo):
-        return self.vanillaWrapper().dropCandidateUpdated(draggingInfo)
+        return self.vanillaWrapper()._dropCandidateUpdated(draggingInfo)
 
-    @objc.signature(b"Z@:@")  # PyObjC bug? <- Found in the FontGoogles source.
+    @objc.signature(b"Z@:@") # PyObjC bug? <- Found in the FontGoogles source.
     def draggingEnded_(self, draggingInfo):
-        return self.vanillaWrapper().dropCandidateEnded(draggingInfo)
+        return self.vanillaWrapper()._dropCandidateEnded(draggingInfo)
 
     def draggingExited_(self, draggingInfo):
-        return self.vanillaWrapper().dropCandidateExited(draggingInfo)
+        return self.vanillaWrapper()._dropCandidateExited(draggingInfo)
 
     def updateDraggingItemsForDrag_(self, draggingInfo):
-        return self.vanillaWrapper().updateDropCandidateImages(draggingInfo)
+        return self.vanillaWrapper()._updateDropCandidateImages(draggingInfo)
 
     def prepareForDragOperation_(self, draggingInfo):
-        return self.vanillaWrapper().prepareForDrop(draggingInfo)
+        return self.vanillaWrapper()._prepareForDrop(draggingInfo)
 
     def performDragOperation_(self, draggingInfo):
-        return self.vanillaWrapper().performDrop(draggingInfo)
+        return self.vanillaWrapper()._performDrop(draggingInfo)
 
     def concludeDragOperation_(self, draggingInfo):
-        return self.vanillaWrapper().finishDrop(draggingInfo)
+        return self.vanillaWrapper()._finishDrop(draggingInfo)
+
+    # End dragging destination protocol.
+    # ----------------------------------
 
 
-class Group2(vanilla.Group, DropTargetProtocol):
+class Group2(vanilla.Group, DropTargetProtocolMixIn):
 
     nsViewClass = VanillaGroupView
 
@@ -297,6 +437,7 @@ class Group2(vanilla.Group, DropTargetProtocol):
         super().__init__(posSize)
         if dropSettings is not None:
             self.setDropSettings(dropSettings)
+
 
 # ----
 # Test
@@ -374,8 +515,7 @@ class DraggingSourceNSView(AppKit.NSView):
                     self.draggingType : value
                 },
                 image=image,
-                location=location,
-                size=image.size()
+                location=location
             )
             items.append(item)
         startDraggingSession(
@@ -471,10 +611,10 @@ class Test:
         )
         self.dropDestOperationPopUp = vanilla.PopUpButton(
             "auto",
-            dragOperationMap.keys(),
+            dropOperationMap.keys(),
             callback=self.dropDestSettingsCallback
         )
-        index = list(dragOperationMap).index(self.dropOperation)
+        index = list(dropOperationMap).index(self.dropOperation)
         self.dropDestOperationPopUp.set(index)
 
         self.dropDestSettingsStack = vanilla.VerticalStackView(
@@ -639,7 +779,7 @@ class Test:
         sender = info["sender"]
         source = info["source"]
         items = info["items"]
-        items = sender.getItemValues(
+        items = sender.getDropItemValues(
             items,
             "string"
         )
@@ -663,14 +803,15 @@ class Test:
 
     def dest1PerformDropCallback(self, info):
         print("dest1PerformDropCallback")
+        return True
 
     # plist drop destination
-    
+
     def dest2DropCandidateCallback(self, info):
         sender = info["sender"]
         source = info["source"]
         items = info["items"]
-        items = sender.getItemValues(
+        items = sender.getDropItemValues(
             items,
             "plist"
         )
@@ -685,15 +826,16 @@ class Test:
         text = "\n".join(text)
         self.dest2.textBox.set(text)
         return self.dropOperation
-    
+
     def dest2DropCandidateExitedCallback(self, info):
         self.dest2.textBox.set("drop exited")
-    
+
     def dest2DropCandidateEndedCallback(self, info):
         self.dest2.textBox.set("drop ended")
-    
+
     def dest2PerformDropCallback(self, info):
         print("dest2PerformDropCallback")
+        return True
 
 
 if __name__ == "__main__":
