@@ -4,9 +4,6 @@ import vanilla
 
 objc.setVerbose(True)
 
-# To Do:
-# - abstract receiving file promises
-
 # -----------------
 # Vanilla Additions
 # -----------------
@@ -23,7 +20,8 @@ draggingFormationMap = dict(
 
 pasteboardTypeMap = dict(
     string=AppKit.NSPasteboardTypeString,
-    plist="dev.robotools.vanilla.propertyList"
+    plist="dev.robotools.vanilla.propertyList",
+    fileURL=AppKit.NSPasteboardTypeFileURL
 )
 
 def startDraggingSession(
@@ -266,7 +264,11 @@ class DropTargetProtocolMixIn:
         pasteboardType = pasteboardTypeMap.get(pasteboardType, pasteboardType)
         values = []
         for item in items:
-            value = item.propertyListForType_(pasteboardType)
+            if pasteboardType == AppKit.NSPasteboardTypeFileURL:
+                value = item.stringForType_(pasteboardType)
+                value = AppKit.NSURL.URLWithString_(value)
+            else:
+                value = item.propertyListForType_(pasteboardType)
             values.append(value)
         return values
 
@@ -695,7 +697,17 @@ class Test:
             margins=0
         )
 
-        self.dest3 = Group2("auto")
+        dropSettings = dict(
+            pasteboardTypes=["fileURL"],
+            dropCandidateCallback=self.dest3DropCandidateCallback,
+            dropCandidateEndedCallback=self.dest3DropCandidateEndedCallback,
+            dropCandidateExitedCallback=self.dest3DropCandidateExitedCallback,
+            performDropCallback=self.dest3PerformDropCallback
+        )
+        self.dest3 = Group2(
+            "auto",
+            dropSettings=dropSettings
+        )
         self.dest3.box = vanilla.Box(
             (0, 0, 0, 0),
             fillColor=AppKit.NSColor.yellowColor(),
@@ -706,6 +718,13 @@ class Test:
         self.dest3.textBox = vanilla.TextBox(
             (20, 20, 0, 0),
             "files"
+        )
+        self.dest3.locationBox = vanilla.Box(
+            (0, 0, 2, 2),
+            fillColor=AppKit.NSColor.redColor(),
+            borderColor=AppKit.NSColor.redColor(),
+            cornerRadius=0,
+            margins=0
         )
 
         # stacks
@@ -835,6 +854,46 @@ class Test:
 
     def dest2PerformDropCallback(self, info):
         print("dest2PerformDropCallback")
+        return True
+
+    # files
+
+    def dest3DropCandidateCallback(self, info):
+        sender = info["sender"]
+        source = info["source"]
+        items = info["items"]
+        items = sender.getDropItemValues(
+            items,
+            "fileURL"
+        )
+        location = info["location"]
+        x, y = location
+        self.dest3.locationBox.setPosSize((x-1, y-1, 2, 2))
+        text = (
+            f"count={len(items)}",
+            f"items={repr(items)}",
+            f"source={source.__class__.__name__}"
+        )
+        text = "\n".join(text)
+        self.dest3.textBox.set(text)
+        return self.dropOperation
+    
+    def dest3DropCandidateExitedCallback(self, info):
+        self.dest3.textBox.set("drop exited")
+    
+    def dest3DropCandidateEndedCallback(self, info):
+        self.dest3.textBox.set("drop ended")
+    
+    def dest3PerformDropCallback(self, info):
+        print("dest3PerformDropCallback")
+        sender = info["sender"]
+        items = info["items"]
+        items = sender.getDropItemValues(
+            items,
+            "fileURL"
+        )
+        for item in items:
+            print(item.path())
         return True
 
 
