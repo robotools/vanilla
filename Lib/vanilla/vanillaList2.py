@@ -1,12 +1,14 @@
 import operator
 import weakref
 import types
+import objc
 from objc import python_method
 import AppKit
 import vanilla
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaCallbackWrapper, osVersionCurrent, osVersion10_16
 from vanilla.vanillaScrollView import ScrollView
+from vanilla.dragAndDrop import DropTargetProtocolMixIn, dropOperationMap
 
 simpleDataTypes = (
     str,
@@ -217,11 +219,31 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         if wrapper._editCallback is not None:
             wrapper._editCallback(wrapper)
 
+    # Drop
+
+    def tableView_validateDrop_proposedRow_proposedDropOperation_(
+            self,
+            tableView,
+            draggingInfo,
+            row,
+            operation
+        ):
+        return self.vanillaWrapper()._dropCandidateUpdated(draggingInfo, row, operation)
+
+    def tableView_acceptDrop_row_dropOperation_(
+            self,
+            tableView,
+            draggingInfo,
+            row,
+            operation
+        ):
+        return self.vanillaWrapper()._performDrop(draggingInfo, row, operation)
+
 
 class VanillaList2TableViewSubclass(AppKit.NSTableView): pass
 
 
-class List2(ScrollView):
+class List2(ScrollView, DropTargetProtocolMixIn):
 
     """
     A control that shows a list of items. These lists can contain one or more columns.
@@ -365,61 +387,18 @@ class List2(ScrollView):
     **autosaveName** A string representing a unique name for the list. If given,
     this name will be used to store the column states in the application preferences.
 
-#     **selfDropSettings** A dictionary defining the drop settings when the source of the drop
-#     is this list. The dictionary form is described below.
-# 
-#     **selfWindowDropSettings** A dictionary defining the drop settings when the source of the drop
-#     is contained the same window as this list. The dictionary form is described below.
-# 
-#     **selfDocumentDropSettings** A dictionary defining the drop settings when the source of the drop
-#     is contained the same document as this list. The dictionary form is described below.
-# 
-#     **selfApplicationDropSettings** A dictionary defining the drop settings when the source of the drop
-#     is contained the same application as this list. The dictionary form is described below.
-# 
-#     **otherApplicationDropSettings** A dictionary defining the drop settings when the source of the drop
-#     is contained an application other than the one that contains this list. The dictionary form is described below.
-# 
-#     The drop settings dictionaries should be of this form:
-# 
-#     +-----------------------------------+--------------------------------------------------------------------+
-#     | *type*                            | A single drop type indicating what drop types the list accepts.    |
-#     |                                   | For example, "NSFilenamesPboardType" or "MyCustomPboardType".      |
-#     +-----------------------------------+--------------------------------------------------------------------+
-#     | *operation* (optional)            | A `drag operation`_ that the list accepts.                         |
-#     |                                   | The default is *NSDragOperationCopy*.                              |
-#     +-----------------------------------+--------------------------------------------------------------------+
-#     | *allowDropBetweenRows* (optional) | A boolean indicating if the list accepts drops between rows.       |
-#     |                                   | The default is *True*.                                             |
-#     +-----------------------------------+--------------------------------------------------------------------+
-#     | *allowDropOnRow* (optional)       | A boolean indicating if the list accepts drops on rows.            |
-#     |                                   | The default is *False*.                                            |
-#     +-----------------------------------+--------------------------------------------------------------------+
-#     | *callback*                        | Callback to be called when a drop is proposed and when a drop      |
-#     |                                   | is to occur. This method should return a boolean representing      |
-#     |                                   | if the drop is acceptable or not. This method must accept *sender* |
-#     |                                   | and *dropInfo* arguments. The *dropInfo* will be a dictionary as   |
-#     |                                   | described below.                                                   |
-#     +-----------------------------------+--------------------------------------------------------------------+
-# 
-#     .. _drag operation: https://developer.apple.com/documentation/appkit/nsdragginginfo?language=objc
-# 
-#     The *dropInfo* dictionary passed to drop callbacks will be of this form:
-# 
-#     +--------------+----------------------------------------------------------------------------------------------+
-#     | *data*       | The data proposed for the drop. This data will be of the type specified by *dropDataFormat*. |
-#     +--------------+----------------------------------------------------------------------------------------------+
-#     | *rowIndex*   | The row where the drop is proposed.                                                          |
-#     +--------------+----------------------------------------------------------------------------------------------+
-#     | *source*     | The source from which items are being dragged. If this object is wrapped by Vanilla, the     |
-#     |              | Vanilla object will be passed as the source.                                                 |
-#     +--------------+----------------------------------------------------------------------------------------------+
-#     | *dropOnRow*  | A boolean representing if the row is being dropped on. If this is *False*, the drop should   |
-#     |              | occur between rows.                                                                          |
-#     +--------------+----------------------------------------------------------------------------------------------+
-#     | *isProposal* | A boolean representing if this call is simply proposing the drop or if it is time to         |
-#     |              | accept the drop.                                                                             |
-#     +--------------+----------------------------------------------------------------------------------------------+
+    **dropSettings** A drop settings dictionary.
+
+    Differences from the standard vanilla drag and drop API:
+
+    `dropCandidateCallback` and `performDropCallback` are the only callbacks
+    used during List2 drops.
+
+    `dropCandidateCallback` should return a boolean indicating if the
+    drop is acceptable instead of a drop operation.
+
+    The dragging info dictionary will contain a `row` key that specifies
+    where in the list the is proposed for insertion.
     """
 
     nsTableViewClass = VanillaList2TableViewSubclass
@@ -446,7 +425,8 @@ class List2(ScrollView):
             floatsGroupRows=False,
             groupRowCellClass=None,
             groupRowCellClassArguments={},
-            autosaveName=None
+            autosaveName=None,
+            dropSettings=None
         ):
         if not columnDescriptions:
             showColumnTitles = False
@@ -509,6 +489,8 @@ class List2(ScrollView):
             nsView=self._tableView,
             autohidesScrollers=autohidesScrollers
         )
+        if dropSettings is not None:
+            self.setDropSettings(dropSettings)
         # populate
         self._itemsWereDict = True
         self.set(items)
@@ -517,6 +499,9 @@ class List2(ScrollView):
         super()._breakCycles()
         self._selectionCallback = None
         self._editCallback = None
+
+    def _getDropView(self):
+        return self._tableView
 
     def _buildColumns(self, columnDescriptions):
         getters = {}
@@ -743,6 +728,39 @@ class List2(ScrollView):
         """
         self._tableView.scrollRowToVisible_(index)
 
+    # Drop
+
+    _allowDropOnRow = None
+    _allowDropBetweenRows = None
+
+    def setDropSettings(self, settings):
+        self._allowDropOnRow = settings.get("allowDropOnRow", False)
+        self._allowDropBetweenRows = settings.get("allowDropBetweenRows", True)
+        super().setDropSettings(settings)
+
+    def _dropCandidateUpdated(self, draggingInfo, row, operation):
+        if self._dropCandidateCallback is None:
+            return AppKit.NSDragOperationNone
+        info = self._unpackDropCandidateInfo(draggingInfo)
+        info["row"] = row
+        highlightTable = False
+        if not self._allowDropOnRow and not self._allowDropBetweenRows:
+            highlightTable = True
+        elif not self._allowDropOnRow and operation == AppKit.NSTableViewDropOn:
+            return AppKit.NSDragOperationNone
+        elif not self._allowDropBetweenRows and operation == AppKit.NSTableViewDropAbove:
+            return AppKit.NSDragOperationNone
+        operation = self._dropCandidateCallback(info)
+        operation = dropOperationMap.get(operation, operation)
+        # highlight the whole table instead of a single spot
+        if highlightTable:
+            self._tableView.setDropRow_dropOperation_(-1, operation)
+        return operation
+
+    def _performDrop(self, draggingInfo, row, operation):
+        info = self._unpackDropCandidateInfo(draggingInfo)
+        info["row"] = row
+        return self._performDropCallback(info)
 
 # -----
 # Tools

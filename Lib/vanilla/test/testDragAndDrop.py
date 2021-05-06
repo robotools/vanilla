@@ -1,3 +1,4 @@
+import os
 import objc
 import AppKit
 import vanilla
@@ -65,7 +66,7 @@ class DraggingSourceNSView(AppKit.NSView):
         AppKit.NSColor.whiteColor().set()
         AppKit.NSRectFill(rect)
         rect = AppKit.NSInsetRect(rect, 20, 20)
-        AppKit.NSColor.blackColor().set()
+        AppKit.NSColor.greenColor().set()
         AppKit.NSRectFill(rect)
 
     def mouseDown_(self, event):
@@ -102,9 +103,12 @@ class Test:
 
     def __init__(self):
         self.w = vanilla.Window(
-            (600, 300),
+            (1, 1),
             "Dragon Drop"
         )
+
+        titleSpacing = 5
+        controlSpacing = 10
 
         # source settings
 
@@ -144,23 +148,34 @@ class Test:
             "auto",
             views=[
                 dict(
-                    view=self.dragSourceTitle,
-                    width="fill"
+                    view=vanilla.TextBox("auto", "Drag Count:"),
+                    width="fill",
+                    spacing=titleSpacing
                 ),
                 dict(
                     view=self.dragSourceCountSlider,
                     width="fill"
                 ),
                 dict(
+                    view=vanilla.TextBox("auto", "Drag Type:"),
+                    width="fill",
+                    spacing=titleSpacing
+                ),
+                dict(
                     view=self.dragSourceTypePopUp,
                     width="fill"
+                ),
+                dict(
+                    view=vanilla.TextBox("auto", "Drag Formation:"),
+                    width="fill",
+                    spacing=titleSpacing
                 ),
                 dict(
                     view=self.dragSourceFormationPopUp,
                     width="fill"
                 )
             ],
-            spacing=20,
+            spacing=controlSpacing,
             alignment="leading"
         )
 
@@ -172,10 +187,6 @@ class Test:
 
         self.dropOperation = "copy"
 
-        self.dropDestTitle = vanilla.TextBox(
-            "auto",
-            "Drop Details:"
-        )
         self.dropDestOperationPopUp = vanilla.PopUpButton(
             "auto",
             dropOperationMap.keys(),
@@ -184,23 +195,47 @@ class Test:
         index = list(dropOperationMap).index(self.dropOperation)
         self.dropDestOperationPopUp.set(index)
 
+        self.dropDestOnRowCheckBox = vanilla.CheckBox(
+            "auto",
+            title="Drop On Row",
+            value=False,
+            callback=self.dropDestSettingsCallback
+        )
+        self.dropDestBetweenRowsCheckBox = vanilla.CheckBox(
+            "auto",
+            title="Drop Between Rows",
+            value=True,
+            callback=self.dropDestSettingsCallback
+        )
+
         self.dropDestSettingsStack = vanilla.VerticalStackView(
             "auto",
             views=[
                 dict(
-                    view=self.dropDestTitle,
-                    width="fill"
+                    view=vanilla.TextBox("auto", "Drop Mode:"),
+                    width="fill",
+                    spacing=titleSpacing
                 ),
                 dict(
                     view=self.dropDestOperationPopUp,
                     width="fill"
+                ),
+                dict(
+                    view=self.dropDestOnRowCheckBox,
+                    width="fill",
+                    spacing=titleSpacing
+                ),
+                dict(
+                    view=self.dropDestBetweenRowsCheckBox,
+                    width="fill",
+                    spacing=titleSpacing
                 )
             ],
-            spacing=20,
+            spacing=controlSpacing,
             alignment="leading"
         )
 
-        # destinations
+        # views
 
         dropSettings = dict(
             pasteboardTypes=["string"],
@@ -292,26 +327,88 @@ class Test:
             margins=0
         )
 
+        # lists
+
+        dropSettings = dict(
+            pasteboardTypes=["string"],
+            dropCandidateCallback=self.list1DropCandidateCallback,
+            performDropCallback=self.list1PerformDropCallback
+        )
+        self.list1 = vanilla.List2(
+            "auto",
+            ["XXX", "YYY", "ZZZ"],
+            dropSettings=dropSettings
+        )
+
+        columnDescriptions = [
+            dict(
+                identifier="letter",
+                title="ABC"
+            ),
+            dict(
+                identifier="number",
+                title="#"
+            )
+        ]
+        dropSettings = dict(
+            pasteboardTypes=["plist"],
+            dropCandidateCallback=self.list2DropCandidateCallback,
+            performDropCallback=self.list2PerformDropCallback
+        )
+        self.list2 = vanilla.List2(
+            "auto",
+            [
+                dict(
+                    letter="XXX",
+                    number=-1
+                ),
+                dict(
+                    letter="YYY",
+                    number=-2
+                ),
+                dict(
+                    letter="ZZZ",
+                    number=-3
+                ),
+            ],
+            columnDescriptions=columnDescriptions,
+            dropSettings=dropSettings
+        )
+
+        dropSettings = dict(
+            pasteboardTypes=["fileURL"],
+            dropCandidateCallback=self.list3DropCandidateCallback,
+            performDropCallback=self.list3PerformDropCallback
+        )
+        self.list3 = vanilla.List2(
+            "auto",
+            [],
+            dropSettings=dropSettings
+        )
+
         # stacks
 
         self.topStack = vanilla.HorizontalStackView(
             "auto",
             views=[
                 dict(
-                    view=self.dragSourceSettingsStack,
-                ),
-                dict(
                     view=self.dragSourceView,
                     width=100
                 ),
                 dict(
-                    view=self.dropDestSettingsStack
+                    view=self.dragSourceSettingsStack,
+                    width=200,
+                ),
+                dict(
+                    view=self.dropDestSettingsStack,
+                    width=200
                 )
             ],
-            spacing=20
+            spacing=20,
+            alignment="leading"
         )
 
-        self.bottomStack = vanilla.HorizontalStackView(
+        self.viewStack = vanilla.HorizontalStackView(
             "auto",
             views=[
                 self.dest1,
@@ -321,16 +418,39 @@ class Test:
             spacing=20
         )
 
+        self.listStack = vanilla.HorizontalStackView(
+            "auto",
+            views=[
+                self.list1,
+                self.list2,
+                self.list3
+            ],
+            spacing=20
+        )
+
         self.w.stack = vanilla.VerticalStackView(
             "auto",
             views=[
+                vanilla.TextBox(
+                    "auto",
+                    "Drag from the green block to one of "
+                    "the destinations.\nOr drag files from "
+                    "Finder to the file destinations."
+                ),
                 self.topStack,
                 dict(
-                    view=self.bottomStack,
-                    height=200
-                )
+                    view=self.viewStack,
+                    height=150
+                ),
+                dict(
+                    view=self.listStack,
+                    height=150
+                ),
+                vanilla.HorizontalLine("auto"),
+                vanilla.TextBox("auto", "Drag within the list to reorder items."),
             ],
-            spacing=20
+            spacing=20,
+            alignment="leading"
         )
 
         rules = [
@@ -356,8 +476,14 @@ class Test:
         operations = self.dropDestOperationPopUp.getItems()
         index = self.dropDestOperationPopUp.get()
         self.dropOperation = operations[index]
+        self.list1._allowDropOnRow = self.dropDestOnRowCheckBox.get()
+        self.list1._allowDropBetweenRows = self.dropDestBetweenRowsCheckBox.get()
+        self.list2._allowDropOnRow = self.dropDestOnRowCheckBox.get()
+        self.list2._allowDropBetweenRows = self.dropDestBetweenRowsCheckBox.get()
+        self.list3._allowDropOnRow = self.dropDestOnRowCheckBox.get()
+        self.list3._allowDropBetweenRows = self.dropDestBetweenRowsCheckBox.get()
 
-    # string drop destination
+    # view: string drop destination
 
     def dest1DropCandidateCallback(self, info):
         sender = info["sender"]
@@ -389,7 +515,7 @@ class Test:
         print("dest1PerformDropCallback")
         return True
 
-    # plist drop destination
+    # view: plist drop destination
 
     def dest2DropCandidateCallback(self, info):
         sender = info["sender"]
@@ -421,7 +547,7 @@ class Test:
         print("dest2PerformDropCallback")
         return True
 
-    # files
+    # view: files
 
     def dest3DropCandidateCallback(self, info):
         sender = info["sender"]
@@ -459,6 +585,61 @@ class Test:
         )
         for item in items:
             print(item.path())
+        return True
+
+    # list: string
+
+    def list1DropCandidateCallback(self, info):
+        return "copy"
+    
+    def list1PerformDropCallback(self, info):
+        sender = info["sender"]
+        row = info["row"]
+        items = info["items"]
+        items = sender.getDropItemValues(items)
+        allItems = list(self.list1.get())
+        items = allItems[:row] + items + allItems[row:]
+        self.list1.set(items)
+        return True
+
+    # list: plist
+    
+    def list2DropCandidateCallback(self, info):
+        return "copy"
+    
+    def list2PerformDropCallback(self, info):
+        sender = info["sender"]
+        row = info["row"]
+        items = info["items"]
+        items = sender.getDropItemValues(items)
+        allItems = list(self.list2.get())
+        items = allItems[:row] + items + allItems[row:]
+        self.list2.set(items)
+        return True
+
+    # list: file urls
+    
+    def list3DropCandidateCallback(self, info):
+        existing = list(self.list3.get())
+        sender = info["sender"]
+        items = info["items"]
+        items = sender.getDropItemValues(items)
+        items = [os.path.basename(item.path()) for item in items]
+        items = [item for item in items if item not in existing]
+        if not items:
+            return "none"
+        return "link"
+    
+    def list3PerformDropCallback(self, info):
+        existing = list(self.list3.get())
+        sender = info["sender"]
+        row = info["row"]
+        items = info["items"]
+        items = sender.getDropItemValues(items)
+        items = [os.path.basename(item.path()) for item in items]
+        items = [item for item in items if item not in existing]
+        items = existing[:row] + items + existing[row:]
+        self.list3.set(items)
         return True
 
 

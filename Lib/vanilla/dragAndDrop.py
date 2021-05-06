@@ -58,7 +58,7 @@ def startDraggingSession(
     an item dictionary. Optional.
     """
     if isinstance(view, VanillaBaseObject):
-        view = view._getContentView()
+        view = view._nsObject
     if source is None:
         source = view
     draggingItems = []
@@ -135,6 +135,7 @@ class DropTargetProtocolMixIn:
 
     - "string"
     - "plist"
+    - "fileURL"
 
     `dropCandidateCallback`
 
@@ -221,6 +222,9 @@ class DropTargetProtocolMixIn:
     _performDropCallback = None
     _finishDropCallback = None
 
+    def _getDropView(self):
+        return self._nsObject
+
     def setDropSettings(self, settings):
         pasteboardTypes = settings.get("pasteboardTypes")
         performDropCallback = settings.get("performDropCallback")
@@ -237,7 +241,7 @@ class DropTargetProtocolMixIn:
         self._finishDropCallback = settings.get("finishDropCallback")
 
     def _registerDropTypes(self, pasteboardTypes):
-        view = self._getContentView()
+        view = self._getDropView()
         unwrapped = []
         for pasteboardType in pasteboardTypes:
             pasteboardType = pasteboardTypeMap.get(pasteboardType, pasteboardType)
@@ -252,7 +256,7 @@ class DropTargetProtocolMixIn:
         be given as the pasteboard type.
         """
         if pasteboardType is None:
-            pasteboardTypes = self._getContentView().registeredDraggedTypes()
+            pasteboardTypes = self._getDropView().registeredDraggedTypes()
             assert len(pasteboardTypes) == 1
             pasteboardType = pasteboardTypes[0]
         pasteboardType = pasteboardTypeMap.get(pasteboardType, pasteboardType)
@@ -285,11 +289,11 @@ class DropTargetProtocolMixIn:
             source = source.vanillaWrapper()
         pasteboard = draggingInfo.draggingPasteboard()
         items = pasteboard.pasteboardItems()
-        x, y = self._nsObject.convertPoint_fromView_(
+        x, y = self._getDropView().convertPoint_fromView_(
             draggingInfo.draggingLocation(),
             None
         )
-        w, h = self._nsObject.frame().size
+        w, h = self._getDropView().frame().size
         location = (x, h - y)
         info = dict(
             sender=self,
