@@ -99,19 +99,64 @@ class DraggingSourceView(vanilla.Group):
     nsViewClass = DraggingSourceNSView
 
 
+titleSpacing = 5
+controlSpacing = 10
+
 class Test:
 
     def __init__(self):
         self.w = vanilla.Window(
-            (1, 1),
+            (600, 1),
             "Dragon Drop"
         )
 
-        titleSpacing = 5
-        controlSpacing = 10
+        self.makeMainSource()
+        self.makeDestViews()
+        self.makeDestLists()
 
-        # source settings
+        self.w.stack = vanilla.VerticalStackView(
+            "auto",
+            views=[
+                vanilla.TextBox(
+                    "auto",
+                    "Drag from the green block to one of "
+                    "the yellow blocks or lists."
+                    "\n"
+                    "Drag files from Finder to the file "
+                    "yellow block or the list."
+                    "\n"
+                    "The string list is reorderable."
+                ),
+                dict(
+                    view=self.mainSourceStack,
+                    width="fill"
+                ),
+                dict(
+                    view=self.destViewViewStack,
+                    height=150,
+                    width="fill"
+                ),
+                dict(
+                    view=self.destViewListStack,
+                    height=150,
+                    width="fill"
+                ),
+                # vanilla.HorizontalLine("auto"),
+                # vanilla.TextBox("auto", "Drag within the list to reorder items."),
+            ],
+            spacing=20,
+            alignment="leading"
+        )
 
+        rules = [
+            "H:|-[stack]-|",
+            "V:|-[stack]-|"
+        ]
+        self.w.addAutoPosSizeRules(rules)
+
+        self.w.open()
+
+    def makeMainSource(self):
         self.dragSourceTitle = vanilla.TextBox(
             "auto",
             "Drag Details:"
@@ -234,161 +279,7 @@ class Test:
             spacing=controlSpacing,
             alignment="leading"
         )
-
-        # views
-
-        dropSettings = dict(
-            pasteboardTypes=["string"],
-            dropCandidateCallback=self.dest1DropCandidateCallback,
-            dropCandidateEndedCallback=self.dest1DropCandidateEndedCallback,
-            dropCandidateExitedCallback=self.dest1DropCandidateExitedCallback,
-            performDropCallback=self.dest1PerformDropCallback
-        )
-        self.dest1 = vanilla.Group(
-            "auto",
-            dropSettings=dropSettings
-        )
-        self.dest1.box = vanilla.Box(
-            (0, 0, 0, 0),
-            fillColor=AppKit.NSColor.yellowColor(),
-            borderColor=AppKit.NSColor.blackColor(),
-            margins=0,
-            cornerRadius=0
-        )
-        self.dest1.textBox = vanilla.TextBox(
-            (20, 20, 0, 0),
-            "string"
-        )
-        self.dest1.locationBox = vanilla.Box(
-            (0, 0, 2, 2),
-            fillColor=AppKit.NSColor.redColor(),
-            borderColor=AppKit.NSColor.redColor(),
-            cornerRadius=0,
-            margins=0
-        )
-
-        dropSettings = dict(
-            pasteboardTypes=["plist"],
-            dropCandidateCallback=self.dest2DropCandidateCallback,
-            dropCandidateEndedCallback=self.dest2DropCandidateEndedCallback,
-            dropCandidateExitedCallback=self.dest2DropCandidateExitedCallback,
-            performDropCallback=self.dest2PerformDropCallback
-        )
-        self.dest2 = vanilla.Group(
-            "auto",
-            dropSettings=dropSettings
-        )
-        self.dest2.box = vanilla.Box(
-            (0, 0, 0, 0),
-            fillColor=AppKit.NSColor.yellowColor(),
-            borderColor=AppKit.NSColor.blackColor(),
-            margins=0,
-            cornerRadius=0
-        )
-        self.dest2.textBox = vanilla.TextBox(
-            (20, 20, 0, 0),
-            "plist"
-        )
-        self.dest2.locationBox = vanilla.Box(
-            (0, 0, 2, 2),
-            fillColor=AppKit.NSColor.redColor(),
-            borderColor=AppKit.NSColor.redColor(),
-            cornerRadius=0,
-            margins=0
-        )
-
-        dropSettings = dict(
-            pasteboardTypes=["fileURL"],
-            dropCandidateCallback=self.dest3DropCandidateCallback,
-            dropCandidateEndedCallback=self.dest3DropCandidateEndedCallback,
-            dropCandidateExitedCallback=self.dest3DropCandidateExitedCallback,
-            performDropCallback=self.dest3PerformDropCallback
-        )
-        self.dest3 = vanilla.Group(
-            "auto",
-            dropSettings=dropSettings
-        )
-        self.dest3.box = vanilla.Box(
-            (0, 0, 0, 0),
-            fillColor=AppKit.NSColor.yellowColor(),
-            borderColor=AppKit.NSColor.blackColor(),
-            margins=0,
-            cornerRadius=0
-        )
-        self.dest3.textBox = vanilla.TextBox(
-            (20, 20, 0, 0),
-            "files"
-        )
-        self.dest3.locationBox = vanilla.Box(
-            (0, 0, 2, 2),
-            fillColor=AppKit.NSColor.redColor(),
-            borderColor=AppKit.NSColor.redColor(),
-            cornerRadius=0,
-            margins=0
-        )
-
-        # lists
-
-        dropSettings = dict(
-            pasteboardTypes=["string"],
-            dropCandidateCallback=self.list1DropCandidateCallback,
-            performDropCallback=self.list1PerformDropCallback
-        )
-        self.list1 = vanilla.List2(
-            "auto",
-            ["XXX", "YYY", "ZZZ"],
-            dropSettings=dropSettings
-        )
-
-        columnDescriptions = [
-            dict(
-                identifier="letter",
-                title="ABC"
-            ),
-            dict(
-                identifier="number",
-                title="#"
-            )
-        ]
-        dropSettings = dict(
-            pasteboardTypes=["plist"],
-            dropCandidateCallback=self.list2DropCandidateCallback,
-            performDropCallback=self.list2PerformDropCallback
-        )
-        self.list2 = vanilla.List2(
-            "auto",
-            [
-                dict(
-                    letter="XXX",
-                    number=-1
-                ),
-                dict(
-                    letter="YYY",
-                    number=-2
-                ),
-                dict(
-                    letter="ZZZ",
-                    number=-3
-                ),
-            ],
-            columnDescriptions=columnDescriptions,
-            dropSettings=dropSettings
-        )
-
-        dropSettings = dict(
-            pasteboardTypes=["fileURL"],
-            dropCandidateCallback=self.list3DropCandidateCallback,
-            performDropCallback=self.list3PerformDropCallback
-        )
-        self.list3 = vanilla.List2(
-            "auto",
-            [],
-            dropSettings=dropSettings
-        )
-
-        # stacks
-
-        self.topStack = vanilla.HorizontalStackView(
+        self.mainSourceStack = vanilla.HorizontalStackView(
             "auto",
             views=[
                 dict(
@@ -397,69 +288,16 @@ class Test:
                 ),
                 dict(
                     view=self.dragSourceSettingsStack,
-                    width=200,
+                    
                 ),
                 dict(
                     view=self.dropDestSettingsStack,
-                    width=200
+                    
                 )
             ],
             spacing=20,
             alignment="leading"
         )
-
-        self.viewStack = vanilla.HorizontalStackView(
-            "auto",
-            views=[
-                self.dest1,
-                self.dest2,
-                self.dest3
-            ],
-            spacing=20
-        )
-
-        self.listStack = vanilla.HorizontalStackView(
-            "auto",
-            views=[
-                self.list1,
-                self.list2,
-                self.list3
-            ],
-            spacing=20
-        )
-
-        self.w.stack = vanilla.VerticalStackView(
-            "auto",
-            views=[
-                vanilla.TextBox(
-                    "auto",
-                    "Drag from the green block to one of "
-                    "the destinations.\nOr drag files from "
-                    "Finder to the file destinations."
-                ),
-                self.topStack,
-                dict(
-                    view=self.viewStack,
-                    height=150
-                ),
-                dict(
-                    view=self.listStack,
-                    height=150
-                ),
-                vanilla.HorizontalLine("auto"),
-                vanilla.TextBox("auto", "Drag within the list to reorder items."),
-            ],
-            spacing=20,
-            alignment="leading"
-        )
-
-        rules = [
-            "H:|-[stack]-|",
-            "V:|-[stack]-|"
-        ]
-        self.w.addAutoPosSizeRules(rules)
-
-        self.w.open()
 
     def dragSourceSettingsCallback(self, sender):
         count = self.dragSourceCountSlider.get()
@@ -476,16 +314,125 @@ class Test:
         operations = self.dropDestOperationPopUp.getItems()
         index = self.dropDestOperationPopUp.get()
         self.dropOperation = operations[index]
-        self.list1._allowDropOnRow = self.dropDestOnRowCheckBox.get()
-        self.list1._allowDropBetweenRows = self.dropDestBetweenRowsCheckBox.get()
-        self.list2._allowDropOnRow = self.dropDestOnRowCheckBox.get()
-        self.list2._allowDropBetweenRows = self.dropDestBetweenRowsCheckBox.get()
-        self.list3._allowDropOnRow = self.dropDestOnRowCheckBox.get()
-        self.list3._allowDropBetweenRows = self.dropDestBetweenRowsCheckBox.get()
+        self.stringDestList._allowDropOnRow = self.dropDestOnRowCheckBox.get()
+        self.stringDestList._allowDropBetweenRows = self.dropDestBetweenRowsCheckBox.get()
+        self.plistDestList._allowDropOnRow = self.dropDestOnRowCheckBox.get()
+        self.plistDestList._allowDropBetweenRows = self.dropDestBetweenRowsCheckBox.get()
+        self.fileURLDestList._allowDropOnRow = self.dropDestOnRowCheckBox.get()
+        self.fileURLDestList._allowDropBetweenRows = self.dropDestBetweenRowsCheckBox.get()
 
-    # view: string drop destination
+    # Destination Views
+    # -----------------
 
-    def dest1DropCandidateCallback(self, info):
+    def makeDestViews(self):
+        dropSettings = dict(
+            pasteboardTypes=["string"],
+            dropCandidateCallback=self.stringDestViewDropCandidateCallback,
+            dropCandidateEndedCallback=self.stringDestViewDropCandidateEndedCallback,
+            dropCandidateExitedCallback=self.stringDestViewDropCandidateExitedCallback,
+            performDropCallback=self.stringDestViewPerformDropCallback
+        )
+        self.stringDestView = vanilla.Group(
+            "auto",
+            dropSettings=dropSettings
+        )
+        self.stringDestView.box = vanilla.Box(
+            (0, 0, 0, 0),
+            fillColor=AppKit.NSColor.yellowColor(),
+            borderColor=AppKit.NSColor.blackColor(),
+            margins=0,
+            cornerRadius=0
+        )
+        self.stringDestView.textBox = vanilla.TextBox(
+            (20, 20, 0, 0),
+            "drop: string"
+        )
+        self.stringDestView.locationBox = vanilla.Box(
+            (0, 0, 2, 2),
+            fillColor=AppKit.NSColor.redColor(),
+            borderColor=AppKit.NSColor.redColor(),
+            cornerRadius=0,
+            margins=0
+        )
+    
+        dropSettings = dict(
+            pasteboardTypes=["plist"],
+            dropCandidateCallback=self.plistDestViewDropCandidateCallback,
+            dropCandidateEndedCallback=self.plistDestViewDropCandidateEndedCallback,
+            dropCandidateExitedCallback=self.plistDestViewDropCandidateExitedCallback,
+            performDropCallback=self.plistDestViewPerformDropCallback
+        )
+        self.plistDestView = vanilla.Group(
+            "auto",
+            dropSettings=dropSettings
+        )
+        self.plistDestView.box = vanilla.Box(
+            (0, 0, 0, 0),
+            fillColor=AppKit.NSColor.yellowColor(),
+            borderColor=AppKit.NSColor.blackColor(),
+            margins=0,
+            cornerRadius=0
+        )
+        self.plistDestView.textBox = vanilla.TextBox(
+            (20, 20, 0, 0),
+            "drop: plist"
+        )
+        self.plistDestView.locationBox = vanilla.Box(
+            (0, 0, 2, 2),
+            fillColor=AppKit.NSColor.redColor(),
+            borderColor=AppKit.NSColor.redColor(),
+            cornerRadius=0,
+            margins=0
+        )
+    
+        dropSettings = dict(
+            pasteboardTypes=["fileURL"],
+            dropCandidateCallback=self.fileURLDestViewDropCandidateCallback,
+            dropCandidateEndedCallback=self.fileURLDestViewDropCandidateEndedCallback,
+            dropCandidateExitedCallback=self.fileURLDestViewDropCandidateExitedCallback,
+            performDropCallback=self.fileURLDestViewPerformDropCallback
+        )
+        self.fileURLDestView = vanilla.Group(
+            "auto",
+            dropSettings=dropSettings
+        )
+        self.fileURLDestView.box = vanilla.Box(
+            (0, 0, 0, 0),
+            fillColor=AppKit.NSColor.yellowColor(),
+            borderColor=AppKit.NSColor.blackColor(),
+            margins=0,
+            cornerRadius=0
+        )
+        self.fileURLDestView.textBox = vanilla.TextBox(
+            (20, 20, 0, 0),
+            "drop: files"
+        )
+        self.fileURLDestView.locationBox = vanilla.Box(
+            (0, 0, 2, 2),
+            fillColor=AppKit.NSColor.redColor(),
+            borderColor=AppKit.NSColor.redColor(),
+            cornerRadius=0,
+            margins=0
+        )
+    
+        self.destViewViewStack = vanilla.HorizontalStackView(
+            "auto",
+            views=[
+                self.stringDestView,
+                self.plistDestView,
+                dict(
+                    view=vanilla.VerticalLine("auto"),
+                    height="fill",
+                    width=1
+                ),
+                self.fileURLDestView
+            ],
+            spacing=20
+        )
+
+    # string
+
+    def stringDestViewDropCandidateCallback(self, info):
         sender = info["sender"]
         source = info["source"]
         items = info["items"]
@@ -495,29 +442,29 @@ class Test:
         )
         location = info["location"]
         x, y = location
-        self.dest1.locationBox.setPosSize((x-1, y-1, 2, 2))
+        self.stringDestView.locationBox.setPosSize((x-1, y-1, 2, 2))
         text = (
             f"count={len(items)}",
             f"items={repr(items)}",
             f"source={source.__class__.__name__}"
         )
         text = "\n".join(text)
-        self.dest1.textBox.set(text)
+        self.stringDestView.textBox.set(text)
         return self.dropOperation
 
-    def dest1DropCandidateExitedCallback(self, info):
-        self.dest1.textBox.set("drop exited")
+    def stringDestViewDropCandidateExitedCallback(self, info):
+        self.stringDestView.textBox.set("drop exited")
 
-    def dest1DropCandidateEndedCallback(self, info):
-        self.dest1.textBox.set("drop ended")
+    def stringDestViewDropCandidateEndedCallback(self, info):
+        self.stringDestView.textBox.set("drop ended")
 
-    def dest1PerformDropCallback(self, info):
+    def stringDestViewPerformDropCallback(self, info):
         print("dest1PerformDropCallback")
         return True
 
-    # view: plist drop destination
+    # plist
 
-    def dest2DropCandidateCallback(self, info):
+    def plistDestViewDropCandidateCallback(self, info):
         sender = info["sender"]
         source = info["source"]
         items = info["items"]
@@ -527,29 +474,29 @@ class Test:
         )
         location = info["location"]
         x, y = location
-        self.dest2.locationBox.setPosSize((x-1, y-1, 2, 2))
+        self.plistDestView.locationBox.setPosSize((x-1, y-1, 2, 2))
         text = (
             f"count={len(items)}",
             f"items={repr(items)}",
             f"source={source.__class__.__name__}"
         )
         text = "\n".join(text)
-        self.dest2.textBox.set(text)
+        self.plistDestView.textBox.set(text)
         return self.dropOperation
 
-    def dest2DropCandidateExitedCallback(self, info):
-        self.dest2.textBox.set("drop exited")
+    def plistDestViewDropCandidateExitedCallback(self, info):
+        self.plistDestView.textBox.set("drop exited")
 
-    def dest2DropCandidateEndedCallback(self, info):
-        self.dest2.textBox.set("drop ended")
+    def plistDestViewDropCandidateEndedCallback(self, info):
+        self.plistDestView.textBox.set("drop ended")
 
-    def dest2PerformDropCallback(self, info):
+    def plistDestViewPerformDropCallback(self, info):
         print("dest2PerformDropCallback")
         return True
 
-    # view: files
+    # file urls
 
-    def dest3DropCandidateCallback(self, info):
+    def fileURLDestViewDropCandidateCallback(self, info):
         sender = info["sender"]
         source = info["source"]
         items = info["items"]
@@ -559,23 +506,23 @@ class Test:
         )
         location = info["location"]
         x, y = location
-        self.dest3.locationBox.setPosSize((x-1, y-1, 2, 2))
+        self.fileURLDestView.locationBox.setPosSize((x-1, y-1, 2, 2))
         text = (
             f"count={len(items)}",
             f"items={repr(items)}",
             f"source={source.__class__.__name__}"
         )
         text = "\n".join(text)
-        self.dest3.textBox.set(text)
+        self.fileURLDestView.textBox.set(text)
         return self.dropOperation
     
-    def dest3DropCandidateExitedCallback(self, info):
-        self.dest3.textBox.set("drop exited")
+    def fileURLDestViewDropCandidateExitedCallback(self, info):
+        self.fileURLDestView.textBox.set("drop exited")
     
-    def dest3DropCandidateEndedCallback(self, info):
-        self.dest3.textBox.set("drop ended")
+    def fileURLDestViewDropCandidateEndedCallback(self, info):
+        self.fileURLDestView.textBox.set("drop ended")
     
-    def dest3PerformDropCallback(self, info):
+    def fileURLDestViewPerformDropCallback(self, info):
         print("dest3PerformDropCallback")
         sender = info["sender"]
         items = info["items"]
@@ -587,40 +534,167 @@ class Test:
             print(item.path())
         return True
 
-    # list: string
+    # Destination Lists
+    # -----------------
 
-    def list1DropCandidateCallback(self, info):
+    def makeDestLists(self):
+        dragSettings = dict(
+            makeDragDataCallback=self.stringDestListMakeDragDataCallback
+        )
+        dropSettings = dict(
+            pasteboardTypes=[
+                "string",
+                "dev.robotools.test.stringDestListIndexes"
+            ],
+            dropCandidateCallback=self.stringDestListDropCandidateCallback,
+            performDropCallback=self.stringDestListPerformDropCallback
+        )
+        self.stringDestList = vanilla.List2(
+            "auto",
+            ["XXX", "YYY", "ZZZ"],
+            dragSettings=dragSettings,
+            dropSettings=dropSettings
+        )
+    
+        columnDescriptions = [
+            dict(
+                identifier="letter",
+                title="ABC",
+                width=35
+            ),
+            dict(
+                identifier="number",
+                title="#",
+                width=35
+            )
+        ]
+        dragSettings = dict(
+            makeDragDataCallback=self.plistDestListMakeDragDataCallback
+        )
+        dropSettings = dict(
+            pasteboardTypes=["plist"],
+            dropCandidateCallback=self.plistDestListDropCandidateCallback,
+            performDropCallback=self.plistDestListPerformDropCallback
+        )
+        self.plistDestList = vanilla.List2(
+            "auto",
+            [
+                dict(
+                    letter="XXX",
+                    number=-1
+                ),
+                dict(
+                    letter="YYY",
+                    number=-2
+                ),
+                dict(
+                    letter="ZZZ",
+                    number=-3
+                ),
+            ],
+            columnDescriptions=columnDescriptions,
+            dragSettings=dragSettings,
+            dropSettings=dropSettings
+        )
+    
+        dropSettings = dict(
+            pasteboardTypes=["fileURL"],
+            dropCandidateCallback=self.fileURLDestListDropCandidateCallback,
+            performDropCallback=self.fileURLDestListPerformDropCallback
+        )
+        self.fileURLDestList = vanilla.List2(
+            "auto",
+            [],
+            dropSettings=dropSettings
+        )
+    
+        self.destViewListStack = vanilla.HorizontalStackView(
+            "auto",
+            views=[
+                self.stringDestList,
+                self.plistDestList,
+                dict(
+                    view=vanilla.VerticalLine("auto"),
+                    height="fill",
+                    width=1
+                ),
+                self.fileURLDestList
+            ],
+            spacing=20
+        )
+
+    # string
+
+    def stringDestListMakeDragDataCallback(self, index):
+        typesAndValues = {
+            "string" : self.stringDestList.get()[index],
+            "dev.robotools.test.stringDestListIndexes" : index
+        }
+        return typesAndValues
+
+    def stringDestListDropCandidateCallback(self, info):
+        source = info["source"]
+        if source == self.stringDestList:
+            return "move"
         return "copy"
     
-    def list1PerformDropCallback(self, info):
+    def stringDestListPerformDropCallback(self, info):
         sender = info["sender"]
-        row = info["row"]
+        source = info["source"]
+        index = info["index"]
         items = info["items"]
-        items = sender.getDropItemValues(items)
-        allItems = list(self.list1.get())
-        items = allItems[:row] + items + allItems[row:]
-        self.list1.set(items)
+        # reorder
+        if source == self.stringDestList:
+            indexes = sender.getDropItemValues(items, "dev.robotools.test.stringDestListIndexes")
+            # XXX this is wrong
+            items = list(self.stringDestList.get())
+            move = [items.pop(i) for i in indexes]
+            # insert
+            if index is not None:
+                items[index:index] = move
+            # append
+            else:
+                items += move
+        else:
+            items = sender.getDropItemValues(items, "string")
+            allItems = list(self.stringDestList.get())
+            # insert
+            if index is not None:
+                items = allItems[:index] + items + allItems[index:]
+            # append
+            else:
+                items = allItems + items
+        self.stringDestList.set(items)
         return True
 
-    # list: plist
-    
-    def list2DropCandidateCallback(self, info):
+    # plist
+
+    def plistDestListMakeDragDataCallback(self, index):
+        typesAndValues = {
+            "plist" : self.plistDestList.get()[index]
+        }
+        return typesAndValues
+
+    def plistDestListDropCandidateCallback(self, info):
+        source = info["source"]
+        if source == self.plistDestList:
+            return "none"
         return "copy"
     
-    def list2PerformDropCallback(self, info):
+    def plistDestListPerformDropCallback(self, info):
         sender = info["sender"]
-        row = info["row"]
+        index = info["index"]
         items = info["items"]
         items = sender.getDropItemValues(items)
-        allItems = list(self.list2.get())
-        items = allItems[:row] + items + allItems[row:]
-        self.list2.set(items)
+        allItems = list(self.plistDestList.get())
+        items = allItems[:index] + items + allItems[index:]
+        self.plistDestList.set(items)
         return True
 
-    # list: file urls
+    # file urls
     
-    def list3DropCandidateCallback(self, info):
-        existing = list(self.list3.get())
+    def fileURLDestListDropCandidateCallback(self, info):
+        existing = list(self.fileURLDestList.get())
         sender = info["sender"]
         items = info["items"]
         items = sender.getDropItemValues(items)
@@ -630,16 +704,16 @@ class Test:
             return "none"
         return "link"
     
-    def list3PerformDropCallback(self, info):
-        existing = list(self.list3.get())
+    def fileURLDestListPerformDropCallback(self, info):
+        existing = list(self.fileURLDestList.get())
         sender = info["sender"]
-        row = info["row"]
+        index = info["index"]
         items = info["items"]
         items = sender.getDropItemValues(items)
         items = [os.path.basename(item.path()) for item in items]
         items = [item for item in items if item not in existing]
-        items = existing[:row] + items + existing[row:]
-        self.list3.set(items)
+        items = existing[:index] + items + existing[index:]
+        self.fileURLDestList.set(items)
         return True
 
 

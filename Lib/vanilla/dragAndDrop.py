@@ -38,6 +38,8 @@ def startDraggingSession(
 
     - `typesAndValues` A dictionary of pasteboard types
       as keys and the object value for the type as the value.
+      Acceptable value types are strings, bytes and any python
+      object structure that can be represented as a Property List.
     - `location` The location within the source view from
       which the dragging image should originate. Optional.
     - `size` The size to display the dragging image. Optional.
@@ -81,12 +83,7 @@ def startDraggingSession(
     session.setDraggingFormation_(formation)
     return session
 
-def _makeDraggingItem(
-        typesAndValues,
-        location=(0, 0),
-        size=None,
-        image=None
-    ):
+def makePasteboardItem(typesAndValues):
     pasteboardItem = AppKit.NSPasteboardItem.alloc().init()
     for pasteboardType, value in typesAndValues.items():
         pasteboardType = pasteboardTypeMap.get(pasteboardType, pasteboardType)
@@ -96,6 +93,15 @@ def _makeDraggingItem(
             pasteboardItem.setString_forType_(value, pasteboardType)
         else:
             pasteboardItem.setPropertyList_forType_(value, pasteboardType)
+    return pasteboardItem
+
+def _makeDraggingItem(
+        typesAndValues,
+        location=(0, 0),
+        size=None,
+        image=None
+    ):
+    pasteboardItem = makePasteboardItem(typesAndValues)
     if size is None:
         if image is not None:
             size = image.size()

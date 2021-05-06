@@ -8,7 +8,7 @@ import vanilla
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaCallbackWrapper, osVersionCurrent, osVersion10_16
 from vanilla.vanillaScrollView import ScrollView
-from vanilla.dragAndDrop import DropTargetProtocolMixIn, dropOperationMap
+from vanilla.dragAndDrop import DropTargetProtocolMixIn, dropOperationMap, makePasteboardItem
 
 simpleDataTypes = (
     str,
@@ -219,6 +219,30 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         if wrapper._editCallback is not None:
             wrapper._editCallback(wrapper)
 
+    # Drag
+
+    """
+    at init:
+    - approve rows (optional): dragCandidateCallback
+    - note that drag will begin: dragStartedCallback
+    - make type/value dict for row: makeDragDataCallback
+    - note that the drag ended: dragEndedCallback
+    """
+
+    # tv: canDragRowsWithIndexes:atPoint: _validateRowsForDrag
+    # ds: tableView:draggingSession:willBeginAtPoint:forRowIndexes:
+    # tv: dragImageForRowsWithIndexes:tableColumns:event:offset:
+    # ds: tableView_pasteboardWriterForRow_
+    # ds: tableView:draggingSession:endedAtPoint:operation:
+
+    def tableView_pasteboardWriterForRow_(
+            self,
+            tableView,
+            row
+        ):
+        index = self._arrangedIndexes[row]
+        return self.vanillaWrapper()._getPasteboardDataForIndex(index)
+
     # Drop
 
     def tableView_validateDrop_proposedRow_proposedDropOperation_(
@@ -228,7 +252,11 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
             row,
             operation
         ):
-        return self.vanillaWrapper()._dropCandidateUpdated(draggingInfo, row, operation)
+        if row == len(self._arrangedIndexes):
+            index = row
+        else:
+            index = self._arrangedIndexes[row]
+        return self.vanillaWrapper()._dropCandidateUpdated(draggingInfo, index, operation)
 
     def tableView_acceptDrop_row_dropOperation_(
             self,
@@ -237,10 +265,17 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
             row,
             operation
         ):
-        return self.vanillaWrapper()._performDrop(draggingInfo, row, operation)
+        if row == len(self._arrangedIndexes):
+            index = row
+        else:
+            index = self._arrangedIndexes[row]
+        return self.vanillaWrapper()._performDrop(draggingInfo, index, operation)
 
 
-class VanillaList2TableViewSubclass(AppKit.NSTableView): pass
+class VanillaList2TableViewSubclass(AppKit.NSTableView):
+
+    def canDragRowsWithIndexes_atPoint_(self, indexes, point):
+        return self.vanillaWrapper()._validateRowsForDrag(indexes)
 
 
 class List2(ScrollView, DropTargetProtocolMixIn):
@@ -397,8 +432,9 @@ class List2(ScrollView, DropTargetProtocolMixIn):
     `dropCandidateCallback` should return a boolean indicating if the
     drop is acceptable instead of a drop operation.
 
-    The dragging info dictionary will contain a `row` key that specifies
-    where in the list the is proposed for insertion.
+    The dragging info dictionary will contain an `index` key that specifies
+    where in the list the is proposed for insertion. If the list doesn't
+    allow dropping on or between rows, index will be `None`.
     """
 
     nsTableViewClass = VanillaList2TableViewSubclass
@@ -426,6 +462,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             groupRowCellClass=None,
             groupRowCellClassArguments={},
             autosaveName=None,
+            dragSettings=None,
             dropSettings=None
         ):
         if not columnDescriptions:
@@ -489,6 +526,12 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             nsView=self._tableView,
             autohidesScrollers=autohidesScrollers
         )
+        # drag and drop
+        if dragSettings is not None:
+            self._dragCandidateCallback = dragSettings.get("dragCandidateCallback")
+            self._dragStartedCallback = dragSettings.get("dragStartedCallback")
+            self._makeDragDataCallback = dragSettings.get("makeDragDataCallback")
+            self._dragEndedCallback = dragSettings.get("dragEndedCallback")
         if dropSettings is not None:
             self.setDropSettings(dropSettings)
         # populate
@@ -728,7 +771,33 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         """
         self._tableView.scrollRowToVisible_(index)
 
+    # Drag
+
+    _dragCandidateCallback = None
+    _dragStartedCallback = None
+    _makeDragDataCallback = None
+    _dragEndedCallback = None
+
+    def _validateRowsForDrag(self, indexes):
+        if self._dragCandidateCallback is None:
+            if self._makeDragDataCallback is None:
+                return False
+            return True
+        return self._dragCandidateCallback(indexes)
+
+    def _getPasteboardDataForIndex(self, index):
+        if self._makeDragDataCallback is None:
+            return None
+        typesAndValues = self._makeDragDataCallback(index)
+        if not typesAndValues:
+            return None
+        return makePasteboardItem(typesAndValues)
+
     # Drop
+
+    # - accepts drop from self, window, app, other:
+    #   setDraggingSourceOperationMask_forLocal_
+    # - set on/between in dropSettings
 
     _allowDropOnRow = None
     _allowDropBetweenRows = None
@@ -738,14 +807,13 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         self._allowDropBetweenRows = settings.get("allowDropBetweenRows", True)
         super().setDropSettings(settings)
 
-    def _dropCandidateUpdated(self, draggingInfo, row, operation):
+    def _dropCandidateUpdated(self, draggingInfo, index, operation):
         if self._dropCandidateCallback is None:
             return AppKit.NSDragOperationNone
         info = self._unpackDropCandidateInfo(draggingInfo)
-        info["row"] = row
-        highlightTable = False
+        info["index"] = index
         if not self._allowDropOnRow and not self._allowDropBetweenRows:
-            highlightTable = True
+            index = None
         elif not self._allowDropOnRow and operation == AppKit.NSTableViewDropOn:
             return AppKit.NSDragOperationNone
         elif not self._allowDropBetweenRows and operation == AppKit.NSTableViewDropAbove:
@@ -753,13 +821,15 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         operation = self._dropCandidateCallback(info)
         operation = dropOperationMap.get(operation, operation)
         # highlight the whole table instead of a single spot
-        if highlightTable:
+        if index is None:
             self._tableView.setDropRow_dropOperation_(-1, operation)
         return operation
 
-    def _performDrop(self, draggingInfo, row, operation):
+    def _performDrop(self, draggingInfo, index, operation):
+        if not self._allowDropOnRow and not self._allowDropBetweenRows:
+            index = None
         info = self._unpackDropCandidateInfo(draggingInfo)
-        info["row"] = row
+        info["index"] = index
         return self._performDropCallback(info)
 
 # -----
