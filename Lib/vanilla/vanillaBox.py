@@ -1,47 +1,9 @@
 import objc
 from AppKit import NSBox, NSColor, NSFont, NSSmallControlSize, NSNoTitle, NSLineBorder, NSBoxSeparator, NSBoxCustom
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, osVersionCurrent, osVersion10_10
-from vanilla.dragAndDrop import DropTargetProtocolMixIn
-
-class VanillaBoxSubclass(NSBox):
-
-    # ------------------------------------
-    # Start dragging destination protocol.
-    #
-    # If this is changed, it must be changed
-    # in all other classes where this code has
-    # been duplicated.
-
-    def draggingEntered_(self, draggingInfo):
-        return self.vanillaWrapper()._dropCandidateEntered(draggingInfo)
-
-    def draggingUpdated_(self, draggingInfo):
-        return self.vanillaWrapper()._dropCandidateUpdated(draggingInfo)
-
-    @objc.signature(b"Z@:@") # PyObjC bug? <- Found in the FontGoogles source.
-    def draggingEnded_(self, draggingInfo):
-        return self.vanillaWrapper()._dropCandidateEnded(draggingInfo)
-
-    def draggingExited_(self, draggingInfo):
-        return self.vanillaWrapper()._dropCandidateExited(draggingInfo)
-
-    def updateDraggingItemsForDrag_(self, draggingInfo):
-        return self.vanillaWrapper()._updateDropCandidateImages(draggingInfo)
-
-    def prepareForDragOperation_(self, draggingInfo):
-        return self.vanillaWrapper()._prepareForDrop(draggingInfo)
-
-    def performDragOperation_(self, draggingInfo):
-        return self.vanillaWrapper()._performDrop(draggingInfo)
-
-    def concludeDragOperation_(self, draggingInfo):
-        return self.vanillaWrapper()._finishDrop(draggingInfo)
-
-    # End dragging destination protocol.
-    # ----------------------------------
 
 
-class Box(VanillaBaseObject, DropTargetProtocolMixIn):
+class Box(VanillaBaseObject):
 
     """
     A bordered container for other controls.
@@ -71,8 +33,6 @@ class Box(VanillaBaseObject, DropTargetProtocolMixIn):
     representing the position and size of the box.
 
     **title** The title to be displayed above the box. Pass *None* if no title is desired.
-
-    **dropSettings** A drop settings dictionary.
     """
 
     allFrameAdjustments = {
@@ -83,12 +43,11 @@ class Box(VanillaBaseObject, DropTargetProtocolMixIn):
         "Box-None": (-3, -4, 6, 6)
     }
 
-    nsBoxClass = VanillaBoxSubclass
+    nsBoxClass = NSBox
 
     def __init__(self, posSize, title=None,
             fillColor=None, borderColor=None, borderWidth=None,
-            cornerRadius=None, margins=None,
-            dropSettings=None
+            cornerRadius=None, margins=None
         ):
         self._setupView(self.nsBoxClass, posSize)
         if title:
@@ -109,8 +68,6 @@ class Box(VanillaBaseObject, DropTargetProtocolMixIn):
             self.setCornerRadius(cornerRadius)
         if margins is not None:
             self.setMargins(margins)
-        if dropSettings is not None:
-            self.setDropSettings(dropSettings)
 
     def getNSBox(self):
         """
