@@ -205,8 +205,8 @@ class HorizontalStackView(_StackView):
     )
     _alignments = dict(
         center=AppKit.NSLayoutAttributeCenterY,
-        leading=AppKit.NSLayoutAttributeLeading,
-        trailing=AppKit.NSLayoutAttributeTrailing
+        leading=AppKit.NSLayoutAttributeTop,
+        trailing=AppKit.NSLayoutAttributeBottom
     )
 
 class VerticalStackView(_StackView):
