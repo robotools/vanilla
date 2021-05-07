@@ -38,6 +38,19 @@ for color in colors:
         10
     )
     path.fill()
+    shadow = AppKit.NSShadow.alloc().init()
+    shadow.setShadowOffset_((0, -5))
+    shadow.setShadowBlurRadius_(5)
+    shadow.setShadowColor_(AppKit.NSColor.blackColor())
+    shadow.set()
+    text = AppKit.NSAttributedString.alloc().initWithString_attributes_(
+        "🐲",
+        {
+            AppKit.NSFontAttributeName : AppKit.NSFont.systemFontOfSize_(40),
+            AppKit.NSShadowAttributeName : shadow
+        }
+    )
+    text.drawAtPoint_((3, 3))
     image.unlockFocus()
     draggingImages.append(image)
 
@@ -76,7 +89,7 @@ class DraggingSourceNSView(AppKit.NSView):
         for i in range(self.draggingItemCount):
             image = draggingImages[i]
             value = draggingValues[self.draggingType][i]
-            y = height / (i + 1)
+            y = height * i * 0.1
             location = (x, y)
             item = dict(
                 typesAndValues={
@@ -107,7 +120,7 @@ class Test:
     def __init__(self):
         self.w = vanilla.Window(
             (600, 1),
-            "Dragon Drop"
+            "Drag and Drop Test"
         )
 
         self.makeMainSource()
@@ -327,6 +340,7 @@ class Test:
     def makeDestViews(self):
         dropSettings = dict(
             pasteboardTypes=["string"],
+            dropCandidateEnteredCallback=self.stringDestViewDropCandidateEnteredCallback,
             dropCandidateCallback=self.stringDestViewDropCandidateCallback,
             dropCandidateEndedCallback=self.stringDestViewDropCandidateEndedCallback,
             dropCandidateExitedCallback=self.stringDestViewDropCandidateExitedCallback,
@@ -339,7 +353,8 @@ class Test:
         self.stringDestView.box = vanilla.Box(
             (0, 0, 0, 0),
             fillColor=AppKit.NSColor.yellowColor(),
-            borderColor=AppKit.NSColor.blackColor(),
+            borderColor=AppKit.NSColor.greenColor(),
+            borderWidth=0,
             margins=0,
             cornerRadius=0
         )
@@ -349,14 +364,17 @@ class Test:
         )
         self.stringDestView.locationBox = vanilla.Box(
             (0, 0, 2, 2),
-            fillColor=AppKit.NSColor.redColor(),
+            fillColor=AppKit.NSColor.clearColor(),
             borderColor=AppKit.NSColor.redColor(),
-            cornerRadius=0,
+            borderWidth=1,
+            cornerRadius=10,
             margins=0
         )
+        self.stringDestView.locationBox.show(False)
     
         dropSettings = dict(
             pasteboardTypes=["plist"],
+            dropCandidateEnteredCallback=self.plistDestViewDropCandidateEnteredCallback,
             dropCandidateCallback=self.plistDestViewDropCandidateCallback,
             dropCandidateEndedCallback=self.plistDestViewDropCandidateEndedCallback,
             dropCandidateExitedCallback=self.plistDestViewDropCandidateExitedCallback,
@@ -379,14 +397,17 @@ class Test:
         )
         self.plistDestView.locationBox = vanilla.Box(
             (0, 0, 2, 2),
-            fillColor=AppKit.NSColor.redColor(),
+            fillColor=AppKit.NSColor.clearColor(),
             borderColor=AppKit.NSColor.redColor(),
-            cornerRadius=0,
+            borderWidth=1,
+            cornerRadius=10,
             margins=0
         )
+        self.plistDestView.locationBox.show(False)
     
         dropSettings = dict(
             pasteboardTypes=["fileURL"],
+            dropCandidateEnteredCallback=self.fileURLDestViewDropCandidateEnteredCallback,
             dropCandidateCallback=self.fileURLDestViewDropCandidateCallback,
             dropCandidateEndedCallback=self.fileURLDestViewDropCandidateEndedCallback,
             dropCandidateExitedCallback=self.fileURLDestViewDropCandidateExitedCallback,
@@ -409,11 +430,13 @@ class Test:
         )
         self.fileURLDestView.locationBox = vanilla.Box(
             (0, 0, 2, 2),
-            fillColor=AppKit.NSColor.redColor(),
+            fillColor=AppKit.NSColor.clearColor(),
             borderColor=AppKit.NSColor.redColor(),
-            cornerRadius=0,
+            borderWidth=1,
+            cornerRadius=10,
             margins=0
         )
+        self.fileURLDestView.locationBox.show(False)
     
         self.destViewViewStack = vanilla.HorizontalStackView(
             "auto",
@@ -432,6 +455,12 @@ class Test:
 
     # string
 
+    def stringDestViewDropCandidateEnteredCallback(self, info):
+        self.stringDestView.box.setBorderColor(AppKit.NSColor.greenColor())
+        self.stringDestView.box.setBorderWidth(20)
+        self.stringDestView.locationBox.show(True)
+        return self.dropOperation
+
     def stringDestViewDropCandidateCallback(self, info):
         sender = info["sender"]
         source = info["source"]
@@ -442,7 +471,7 @@ class Test:
         )
         location = info["location"]
         x, y = location
-        self.stringDestView.locationBox.setPosSize((x-1, y-1, 2, 2))
+        self.stringDestView.locationBox.setPosSize((x-10, y-10, 20, 20))
         text = (
             f"count={len(items)}",
             f"items={repr(items)}",
@@ -453,16 +482,25 @@ class Test:
         return self.dropOperation
 
     def stringDestViewDropCandidateExitedCallback(self, info):
-        self.stringDestView.textBox.set("drop exited")
+        self.stringDestView.box.setBorderColor(AppKit.NSColor.orangeColor())
+        self.stringDestView.locationBox.show(False)
 
     def stringDestViewDropCandidateEndedCallback(self, info):
-        self.stringDestView.textBox.set("drop ended")
+        self.stringDestView.box.setBorderWidth(0)
+        self.stringDestView.locationBox.show(False)
+        self.stringDestView.textBox.set("drop: string")
 
     def stringDestViewPerformDropCallback(self, info):
         print("dest1PerformDropCallback")
         return True
 
     # plist
+
+    def plistDestViewDropCandidateEnteredCallback(self, info):
+        self.plistDestView.box.setBorderColor(AppKit.NSColor.greenColor())
+        self.plistDestView.box.setBorderWidth(20)
+        self.plistDestView.locationBox.show(True)
+        return self.dropOperation
 
     def plistDestViewDropCandidateCallback(self, info):
         sender = info["sender"]
@@ -474,7 +512,7 @@ class Test:
         )
         location = info["location"]
         x, y = location
-        self.plistDestView.locationBox.setPosSize((x-1, y-1, 2, 2))
+        self.plistDestView.locationBox.setPosSize((x-10, y-10, 20, 20))
         text = (
             f"count={len(items)}",
             f"items={repr(items)}",
@@ -485,16 +523,25 @@ class Test:
         return self.dropOperation
 
     def plistDestViewDropCandidateExitedCallback(self, info):
-        self.plistDestView.textBox.set("drop exited")
+        self.plistDestView.box.setBorderColor(AppKit.NSColor.orangeColor())
+        self.plistDestView.locationBox.show(False)
 
     def plistDestViewDropCandidateEndedCallback(self, info):
-        self.plistDestView.textBox.set("drop ended")
+        self.plistDestView.box.setBorderWidth(0)
+        self.plistDestView.locationBox.show(False)
+        self.plistDestView.textBox.set("drop: string")
 
     def plistDestViewPerformDropCallback(self, info):
         print("dest2PerformDropCallback")
         return True
 
     # file urls
+
+    def fileURLDestViewDropCandidateEnteredCallback(self, info):
+        self.fileURLDestView.box.setBorderColor(AppKit.NSColor.greenColor())
+        self.fileURLDestView.box.setBorderWidth(20)
+        self.fileURLDestView.locationBox.show(True)
+        return self.dropOperation
 
     def fileURLDestViewDropCandidateCallback(self, info):
         sender = info["sender"]
@@ -506,7 +553,7 @@ class Test:
         )
         location = info["location"]
         x, y = location
-        self.fileURLDestView.locationBox.setPosSize((x-1, y-1, 2, 2))
+        self.fileURLDestView.locationBox.setPosSize((x-10, y-10, 20, 20))
         text = (
             f"count={len(items)}",
             f"items={repr(items)}",
@@ -517,10 +564,13 @@ class Test:
         return self.dropOperation
     
     def fileURLDestViewDropCandidateExitedCallback(self, info):
-        self.fileURLDestView.textBox.set("drop exited")
+        self.fileURLDestView.box.setBorderColor(AppKit.NSColor.orangeColor())
+        self.fileURLDestView.locationBox.show(False)
     
     def fileURLDestViewDropCandidateEndedCallback(self, info):
-        self.fileURLDestView.textBox.set("drop ended")
+        self.fileURLDestView.box.setBorderWidth(0)
+        self.fileURLDestView.locationBox.show(False)
+        self.fileURLDestView.textBox.set("drop: files")
     
     def fileURLDestViewPerformDropCallback(self, info):
         print("dest3PerformDropCallback")
@@ -546,6 +596,9 @@ class Test:
                 "string",
                 "dev.robotools.test.stringDestListIndexes"
             ],
+            dropCandidateEnteredCallback=self.stringDestListDropCandidateEnteredCallback,
+            dropCandidateEndedCallback=self.stringDestListDropCandidateEndedCallback,
+            dropCandidateExitedCallback=self.stringDestListDropCandidateExitedCallback,
             dropCandidateCallback=self.stringDestListDropCandidateCallback,
             performDropCallback=self.stringDestListPerformDropCallback
         )
@@ -573,6 +626,9 @@ class Test:
         )
         dropSettings = dict(
             pasteboardTypes=["plist"],
+            dropCandidateEnteredCallback=self.plistDestListDropCandidateEnteredCallback,
+            dropCandidateEndedCallback=self.plistDestListDropCandidateEndedCallback,
+            dropCandidateExitedCallback=self.plistDestListDropCandidateExitedCallback,
             dropCandidateCallback=self.plistDestListDropCandidateCallback,
             performDropCallback=self.plistDestListPerformDropCallback
         )
@@ -625,6 +681,22 @@ class Test:
 
     # string
 
+    def stringDestListDropCandidateEnteredCallback(self, info):
+        self.stringDestList.getNSScrollView().setBackgroundColor_(
+            AppKit.NSColor.greenColor()
+        )
+        return "generic"
+
+    def stringDestListDropCandidateExitedCallback(self, info):
+        self.stringDestList.getNSScrollView().setBackgroundColor_(
+            AppKit.NSColor.orangeColor()
+        )
+
+    def stringDestListDropCandidateEndedCallback(self, info):
+        self.stringDestList.getNSScrollView().setBackgroundColor_(
+            AppKit.NSColor.whiteColor()
+        )
+
     def stringDestListMakeDragDataCallback(self, index):
         typesAndValues = {
             "string" : self.stringDestList.get()[index],
@@ -669,6 +741,22 @@ class Test:
 
     # plist
 
+    def plistDestListDropCandidateEnteredCallback(self, info):
+        self.plistDestList.getNSScrollView().setBackgroundColor_(
+            AppKit.NSColor.greenColor()
+        )
+        return "generic"
+    
+    def plistDestListDropCandidateExitedCallback(self, info):
+        self.plistDestList.getNSScrollView().setBackgroundColor_(
+            AppKit.NSColor.orangeColor()
+        )
+    
+    def plistDestListDropCandidateEndedCallback(self, info):
+        self.plistDestList.getNSScrollView().setBackgroundColor_(
+            AppKit.NSColor.whiteColor()
+        )
+
     def plistDestListMakeDragDataCallback(self, index):
         typesAndValues = {
             "plist" : self.plistDestList.get()[index]
@@ -712,7 +800,8 @@ class Test:
         items = sender.getDropItemValues(items)
         items = [os.path.basename(item.path()) for item in items]
         items = [item for item in items if item not in existing]
-        items = existing[:index] + items + existing[index:]
+        if index is not None:
+            items = existing[:index] + items + existing[index:]
         self.fileURLDestList.set(items)
         return True
 

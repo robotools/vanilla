@@ -221,20 +221,6 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 
     # Drag
 
-    """
-    at init:
-    - approve rows (optional): dragCandidateCallback
-    - note that drag will begin: dragStartedCallback
-    - make type/value dict for row: makeDragDataCallback
-    - note that the drag ended: dragEndedCallback
-    """
-
-    # tv: canDragRowsWithIndexes:atPoint: _validateRowsForDrag
-    # ds: tableView:draggingSession:willBeginAtPoint:forRowIndexes:
-    # tv: dragImageForRowsWithIndexes:tableColumns:event:offset:
-    # ds: tableView_pasteboardWriterForRow_
-    # ds: tableView:draggingSession:endedAtPoint:operation:
-
     def tableView_pasteboardWriterForRow_(
             self,
             tableView,
@@ -252,7 +238,9 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
             row,
             operation
         ):
-        if row == len(self._arrangedIndexes):
+        if not self._arrangedIndexes:
+            index = None
+        elif row == len(self._arrangedIndexes):
             index = row
         else:
             index = self._arrangedIndexes[row]
@@ -265,7 +253,9 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
             row,
             operation
         ):
-        if row == len(self._arrangedIndexes):
+        if not self._arrangedIndexes:
+            index = None
+        elif row == len(self._arrangedIndexes):
             index = row
         else:
             index = self._arrangedIndexes[row]
@@ -273,6 +263,24 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 
 
 class VanillaList2TableViewSubclass(AppKit.NSTableView):
+
+    def draggingEntered_(self, draggingInfo):
+        super().draggingEntered_(draggingInfo)
+        return self.vanillaWrapper()._dropCandidateEntered(draggingInfo)
+    
+    @objc.signature(b"Z@:@") # PyObjC bug? <- Found in the FontGoogles source.
+    def draggingEnded_(self, draggingInfo):
+        self.vanillaWrapper()._dropCandidateEnded(draggingInfo)
+        # XXX
+        # super().draggingEnded_(draggingInfo)
+        # the super doesn't have this.
+        # i'm not sure if it because of the
+        # PyObjC bug mentioned above or
+        # something else.
+
+    def draggingExited_(self, draggingInfo):
+        self.vanillaWrapper()._dropCandidateExited(draggingInfo)
+        super().draggingExited_(draggingInfo)
 
     def canDragRowsWithIndexes_atPoint_(self, indexes, point):
         return self.vanillaWrapper()._validateRowsForDrag(indexes)
@@ -426,8 +434,13 @@ class List2(ScrollView, DropTargetProtocolMixIn):
 
     Differences from the standard vanilla drag and drop API:
 
-    `dropCandidateCallback` and `performDropCallback` are the only callbacks
-    used during List2 drops.
+    Only these callbacks will be used:
+
+    - `dropCandidateCallback`
+    - `performDropCallback`
+    - `dropCandidateEnteredCallback`
+    - `dropCandidateEndedCallback`
+    - `dropCandidateExitedCallback`
 
     `dropCandidateCallback` should return a boolean indicating if the
     drop is acceptable instead of a drop operation.
@@ -795,10 +808,6 @@ class List2(ScrollView, DropTargetProtocolMixIn):
 
     # Drop
 
-    # - accepts drop from self, window, app, other:
-    #   setDraggingSourceOperationMask_forLocal_
-    # - set on/between in dropSettings
-
     _allowDropOnRow = None
     _allowDropBetweenRows = None
 
@@ -818,6 +827,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             return AppKit.NSDragOperationNone
         elif not self._allowDropBetweenRows and operation == AppKit.NSTableViewDropAbove:
             return AppKit.NSDragOperationNone
+        if not len(self.get()):
+            index = None
         operation = self._dropCandidateCallback(info)
         operation = dropOperationMap.get(operation, operation)
         # highlight the whole table instead of a single spot

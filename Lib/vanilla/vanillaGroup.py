@@ -30,13 +30,6 @@ else:
 
 class VanillaGroupViewSubclass(NSView):
 
-    # ------------------------------------
-    # Start dragging destination protocol.
-    #
-    # If this is changed, it must be changed
-    # in all other classes where this code has
-    # been duplicated.
-
     def draggingEntered_(self, draggingInfo):
         return self.vanillaWrapper()._dropCandidateEntered(draggingInfo)
 
@@ -61,9 +54,6 @@ class VanillaGroupViewSubclass(NSView):
 
     def concludeDragOperation_(self, draggingInfo):
         return self.vanillaWrapper()._finishDrop(draggingInfo)
-
-    # End dragging destination protocol.
-    # ----------------------------------
 
 
 class Group(VanillaBaseObject, DropTargetProtocolMixIn):
