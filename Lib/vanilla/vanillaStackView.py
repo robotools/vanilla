@@ -46,7 +46,7 @@ the position and size of the stack view.
 * "fillProportionally"
 * "gravityAreas"
 
-**edgeInsets** Tuple of four numbers indicating the amount to inset the views.
+**edgeInsets** Tuple of four numbers (left, top, right, bottom) indicating the amount to inset the views.
 
 **View Definition Structure**
 
@@ -128,7 +128,7 @@ class _StackView(VanillaBaseObject):
         """
         stackView = self.getNSStackView()
         stackView.setEdgeInsets_(value)
-        bottomInset, leftInset, rightInset, topInset = value
+        leftInset, topInset, rightInset, bottomInset = value
         for view in self._fillWidthViews:
             for oldConstraint in view.leftAnchor().constraintsAffectingLayout():
                 oldConstraint.setActive_(False)
