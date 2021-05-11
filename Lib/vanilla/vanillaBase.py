@@ -301,8 +301,6 @@ class VanillaBaseObject(object):
         """
         Add tool tip message to the object when hover over it with the cursor.
         """
-        if not hasattr(self, "_nsObject"):
-            return
         self._nsObject.setToolTip_(toolTipMessage)
 
 # ------------
