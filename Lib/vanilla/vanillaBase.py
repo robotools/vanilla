@@ -297,6 +297,13 @@ class VanillaBaseObject(object):
         l, t, w, h = posSize
         self.setPosSize((l, t, width, height))
 
+    def setToolTip(self, toolTipMessage):
+        """
+        Add tool tip message to the object when hover over it with the cursor.
+        """
+        if not hasattr(self, "_nsObject"):
+            return
+        self._nsObject.setToolTip_(toolTipMessage)
 
 # ------------
 # Base Control
