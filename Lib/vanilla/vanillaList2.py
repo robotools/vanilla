@@ -27,7 +27,9 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         self._arrangedIndexes = []
         self._groupRowIndexes = []
         self._tableView = tableView
-        self._cellClasses = {} # { identifier : class }
+        self._cellClasses = {} # { identifier : (class, kwargs) }
+        self._valueToCellConverters = {} # { identifier : function }
+        self._cellToValueConverters = {} # { identifier : function }
         self._groupRowCellClass = None
         self._groupRowCellClassKwargs = {}
         self._cellWrappers = {} # { nsView : vanilla wrapper } for view + wrapper reuse purposes
@@ -52,9 +54,20 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         self._groupRowCellClassKwargs = kwargs
 
     @python_method
-    def setGettersAndSetters(self, getters, setters):
+    def setGetters(self, getters):
         self._valueGetters = getters
+
+    @python_method
+    def setSetters(self, setters):
         self._valueSetters = setters
+
+    @python_method
+    def setValueToCellConverters(self, converters):
+        self._valueToCellConverters = converters
+    
+    @python_method
+    def setCellToValueConverters(self, converters):
+        self._cellToValueConverters = converters
 
     @python_method
     def vanillaWrapper(self):
@@ -135,15 +148,21 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         method = getters.get("method")
         function = getters.get("function")
         if property is not None:
-            return getattr(item, property)
+            value = getattr(item, property)
         elif method is not None:
-            return getattr(item, method)()
+            value = getattr(item, method)()
         elif function is not None:
-            return function(item)
-        return item[identifier]
+            value = function(item)
+        else:
+            value = item[identifier]
+        if identifier in self._valueToCellConverters:
+            value = self._valueToCellConverters[identifier](value)
+        return value
 
     @python_method
     def setItemValueForColumnAndRow(self, value, identifier, row):
+        if identifier in self._cellToValueConverters:
+            value = self._cellToValueConverters[identifier](value)
         item = self._getItemForRow(row)
         setters = self._valueSetters.get(identifier, {})
         property = setters.get("property")
@@ -168,7 +187,8 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         if isGroupRow:
             return self.getGroupValueForRow(row)
         identifier = column.identifier()
-        return self.getItemValueForColumnAndRow(identifier, row)
+        value = self.getItemValueForColumnAndRow(identifier, row)
+        return value
 
     def tableView_sortDescriptorsDidChange_(self, tableView, sortDescriptors):
         self._updateArrangedIndexes()
@@ -315,42 +335,48 @@ class List2(ScrollView, DropTargetProtocolMixIn):
     **columnDescriptions** An ordered list of dictionaries describing the
     columns. This is only necessary for multiple column lists.
 
-    +-----------------------------------+-----------------------------------------------------------+
-    | *"identifier"*                    | The unique identifier for this column.                    |
-    +-----------------------------------+-----------------------------------------------------------+
-    | *"title"* (optional)              | The title to appear in the column header.                 |
-    +-----------------------------------+-----------------------------------------------------------+
-    | *"cellClass"* (optional)          | A cell class to be displayed in the column.               |
-    |                                   | If nothing is given, a text cell is used.                 |
-    +-----------------------------------+-----------------------------------------------------------+
-    | *"cellClassArguments"* (optional) | A dictionary of keyword arguments to be used when         |
-    |                                   | *cellClass* is instantiated.                              |
-    +-----------------------------------+-----------------------------------------------------------+
-    | *"editable"* (optional)           | Enable or disable editing in the column. If               |
-    |                                   | nothing is given, it will follow the                      |
-    |                                   | editability of the rest of the list.                      |
-    +-----------------------------------+-----------------------------------------------------------+
-    | *"width"* (optional)              | The width of the column.                                  |
-    +-----------------------------------+-----------------------------------------------------------+
-    | *"minWidth"* (optional)           | The minimum width of the column. The fallback is `width`. |
-    +-----------------------------------+-----------------------------------------------------------+
-    | *"maxWidth"* (optional)           | The maximum width of the column. The fallback is `width`. |
-    +-----------------------------------+-----------------------------------------------------------+
-    | *"sortable"* (optional)           | A boolean representing that this column allows the user   |
-    |                                   | to sort the table by clicking the column's header.        |
-    |                                   | The fallback is `True`. If a List is set to disallow      |
-    |                                   | sorting the column level settings will be ignored.        |
-    +-----------------------------------+-----------------------------------------------------------+
-    | property (optional)               | A property name for getting and setting the item value.   |
-    +-----------------------------------+-----------------------------------------------------------+
-    | getMethod (optional)              | A method name for getting the item value.                 |
-    +-----------------------------------+-----------------------------------------------------------+
-    | setMethod (optional)              | A method name for setting the item value.                 |
-    +-----------------------------------+-----------------------------------------------------------+
-    | getFunction (optional)            | A function for getting the item value.                    |
-    +-----------------------------------+-----------------------------------------------------------+
-    | setFunction (optional)            | A function for getting the item value.                    |
-    +-----------------------------------+-----------------------------------------------------------+
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"identifier"*                      | The unique identifier for this column.                    |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"title"* (optional)                | The title to appear in the column header.                 |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"cellClass"* (optional)            | A cell class to be displayed in the column.               |
+    |                                     | If nothing is given, a text cell is used.                 |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"cellClassArguments"* (optional)   | A dictionary of keyword arguments to be used when         |
+    |                                     | *cellClass* is instantiated.                              |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"valueToCellConverter"* (optional) | A function for converting the value for display in the    |
+    |                                     | cell.                                                     |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"cellToValueConverter"* (optional) | A function for converting the value displayed in the cell |
+    |                                     | value for storage.                                        |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"editable"* (optional)             | Enable or disable editing in the column. If               |
+    |                                     | nothing is given, it will follow the                      |
+    |                                     | editability of the rest of the list.                      |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"width"* (optional)                | The width of the column.                                  |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"minWidth"* (optional)             | The minimum width of the column. The fallback is `width`. |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"maxWidth"* (optional)             | The maximum width of the column. The fallback is `width`. |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"sortable"* (optional)             | A boolean representing that this column allows the user   |
+    |                                     | to sort the table by clicking the column's header.        |
+    |                                     | The fallback is `True`. If a List is set to disallow      |
+    |                                     | sorting the column level settings will be ignored.        |
+    +-------------------------------------+-----------------------------------------------------------+
+    | property (optional)                 | A property name for getting and setting the item value.   |
+    +-------------------------------------+-----------------------------------------------------------+
+    | getMethod (optional)                | A method name for getting the item value.                 |
+    +-------------------------------------+-----------------------------------------------------------+
+    | setMethod (optional)                | A method name for setting the item value.                 |
+    +-------------------------------------+-----------------------------------------------------------+
+    | getFunction (optional)              | A function for getting the item value.                    |
+    +-------------------------------------+-----------------------------------------------------------+
+    | setFunction (optional)              | A function for getting the item value.                    |
+    +-------------------------------------+-----------------------------------------------------------+
 
     **showColumnTitles** Boolean representing if the column titles should be shown or not.
     Column titles will not be shown in single column lists.
@@ -382,6 +408,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
 
     **drawFocusRing** Boolean representing if the standard focus ring should be drawn when the list is selected.
 
+    **alternatingRowColors** Boolean representing if alternating row colors should be used.
+
     **autohidesScrollers** Boolean representing if scrollbars should automatically be hidden if possible.
 
     Group Rows:
@@ -392,7 +420,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         class Demo:
 
             def __init__(self):
-                self.w = vanilla.Window((300, 150))        
+                self.w = vanilla.Window((300, 150))
                 items = [
                     vanilla.List2GroupRow("Group 1"),
                     "A",
@@ -422,7 +450,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
     **floatsGroupRows** Boolean representing if the list floats the group rows.
 
     **groupRowCellClass**  A cell class to be displayed in the column.
-    If nothing is given, a text cell is used.  
+    If nothing is given, a text cell is used.
 
     **groupRowCellClassArguments** A dictionary of keyword arguments to be used
     when *groupRowCellClass* is instantiated.
@@ -466,6 +494,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             drawFocusRing=True,
             drawVerticalLines=False,
             drawHorizontalLines=False,
+            alternatingRowColors=True,
             autohidesScrollers=False,
             selectionCallback=None,
             doubleClickCallback=None,
@@ -514,16 +543,16 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         if not showColumnTitles:
             self._tableView.setHeaderView_(None)
             self._tableView.setCornerView_(None)
-        self._tableView.setUsesAlternatingRowBackgroundColors_(True)
+        self._tableView.setUsesAlternatingRowBackgroundColors_(alternatingRowColors)
         if not drawFocusRing:
-            self._tableView.setFocusRingType_(NSFocusRingTypeNone)
+            self._tableView.setFocusRingType_(AppKit.NSFocusRingTypeNone)
         if drawVerticalLines or drawHorizontalLines:
             if drawVerticalLines and drawHorizontalLines:
-                lineType = NSTableViewSolidVerticalGridLineMask | NSTableViewSolidHorizontalGridLineMask
+                lineType = AppKit.NSTableViewSolidVerticalGridLineMask | AppKit.NSTableViewSolidHorizontalGridLineMask
             elif drawVerticalLines:
-                lineType = NSTableViewSolidVerticalGridLineMask
+                lineType = AppKit.NSTableViewSolidVerticalGridLineMask
             else:
-                lineType = NSTableViewSolidHorizontalGridLineMask
+                lineType = AppKit.NSTableViewSolidHorizontalGridLineMask
             self._tableView.setGridStyleMask_(lineType)
         if osVersionCurrent >= osVersion10_16:
             self._tableView.setStyle_(AppKit.NSTableViewStyleInset)
@@ -562,6 +591,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
     def _buildColumns(self, columnDescriptions):
         getters = {}
         setters = {}
+        cellToValueConverters = {}
+        valueToCellConverters = {}
         rowHeights = []
         if osVersionCurrent >= osVersion10_16:
             rowHeights.append(24)
@@ -582,6 +613,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             setMethod = columnDescription.get("setMethod")
             getFunction = columnDescription.get("getFunction")
             setFunction = columnDescription.get("setFunction")
+            cellToValueConverter = columnDescription.get("cellToValueConverter")
+            valueToCellConverter = columnDescription.get("valueToCellConverter")
             getters[identifier] = dict(
                 property=property,
                 method=getMethod,
@@ -592,6 +625,10 @@ class List2(ScrollView, DropTargetProtocolMixIn):
                 method=setMethod,
                 function=setFunction
             )
+            if cellToValueConverter is not None:
+                cellToValueConverters[identifier] = cellToValueConverter
+            if valueToCellConverter is not None:
+                valueToCellConverters[identifier] = valueToCellConverter
             cellKwargs["editable"] = editable
             if editable:
                 cellKwargs["callback"] = True
@@ -625,7 +662,10 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             height = cell._nsObject.fittingSize().height
             del cell
             rowHeights.append(height)
-        self._dataSourceAndDelegate.setGettersAndSetters(getters, setters)
+        self._dataSourceAndDelegate.setGetters(getters)
+        self._dataSourceAndDelegate.setSetters(setters)
+        self._dataSourceAndDelegate.setCellToValueConverters(cellToValueConverters)
+        self._dataSourceAndDelegate.setValueToCellConverters(valueToCellConverters)
         self._tableView.setRowHeight_(max(rowHeights))
 
     def _wrapItem(self, item):
@@ -708,10 +748,14 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         """
         Get a list of selected items in the list.
         """
-        indexes = self._tableView.selectedRowIndexes()
+        selectedIndexes = self._tableView.selectedRowIndexes()
         items = self.get()
         indexes = self.getArrangedIndexes()
-        items = [items[i] for i in indexes]
+        items = [
+            items[i]
+            for i in indexes
+            if i in selectedIndexes
+        ]
         return items
 
     def setSelectedItems(self, items):
