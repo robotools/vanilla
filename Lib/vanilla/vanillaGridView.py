@@ -120,7 +120,12 @@ class GridView(VanillaBaseObject):
             columnDescriptions=None
         ):
         if columnDescriptions is None:
-            columnDescriptions = [{} for i in range(len(contents[0]))]
+            sample = contents[0]
+            if isinstance(sample, dict):
+                count = len(sample["cells"])
+            else:
+                count = len(sample)
+            columnDescriptions = [{} for i in range(count)]
         self._setupView(self.nsGridViewClass, posSize)
         gridView = self.getNSGridView()
         gridView.setColumnSpacing_(columnSpacing)
@@ -132,7 +137,7 @@ class GridView(VanillaBaseObject):
         self._columnPadding = columnPadding
         self._rowHeight = rowHeight
         self._rowPadding = rowPadding
-        self._buildColumns(columnDescriptions)    
+        self._buildColumns(columnDescriptions)
         self._buildRows(contents)
 
     def getNSGridView(self):
