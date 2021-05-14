@@ -290,10 +290,17 @@ class GridView(VanillaBaseObject):
         # special handling and defaults for
         # views without an intrinsic size
         if view.intrinsicContentSize() == (-1, -1):
+            w, h = view.fittingSize()
             if width is None:
-                width = gridView.columnAtIndex_(columnIndex).width()
+                if w > 0:
+                    width = w
+                else:
+                    width = gridView.columnAtIndex_(columnIndex).width()
             if height is None:
-                height = gridView.rowAtIndex_(rowIndex).height()
+                if h > 0:
+                    height = h
+                else:
+                    height = gridView.rowAtIndex_(rowIndex).height()
             if rowAlignment is None:
                 rowAlignment = "none"
             if columnPlacement is None:
