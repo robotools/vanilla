@@ -204,29 +204,6 @@ class GridView(VanillaBaseObject):
     def _populateColumn(self, column, cells):
         gridView = self.getNSGridView()
         columnIndex = gridView.indexOfColumn_(column)
-        # merge cells
-        if None in cells:
-            mergers = [[]]
-            for rowIndex, cell in enumerate(cells):
-                if cell is None:
-                    mergers[-1].append(rowIndex)
-                else:
-                    if mergers[-1]:
-                        mergers.append([])
-            for merger in mergers:
-                if not merger:
-                    continue
-                start = merger[0] - 1
-                # can't merge first row with a nonexistent previous row
-                if start == -1:
-                    continue
-                end = merger[-1]
-                length = end - start
-                gridView.mergeCellsInHorizontalRange_verticalRange_(
-                    AppKit.NSMakeRange(columnIndex, 1),
-                    AppKit.NSMakeRange(start, length)
-                )
-        # place the views
         for rowIndex, cellData in enumerate(cells):
             self._populateCell(columnIndex, rowIndex, cellData)
 
@@ -239,6 +216,32 @@ class GridView(VanillaBaseObject):
         for rowIndex, rowData in enumerate(rows):
             row = gridView.rowAtIndex_(rowIndex)
             self._setRowAttributes(row, rowData)
+        # merge cells
+        mergers = {}
+        for rowIndex, rowData in enumerate(rows):
+            rowMergers = [[]]
+            for columnIndex, cell in enumerate(rowData["cells"]):
+                if cell is None:
+                    rowMergers[-1].append(columnIndex)
+                else:
+                    if rowMergers[-1]:
+                        rowMergers.append([])
+            if rowMergers[0]:
+                mergers[rowIndex] = rowMergers
+        for rowIndex, rowMergers in sorted(mergers.items()):
+            for merger in rowMergers:
+                if not merger:
+                    continue
+                start = merger[0] - 1
+                # can't merge first column with a nonexistent previous column
+                if start == -1:
+                    continue
+                end = merger[-1] + 1
+                length = end - start
+                gridView.mergeCellsInHorizontalRange_verticalRange_(
+                    AppKit.NSMakeRange(start, length),
+                    AppKit.NSMakeRange(rowIndex, 1)
+                )
         # populate columns
         columns = {}
         for rowData in rows:
