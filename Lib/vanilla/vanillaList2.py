@@ -4,9 +4,8 @@ import types
 import objc
 from objc import python_method
 import AppKit
-import vanilla
 from vanilla.nsSubclasses import getNSSubclass
-from vanilla.vanillaBase import VanillaCallbackWrapper, osVersionCurrent, osVersion10_16
+from vanilla.vanillaBase import VanillaBaseObject, VanillaCallbackWrapper, osVersionCurrent, osVersion10_16
 from vanilla.vanillaScrollView import ScrollView
 from vanilla.dragAndDrop import DropTargetProtocolMixIn, dropOperationMap, makePasteboardItem
 
@@ -64,7 +63,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
     @python_method
     def setValueToCellConverters(self, converters):
         self._valueToCellConverters = converters
-    
+
     @python_method
     def setCellToValueConverters(self, converters):
         self._cellToValueConverters = converters
@@ -228,6 +227,12 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         itemIndex = self._arrangedIndexes[row]
         return itemIndex in self._groupRowIndexes
 
+    def tableView_shouldSelectRow_(self, tableView, row):
+        wrapper = self.vanillaWrapper()
+        if not wrapper._allowsSelection:
+            return False
+        return True
+
     # Editing
 
     @python_method
@@ -287,7 +292,7 @@ class VanillaList2TableViewSubclass(AppKit.NSTableView):
     def draggingEntered_(self, draggingInfo):
         super().draggingEntered_(draggingInfo)
         return self.vanillaWrapper()._dropCandidateEntered(draggingInfo)
-    
+
     @objc.signature(b"Z@:@") # PyObjC bug? <- Found in the FontGoogles source.
     def draggingEnded_(self, draggingInfo):
         self.vanillaWrapper()._dropCandidateEnded(draggingInfo)
@@ -394,6 +399,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
     **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
     closest match as the entered keystrokes.
 
+    **allowsSelection** A boolean representing if items in the list can be selected.
+
     **allowsMultipleSelection** A boolean representing if the list allows more than one item to be selected.
 
     **allowsEmptySelection** A boolean representing if the list allows zero items to be selected.
@@ -485,6 +492,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             posSize,
             items=[],
             columnDescriptions=[],
+            allowsSelection=True,
             allowsMultipleSelection=True,
             allowsEmptySelection=True,
             allowsSorting=True,
@@ -523,7 +531,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         if allowsGroupRows:
             assert not allowsSorting, "Group rows are not allowed in sortable lists."
             if groupRowCellClass is None:
-                groupRowCellClass = EditTextList2Cell
+                groupRowCellClass = GroupTitleList2Cell
             self._dataSourceAndDelegate.setGroupCellClassWithKwargs(groupRowCellClass, groupRowCellClassArguments)
             self._tableView.setFloatsGroupRows_(floatsGroupRows)
         # callbacks
@@ -534,6 +542,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             self._tableView.setTarget_(self._doubleClickTarget)
             self._tableView.setDoubleAction_("action:")
         # behavior attributes
+        self._allowsSelection = allowsSelection
         self._tableView.setAllowsEmptySelection_(allowsEmptySelection)
         self._tableView.setAllowsMultipleSelection_(allowsMultipleSelection)
         self._tableView.setAllowsColumnReordering_(allowColumnReordering)
@@ -673,11 +682,11 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             self._itemsWereDict = False
             item = dict(value=item)
         return item
-    
+
     def getNSTableView(self):
         """
         Return the `NSTableView`_ that this object wraps.
-    
+
         .. _NSTableView: https://developer.apple.com/documentation/appkit/nstableview?language=objc
         """
         return self._tableView
@@ -907,14 +916,116 @@ def makeIndexSet(indexes):
 # Cells
 # -----
 
+from vanilla.vanillaGroup import Group
 from vanilla.vanillaEditText import EditText
 
-class EditTextList2Cell(EditText):
+class EditTextList2Cell(Group):
 
     """
-    An object that displays a check box in a List2 column.
+    An object that displays text in a List2 column.
 
-    **title** The title to be set in *all* items in the List column.
+    **verticalAlignment** The vertical alignment of the text
+    within the row. Options:
+
+    - `"top"`
+    - `"center"`
+    - `"bottom"`
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
+
+    # Implementation Note:
+    # Using NSTextField directly as the row view doesn't
+    # allow for vertically positioning the text anywhere
+    # but to the top. In macOS 11 this leads to text
+    # being out of alignment with other cell types like
+    # checkboxes and sliders. I found numerous complaints
+    # about this on Stack Overflow so I'm not alone in
+    # noticing this. This is apparently solved automatically
+    # when using IB, but a pain when building things
+    # programatically. Additionally, I chose to use NSView
+    # as the base of this instead of NSTableCellView because
+    # NSTableCellView doesn't have a textField by default
+    # so it has to be built and we may as well skip the
+    # expense of NSTableCellView and go straight to NSView.
+    # Sigh.
+
+    def __init__(self,
+            verticalAlignment="center",
+            editable=False,
+            callback=None
+        ):
+        self._externalCallback = callback
+        super().__init__("auto")
+        self.editText = EditText(
+            "auto",
+            readOnly=not editable,
+            callback=self._internalCallback
+        )
+        container = self._nsObject
+        textField = self.editText.getNSTextField()
+        if verticalAlignment == "top":
+            yRule = "V:|[editText]"
+        elif verticalAlignment == "bottom":
+            yRule = "V:[editText]|"
+        else:
+            yRule = dict(
+                view1=self.editText,
+                attribute1="centerY",
+                view2=self,
+                attribute2="centerY"
+            )
+        rules = [
+            "H:|[editText]|",
+            yRule
+        ]
+        if verticalAlignment != "center":
+            heightRule = dict(
+                view1=self.editText,
+                attribute1="height",
+                view2=self,
+                attribute2="height"
+            )
+            rules.append(heightRule)
+        self.addAutoPosSizeRules(rules)
+        textField.setDrawsBackground_(False)
+        textField.setBezeled_(False)
+
+    def getNSTextField(self):
+        return self.editText.getNSTextField()
+
+    def _internalCallback(self, sender):
+        if self._externalCallback is not None:
+            self._externalCallback(self)
+
+    def set(self, value):
+        self.editText.set(value)
+
+    def get(self):
+        return self.editText.get()
+
+
+class GroupTitleList2Cell(EditTextList2Cell):
+
+    """
+    An object that displays highlighted text for group rows
+    in a List2 column.
+
+    **font** The font.
+
+    **textColor** The text color.
+
+    **backgroundColor** The background color.
+
+    **verticalAlignment** The vertical alignment of the text
+    within the row. Options:
+
+    - `"top"`
+    - `"center"`
+    - `"bottom"`
 
     .. note::
        This class should only be used in the *columnDescriptions*
@@ -923,19 +1034,26 @@ class EditTextList2Cell(EditText):
     """
 
     def __init__(self,
+            font=None,
+            textColor=None,
+            backgroundColor=None,
+            verticalAlignment="center",
             editable=False,
             callback=None
         ):
         super().__init__(
-            "auto",
+            editable=False,
             callback=callback
         )
         textField = self.getNSTextField()
-        textField.setDrawsBackground_(False)
-        textField.setBezeled_(False)
-        textField.setEditable_(editable)
-        if not editable:
-            textField.setSelectable_(False)
+        if backgroundColor is not None:
+            textField.setDrawsBackground_(True)
+            textField.setBackgroundColor_(backgroundColor)
+        if textColor is not None:
+            textField.setTextColor_(textColor)
+        if font is not None:
+            textField.setFont_(font)
+
 
 
 from vanilla.vanillaSlider import Slider
