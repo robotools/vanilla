@@ -1297,3 +1297,4 @@ class ColorWellList2Cell(ColorWell):
         )
         colorWell = self.getNSColorWell()
         self.enable(editable)
+        colorWell.setBordered_(False)
