@@ -14,12 +14,6 @@ _edgeMap = {
     "bottom": NSMaxYEdge
 }
 
-try:
-    NSPopoverBehaviorApplicationDefined
-except NameError:
-    NSPopoverBehaviorApplicationDefined = 0
-    NSPopoverBehaviorTransient = 1
-    NSPopoverBehaviorSemitransient = 2
 
 _behaviorMap = {
     "applicationDefined": NSPopoverBehaviorApplicationDefined,

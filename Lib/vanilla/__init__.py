@@ -9,13 +9,13 @@ from vanilla.vanillaDatePicker import DatePicker
 from vanilla.vanillaDrawer import Drawer
 from vanilla.vanillaEditText import EditText, SecureEditText
 from vanilla.vanillaGradientButton import GradientButton
-from vanilla.vanillaGridView import GridView
 from vanilla.vanillaGroup import Group
 from vanilla.vanillaImageView import ImageView
 from vanilla.vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
 from vanilla.vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell, ImageListCell, SegmentedButtonListCell
 from vanilla.vanillaPathControl import PathControl
 from vanilla.vanillaPopUpButton import PopUpButton, ActionButton
+from vanilla.vanillaPopover import Popover
 from vanilla.vanillaProgressBar import ProgressBar
 from vanilla.vanillaProgressSpinner import ProgressSpinner
 from vanilla.vanillaRadioGroup import RadioGroup, VerticalRadioGroup, HorizontalRadioGroup, RadioButton
@@ -49,6 +49,7 @@ __all__ = [
     "ObjectBrowser",
     "PathControl",
     "PopUpButton", "ActionButton",
+    "Popover",
     "ProgressBar",
     "ProgressSpinner",
     "RadioGroup", "VerticalRadioGroup", "HorizontalRadioGroup", "RadioButton",
@@ -59,7 +60,6 @@ __all__ = [
     "Slider",
     "SplitView",
     "SplitView2",
-    "GridView",
     "HorizontalStackGroup", "VerticalStackGroup",
     "HorizontalStackView", "VerticalStackView",
     "Tabs",
@@ -70,9 +70,11 @@ __all__ = [
 
 __version__ = "0.1"
 
-# OS 10.7 objects
+# NSGridview is available from OS 10.12+
 try:
-    from vanilla.vanillaPopover import Popover
-    __all__.append("Popover")
-except (ImportError, NameError):
+    from AppKit import NSGridView
+except AttributeError:
     pass
+else:
+    from vanilla.vanillaGridView import GridView
+    __all__.append("GridView")
