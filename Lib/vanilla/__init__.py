@@ -73,7 +73,7 @@ __version__ = "0.1"
 # NSGridview is available from OS 10.12+
 try:
     from AppKit import NSGridView
-except AttributeError:
+except ImportError:
     pass
 else:
     from vanilla.vanillaGridView import GridView
