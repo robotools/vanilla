@@ -1,5 +1,5 @@
 from Foundation import NSObject
-from AppKit import NSApplication, NSMenu, NSMenuItem, NSBundle
+from AppKit import NSApplication, NSMenu, NSMenuItem, NSBundle, NSText
 from PyObjCTools import AppHelper
 import asyncio
 
@@ -39,8 +39,13 @@ def executeVanillaTest(cls, nibPath=None, calls=None, **kwargs):
 
         editMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Edit", None, "")
         editMenu = NSMenu.alloc().initWithTitle_("Edit")
+        editMenu.addItemWithTitle_action_keyEquivalent_('Cut', NSText.cut_, 'x')
+        editMenu.addItemWithTitle_action_keyEquivalent_('Copy', NSText.copy_, 'c')
+        editMenu.addItemWithTitle_action_keyEquivalent_("Paste", NSText.paste_, "v")
+        editMenu.addItem_(NSMenuItem.separatorItem())
+        editMenu.addItemWithTitle_action_keyEquivalent_("Select All", NSText.selectAll_, "a")
         editMenuItem.setSubmenu_(editMenu)
-        mainMenu.addItem_(editMenuItem)
+        mainMenu.addItem_(editMenuItem) 
 
         helpMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Help", None, "")
         helpMenu = NSMenu.alloc().initWithTitle_("Help")
