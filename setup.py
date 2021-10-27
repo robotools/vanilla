@@ -29,6 +29,7 @@ setup(
     use_scm_version={"write_to": "Lib/vanilla/_version.py"},
     description="A Pythonic wrapper around Cocoa.",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Tal Leming",
     author_email="tal@typesupply.com",
     maintainer="Just van Rossum, Frederik Berlaen",
