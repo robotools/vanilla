@@ -1,7 +1,15 @@
 
 *.pyc
+.eggs/
+*.egg-info
+/build/
+/dist/
+/venv/
 
 Documentation/build
 
 # Finder turds
 .DS_Store
+
+# setuptools_scm
+Lib/vanilla/_version.py

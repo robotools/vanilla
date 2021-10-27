@@ -74,7 +74,12 @@ __all__ = [
     "DropTargetProtocolMixIn"
     ]
 
-__version__ = "0.1"
+
+try:
+    from ._version import version as __version__
+except ImportError:
+    __version__ = "<unknown>"
+
 
 # NSGridview is available from OS 10.12+
 try:
