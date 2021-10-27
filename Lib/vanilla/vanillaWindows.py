@@ -673,6 +673,35 @@ class Window(NSObject):
     # from the PyObjC demo: WSTConnectionWindowControllerClass
 
     @python_method
+    def setToolbarStyle(self, toolbarStyle):
+        """
+        Set a toolbar style for the window.
+
+        **toolbarStyle** A string represetnting the desired toolbar style
+
+        +------------------+
+        | "default"        |
+        +------------------+
+        | "expanded"       |
+        +------------------+
+        | "preference"     |
+        +------------------+
+        | "unified"        |
+        +------------------+
+        | "unifiedCompact" |
+        +------------------+
+        """
+        if osVersionCurrent >= osVersion10_16:
+            toolbarStyleMap = dict(
+                default=NSWindowToolbarStyleAutomatic,
+                expanded=NSWindowToolbarStyleExpanded,
+                preference=NSWindowToolbarStylePreference,
+                unified=NSWindowToolbarStyleUnified,
+                unifiedCompact=NSWindowToolbarStyleUnifiedCompact,
+            )
+            self._window.setToolbarStyle_(toolbarStyleMap[toolbarStyle])
+
+    @python_method
     def addToolbar(self, toolbarIdentifier, toolbarItems, addStandardItems=True, displayMode="default", sizeStyle="default", toolbarStyle="default"):
         """
         Add a toolbar to the window.
@@ -814,15 +843,7 @@ class Window(NSObject):
         )
         toolbar.setSizeMode_(sizeStyleMap[sizeStyle])
 
-        if osVersionCurrent >= osVersion10_16:
-            toolbarStyleMap = dict(
-                default=NSWindowToolbarStyleAutomatic,
-                expanded=NSWindowToolbarStyleExpanded,
-                preference=NSWindowToolbarStylePreference,
-                unified=NSWindowToolbarStyleUnified,
-                unifiedCompact=NSWindowToolbarStyleUnifiedCompact,
-            )
-            self._window.setToolbarStyle_(toolbarStyleMap[toolbarStyle])
+        self.setToolbarStyle(toolbarStyle)
         self._window.setToolbar_(toolbar)
         # Return the dict of toolbar items, so our caller can choose to
         # keep references to them if needed.
