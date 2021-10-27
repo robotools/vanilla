@@ -92,7 +92,8 @@ class Button(VanillaBaseControl):
         self._setupView(self.nsButtonClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setTitle_(title)
-        self._nsObject.setBezelStyle_(self.nsBezelStyle)
+        if self.nsBezelStyle is not None:
+            self._nsObject.setBezelStyle_(self.nsBezelStyle)
         self._nsObject.setButtonType_(self.nsButtonType)
 
     def _testForDeprecatedAttributes(self):

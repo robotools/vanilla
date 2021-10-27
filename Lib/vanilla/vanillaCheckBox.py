@@ -72,6 +72,7 @@ class _CheckBoxStandardBuild(Button):
     __doc__ = _doc
 
     nsButtonType = NSSwitchButton
+    nsBezelStyle = None
     frameAdjustments = {
         "mini": (-4, -4, 6, 8),
         "small": (-3, -2, 5, 4),

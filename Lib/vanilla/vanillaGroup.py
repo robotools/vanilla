@@ -1,5 +1,7 @@
+import objc
 from AppKit import NSView
 from vanilla.vanillaBase import VanillaBaseObject, osVersionCurrent, osVersion10_10
+from vanilla.dragAndDrop import DropTargetProtocolMixIn
 
 try:
     NSVisualEffectMaterialAppearanceBased
@@ -26,7 +28,35 @@ else:
     NSVisualEffectView = None
 
 
-class Group(VanillaBaseObject):
+class VanillaGroupViewSubclass(NSView):
+
+    def draggingEntered_(self, draggingInfo):
+        return self.vanillaWrapper()._dropCandidateEntered(draggingInfo)
+
+    def draggingUpdated_(self, draggingInfo):
+        return self.vanillaWrapper()._dropCandidateUpdated(draggingInfo)
+
+    @objc.signature(b"Z@:@") # PyObjC bug? <- Found in the FontGoogles source.
+    def draggingEnded_(self, draggingInfo):
+        return self.vanillaWrapper()._dropCandidateEnded(draggingInfo)
+
+    def draggingExited_(self, draggingInfo):
+        return self.vanillaWrapper()._dropCandidateExited(draggingInfo)
+
+    def updateDraggingItemsForDrag_(self, draggingInfo):
+        return self.vanillaWrapper()._updateDropCandidateImages(draggingInfo)
+
+    def prepareForDragOperation_(self, draggingInfo):
+        return self.vanillaWrapper()._prepareForDrop(draggingInfo)
+
+    def performDragOperation_(self, draggingInfo):
+        return self.vanillaWrapper()._performDrop(draggingInfo)
+
+    def concludeDragOperation_(self, draggingInfo):
+        return self.vanillaWrapper()._finishDrop(draggingInfo)
+
+
+class Group(VanillaBaseObject, DropTargetProtocolMixIn):
 
     """
     An invisible container for controls.
@@ -66,12 +96,14 @@ class Group(VanillaBaseObject):
     +----------------+-------------------------------------------+
     | "withinWindow" | Blend with the content within the window. |
     +----------------+-------------------------------------------+
+
+    **dropSettings** A drop settings dictionary.
     """
 
-    nsViewClass = NSView
+    nsViewClass = VanillaGroupViewSubclass
     nsVisualEffectViewClass = NSVisualEffectView
 
-    def __init__(self, posSize, blendingMode=None):
+    def __init__(self, posSize, blendingMode=None, dropSettings=None):
         self._setupView(self.nsViewClass, posSize)
         if blendingMode is not None and osVersionCurrent >= osVersion10_10:
             # the visual effect view is defined as a subview
@@ -86,6 +118,8 @@ class Group(VanillaBaseObject):
                 self._nsObject.setWantsLayer_(True)
             blendingMode = _blendingModeMap[blendingMode]
             self._visualEffectGroup.getNSVisualEffectView().setBlendingMode_(blendingMode)
+        if dropSettings is not None:
+            self.setDropSettings(dropSettings)
 
     def __setattr__(self, attr, value):
         # __init__

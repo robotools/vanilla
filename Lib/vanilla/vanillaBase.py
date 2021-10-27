@@ -434,7 +434,7 @@ def _addAutoLayoutRules(obj, rules, metrics=None):
             attribute2 = _layoutAttributeMap[rule["attribute2"]]
             multiplier = rule.get("multiplier", 1)
             constant = rule.get("constant", 0)
-            constraints = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            constraints = [NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
                 view1,
                 attribute1,
                 relation,
@@ -442,7 +442,7 @@ def _addAutoLayoutRules(obj, rules, metrics=None):
                 attribute2,
                 multiplier,
                 constant
-            )
+            )]
         else:
             constraints = NSLayoutConstraint.constraintsWithVisualFormat_options_metrics_views_(
                 rule,

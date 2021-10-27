@@ -197,6 +197,7 @@ class RadioButton(Button):
     A single radio button.
     """
 
+    nsBezelStyle = None
     nsButtonType = NSRadioButtonType
 
     def __init__(self, posSize, title, value=False, callback=None, sizeStyle="regular"):

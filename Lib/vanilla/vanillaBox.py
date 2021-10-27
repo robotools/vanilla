@@ -1,3 +1,4 @@
+import objc
 from AppKit import NSBox, NSColor, NSFont, NSSmallControlSize, NSNoTitle, NSLineBorder, NSBoxSeparator, NSBoxCustom
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, osVersionCurrent, osVersion10_10
 
@@ -44,7 +45,10 @@ class Box(VanillaBaseObject):
 
     nsBoxClass = NSBox
 
-    def __init__(self, posSize, title=None, fillColor=None, borderColor=None, borderWidth=None, cornerRadius=None):
+    def __init__(self, posSize, title=None,
+            fillColor=None, borderColor=None, borderWidth=None,
+            cornerRadius=None, margins=None
+        ):
         self._setupView(self.nsBoxClass, posSize)
         if title:
             self._nsObject.setTitle_(title)
@@ -62,6 +66,8 @@ class Box(VanillaBaseObject):
             self.setBorderWidth(borderWidth)
         if cornerRadius is not None:
             self.setCornerRadius(cornerRadius)
+        if margins is not None:
+            self.setMargins(margins)
 
     def getNSBox(self):
         """
@@ -132,6 +138,14 @@ class Box(VanillaBaseObject):
         self._nsObject.setBoxType_(NSBoxCustom)
         self._nsObject.setCornerRadius_(value)
 
+    def setMargins(self, value):
+        """
+        Set the x, y margins for the content.
+        """
+        if isinstance(value, int):
+            value = (value, value)
+        self._nsObject.setContentViewMargins_(value)
+        self._nsObject.sizeToFit()
 
 class _Line(Box):
 
