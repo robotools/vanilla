@@ -828,14 +828,14 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         selection = self.getSelectedIndexes()
         if not selection:
             return
-        index = min(indexes)
+        index = min(selection)
         self.scrollToIndex(index)
 
     def scrollToIndex(self, row):
         """
         Scroll the row to visible.
         """
-        self._tableView.scrollRowToVisible_(index)
+        self._tableView.scrollRowToVisible_(row)
 
     # Drag
 
