@@ -1,5 +1,5 @@
-To create a new release on PyPI, use git tag with a new version tag
-of the form:
+To create a new release on PyPI, creat an annotated git tag with a new
+version tag of the form:
 
    v0.0.0
 
@@ -9,8 +9,8 @@ Then push the tags to the repository. GitHub Actions will do the rest.
 
 Example:
 
-  $ git tag v0.1.2
-  $ git push --tags
+  $ git tag -a v0.1.2 -m "Version v0.1.2"
+  $ git push --follow-tags
 
 And wait for GH Actions to do its work. The new release should be
 visible at:
