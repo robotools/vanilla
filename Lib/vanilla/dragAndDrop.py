@@ -11,11 +11,15 @@ draggingFormationMap = dict(
     stack=AppKit.NSDraggingFormationStack,
     list=AppKit.NSDraggingFormationList
 )
+try:
+    NSPasteboardTypeFileURL = AppKit.NSPasteboardTypeFileURL
+except:
+    NSPasteboardTypeFileURL = "public.file-url"
 
 pasteboardTypeMap = dict(
     string=AppKit.NSPasteboardTypeString,
     plist="dev.robotools.vanilla.propertyList",
-    fileURL=AppKit.NSPasteboardTypeFileURL
+    fileURL=NSPasteboardTypeFileURL
 )
 
 def startDraggingSession(
