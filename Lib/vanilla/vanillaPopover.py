@@ -145,6 +145,9 @@ class Popover(VanillaBaseObject):
         self._parentView = None
         self._delegate = None
 
+    def getNSPopover(self):
+        return self._popover
+
     def open(self, parentView=None, preferredEdge=None, relativeRect=None):
         """
         Open the popover. If desired, the *parentView* may be specified.
