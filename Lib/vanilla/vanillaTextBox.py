@@ -1,12 +1,12 @@
-from AppKit import NSTextField, NSAttributedString, NSLeftTextAlignment, NSRightTextAlignment, NSCenterTextAlignment, NSJustifiedTextAlignment, NSNaturalTextAlignment
+from AppKit import NSTextField, NSAttributedString, NSTextAlignmentLeft, NSTextAlignmentRight, NSTextAlignmentCenter, NSTextAlignmentJustified, NSNaturalTextAlignment
 from vanilla.vanillaBase import VanillaBaseControl
 
 
 _textAlignmentMap = {
-    "left": NSLeftTextAlignment,
-    "right": NSRightTextAlignment,
-    "center": NSCenterTextAlignment,
-    "justified": NSJustifiedTextAlignment,
+    "left": NSTextAlignmentLeft,
+    "right": NSTextAlignmentRight,
+    "center": NSTextAlignmentCenter,
+    "justified": NSTextAlignmentJustified,
     "natural": NSNaturalTextAlignment,
 }
 

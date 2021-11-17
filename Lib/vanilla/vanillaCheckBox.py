@@ -1,4 +1,4 @@
-from AppKit import NSSwitchButton, NSShadowlessSquareBezelStyle, NSLeftTextAlignment, NSNoCellMask
+from AppKit import NSSwitchButton, NSShadowlessSquareBezelStyle, NSTextAlignmentLeft, NSNoCellMask
 from vanilla.vanillaButton import Button
 from vanilla.vanillaBase import osVersionCurrent, osVersion10_10, VanillaBaseObject
 
@@ -136,7 +136,7 @@ class _CheckBoxManualBuildTextButton(Button):
         super(_CheckBoxManualBuildTextButton, self).__init__(posSize, title=title, callback=callback)
         self._nsObject.setBordered_(False)
         self._setSizeStyle(sizeStyle)
-        self._nsObject.setAlignment_(NSLeftTextAlignment)
+        self._nsObject.setAlignment_(NSTextAlignmentLeft)
         self._nsObject.cell().setHighlightsBy_(NSNoCellMask)
 
 
