@@ -4,15 +4,13 @@ import AppKit
 import vanilla
 from vanilla.dragAndDrop import dropOperationMap
 
-objc.setVerbose(True)
 
 
 # ----
 # Test
 # ----
 
-import objc
-objc.setVerbose(True)
+objc.options.verbose = True
 
 draggingImages = []
 colors = [
@@ -301,11 +299,11 @@ class Test:
                 ),
                 dict(
                     view=self.dragSourceSettingsStack,
-                    
+
                 ),
                 dict(
                     view=self.dropDestSettingsStack,
-                    
+
                 )
             ],
             spacing=20,
@@ -371,7 +369,7 @@ class Test:
             margins=0
         )
         self.stringDestView.locationBox.show(False)
-    
+
         dropSettings = dict(
             pasteboardTypes=["plist"],
             dropCandidateEnteredCallback=self.plistDestViewDropCandidateEnteredCallback,
@@ -404,7 +402,7 @@ class Test:
             margins=0
         )
         self.plistDestView.locationBox.show(False)
-    
+
         dropSettings = dict(
             pasteboardTypes=["fileURL"],
             dropCandidateEnteredCallback=self.fileURLDestViewDropCandidateEnteredCallback,
@@ -437,7 +435,7 @@ class Test:
             margins=0
         )
         self.fileURLDestView.locationBox.show(False)
-    
+
         self.destViewViewStack = vanilla.HorizontalStackView(
             "auto",
             views=[
@@ -562,16 +560,16 @@ class Test:
         text = "\n".join(text)
         self.fileURLDestView.textBox.set(text)
         return self.dropOperation
-    
+
     def fileURLDestViewDropCandidateExitedCallback(self, info):
         self.fileURLDestView.box.setBorderColor(AppKit.NSColor.orangeColor())
         self.fileURLDestView.locationBox.show(False)
-    
+
     def fileURLDestViewDropCandidateEndedCallback(self, info):
         self.fileURLDestView.box.setBorderWidth(0)
         self.fileURLDestView.locationBox.show(False)
         self.fileURLDestView.textBox.set("drop: files")
-    
+
     def fileURLDestViewPerformDropCallback(self, info):
         print("dest3PerformDropCallback")
         sender = info["sender"]
@@ -608,7 +606,7 @@ class Test:
             dragSettings=dragSettings,
             dropSettings=dropSettings
         )
-    
+
         columnDescriptions = [
             dict(
                 identifier="letter",
@@ -652,7 +650,7 @@ class Test:
             dragSettings=dragSettings,
             dropSettings=dropSettings
         )
-    
+
         dropSettings = dict(
             pasteboardTypes=["fileURL"],
             dropCandidateCallback=self.fileURLDestListDropCandidateCallback,
@@ -663,7 +661,7 @@ class Test:
             [],
             dropSettings=dropSettings
         )
-    
+
         self.destViewListStack = vanilla.HorizontalStackView(
             "auto",
             views=[
@@ -709,7 +707,7 @@ class Test:
         if source == self.stringDestList:
             return "move"
         return "copy"
-    
+
     def stringDestListPerformDropCallback(self, info):
         sender = info["sender"]
         source = info["source"]
@@ -746,12 +744,12 @@ class Test:
             AppKit.NSColor.greenColor()
         )
         return "generic"
-    
+
     def plistDestListDropCandidateExitedCallback(self, info):
         self.plistDestList.getNSScrollView().setBackgroundColor_(
             AppKit.NSColor.orangeColor()
         )
-    
+
     def plistDestListDropCandidateEndedCallback(self, info):
         self.plistDestList.getNSScrollView().setBackgroundColor_(
             AppKit.NSColor.whiteColor()
@@ -768,7 +766,7 @@ class Test:
         if source == self.plistDestList:
             return "none"
         return "copy"
-    
+
     def plistDestListPerformDropCallback(self, info):
         sender = info["sender"]
         index = info["index"]
@@ -780,7 +778,7 @@ class Test:
         return True
 
     # file urls
-    
+
     def fileURLDestListDropCandidateCallback(self, info):
         existing = list(self.fileURLDestList.get())
         sender = info["sender"]
@@ -791,7 +789,7 @@ class Test:
         if not items:
             return "none"
         return "link"
-    
+
     def fileURLDestListPerformDropCallback(self, info):
         existing = list(self.fileURLDestList.get())
         sender = info["sender"]

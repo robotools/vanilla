@@ -16,7 +16,7 @@ from vanilla.test.testStackView import TestStackView
 from vanilla.test.testGridView import TestGridView
 
 import objc
-objc.setVerbose(True)
+objc.options.verbose = True
 vanillaPath = os.path.realpath(vanilla.__file__)
 vanillaPath = os.path.dirname(os.path.dirname(os.path.dirname(vanillaPath)))
 iconPath = os.path.join(vanillaPath, "Data", "testIcon.tif")
