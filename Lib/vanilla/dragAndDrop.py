@@ -13,7 +13,7 @@ draggingFormationMap = dict(
 )
 try:
     NSPasteboardTypeFileURL = AppKit.NSPasteboardTypeFileURL
-except:
+except AttributeError:
     NSPasteboardTypeFileURL = "public.file-url"
 
 pasteboardTypeMap = dict(
