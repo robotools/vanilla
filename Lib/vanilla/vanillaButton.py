@@ -1,4 +1,4 @@
-from AppKit import NSButton, NSImage, NSBundle, NSRoundedBezelStyle, NSShadowlessSquareBezelStyle, NSHelpButtonBezelStyle, NSMomentaryPushInButton, NSCommandKeyMask, NSAlternateKeyMask, NSAlternateKeyMask, NSShiftKeyMask, NSAlphaShiftKeyMask, NSHelpFunctionKey, NSHomeFunctionKey, NSEndFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSDeleteFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSImageLeft, NSImageRight, NSImageAbove, NSImageBelow, NSImageOnly, NSRightTextAlignment, NSLeftTextAlignment, NSNoCellMask
+from AppKit import NSButton, NSImage, NSBundle, NSRoundedBezelStyle, NSShadowlessSquareBezelStyle, NSHelpButtonBezelStyle, NSMomentaryPushInButton, NSCommandKeyMask, NSAlternateKeyMask, NSAlternateKeyMask, NSShiftKeyMask, NSAlphaShiftKeyMask, NSHelpFunctionKey, NSHomeFunctionKey, NSEndFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSDeleteFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSImageLeft, NSImageRight, NSImageAbove, NSImageBelow, NSImageOnly, NSTextAlignmentRight, NSTextAlignmentLeft, NSNoCellMask
 from vanilla.vanillaBase import VanillaBaseControl
 
 
@@ -307,9 +307,9 @@ class ImageButton(SquareButton):
         else:
             position= _imagePositionMap[imagePosition]
             if imagePosition == "left":
-                self._nsObject.setAlignment_(NSRightTextAlignment)
+                self._nsObject.setAlignment_(NSTextAlignmentRight)
             elif imagePosition == "right":
-                self._nsObject.setAlignment_(NSLeftTextAlignment)
+                self._nsObject.setAlignment_(NSTextAlignmentLeft)
         if not bordered:
             self._nsObject.cell().setHighlightsBy_(NSNoCellMask)
         self._nsObject.setImagePosition_(position)
