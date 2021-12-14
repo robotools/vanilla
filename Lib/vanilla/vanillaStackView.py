@@ -204,14 +204,18 @@ class _StackView(VanillaBaseObject):
         )
         if width is not None:
             if width == "fill":
-                pass
-            else:
-                _applyStackViewConstantToAnchor(view.widthAnchor(), width)
+                width = stackView.widthAnchor()
+            _setAnchorContraint(
+                view.widthAnchor(),
+                width
+            )
         if height is not None:
             if height == "fill":
-                pass
-            else:
-                _applyStackViewConstantToAnchor(view.heightAnchor(), height)
+                height = stackView.heightAnchor()
+            _setAnchorContraint(
+                view.heightAnchor(),
+                height
+            )
         if spacing is not None:
             stackView.setCustomSpacing_afterView_(spacing, view)
 
@@ -258,21 +262,22 @@ class VerticalStackView(_StackView):
         width=AppKit.NSLayoutAttributeWidth
     )
 
-
-def _applyStackViewConstantToAnchor(anchor, value):
+def _setAnchorContraint(anchor, value):
     for existing in anchor.constraintsAffectingLayout():
         existing.setActive_(False)
     if isinstance(value, str) and "," in value:
         for v in value.split(","):
             v = v.strip()
-            _applyStackViewConstantToAnchor(anchor, v)
+            _setAnchorContraint(anchor, v)
         return
     methods = {
         "==" : anchor.constraintEqualToConstant_,
         ">=" : anchor.constraintGreaterThanOrEqualToConstant_,
         "<=" : anchor.constraintLessThanOrEqualToConstant_,
     }
-    if isinstance(value, (int, float)):
+    if isinstance(value, AppKit.NSLayoutAnchor):
+        method = anchor.constraintEqualToAnchor_
+    elif isinstance(value, (int, float)):
         method = methods["=="]
     else:
         relation = value[:2]
