@@ -67,6 +67,7 @@ Size Constants:
 
 * "fill" Stretch the view to fit the width or height of
   the stack view.
+* "fit" Fit the view to the size needed to contain its contents.
 
 Size Syntax:
 
@@ -148,6 +149,18 @@ class _StackView(VanillaBaseObject):
         if isinstance(view, VanillaBaseObject):
             view = view._nsObject
         stackView = self.getNSStackView()
+        # size shortcuts
+        # - when "fill" if used in the direction of the main axis,
+        #   it means "use a flexible space"
+        if width == "fit":
+            width = view.fittingSize()[0]
+        elif width == "fill" and self._orientation == NSUserInterfaceLayoutOrientationHorizontal:
+            width = None
+        if height == "fit":
+            height = view.fittingSize()[1]
+        elif height == "fill" and self._orientation == NSUserInterfaceLayoutOrientationVertical:
+            height = None
+        # hugging and compression
         widthHuggingPriority = AppKit.NSLayoutPriorityRequired
         widthCompressionPriority = AppKit.NSLayoutPriorityRequired
         if width is None:
@@ -202,6 +215,7 @@ class _StackView(VanillaBaseObject):
             heightCompressionPriority,
             AppKit.NSLayoutConstraintOrientationVertical
         )
+        # constraints
         if width is not None:
             if width == "fill":
                 width = stackView.widthAnchor()
@@ -216,6 +230,7 @@ class _StackView(VanillaBaseObject):
                 view.heightAnchor(),
                 height
             )
+        # spacing
         if spacing is not None:
             stackView.setCustomSpacing_afterView_(spacing, view)
 
