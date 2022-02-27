@@ -9,13 +9,14 @@ from vanilla.vanillaDatePicker import DatePicker
 from vanilla.vanillaDrawer import Drawer
 from vanilla.vanillaEditText import EditText, SecureEditText
 from vanilla.vanillaGradientButton import GradientButton
-from vanilla.vanillaGridView import GridView
 from vanilla.vanillaGroup import Group
 from vanilla.vanillaImageView import ImageView
 from vanilla.vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
 from vanilla.vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell, ImageListCell, SegmentedButtonListCell
+from vanilla.vanillaList2 import List2, List2GroupRow, EditTextList2Cell, GroupTitleList2Cell, SliderList2Cell, CheckBoxList2Cell, PopUpButtonList2Cell, ImageList2Cell, SegmentedButtonList2Cell, ColorWellList2Cell
 from vanilla.vanillaPathControl import PathControl
 from vanilla.vanillaPopUpButton import PopUpButton, ActionButton
+from vanilla.vanillaPopover import Popover
 from vanilla.vanillaProgressBar import ProgressBar
 from vanilla.vanillaProgressSpinner import ProgressSpinner
 from vanilla.vanillaRadioGroup import RadioGroup, VerticalRadioGroup, HorizontalRadioGroup, RadioButton
@@ -30,6 +31,7 @@ from vanilla.vanillaTabs import Tabs
 from vanilla.vanillaTextBox import TextBox
 from vanilla.vanillaTextEditor import TextEditor
 from vanilla.vanillaWindows import Window, FloatingWindow, HUDFloatingWindow, Sheet
+from vanilla.dragAndDrop import startDraggingSession, DropTargetProtocolMixIn
 
 __all__ = [
     "VanillaBaseObject", "VanillaBaseControl", "VanillaError",
@@ -46,9 +48,11 @@ __all__ = [
     "ImageView",
     "LevelIndicator", "LevelIndicatorListCell",
     "List", "CheckBoxListCell", "SliderListCell", "PopUpButtonListCell", "ImageListCell", "SegmentedButtonListCell",
+    "List2", "List2GroupRow", "EditTextList2Cell", "GroupTitleList2Cell", "SliderList2Cell", "CheckBoxList2Cell", "PopUpButtonList2Cell", "ImageList2Cell", "SegmentedButtonList2Cell", "ColorWellList2Cell",
     "ObjectBrowser",
     "PathControl",
     "PopUpButton", "ActionButton",
+    "Popover",
     "ProgressBar",
     "ProgressSpinner",
     "RadioGroup", "VerticalRadioGroup", "HorizontalRadioGroup", "RadioButton",
@@ -59,20 +63,29 @@ __all__ = [
     "Slider",
     "SplitView",
     "SplitView2",
-    "GridView",
     "HorizontalStackGroup", "VerticalStackGroup",
     "HorizontalStackView", "VerticalStackView",
     "Tabs",
     "TextBox",
     "TextEditor",
-    "Window", "FloatingWindow", "HUDFloatingWindow", "Sheet"
+    "Window", "FloatingWindow", "HUDFloatingWindow", "Sheet",
+
+    "startDraggingSession",
+    "DropTargetProtocolMixIn"
     ]
 
-__version__ = "0.1"
 
-# OS 10.7 objects
 try:
-    from vanilla.vanillaPopover import Popover
-    __all__.append("Popover")
-except (ImportError, NameError):
+    from ._version import version as __version__
+except ImportError:
+    __version__ = "<unknown>"
+
+
+# NSGridview is available from OS 10.12+
+try:
+    from AppKit import NSGridView
+except ImportError:
     pass
+else:
+    from vanilla.vanillaGridView import GridView
+    __all__.append("GridView")

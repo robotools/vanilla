@@ -16,6 +16,8 @@ distributions = dict(
     fill=AppKit.NSStackViewDistributionFill,
     fillEqually=AppKit.NSStackViewDistributionFillEqually,
     fillProportionally=AppKit.NSStackViewDistributionFillProportionally,
+    gravity=AppKit.NSStackViewDistributionGravityAreas,
+    # deprecated
     gravityAreas=AppKit.NSStackViewDistributionGravityAreas
 )
 
@@ -44,7 +46,7 @@ the position and size of the stack view.
 * "fill"
 * "fillEqually"
 * "fillProportionally"
-* "gravityAreas"
+* "gravity"
 
 **edgeInsets** Tuple of four numbers (left, top, right, bottom) indicating the amount to inset the views.
 
@@ -65,6 +67,7 @@ Size Constants:
 
 * "fill" Stretch the view to fit the width or height of
   the stack view.
+* "fit" Fit the view to the size needed to contain its contents.
 
 Size Syntax:
 
@@ -111,8 +114,6 @@ class _StackView(VanillaBaseObject):
         stackView.setSpacing_(spacing)
         stackView.setAlignment_(alignment)
         stackView.setDistribution_(distribution)
-        self._fillWidthViews = []
-        self._fillHeightViews = []
         for view in views:
             if not isinstance(view, dict):
                 view = dict(view=view)
@@ -128,25 +129,6 @@ class _StackView(VanillaBaseObject):
         """
         stackView = self.getNSStackView()
         stackView.setEdgeInsets_(value)
-        leftInset, topInset, rightInset, bottomInset = value
-        for view in self._fillWidthViews:
-            for oldConstraint in view.leftAnchor().constraintsAffectingLayout():
-                oldConstraint.setActive_(False)
-            for oldConstraint in view.rightAnchor().constraintsAffectingLayout():
-                oldConstraint.setActive_(False)
-            constraint = view.leftAnchor().constraintEqualToAnchor_constant_(stackView.leftAnchor(), leftInset)
-            constraint.setActive_(True)
-            constraint = view.rightAnchor().constraintEqualToAnchor_constant_(stackView.rightAnchor(), -rightInset)
-            constraint.setActive_(True)
-        for view in self._fillHeightViews:
-            for oldConstraint in view.topAnchor().constraintsAffectingLayout():
-                oldConstraint.setActive_(False)
-            for oldConstraint in view.bottomAnchor().constraintsAffectingLayout():
-                oldConstraint.setActive_(False)
-            constraint = view.topAnchor().constraintEqualToAnchor_constant_(stackView.topAnchor(), topInset)
-            constraint.setActive_(True)
-            constraint = view.bottomAnchor().constraintEqualToAnchor_constant_(stackView.bottomAnchor(), -bottomInset)
-            constraint.setActive_(True)
 
     def appendView(self, view, width=None, height=None, spacing=None, gravity="center"):
         """
@@ -167,16 +149,88 @@ class _StackView(VanillaBaseObject):
         if isinstance(view, VanillaBaseObject):
             view = view._nsObject
         stackView = self.getNSStackView()
+        # size shortcuts
+        # - when "fill" if used in the direction of the main axis,
+        #   it means "use a flexible space"
+        if width == "fit":
+            width = view.fittingSize()[0]
+        elif width == "fill" and self._orientation == NSUserInterfaceLayoutOrientationHorizontal:
+            width = None
+        if height == "fit":
+            height = view.fittingSize()[1]
+        elif height == "fill" and self._orientation == NSUserInterfaceLayoutOrientationVertical:
+            height = None
+        # hugging and compression
+        widthHuggingPriority = AppKit.NSLayoutPriorityRequired
+        widthCompressionPriority = AppKit.NSLayoutPriorityRequired
+        if width is None:
+            intrinsicWidth = view.intrinsicContentSize()[0]
+            if intrinsicWidth == AppKit.NSViewNoInstrinsicMetric:
+                widthHuggingPriority = AppKit.NSLayoutPriorityDefaultLow
+                widthCompressionPriority = AppKit.NSLayoutPriorityDefaultLow
+        elif isinstance(width, (float, int)):
+            pass
+        elif isinstance(width, str):
+            if width == "fill":
+                widthHuggingPriority = AppKit.NSLayoutPriorityDefaultLow
+                widthCompressionPriority = AppKit.NSLayoutPriorityDefaultLow
+            elif width.startswith("=="):
+                pass
+            elif width.startswith(">="):
+                widthHuggingPriority = AppKit.NSLayoutPriorityDefaultLow
+            elif width.startswith("<="):
+                widthCompressionPriority = AppKit.NSLayoutPriorityDefaultLow
+        view.setContentHuggingPriority_forOrientation_(
+            widthHuggingPriority,
+            AppKit.NSLayoutConstraintOrientationHorizontal
+        )
+        view.setContentCompressionResistancePriority_forOrientation_(
+            widthCompressionPriority,
+            AppKit.NSLayoutConstraintOrientationHorizontal
+        )
+        heightHuggingPriority = AppKit.NSLayoutPriorityRequired
+        heightCompressionPriority = AppKit.NSLayoutPriorityRequired
+        if height is None:
+            intrinsicHeight = view.intrinsicContentSize()[1]
+            if intrinsicHeight == AppKit.NSViewNoInstrinsicMetric:
+                heightHuggingPriority = AppKit.NSLayoutPriorityDefaultLow
+                heightCompressionPriority = AppKit.NSLayoutPriorityDefaultLow
+        elif isinstance(height, (float, int)):
+            pass
+        elif isinstance(height, str):
+            if height == "fill":
+                heightHuggingPriority = AppKit.NSLayoutPriorityDefaultLow
+                heightCompressionPriority = AppKit.NSLayoutPriorityDefaultLow
+            elif height.startswith("=="):
+                pass
+            elif height.startswith(">="):
+                heightHuggingPriority = AppKit.NSLayoutPriorityDefaultLow
+            elif height.startswith("<="):
+                heightCompressionPriority = AppKit.NSLayoutPriorityDefaultLow
+        view.setContentHuggingPriority_forOrientation_(
+            heightHuggingPriority,
+            AppKit.NSLayoutConstraintOrientationVertical
+        )
+        view.setContentCompressionResistancePriority_forOrientation_(
+            heightCompressionPriority,
+            AppKit.NSLayoutConstraintOrientationVertical
+        )
+        # constraints
         if width is not None:
             if width == "fill":
-                self._fillWidthViews.append(view)
-            else:
-                _applyStackViewConstantToAnchor(view.widthAnchor(), width)
+                width = stackView.widthAnchor()
+            _setAnchorContraint(
+                view.widthAnchor(),
+                width
+            )
         if height is not None:
             if height == "fill":
-                self._fillHeightViews.append(view)
-            else:
-                _applyStackViewConstantToAnchor(view.heightAnchor(), height)
+                height = stackView.heightAnchor()
+            _setAnchorContraint(
+                view.heightAnchor(),
+                height
+            )
+        # spacing
         if spacing is not None:
             stackView.setCustomSpacing_afterView_(spacing, view)
 
@@ -186,10 +240,6 @@ class _StackView(VanillaBaseObject):
         """
         if isinstance(view, VanillaBaseObject):
             view = view._nsObject
-        if view in self._fillWidthViews:
-            self._fillWidthViews.remove(view)
-        if view in self._fillHeightViews:
-            self._fillHeightViews.remove(view)
         self.getNSStackView().removeView_(view)
 
 
@@ -205,8 +255,9 @@ class HorizontalStackView(_StackView):
     )
     _alignments = dict(
         center=AppKit.NSLayoutAttributeCenterY,
-        leading=AppKit.NSLayoutAttributeLeading,
-        trailing=AppKit.NSLayoutAttributeTrailing
+        leading=AppKit.NSLayoutAttributeTop,
+        trailing=AppKit.NSLayoutAttributeBottom,
+        height=AppKit.NSLayoutAttributeHeight
     )
 
 class VerticalStackView(_StackView):
@@ -222,24 +273,26 @@ class VerticalStackView(_StackView):
     _alignments = dict(
         center=AppKit.NSLayoutAttributeCenterX,
         leading=AppKit.NSLayoutAttributeLeading,
-        trailing=AppKit.NSLayoutAttributeTrailing
+        trailing=AppKit.NSLayoutAttributeTrailing,
+        width=AppKit.NSLayoutAttributeWidth
     )
 
-
-def _applyStackViewConstantToAnchor(anchor, value):
+def _setAnchorContraint(anchor, value):
     for existing in anchor.constraintsAffectingLayout():
         existing.setActive_(False)
     if isinstance(value, str) and "," in value:
         for v in value.split(","):
             v = v.strip()
-            _applyStackViewConstantToAnchor(anchor, v)
+            _setAnchorContraint(anchor, v)
         return
     methods = {
         "==" : anchor.constraintEqualToConstant_,
         ">=" : anchor.constraintGreaterThanOrEqualToConstant_,
         "<=" : anchor.constraintLessThanOrEqualToConstant_,
     }
-    if isinstance(value, (int, float)):
+    if isinstance(value, AppKit.NSLayoutAnchor):
+        method = anchor.constraintEqualToAnchor_
+    elif isinstance(value, (int, float)):
         method = methods["=="]
     else:
         relation = value[:2]

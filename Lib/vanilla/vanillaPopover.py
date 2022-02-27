@@ -14,12 +14,6 @@ _edgeMap = {
     "bottom": NSMaxYEdge
 }
 
-try:
-    NSPopoverBehaviorApplicationDefined
-except NameError:
-    NSPopoverBehaviorApplicationDefined = 0
-    NSPopoverBehaviorTransient = 1
-    NSPopoverBehaviorSemitransient = 2
 
 _behaviorMap = {
     "applicationDefined": NSPopoverBehaviorApplicationDefined,
@@ -150,6 +144,9 @@ class Popover(VanillaBaseObject):
         self._popover = None
         self._parentView = None
         self._delegate = None
+
+    def getNSPopover(self):
+        return self._popover
 
     def open(self, parentView=None, preferredEdge=None, relativeRect=None):
         """

@@ -4,7 +4,7 @@ from objc import python_method
 
 from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _addAutoLayoutRules, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaWarning, VanillaBaseControl, \
-        osVersionCurrent, osVersion10_7, osVersion10_10
+        osVersionCurrent, osVersion10_7, osVersion10_10, osVersion10_16
 
 # PyObjC may not have these constants wrapped,
 # so test and fallback if needed.
@@ -19,6 +19,16 @@ try:
 except ImportError:
     NSWindowTitleVisible  = 0
     NSWindowTitleHidden = 1
+
+try:
+    # https://developer.apple.com/documentation/appkit/nswindowtoolbarstyle?language=objc
+    from AppKit import NSWindowToolbarStyleAutomatic, NSWindowToolbarStyleExpanded, NSWindowToolbarStylePreference, NSWindowToolbarStyleUnified, NSWindowToolbarStyleUnifiedCompact
+except ImportError:
+    NSWindowToolbarStyleAutomatic = 0
+    NSWindowToolbarStyleExpanded = 1
+    NSWindowToolbarStylePreference = 2
+    NSWindowToolbarStyleUnified = 3
+    NSWindowToolbarStyleUnifiedCompact = 4
 
 try:
     from AppKit import NSFullSizeContentViewWindowMask
@@ -663,7 +673,36 @@ class Window(NSObject):
     # from the PyObjC demo: WSTConnectionWindowControllerClass
 
     @python_method
-    def addToolbar(self, toolbarIdentifier, toolbarItems, addStandardItems=True, displayMode="default", sizeStyle="default"):
+    def setToolbarStyle(self, toolbarStyle):
+        """
+        Set a toolbar style for the window.
+
+        **toolbarStyle** A string represetnting the desired toolbar style
+
+        +------------------+
+        | "default"        |
+        +------------------+
+        | "expanded"       |
+        +------------------+
+        | "preference"     |
+        +------------------+
+        | "unified"        |
+        +------------------+
+        | "unifiedCompact" |
+        +------------------+
+        """
+        if osVersionCurrent >= osVersion10_16:
+            toolbarStyleMap = dict(
+                default=NSWindowToolbarStyleAutomatic,
+                expanded=NSWindowToolbarStyleExpanded,
+                preference=NSWindowToolbarStylePreference,
+                unified=NSWindowToolbarStyleUnified,
+                unifiedCompact=NSWindowToolbarStyleUnifiedCompact,
+            )
+            self._window.setToolbarStyle_(toolbarStyleMap[toolbarStyle])
+
+    @python_method
+    def addToolbar(self, toolbarIdentifier, toolbarItems, addStandardItems=True, displayMode="default", sizeStyle="default", toolbarStyle="default"):
         """
         Add a toolbar to the window.
 
@@ -745,6 +784,20 @@ class Window(NSObject):
         | "small"   |
         +-----------+
 
+        **toolbarStyle** A string represetnting the desired toolbar style
+
+        +------------------+
+        | "default"        |
+        +------------------+
+        | "expanded"       |
+        +------------------+
+        | "preference"     |
+        +------------------+
+        | "unified"        |
+        +------------------+
+        | "unifiedCompact" |
+        +------------------+
+
         Returns a dictionary containing the created toolbar items, mapped by itemIdentifier.
         """
         STANDARD_TOOLBAR_ITEMS = [
@@ -776,18 +829,21 @@ class Window(NSObject):
         toolbar.setAutosavesConfiguration_(True)
 
         displayModeMap = dict(
-                default=NSToolbarDisplayModeDefault,
-                iconLabel=NSToolbarDisplayModeIconAndLabel,
-                icon=NSToolbarDisplayModeIconOnly,
-                label=NSToolbarDisplayModeLabelOnly,
-                )
+            default=NSToolbarDisplayModeDefault,
+            iconLabel=NSToolbarDisplayModeIconAndLabel,
+            icon=NSToolbarDisplayModeIconOnly,
+            label=NSToolbarDisplayModeLabelOnly,
+        )
         toolbar.setDisplayMode_(displayModeMap[displayMode])
 
         sizeStyleMap = dict(
-                default=NSToolbarSizeModeDefault,
-                regular=NSToolbarSizeModeRegular,
-                small=NSToolbarSizeModeSmall)
+            default=NSToolbarSizeModeDefault,
+            regular=NSToolbarSizeModeRegular,
+            small=NSToolbarSizeModeSmall
+        )
         toolbar.setSizeMode_(sizeStyleMap[sizeStyle])
+
+        self.setToolbarStyle(toolbarStyle)
         self._window.setToolbar_(toolbar)
         # Return the dict of toolbar items, so our caller can choose to
         # keep references to them if needed.

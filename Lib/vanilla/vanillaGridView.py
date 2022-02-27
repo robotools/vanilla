@@ -120,7 +120,12 @@ class GridView(VanillaBaseObject):
             columnDescriptions=None
         ):
         if columnDescriptions is None:
-            columnDescriptions = [{} for i in range(len(contents[0]))]
+            sample = contents[0]
+            if isinstance(sample, dict):
+                count = len(sample["cells"])
+            else:
+                count = len(sample)
+            columnDescriptions = [{} for i in range(count)]
         self._setupView(self.nsGridViewClass, posSize)
         gridView = self.getNSGridView()
         gridView.setColumnSpacing_(columnSpacing)
@@ -132,7 +137,7 @@ class GridView(VanillaBaseObject):
         self._columnPadding = columnPadding
         self._rowHeight = rowHeight
         self._rowPadding = rowPadding
-        self._buildColumns(columnDescriptions)    
+        self._buildColumns(columnDescriptions)
         self._buildRows(contents)
 
     def getNSGridView(self):
@@ -199,29 +204,6 @@ class GridView(VanillaBaseObject):
     def _populateColumn(self, column, cells):
         gridView = self.getNSGridView()
         columnIndex = gridView.indexOfColumn_(column)
-        # merge cells
-        if None in cells:
-            mergers = [[]]
-            for rowIndex, cell in enumerate(cells):
-                if cell is None:
-                    mergers[-1].append(rowIndex)
-                else:
-                    if mergers[-1]:
-                        mergers.append([])
-            for merger in mergers:
-                if not merger:
-                    continue
-                start = merger[0] - 1
-                # can't merge first row with a nonexistent previous row
-                if start == -1:
-                    continue
-                end = merger[-1]
-                length = end - start
-                gridView.mergeCellsInHorizontalRange_verticalRange_(
-                    AppKit.NSMakeRange(columnIndex, 1),
-                    AppKit.NSMakeRange(start, length)
-                )
-        # place the views
         for rowIndex, cellData in enumerate(cells):
             self._populateCell(columnIndex, rowIndex, cellData)
 
@@ -234,6 +216,32 @@ class GridView(VanillaBaseObject):
         for rowIndex, rowData in enumerate(rows):
             row = gridView.rowAtIndex_(rowIndex)
             self._setRowAttributes(row, rowData)
+        # merge cells
+        mergers = {}
+        for rowIndex, rowData in enumerate(rows):
+            rowMergers = [[]]
+            for columnIndex, cell in enumerate(rowData["cells"]):
+                if cell is None:
+                    rowMergers[-1].append(columnIndex)
+                else:
+                    if rowMergers[-1]:
+                        rowMergers.append([])
+            if rowMergers[0]:
+                mergers[rowIndex] = rowMergers
+        for rowIndex, rowMergers in sorted(mergers.items()):
+            for merger in rowMergers:
+                if not merger:
+                    continue
+                start = merger[0] - 1
+                # can't merge first column with a nonexistent previous column
+                if start == -1:
+                    continue
+                end = merger[-1] + 1
+                length = end - start
+                gridView.mergeCellsInHorizontalRange_verticalRange_(
+                    AppKit.NSMakeRange(start, length),
+                    AppKit.NSMakeRange(rowIndex, 1)
+                )
         # populate columns
         columns = {}
         for rowData in rows:
@@ -282,10 +290,17 @@ class GridView(VanillaBaseObject):
         # special handling and defaults for
         # views without an intrinsic size
         if view.intrinsicContentSize() == (-1, -1):
+            w, h = view.fittingSize()
             if width is None:
-                width = gridView.columnAtIndex_(columnIndex).width()
+                if w > 0:
+                    width = w
+                else:
+                    width = gridView.columnAtIndex_(columnIndex).width()
             if height is None:
-                height = gridView.rowAtIndex_(rowIndex).height()
+                if h > 0:
+                    height = h
+                else:
+                    height = gridView.rowAtIndex_(rowIndex).height()
             if rowAlignment is None:
                 rowAlignment = "none"
             if columnPlacement is None:

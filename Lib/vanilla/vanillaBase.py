@@ -30,6 +30,7 @@ macVersion = platform.mac_ver()[0]
 if platform.system() != "Darwin":
     macVersion = "0.0"
 osVersionCurrent = StrictVersion(macVersion)
+osVersion12_0 = StrictVersion("12.0") 
 osVersion10_16 = StrictVersion("10.16")  # macOS11 Big Sur seems to be 10.16
 osVersion10_15 = StrictVersion("10.15")
 osVersion10_14 = StrictVersion("10.14")
@@ -438,7 +439,7 @@ def _addAutoLayoutRules(obj, rules, metrics=None):
             attribute2 = _layoutAttributeMap[rule["attribute2"]]
             multiplier = rule.get("multiplier", 1)
             constant = rule.get("constant", 0)
-            constraints = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            constraints = [NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
                 view1,
                 attribute1,
                 relation,
@@ -446,7 +447,7 @@ def _addAutoLayoutRules(obj, rules, metrics=None):
                 attribute2,
                 multiplier,
                 constant
-            )
+            )]
         else:
             constraints = NSLayoutConstraint.constraintsWithVisualFormat_options_metrics_views_(
                 rule,

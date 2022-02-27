@@ -10,7 +10,8 @@ except ImportError:
     hasCorefoundationasyncio = False
 
 
-class _VanillaMiniApp(NSApplication): pass
+class _VanillaMiniApp(NSApplication):
+    pass
 
 
 class _VanillaMiniAppDelegate(NSObject):
@@ -39,6 +40,11 @@ def executeVanillaTest(cls, nibPath=None, calls=None, **kwargs):
 
         editMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Edit", None, "")
         editMenu = NSMenu.alloc().initWithTitle_("Edit")
+        editMenu.addItemWithTitle_action_keyEquivalent_("Cut", "cut:", "x")
+        editMenu.addItemWithTitle_action_keyEquivalent_("Copy", "copy:", "c")
+        editMenu.addItemWithTitle_action_keyEquivalent_("Paste", "paste:", "v")
+        editMenu.addItem_(NSMenuItem.separatorItem())
+        editMenu.addItemWithTitle_action_keyEquivalent_("Select All", "selectAll:", "a")
         editMenuItem.setSubmenu_(editMenu)
         mainMenu.addItem_(editMenuItem)
 
