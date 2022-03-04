@@ -25,6 +25,26 @@ class ImageView(VanillaBaseObject):
     """
     A view that displays an image.
 
+    ::
+        from vanilla import ImageView, Window
+
+        class ImageViewExample:
+            def __init__(self):
+                path = 'path/to/image.png'
+                self.w = Window((80, 80))
+                self.w.imageView = ImageView(
+                    (10, 10, 40, 40),
+                    horizontalAlignment="center",
+                    verticalAlignment="center",
+                    scale="proportional"
+                )
+                self.w.imageView.setImage(imagePath=path)
+                self.w.open()
+
+
+        ImageViewExample()
+
+
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
     representing the position and size of the view.
 
