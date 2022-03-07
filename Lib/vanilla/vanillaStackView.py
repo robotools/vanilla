@@ -21,80 +21,10 @@ distributions = dict(
     gravityAreas=AppKit.NSStackViewDistributionGravityAreas
 )
 
+_doc = """A view that allows the creation of a stack of views.
 
-_doc = """
-A view that allows the creation of a stack of views.
-
-The following example shows a horizontal stack
-
-.. image:: /_images/HorizontalStackView.png
-
-::
-
-    from vanilla import Button, HorizontalStackView, Window
-
-    class HorizontalStackViewExample:
-        def __init__(self):
-            self.w = Window((300, 40))
-
-            self.button1 = Button("auto", "One")
-            self.button2 = Button("auto", "Two")
-            self.button3 = Button("auto", "Three")
-            self.button4 = Button("auto", "Four")
-
-            self.w.horizontalStack = HorizontalStackView(
-                (0, 0, 0, 0),
-                views=[
-                    dict(view=self.button1),
-                    dict(view=self.button2),
-                    dict(view=self.button3),
-                    dict(view=self.button4)
-                ],
-                spacing=4,
-                edgeInsets=(4, 4, 4, 4),
-            )
-
-            self.w.open()
-
-
-    HorizontalStackViewExample()
-
-
-The following example instead shows a vertical stack
-
-.. image:: /_images/VerticalStackView.png
-
-::
-
-    from vanilla import Button, VerticalStackView, Window
-
-
-    class VerticalStackViewExample:
-        def __init__(self):
-            self.w = Window((80, 300))
-
-            self.button1 = Button("auto", "One")
-            self.button2 = Button("auto", "Two")
-            self.button3 = Button("auto", "Three")
-            self.button4 = Button("auto", "Four")
-
-            self.w.horizontalStack = VerticalStackView(
-                (0, 0, 0, 0),
-                views=[
-                    dict(view=self.button1),
-                    dict(view=self.button2),
-                    dict(view=self.button3),
-                    dict(view=self.button4)
-                ],
-                spacing=4,
-                edgeInsets=(4, 4, 4, 4),
-            )
-
-            self.w.open()
-
-
-    VerticalStackViewExample()
-
+{image}
+{example}
 
 **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
 the position and size of the stack view.
@@ -316,7 +246,43 @@ class _StackView(VanillaBaseObject):
 
 class HorizontalStackView(_StackView):
 
-    __doc__ = _doc
+    _imageDocStr = """
+    .. image:: /_images/HorizontalStackView.png
+    """
+
+    _exampleDocStr = """
+    ::
+
+        from vanilla import Button, HorizontalStackView, Window
+
+        class HorizontalStackViewExample:
+            def __init__(self):
+                self.w = Window((300, 40))
+
+                self.button1 = Button("auto", "One")
+                self.button2 = Button("auto", "Two")
+                self.button3 = Button("auto", "Three")
+                self.button4 = Button("auto", "Four")
+
+                self.w.horizontalStack = HorizontalStackView(
+                    (0, 0, 0, 0),
+                    views=[
+                        dict(view=self.button1),
+                        dict(view=self.button2),
+                        dict(view=self.button3),
+                        dict(view=self.button4)
+                    ],
+                    spacing=4,
+                    edgeInsets=(4, 4, 4, 4),
+                )
+
+                self.w.open()
+
+
+        HorizontalStackViewExample()
+    """
+
+    __doc__ = _doc.format(image=_imageDocStr, example=_exampleDocStr)
 
     _orientation = NSUserInterfaceLayoutOrientationHorizontal
     _gravities = dict(
@@ -333,7 +299,44 @@ class HorizontalStackView(_StackView):
 
 class VerticalStackView(_StackView):
 
-    __doc__ = _doc
+    _imageDocStr = """
+    .. image:: /_images/VerticalStackView.png
+    """
+
+    _exampleDocStr = """
+    ::
+
+        from vanilla import Button, VerticalStackView, Window
+
+
+        class VerticalStackViewExample:
+            def __init__(self):
+                self.w = Window((80, 300))
+
+                self.button1 = Button("auto", "One")
+                self.button2 = Button("auto", "Two")
+                self.button3 = Button("auto", "Three")
+                self.button4 = Button("auto", "Four")
+
+                self.w.horizontalStack = VerticalStackView(
+                    (0, 0, 0, 0),
+                    views=[
+                        dict(view=self.button1),
+                        dict(view=self.button2),
+                        dict(view=self.button3),
+                        dict(view=self.button4)
+                    ],
+                    spacing=4,
+                    edgeInsets=(4, 4, 4, 4),
+                )
+
+                self.w.open()
+
+
+        VerticalStackViewExample()
+    """
+
+    __doc__ = _doc.format(image=_imageDocStr, example=_exampleDocStr)
 
     _orientation = NSUserInterfaceLayoutOrientationVertical
     _gravities = dict(
