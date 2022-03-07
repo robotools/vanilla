@@ -11,16 +11,16 @@ class GradientButton(ImageButton):
 
     ::
 
+        import AppKit
         from vanilla import GradientButton, Window
 
 
         class GradientButtonExample:
             def __init__(self):
-                path = 'path/to/image'
                 self.w = Window((80, 80))
                 self.w.gradientButton = GradientButton(
                     (10, 10, 40, 40),
-                    imagePath=path,
+                    imageNamed=AppKit.NSImageNameRefreshTemplate,
                     imagePosition="top",
                     callback=self.gradientButtonCallback,
                     sizeStyle="regular",

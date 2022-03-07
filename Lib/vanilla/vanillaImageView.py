@@ -25,12 +25,15 @@ class ImageView(VanillaBaseObject):
     """
     A view that displays an image.
 
+    .. image:: /_images/ImageView.png
+
     ::
+
+        import AppKit
         from vanilla import ImageView, Window
 
         class ImageViewExample:
             def __init__(self):
-                path = 'path/to/image.png'
                 self.w = Window((80, 80))
                 self.w.imageView = ImageView(
                     (10, 10, 40, 40),
@@ -38,7 +41,8 @@ class ImageView(VanillaBaseObject):
                     verticalAlignment="center",
                     scale="proportional"
                 )
-                self.w.imageView.setImage(imagePath=path)
+                image = AppKit.NSImage.imageWithSystemSymbolName_accessibilityDescription_("pencil.and.outline", "")
+                self.w.imageView.setImage(imageObject=image)
                 self.w.open()
 
 
