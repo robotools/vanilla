@@ -24,6 +24,47 @@ class GridView(VanillaBaseObject):
     """
     A view that allows the placement of other views within a grid.
 
+    .. image:: /_images/GridView.png
+
+    ::
+
+        from vanilla import Button, GridView, Window
+
+        class GridViewExample:
+            def __init__(self):
+                self.w = Window((120, 90))
+
+                self.button1 = Button("auto", "one")
+                self.button2 = Button("auto", "two")
+                self.button3 = Button("auto", "three")
+                self.button4 = Button("auto", "four")
+
+                self.w.gridView = GridView(
+                    (0, 0, 0, 0),
+                    contents=[
+                        dict(
+                            cells=[
+                                dict(view=self.button1),
+                                dict(view=self.button2),
+                            ]
+                        ),
+                        dict(
+                            cells=[
+                                dict(view=self.button3),
+                                dict(view=self.button4),
+                            ]
+                        ),
+                    ],
+                    columnPadding=(4, 4),
+                    rowPadding=(4, 4),
+                )
+
+                self.w.open()
+
+
+        GridViewExample()
+
+
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the grid view.
 

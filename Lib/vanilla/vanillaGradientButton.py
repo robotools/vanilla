@@ -7,6 +7,34 @@ class GradientButton(ImageButton):
     """
     An image button that initiates an immediate action related to a view.
 
+    .. image:: /_images/GradientButton.png
+
+    ::
+
+        import AppKit
+        from vanilla import GradientButton, Window
+
+
+        class GradientButtonExample:
+            def __init__(self):
+                self.w = Window((80, 80))
+                self.w.gradientButton = GradientButton(
+                    (10, 10, 40, 40),
+                    imageNamed=AppKit.NSImageNameRefreshTemplate,
+                    imagePosition="top",
+                    callback=self.gradientButtonCallback,
+                    sizeStyle="regular",
+                )
+
+                self.w.open()
+
+            def gradientButtonCallback(self, sender):
+                print("gradient button hit!")
+
+
+        GradientButtonExample()
+
+
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"* representing
     the position and size of the button.
 

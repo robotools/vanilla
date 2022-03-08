@@ -25,6 +25,37 @@ _dateDisplayFlagMap = {
 class DatePicker(VanillaBaseControl):
 
     """
+
+    A control for setting date objects
+
+    .. image:: /_images/DatePicker.png
+    
+    ::
+
+        from vanilla import DatePicker, Window
+
+        class DatePickerExample:
+            def __init__(self):
+                self.w = Window((300, 180))
+                self.w.datePicker = DatePicker(
+                    (10, 10, -10, -10),
+                    showStepper=True,
+                    mode="graphical",
+                    timeDisplay="hourMinuteSecond",
+                    dateDisplay="yearMonthDay",
+                    callback=self.datePickerCallback,
+                    sizeStyle="regular",
+                )
+
+                self.w.open()
+
+            def datePickerCallback(self, sender):
+                print(sender.get())
+
+
+        DatePickerExample()
+
+
     **posSize** Tuple of form *(left, top, width, height)* or *"auto"*
     representing the position and size of the date picker control.
 

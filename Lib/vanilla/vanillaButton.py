@@ -224,17 +224,22 @@ class ImageButton(SquareButton):
     """
     A button with an image.
 
+    .. image:: /_images/ImageButton.png
+
     ::
 
+        import AppKit
         from vanilla import Window, ImageButton
 
         class ImageButtonDemo:
 
              def __init__(self):
-                 path = "/path/to/an/image"
                  self.w = Window((50, 50))
-                 self.w.button = ImageButton((10, 10, 30, 30), imagePath=path,
-                                    callback=self.buttonCallback)
+                 self.w.button = ImageButton(
+                     (10, 10, 30, 30),
+                     imageNamed=AppKit.NSImageNameRefreshTemplate,
+                    callback=self.buttonCallback
+                    )
                  self.w.open()
 
              def buttonCallback(self, sender):
