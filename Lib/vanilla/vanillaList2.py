@@ -1237,8 +1237,10 @@ class SegmentedButtonList2Cell(SegmentedButton):
 
     **segmentDescriptions** An ordered list of dictionaries describing the segments.
 
-    +------------------------+-----------------------------------------------------+
-    | title (optional)       | The title of the segment.                           |
+    **minValue** The minimum value for the slider.
+
+    **maxValue** The maximum value for the slider.
+
     +------------------------+-----------------------------------------------------+
     | imagePath (optional)   | A file path to an image to display in the segment.  |
     +------------------------+-----------------------------------------------------+
@@ -1297,3 +1299,59 @@ class ColorWellList2Cell(ColorWell):
         )
         colorWell = self.getNSColorWell()
         self.enable(editable)
+
+
+from vanilla.vanillaLevelIndicator import LevelIndicator
+
+class LevelIndicatorList2Cell(LevelIndicator):
+
+    """
+    An object that displays a level indicator in a List2 column.
+    Refer to the LevelIndicator documentation for options.
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
+
+    def __init__(self,
+            style="discrete",
+            value=5,
+            minValue=0,
+            maxValue=10,
+            warningValue=None,
+            criticalValue=None,
+            tickMarkPosition=None,
+            minorTickMarkCount=None,
+            majorTickMarkCount=None,
+            imagePath=None,
+            imageNamed=None,
+            imageObject=None,
+            editable=False,
+            callback=None
+        ):
+        super().__init__(
+            "auto",
+            style=style,
+            value=value,
+            minValue=minValue,
+            maxValue=maxValue,
+            warningValue=warningValue,
+            criticalValue=criticalValue,
+            tickMarkPosition=tickMarkPosition,
+            minorTickMarkCount=minorTickMarkCount,
+            majorTickMarkCount=majorTickMarkCount,
+            # sizeStyle="small",
+            callback=callback
+        )
+        self.enable(editable)
+        cell = self._nsObject.cell()
+        if imagePath is not None:
+            image = NSImage.alloc().initWithContentsOfFile_(imagePath)
+        elif imageNamed is not None:
+            image = NSImage.imageNamed_(imageNamed)
+        elif imageObject is not None:
+            image = imageObject
+        if imageObject is not None:
+            cell.setImage_(image)
