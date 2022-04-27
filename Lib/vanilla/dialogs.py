@@ -21,12 +21,20 @@ alertStyleMap = {
 
 class BasePanel(NSObject):
 
-    def initWithWindow_resultCallback_(cls, parentWindow=None, resultCallback=None):
+    def initWithWindow_resultCallback_cancelCallback_(cls, parentWindow=None, resultCallback=None, cancelCallback=None):
         self = cls.init()
         self.retain()
         self._parentWindow = parentWindow
         self._resultCallback = resultCallback
+        self._cancelCallback = cancelCallback
         return self
+
+    def initWithWindow_resultCallback_(cls, parentWindow=None, resultCallback=None):
+        return cls.initWithWindow_resultCallback_cancelCallback_(
+            parentWindow=parentWindow,
+            resultCallback=resultCallback,
+            cancelCallback=None
+        )
 
     def windowWillClose_(self, notification):
         self.autorelease()
@@ -123,12 +131,15 @@ class BasePutGetPanel(BasePanel):
             self._result = self.panel.filenames()
             if self._resultCallback is not None:
                 self._resultCallback(self._result)
+        else:
+            if self._cancelCallback is not None:
+                self._cancelCallback()
 
 
 class PutFilePanel(BasePutGetPanel):
 
-    def initWithWindow_resultCallback_(self, parentWindow=None, resultCallback=None):
-        self = super(PutFilePanel, self).initWithWindow_resultCallback_(parentWindow, resultCallback)
+    def initWithWindow_resultCallback_cancelCallback_(self, parentWindow=None, resultCallback=None, cancelCallback=None):
+        self = super(PutFilePanel, self).initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
         self.messageText = None
         self.title = None
         self.fileTypes = None
@@ -167,12 +178,15 @@ class PutFilePanel(BasePutGetPanel):
             self._result = self.panel.filename()
             if self._resultCallback is not None:
                 self._resultCallback(self._result)
+        else:
+            if self._cancelCallback is not None:
+                self._cancelCallback()
 
 
 class GetFileOrFolderPanel(BasePutGetPanel):
 
-    def initWithWindow_resultCallback_(self, parentWindow=None, resultCallback=None):
-        self = super(GetFileOrFolderPanel, self).initWithWindow_resultCallback_(parentWindow, resultCallback)
+    def initWithWindow_resultCallback_cancelCallback_(self, parentWindow=None, resultCallback=None, cancelCallback=None):
+        self = super(GetFileOrFolderPanel, self).initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
         self.messageText = None
         self.title = None
         self.directory = None
@@ -324,11 +338,12 @@ def askYesNo(messageText="", informativeText="", alertStyle="informational",
 
 
 def getFile(messageText=None, title=None, directory=None, fileName=None,
-        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None, accessoryView=None):
+        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None,
+        cancelCallback=None, accessoryView=None):
     parentWindow = _unwrapWindow(parentWindow)
     accessoryView = _unwrapView(accessoryView)
 
-    basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
+    basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
     basePanel.messageText = messageText
     basePanel.title = title
     basePanel.directory = directory
@@ -345,11 +360,11 @@ def getFile(messageText=None, title=None, directory=None, fileName=None,
 
 
 def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelection=False,
-        parentWindow=None, resultCallback=None, accessoryView=None):
+        parentWindow=None, resultCallback=None, cancelCallback=None, accessoryView=None):
     parentWindow = _unwrapWindow(parentWindow)
     accessoryView = _unwrapView(accessoryView)
 
-    basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
+    basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
     basePanel.messageText = messageText
     basePanel.title = title
     basePanel.directory = directory
@@ -364,11 +379,12 @@ def getFolder(messageText=None, title=None, directory=None, allowsMultipleSelect
 
 
 def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None,
-        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None, accessoryView=None):
+        allowsMultipleSelection=False, fileTypes=None, parentWindow=None, resultCallback=None,
+        cancelCallback=None, accessoryView=None):
     parentWindow = _unwrapWindow(parentWindow)
     accessoryView = _unwrapView(accessoryView)
 
-    basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
+    basePanel = GetFileOrFolderPanel.alloc().initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
     basePanel.messageText = messageText
     basePanel.title = title
     basePanel.directory = directory
@@ -385,11 +401,11 @@ def getFileOrFolder(messageText=None, title=None, directory=None, fileName=None,
 
 
 def putFile(messageText=None, title=None, directory=None, fileName=None, canCreateDirectories=True,
-        fileTypes=None, parentWindow=None, resultCallback=None, accessoryView=None):
+        fileTypes=None, parentWindow=None, resultCallback=None, cancelCallback=None, accessoryView=None):
     parentWindow = _unwrapWindow(parentWindow)
     accessoryView = _unwrapView(accessoryView)
 
-    basePanel = PutFilePanel.alloc().initWithWindow_resultCallback_(parentWindow, resultCallback)
+    basePanel = PutFilePanel.alloc().initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
     basePanel.messageText = messageText
     basePanel.title = title
     basePanel.directory = directory
