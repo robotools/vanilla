@@ -1,5 +1,5 @@
 import platform
-from distutils.version import StrictVersion
+from packaging.version import Version
 from Foundation import NSObject
 from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, \
     NSViewMinXMargin, NSViewMaxXMargin, NSViewMaxYMargin, NSViewMinYMargin, \
@@ -29,19 +29,19 @@ class VanillaWarning(Warning): pass
 macVersion = platform.mac_ver()[0]
 if platform.system() != "Darwin":
     macVersion = "0.0"
-osVersionCurrent = StrictVersion(macVersion)
-osVersion12_0 = StrictVersion("12.0") 
-osVersion10_16 = StrictVersion("10.16")  # macOS11 Big Sur seems to be 10.16
-osVersion10_15 = StrictVersion("10.15")
-osVersion10_14 = StrictVersion("10.14")
-osVersion10_13 = StrictVersion("10.13")
-osVersion10_12 = StrictVersion("10.12")
-osVersion10_11 = StrictVersion("10.11")
-osVersion10_10 = StrictVersion("10.10")
-osVersion10_9 = StrictVersion("10.9")
-osVersion10_8 = StrictVersion("10.8")
-osVersion10_7 = StrictVersion("10.7")
-osVersion10_6 = StrictVersion("10.6")
+osVersionCurrent = Version(macVersion)
+osVersion12_0 = Version("12.0")
+osVersion10_16 = Version("10.16")  # macOS11 Big Sur seems to be 10.16
+osVersion10_15 = Version("10.15")
+osVersion10_14 = Version("10.14")
+osVersion10_13 = Version("10.13")
+osVersion10_12 = Version("10.12")
+osVersion10_11 = Version("10.11")
+osVersion10_10 = Version("10.10")
+osVersion10_9 = Version("10.9")
+osVersion10_8 = Version("10.8")
+osVersion10_7 = Version("10.7")
+osVersion10_6 = Version("10.6")
 
 
 # ---------
