@@ -1,5 +1,5 @@
 import platform
-from distutils.version import StrictVersion
+
 from Foundation import NSObject
 from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, \
     NSViewMinXMargin, NSViewMaxXMargin, NSViewMaxYMargin, NSViewMinYMargin, \
@@ -17,6 +17,13 @@ except ImportError:
 
 from vanilla.nsSubclasses import getNSSubclass
 
+def version(versionString):
+    parts = [int(p) for p in versionString.split(".")]
+    if len(parts) > 3:
+        raise TypeError(f"version string has more than three parts: {versionString}")
+    while len(parts) < 3:
+        parts.append(0)
+    return tuple(parts)
 
 class VanillaError(Exception): pass
 
@@ -29,19 +36,19 @@ class VanillaWarning(Warning): pass
 macVersion = platform.mac_ver()[0]
 if platform.system() != "Darwin":
     macVersion = "0.0"
-osVersionCurrent = StrictVersion(macVersion)
-osVersion12_0 = StrictVersion("12.0") 
-osVersion10_16 = StrictVersion("10.16")  # macOS11 Big Sur seems to be 10.16
-osVersion10_15 = StrictVersion("10.15")
-osVersion10_14 = StrictVersion("10.14")
-osVersion10_13 = StrictVersion("10.13")
-osVersion10_12 = StrictVersion("10.12")
-osVersion10_11 = StrictVersion("10.11")
-osVersion10_10 = StrictVersion("10.10")
-osVersion10_9 = StrictVersion("10.9")
-osVersion10_8 = StrictVersion("10.8")
-osVersion10_7 = StrictVersion("10.7")
-osVersion10_6 = StrictVersion("10.6")
+osVersionCurrent = version(macVersion)
+osVersion12_0 = version("12.0") 
+osVersion10_16 = version("10.16")  # macOS11 Big Sur seems to be 10.16
+osVersion10_15 = version("10.15")
+osVersion10_14 = version("10.14")
+osVersion10_13 = version("10.13")
+osVersion10_12 = version("10.12")
+osVersion10_11 = version("10.11")
+osVersion10_10 = version("10.10")
+osVersion10_9 = version("10.9")
+osVersion10_8 = version("10.8")
+osVersion10_7 = version("10.7")
+osVersion10_6 = version("10.6")
 
 
 # ---------
