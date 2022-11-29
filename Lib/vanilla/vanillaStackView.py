@@ -115,11 +115,11 @@ class _StackView(VanillaBaseObject):
         stackView.setSpacing_(spacing)
         stackView.setAlignment_(alignment)
         stackView.setDistribution_(distribution)
+        self.setEdgeInsets(edgeInsets)
         for view in views:
             if not isinstance(view, dict):
                 view = dict(view=view)
             self.appendView(**view)
-        self.setEdgeInsets(edgeInsets)
 
     def getNSStackView(self):
         return self._nsObject
@@ -217,20 +217,37 @@ class _StackView(VanillaBaseObject):
             AppKit.NSLayoutConstraintOrientationVertical
         )
         # constraints
+        bottomInset, leftInset, topInset, rightInset = self._nsObject.edgeInsets()
         if width is not None:
             if width == "fill":
-                width = stackView.widthAnchor()
-            _setAnchorContraint(
-                view.widthAnchor(),
-                width
-            )
+                _setAnchorConstraint(
+                    anchor=view.leftAnchor(),
+                    otherAnchor=stackView.leftAnchor(),
+                    constant=leftInset
+                )
+                _setAnchorConstraint(
+                    anchor=view.rightAnchor(),
+                    otherAnchor=stackView.rightAnchor(),
+                    constant=-rightInset
+                )
+            else:
+                _setAnchorConstraint(
+                    view.widthAnchor(),
+                    width
+                )
         if height is not None:
             if height == "fill":
-                height = stackView.heightAnchor()
-            _setAnchorContraint(
-                view.heightAnchor(),
-                height
-            )
+                view.topAnchor().constraintEqualToAnchor_(
+                    stackView.topAnchor()
+                )
+                view.bottomAnchor().constraintEqualToAnchor_(
+                    stackView.bottomAnchor()
+                )
+            else:
+                _setAnchorConstraint(
+                    view.heightAnchor(),
+                    height
+                )
         # spacing
         if spacing is not None:
             stackView.setCustomSpacing_afterView_(spacing, view)
@@ -351,26 +368,48 @@ class VerticalStackView(_StackView):
         width=AppKit.NSLayoutAttributeWidth
     )
 
-def _setAnchorContraint(anchor, value):
-    for existing in anchor.constraintsAffectingLayout():
-        existing.setActive_(False)
+def _setAnchorConstraint(
+        anchor,
+        value=None,
+        otherAnchor=None,
+        constant=0
+    ):
     if isinstance(value, str) and "," in value:
         for v in value.split(","):
             v = v.strip()
-            _setAnchorContraint(anchor, v)
+            _setAnchorConstraint(
+                anchor,
+                value=v,
+                otherAnchor=otherAnchor,
+                constant=constant
+            )
         return
-    methods = {
-        "==" : anchor.constraintEqualToConstant_,
-        ">=" : anchor.constraintGreaterThanOrEqualToConstant_,
-        "<=" : anchor.constraintLessThanOrEqualToConstant_,
-    }
-    if isinstance(value, AppKit.NSLayoutAnchor):
-        method = anchor.constraintEqualToAnchor_
-    elif isinstance(value, (int, float)):
-        method = methods["=="]
-    else:
+    for existing in anchor.constraintsAffectingLayout():
+        existing.setActive_(False)
+    if otherAnchor is not None:
+        anchorMethods = {
+            "==" : anchor.constraintEqualToAnchor_constant_,
+            ">=" : anchor.constraintGreaterThanOrEqualToAnchor_constant_,
+            "<=" : anchor.constraintLessThanOrEqualToAnchor_constant_,
+        }
+        args = [otherAnchor, constant]
+        if not isinstance(value, str):
+            value = "=="
         relation = value[:2]
-        value = float(value[2:])
-        method = methods[relation]
-    constraint = method(value)
+        method = anchorMethods[relation]
+    else:
+        assert value is not None, "A value must be given if otherAnchor is None."
+        valueMethods = {
+            "==" : anchor.constraintEqualToConstant_,
+            ">=" : anchor.constraintGreaterThanOrEqualToConstant_,
+            "<=" : anchor.constraintLessThanOrEqualToConstant_,
+        }
+        if isinstance(value, (int, float)):
+            method = valueMethods["=="]
+        else:
+            relation = value[:2]
+            value = float(value[2:])
+            method = valueMethods[relation]
+        args = [value]
+    constraint = method(*args)
     constraint.setActive_(True)
