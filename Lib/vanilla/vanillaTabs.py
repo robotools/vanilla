@@ -1,4 +1,4 @@
-from warnings import warn
+import weakref
 from Foundation import NSObject
 from AppKit import NSViewController,\
     NSTabViewController, NSTabView, NSTabViewItem,\
@@ -45,9 +45,15 @@ class VanillaTabItem(VanillaBaseObject):
 
 class VanillaTabViewController(NSTabViewController):
 
+    def tabView_willSelectTabViewItem_(self, tabView, tabViewItem):
+        # XXX do the vanilla positioning here and set a flag
+        # that indicates that it has been done.
+        super().tabView_willSelectTabViewItem_(tabView, tabViewItem)
+
     def tabView_didSelectTabViewItem_(self, tabView, tabViewItem):
         if hasattr(self, "_target"):
             self._target.action_(tabView.vanillaWrapper())
+        super().tabView_didSelectTabViewItem_(tabView, tabViewItem)
 
 
 _tabTransitionMap = {
