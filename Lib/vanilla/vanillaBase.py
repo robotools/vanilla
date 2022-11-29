@@ -37,7 +37,7 @@ macVersion = platform.mac_ver()[0]
 if platform.system() != "Darwin":
     macVersion = "0.0"
 osVersionCurrent = version(macVersion)
-osVersion12_0 = version("12.0") 
+osVersion12_0 = version("12.0")
 osVersion10_16 = version("10.16")  # macOS11 Big Sur seems to be 10.16
 osVersion10_15 = version("10.15")
 osVersion10_14 = version("10.14")
@@ -66,10 +66,14 @@ class VanillaBaseObject(object):
         _delAttr(VanillaBaseObject, self, attr)
 
     def _setupView(self, classOrName, posSize, callback=None):
-        self._autoLayoutViews = {}
-        self._testForDeprecatedAttributes()
         cls = getNSSubclass(classOrName)
-        self._nsObject = cls(self)
+        view = cls(self)
+        self._setupInstantiatedView(view, posSize, callback=callback)
+
+    def _setupInstantiatedView(self, view, posSize, callback=None):
+        self._testForDeprecatedAttributes()
+        self._autoLayoutViews = {}
+        self._nsObject = view
         self._posSize = posSize
         self._setCallback(callback)
         self._setAutosizingFromPosSize(posSize)
