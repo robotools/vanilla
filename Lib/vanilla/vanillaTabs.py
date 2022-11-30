@@ -1,4 +1,3 @@
-import weakref
 from Foundation import NSObject
 from AppKit import NSViewController,\
     NSTabViewController, NSTabView, NSTabViewItem,\
@@ -15,15 +14,16 @@ from AppKit import NSViewController,\
     NSViewControllerTransitionSlideBackward,\
     NSFont
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, _sizeStyleMap, VanillaCallbackWrapper, \
-        _reverseSizeStyleMap
+    _reverseSizeStyleMap
 from vanilla.nsSubclasses import getNSSubclass
 
 
 class VanillaTabView(NSTabView):
 
     def viewDidMoveToWindow(self):
-        wrapper = self.vanillaWrapper()
-        wrapper._positionViews()
+        if self.window() is not None:
+            wrapper = self.vanillaWrapper()
+            wrapper._positionViews()
         super().viewDidMoveToWindow()
 
 
@@ -125,6 +125,30 @@ class Tabs(VanillaBaseObject):
     +-----------+
     | "mini"    |
     +-----------+
+
+    **showTabs** Boolean representing if the tabview should display tabs.
+
+    **transitionStyle** A string rerpresenting a transition style between tabs.
+    The options are:
+
+    +-----------------+
+    | None            |
+    +-----------------+
+    | "crossfade"     |
+    +-----------------+
+    | "slideUp"       |
+    +-----------------+
+    | "slideDown"     |
+    +-----------------+
+    | "slideLeft"     |
+    +-----------------+
+    | "slideRight"    |
+    +-----------------+
+    | "slideForward"  |
+    +-----------------+
+    | "slideBackward" |
+    +-----------------+
+
     """
 
     nsTabViewClass = VanillaTabView
@@ -153,7 +177,6 @@ class Tabs(VanillaBaseObject):
         self._setSizeStyle(sizeStyle)
         self._tabViewController.setTransitionOptions_(_tabTransitionMap[transitionStyle])
         self._tabItems = []
-        contentRect = self._nsObject.contentRect()
         for title in titles:
             tab = self.vanillaTabItemClass(title)
             self._tabItems.append(tab)
@@ -192,9 +215,6 @@ class Tabs(VanillaBaseObject):
         if callback is not None:
             self._target = VanillaCallbackWrapper(callback)
             delegate = self._nsObject.delegate()
-            if delegate is None:
-                self._delegate = delegate = getNSSubclass(VanillaTabsDelegate).alloc().init()
-                self._nsObject.setDelegate_(delegate)
             delegate._target = self._target
 
     def _setSizeStyle(self, value):
