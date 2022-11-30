@@ -1,31 +1,78 @@
 from Foundation import NSObject
-from AppKit import NSTabView, NSTabViewItem, NSNoTabsNoBorder, NSFont
+from AppKit import NSViewController,\
+    NSTabViewController, NSTabView, NSTabViewItem,\
+    NSTabPositionTop,\
+    NSTabPositionNone,\
+    NSNoTabsNoBorder,\
+    NSViewControllerTransitionNone,\
+    NSViewControllerTransitionCrossfade,\
+    NSViewControllerTransitionSlideUp,\
+    NSViewControllerTransitionSlideDown,\
+    NSViewControllerTransitionSlideLeft,\
+    NSViewControllerTransitionSlideRight,\
+    NSViewControllerTransitionSlideForward,\
+    NSViewControllerTransitionSlideBackward,\
+    NSFont
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, _sizeStyleMap, VanillaCallbackWrapper, \
-        _reverseSizeStyleMap
+    _reverseSizeStyleMap
+from vanilla.nsSubclasses import getNSSubclass
+
+
+class VanillaTabView(NSTabView):
+
+    def viewDidMoveToWindow(self):
+        if self.window() is not None:
+            wrapper = self.vanillaWrapper()
+            wrapper._positionViews()
+        super().viewDidMoveToWindow()
+
+
+class VanillaTabViewController(NSTabViewController):
+
+    def tabView_didSelectTabViewItem_(self, tabView, tabViewItem):
+        if hasattr(self, "_target"):
+            self._target.action_(tabView.vanillaWrapper())
+        super().tabView_didSelectTabViewItem_(tabView, tabViewItem)
 
 
 class VanillaTabItem(VanillaBaseObject):
 
     nsTabViewItemClass = NSTabViewItem
+    nsViewControllerClass = NSViewController
 
     def __init__(self, title):
         self._autoLayoutViews = {}
-        self._tabItem = self.nsTabViewItemClass.alloc().initWithIdentifier_(title)
+        self._tabItem = getNSSubclass(self.nsTabViewItemClass).alloc().initWithIdentifier_(title)
+        self._tabItem.setVanillaWrapper_(self)
         self._tabItem.setLabel_(title)
+        viewController = getNSSubclass(self.nsViewControllerClass).alloc().init()
+        viewController.setView_(self._tabItem.view())
+        self._tabItem.setViewController_(viewController)
+        self._posSize = (0, 0, 0, 0)
+        self._nsObject = self._tabItem.view()
+
+    def getNSTabViewItem(self):
+        return self._tabItem
 
     def _getContentView(self):
         return self._tabItem.view()
 
     def _breakCycles(self):
+        self._nsObject = None
         _breakCycles(self._tabItem.view())
         self._autoLayoutViews.clear()
 
 
-class VanillaTabsDelegate(NSObject):
-
-    def tabView_didSelectTabViewItem_(self, tabView, tabViewItem):
-        if hasattr(self, "_target"):
-            self._target.action_(tabView.vanillaWrapper())
+_tabTransitionMap = {
+    None : NSViewControllerTransitionNone,
+    "crossfade" : NSViewControllerTransitionCrossfade,
+    "slideUp" : NSViewControllerTransitionSlideUp,
+    "slideDown" : NSViewControllerTransitionSlideDown,
+    "slideLeft" : NSViewControllerTransitionSlideLeft,
+    "slideRight" : NSViewControllerTransitionSlideRight,
+    "slideForward" : NSViewControllerTransitionSlideForward,
+    "slideBackward" : NSViewControllerTransitionSlideBackward
+}
 
 
 class Tabs(VanillaBaseObject):
@@ -78,10 +125,35 @@ class Tabs(VanillaBaseObject):
     +-----------+
     | "mini"    |
     +-----------+
+
+    **showTabs** Boolean representing if the tabview should display tabs.
+
+    **transitionStyle** A string rerpresenting a transition style between tabs.
+    The options are:
+
+    +-----------------+
+    | None            |
+    +-----------------+
+    | "crossfade"     |
+    +-----------------+
+    | "slideUp"       |
+    +-----------------+
+    | "slideDown"     |
+    +-----------------+
+    | "slideLeft"     |
+    +-----------------+
+    | "slideRight"    |
+    +-----------------+
+    | "slideForward"  |
+    +-----------------+
+    | "slideBackward" |
+    +-----------------+
+
     """
 
-    nsTabViewClass = NSTabView
-    vanillaTabViewItemClass = VanillaTabItem
+    nsTabViewClass = VanillaTabView
+    nsTabViewControllerClass = VanillaTabViewController
+    vanillaTabItemClass = VanillaTabItem
 
     allFrameAdjustments = {
         # The sizeStyle will be part of the
@@ -91,17 +163,24 @@ class Tabs(VanillaBaseObject):
         "Tabs-regular": (-7, -10, 14, 16),
     }
 
-    def __init__(self, posSize, titles=["Tab"], callback=None, sizeStyle="regular", showTabs=True):
-        self._setupView(self.nsTabViewClass, posSize) # hold off on setting callback
+    def __init__(self, posSize, titles=["Tab"], callback=None, sizeStyle="regular",
+            showTabs=True, transitionStyle=None,
+        ):
+        self._setupView(self.nsTabViewClass, posSize, callback=None)
+        self._nsObject.setVanillaWrapper_(self)
+        self._tabViewController = getNSSubclass(self.nsTabViewControllerClass).alloc().init()
+        self._tabViewController.setTabView_(self._nsObject)
+        self._tabViewController.loadView()
+        if not showTabs:
+            self._nsObject.setTabPosition_(NSTabPositionNone)
+            self._nsObject.setTabViewType_(NSNoTabsNoBorder)
         self._setSizeStyle(sizeStyle)
+        self._tabViewController.setTransitionOptions_(_tabTransitionMap[transitionStyle])
         self._tabItems = []
         for title in titles:
-            tab = self.vanillaTabViewItemClass(title)
+            tab = self.vanillaTabItemClass(title)
             self._tabItems.append(tab)
-            self._nsObject.addTabViewItem_(tab._tabItem)
-        if not showTabs:
-            self._nsObject.setTabViewType_(NSNoTabsNoBorder)
-            self._nsObject.setDrawsBackground_(False)
+            self._tabViewController.addTabViewItem_(tab._tabItem)
         # now that the tabs are all set, set the callback.
         # this is done because the callback will be called
         # while the tabs are being added.
@@ -116,6 +195,14 @@ class Tabs(VanillaBaseObject):
         """
         return self._nsObject
 
+    def _positionViews(self):
+        contentRect = self.getNSTabView().contentRect()
+        # only do after the first because
+        # adjusting the first gives it
+        # incorrect positioning
+        for item in self._tabItems[1:]:
+            item._setFrame(contentRect)
+
     def _adjustPosSize(self, frame):
         if self._nsObject.tabViewType() == NSNoTabsNoBorder:
             return frame
@@ -128,9 +215,6 @@ class Tabs(VanillaBaseObject):
         if callback is not None:
             self._target = VanillaCallbackWrapper(callback)
             delegate = self._nsObject.delegate()
-            if delegate is None:
-                self._delegate = delegate = VanillaTabsDelegate.alloc().init()
-                self._nsObject.setDelegate_(delegate)
             delegate._target = self._target
 
     def _setSizeStyle(self, value):
@@ -151,8 +235,7 @@ class Tabs(VanillaBaseObject):
         """
         Get the index of the selected tab.
         """
-        item = self._nsObject.selectedTabViewItem()
-        index = self._nsObject.indexOfTabViewItem_(item)
+        index = self._tabViewController.selectedTabViewItemIndex()
         return index
 
     def set(self, value):
@@ -161,4 +244,4 @@ class Tabs(VanillaBaseObject):
 
         **value** The index of the tab to be selected.
         """
-        self._nsObject.selectTabViewItemAtIndex_(value)
+        self._tabViewController.setSelectedTabViewItemIndex_(value)
