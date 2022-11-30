@@ -41,7 +41,6 @@ class VanillaTabItem(VanillaBaseObject):
     nsViewControllerClass = NSViewController
 
     def __init__(self, title):
-        self._haveSetFrame = False
         self._autoLayoutViews = {}
         self._tabItem = getNSSubclass(self.nsTabViewItemClass).alloc().initWithIdentifier_(title)
         self._tabItem.setVanillaWrapper_(self)
@@ -59,6 +58,7 @@ class VanillaTabItem(VanillaBaseObject):
         return self._tabItem.view()
 
     def _breakCycles(self):
+        self._nsObject = None
         _breakCycles(self._tabItem.view())
         self._autoLayoutViews.clear()
 
@@ -174,6 +174,9 @@ class Tabs(VanillaBaseObject):
 
     def _positionViews(self):
         contentRect = self.getNSTabView().contentRect()
+        # only do after the first because
+        # adjusting the first gives it
+        # incorrect positioning
         for item in self._tabItems[1:]:
             item._setFrame(contentRect)
 
