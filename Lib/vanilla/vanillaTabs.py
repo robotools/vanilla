@@ -153,7 +153,7 @@ class Tabs(VanillaBaseObject):
 
     nsTabViewClass = VanillaTabView
     nsTabViewControllerClass = VanillaTabViewController
-    vanillaTabItemClass = VanillaTabItem
+    vanillaTabViewItemClass = VanillaTabItem
 
     allFrameAdjustments = {
         # The sizeStyle will be part of the
@@ -178,7 +178,7 @@ class Tabs(VanillaBaseObject):
         self._tabViewController.setTransitionOptions_(_tabTransitionMap[transitionStyle])
         self._tabItems = []
         for title in titles:
-            tab = self.vanillaTabItemClass(title)
+            tab = self.vanillaTabViewItemClass(title)
             self._tabItems.append(tab)
             self._tabViewController.addTabViewItem_(tab._tabItem)
         # now that the tabs are all set, set the callback.
