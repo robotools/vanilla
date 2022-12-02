@@ -27,6 +27,7 @@ from vanilla.vanillaSlider import Slider
 from vanilla.vanillaSplitView import SplitView, SplitView2
 from vanilla.vanillaStackGroup import HorizontalStackGroup, VerticalStackGroup
 from vanilla.vanillaStackView import HorizontalStackView, VerticalStackView
+from vanilla.vanillaStepper import Stepper
 from vanilla.vanillaTabs import Tabs
 from vanilla.vanillaTextBox import TextBox
 from vanilla.vanillaTextEditor import TextEditor
@@ -65,6 +66,7 @@ __all__ = [
     "SplitView2",
     "HorizontalStackGroup", "VerticalStackGroup",
     "HorizontalStackView", "VerticalStackView",
+    "Stepper",
     "Tabs",
     "TextBox",
     "TextEditor",
