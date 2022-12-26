@@ -161,9 +161,9 @@ class Window(NSObject):
         self._window.setTitle_(title)
         self._window.setLevel_(self.nsWindowLevel)
         self._window.setReleasedWhenClosed_(False)
+        self._bindings = {}
         self._window.setDelegate_(self)
         self._autoLayoutViews = {}
-        self._bindings = {}
         self._initiallyVisible = initiallyVisible
         # full screen mode
         if osVersionCurrent >= osVersion10_7:
@@ -593,20 +593,13 @@ class Window(NSObject):
 
     @python_method
     def _alertBindings(self, key):
-        # test to see if the attr exists.
-        # this is necessary because NSWindow
-        # can move the window (and therefore
-        # call the delegate method which calls
-        # this method) before the super
-        # call in __init__ is complete.
         returnValues = []
-        if hasattr(self, "_bindings"):
-            if key in self._bindings:
-                for callback in self._bindings[key]:
-                    value = callback(self)
-                    if value is not None:
-                        # elimitate None return value
-                        returnValues.append(value)
+        if key in self._bindings:
+            for callback in self._bindings[key]:
+                value = callback(self)
+                if value is not None:
+                    # elimitate None return value
+                    returnValues.append(value)
         return all(returnValues)
 
     def windowWillClose_(self, notification):
