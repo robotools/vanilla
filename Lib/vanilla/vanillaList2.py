@@ -697,7 +697,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
 
         .. _NSScrollView: https://developer.apple.com/documentation/appkit/nsscrollview?language=objc
         """
-        return self._tableView
+        return self._nsObject
 
     def enable(self, onOff):
         """
