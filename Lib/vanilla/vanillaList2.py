@@ -691,6 +691,14 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         """
         return self._tableView
 
+    def getNSScrollView(self):
+        """
+        Return the `NSScrollView`_ that this object wraps.
+
+        .. _NSScrollView: https://developer.apple.com/documentation/appkit/nsscrollview?language=objc
+        """
+        return self._tableView
+
     def enable(self, onOff):
         """
         Enable or disable the object. **onOff** should be a boolean.
