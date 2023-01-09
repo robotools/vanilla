@@ -161,9 +161,9 @@ class Window(NSObject):
         self._window.setTitle_(title)
         self._window.setLevel_(self.nsWindowLevel)
         self._window.setReleasedWhenClosed_(False)
+        self._bindings = {}
         self._window.setDelegate_(self)
         self._autoLayoutViews = {}
-        self._bindings = {}
         self._initiallyVisible = initiallyVisible
         # full screen mode
         if osVersionCurrent >= osVersion10_7:
@@ -209,6 +209,7 @@ class Window(NSObject):
         self._window.setFrameTopLeftPoint_(leftTop)
 
     def _breakCycles(self):
+        self._bindings = {}
         _breakCycles(self._window.contentView())
         drawers = self._window.drawers()
         if drawers is not None:
@@ -593,28 +594,18 @@ class Window(NSObject):
 
     @python_method
     def _alertBindings(self, key):
-        # test to see if the attr exists.
-        # this is necessary because NSWindow
-        # can move the window (and therefore
-        # call the delegate method which calls
-        # this method) before the super
-        # call in __init__ is complete.
         returnValues = []
-        if hasattr(self, "_bindings"):
-            if key in self._bindings:
-                for callback in self._bindings[key]:
-                    value = callback(self)
-                    if value is not None:
-                        # elimitate None return value
-                        returnValues.append(value)
+        if key in self._bindings:
+            for callback in self._bindings[key]:
+                value = callback(self)
+                if value is not None:
+                    # elimitate None return value
+                    returnValues.append(value)
         return all(returnValues)
 
     def windowWillClose_(self, notification):
         self.hide()
         self._alertBindings("close")
-        # remove all bindings to prevent circular refs
-        if hasattr(self, "_bindings"):
-            del self._bindings
         self._breakCycles()
         # We must make sure that the window does _not_ get deallocated during
         # windowWillClose_, or weird things happen, such as that the window
