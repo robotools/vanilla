@@ -209,6 +209,7 @@ class Window(NSObject):
         self._window.setFrameTopLeftPoint_(leftTop)
 
     def _breakCycles(self):
+        self._bindings = {}
         _breakCycles(self._window.contentView())
         drawers = self._window.drawers()
         if drawers is not None:
@@ -605,9 +606,6 @@ class Window(NSObject):
     def windowWillClose_(self, notification):
         self.hide()
         self._alertBindings("close")
-        # remove all bindings to prevent circular refs
-        if hasattr(self, "_bindings"):
-            del self._bindings
         self._breakCycles()
         # We must make sure that the window does _not_ get deallocated during
         # windowWillClose_, or weird things happen, such as that the window
