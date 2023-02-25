@@ -1,5 +1,17 @@
 from AppKit import NSColorWell, NSColorPanel
-from vanilla.vanillaBase import VanillaBaseObject
+from vanilla.vanillaBase import VanillaBaseObject, osVersionCurrent, osVersion13_0
+
+if osVersionCurrent >= osVersion13_0:
+    from AppKit import NSColorWellStyleDefault, NSColorWellStyleMinimal, NSColorWellStyleExpanded
+
+    colorWellStyleMap = dict(
+        default=NSColorWellStyleDefault,
+        minimal=NSColorWellStyleMinimal,
+        expanded=NSColorWellStyleExpanded
+    )
+
+else:
+    colorWellStyleMap = dict()
 
 
 class ColorWell(VanillaBaseObject):
@@ -38,17 +50,32 @@ class ColorWell(VanillaBaseObject):
     **color** A `NSColor`_ object. If *None* is given, the color shown will
     be white.
 
+    **colorWellStyle** A string representing the desired color well style. The options are:
+
+    +------------+
+    | "default"  |
+    +------------+
+    | "minimal"  |
+    +------------+
+    | "expanded" |
+    +------------+
+
     .. _NSColor: https://developer.apple.com/documentation/appkit/nscolor?language=objc
     """
 
     nsColorWellClass = NSColorWell
 
-    def __init__(self, posSize, callback=None, color=None):
+    def __init__(self, posSize, callback=None, color=None, colorWellStyle=None):
         self._setupView(self.nsColorWellClass, posSize, callback=callback)
         if color is not None:
             self._nsObject.setColor_(color)
         colorPanel = NSColorPanel.sharedColorPanel()
         colorPanel.setShowsAlpha_(True)
+        if osVersionCurrent >= osVersion13_0:
+            # https://developer.apple.com/documentation/appkit/nscolorwell/3955203-colorwellstyle?language=objc
+            nsColorWellStyle = colorWellStyleMap.get(colorWellStyle)
+            if nsColorWellStyle is not None:
+                colorPanel.setColorWellStyle_(nsColorWellStyle)
 
     def getNSColorWell(self):
         """

@@ -37,6 +37,7 @@ macVersion = platform.mac_ver()[0]
 if platform.system() != "Darwin":
     macVersion = "0.0"
 osVersionCurrent = version(macVersion)
+osVersion13_0 = version("13.0")
 osVersion12_0 = version("12.0")
 osVersion10_16 = version("10.16")  # macOS11 Big Sur seems to be 10.16
 osVersion10_15 = version("10.15")
