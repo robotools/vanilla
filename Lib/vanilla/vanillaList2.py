@@ -231,6 +231,8 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         wrapper = self.vanillaWrapper()
         if not wrapper._allowsSelection:
             return False
+        if self.tableView_isGroupRow_(tableView, row):
+            return False
         return True
 
     # Editing
