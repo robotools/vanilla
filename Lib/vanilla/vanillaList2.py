@@ -1299,11 +1299,15 @@ class ColorWellList2Cell(ColorWell):
 
     def __init__(self,
             editable=False,
-            callback=None
+            callback=None,
+            colorWellStyle=None
         ):
+        if colorWellStyle is None:
+            colorWellStyle = "minimal"
         super().__init__(
             "auto",
-            callback=callback
+            callback=callback,
+            colorWellStyle=colorWellStyle
         )
         colorWell = self.getNSColorWell()
         self.enable(editable)
