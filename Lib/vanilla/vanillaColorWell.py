@@ -75,7 +75,7 @@ class ColorWell(VanillaBaseObject):
             # https://developer.apple.com/documentation/appkit/nscolorwell/3955203-colorwellstyle?language=objc
             nsColorWellStyle = colorWellStyleMap.get(colorWellStyle)
             if nsColorWellStyle is not None:
-                colorPanel.setColorWellStyle_(nsColorWellStyle)
+                self._nsObject.setColorWellStyle_(nsColorWellStyle)
 
     def getNSColorWell(self):
         """
