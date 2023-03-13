@@ -929,6 +929,13 @@ def makeIndexSet(indexes):
 from vanilla.vanillaGroup import Group
 from vanilla.vanillaEditText import EditText
 
+truncationMap = dict(
+    clipping=AppKit.NSLineBreakByClipping,
+    head=AppKit.NSLineBreakByTruncatingHead,
+    tail=AppKit.NSLineBreakByTruncatingTail,
+    middle=AppKit.NSLineBreakByTruncatingMiddle
+)
+
 class EditTextList2Cell(Group):
 
     """
@@ -940,6 +947,14 @@ class EditTextList2Cell(Group):
     - `"top"`
     - `"center"`
     - `"bottom"`
+
+    **truncationMode** How text should be truncated. Options:
+
+    - `"clipping"`
+    - `"head"`
+    - `"tail"`
+    - `"middle"`
+    - A specific `NSLineBreakMode`.
 
     .. note::
        This class should only be used in the *columnDescriptions*
@@ -966,6 +981,7 @@ class EditTextList2Cell(Group):
     def __init__(self,
             verticalAlignment="center",
             editable=False,
+            truncationMode="tail",
             callback=None
         ):
         self._externalCallback = callback
@@ -1003,6 +1019,8 @@ class EditTextList2Cell(Group):
         self.addAutoPosSizeRules(rules)
         textField.setDrawsBackground_(False)
         textField.setBezeled_(False)
+        lineBreakMode = truncationMap.get(truncationMode, truncationMode)
+        textField.setLineBreakMode_(lineBreakMode)
 
     def getNSTextField(self):
         return self.editText.getNSTextField()
