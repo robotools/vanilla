@@ -42,6 +42,7 @@ class Box(VanillaBaseObject):
         "Box-Titled": (-3, -4, 6, 4),
         "Box-None": (-3, -4, 6, 6)
     }
+    _ignoreFrameAdjustments = False
 
     nsBoxClass = NSBox
 
@@ -49,6 +50,7 @@ class Box(VanillaBaseObject):
             fillColor=None, borderColor=None, borderWidth=None,
             cornerRadius=None, margins=None
         ):
+        self._ignoreFrameAdjustments = set((fillColor, borderColor, borderWidth, cornerRadius)) != set((None,))
         self._setupView(self.nsBoxClass, posSize)
         if title:
             self._nsObject.setTitle_(title)
@@ -78,8 +80,10 @@ class Box(VanillaBaseObject):
         return self._nsObject
 
     def _adjustPosSize(self, frame):
+        if self._ignoreFrameAdjustments:
+            self.frameAdjustments = (0, 0, 0, 0)
         # skip subclasses
-        if self.__class__.__name__ == "Box":
+        elif self.__class__.__name__ == "Box":
             pos = self._nsObject.titlePosition()
             if pos != NSNoTitle:
                 title = "Titled"
