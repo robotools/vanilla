@@ -153,12 +153,16 @@ class _StackView(VanillaBaseObject):
         # size shortcuts
         # - when "fill" if used in the direction of the main axis,
         #   it means "use a flexible space"
+        # - when "fit" is used, let AppKit figure out the width.
+        #   (note: this previously used view.fittingSize()
+        #   to get an absolute size, but it was unreliable.)
         if width == "fit":
-            width = view.fittingSize()[0]
+            # width = view.fittingSize()[0]
+            width = None
         elif width == "fill" and self._orientation == NSUserInterfaceLayoutOrientationHorizontal:
             width = None
         if height == "fit":
-            height = view.fittingSize()[1]
+            height = None
         elif height == "fill" and self._orientation == NSUserInterfaceLayoutOrientationVertical:
             height = None
         # hugging and compression
