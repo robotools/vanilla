@@ -157,7 +157,6 @@ class _StackView(VanillaBaseObject):
         #   (note: this previously used view.fittingSize()
         #   to get an absolute size, but it was unreliable.)
         if width == "fit":
-            # width = view.fittingSize()[0]
             width = None
         elif width == "fill" and self._orientation == NSUserInterfaceLayoutOrientationHorizontal:
             width = None
@@ -241,11 +240,15 @@ class _StackView(VanillaBaseObject):
                 )
         if height is not None:
             if height == "fill":
-                view.topAnchor().constraintEqualToAnchor_(
-                    stackView.topAnchor()
+                _setAnchorConstraint(
+                    anchor=view.topAnchor(),
+                    otherAnchor=stackView.topAnchor(),
+                    constant=topInset
                 )
-                view.bottomAnchor().constraintEqualToAnchor_(
-                    stackView.bottomAnchor()
+                _setAnchorConstraint(
+                    anchor=view.bottomAnchor(),
+                    otherAnchor=stackView.bottomAnchor(),
+                    constant=-bottomInset
                 )
             else:
                 _setAnchorConstraint(
