@@ -195,7 +195,11 @@ class Tabs(VanillaBaseObject):
         """
         return self._nsObject
 
+    _didPositionViews = False
+
     def _positionViews(self):
+        if self._didPositionViews:
+            return
         contentRect = self.getNSTabView().contentRect()
         # only do after the first because
         # adjusting the first gives it
@@ -203,6 +207,7 @@ class Tabs(VanillaBaseObject):
         for item in self._tabItems[1:]:
             item._setFrame(contentRect)
             _recursiveSetFrame(item._nsObject)
+        self._didPositionViews = True
 
     def _adjustPosSize(self, frame):
         if self._nsObject.tabViewType() == NSNoTabsNoBorder:
