@@ -14,7 +14,7 @@ from AppKit import NSViewController,\
     NSViewControllerTransitionSlideBackward,\
     NSFont
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, _sizeStyleMap, VanillaCallbackWrapper, \
-    _reverseSizeStyleMap
+    _reverseSizeStyleMap, _recursiveSetFrame
 from vanilla.nsSubclasses import getNSSubclass
 
 
@@ -202,6 +202,7 @@ class Tabs(VanillaBaseObject):
         # incorrect positioning
         for item in self._tabItems[1:]:
             item._setFrame(contentRect)
+            _recursiveSetFrame(item._nsObject)
 
     def _adjustPosSize(self, frame):
         if self._nsObject.tabViewType() == NSNoTabsNoBorder:
