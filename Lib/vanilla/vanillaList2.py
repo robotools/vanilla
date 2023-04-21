@@ -1363,7 +1363,6 @@ class LevelIndicatorList2Cell(LevelIndicator):
             editable=False,
             callback=None
         ):
-        print(minValue, maxValue)
         super().__init__(
             "auto",
             style=style,
