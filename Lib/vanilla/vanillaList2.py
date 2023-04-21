@@ -1363,6 +1363,7 @@ class LevelIndicatorList2Cell(LevelIndicator):
             editable=False,
             callback=None
         ):
+        print(minValue, maxValue)
         super().__init__(
             "auto",
             style=style,
@@ -1380,9 +1381,9 @@ class LevelIndicatorList2Cell(LevelIndicator):
         self.enable(editable)
         cell = self._nsObject.cell()
         if imagePath is not None:
-            image = NSImage.alloc().initWithContentsOfFile_(imagePath)
+            image = AppKit.NSImage.alloc().initWithContentsOfFile_(imagePath)
         elif imageNamed is not None:
-            image = NSImage.imageNamed_(imageNamed)
+            image = AppKit.NSImage.imageNamed_(imageNamed)
         elif imageObject is not None:
             image = imageObject
         if imageObject is not None:
