@@ -80,7 +80,7 @@ class _CheckBoxStandardBuild(Button):
     }
 
     def __init__(self, posSize, title, callback=None, value=False, sizeStyle="regular"):
-        super(_CheckBoxStandardBuild, self).__init__(posSize, title, callback=callback, sizeStyle=sizeStyle)
+        super().__init__(posSize, title, callback=callback, sizeStyle=sizeStyle)
         self.set(value)
 
     def set(self, value):
@@ -133,7 +133,7 @@ class _CheckBoxManualBuildTextButton(Button):
     frameAdjustments = None
 
     def __init__(self, posSize, title, callback, sizeStyle):
-        super(_CheckBoxManualBuildTextButton, self).__init__(posSize, title=title, callback=callback)
+        super().__init__(posSize, title=title, callback=callback)
         self._nsObject.setBordered_(False)
         self._setSizeStyle(sizeStyle)
         self._nsObject.setAlignment_(NSTextAlignmentLeft)

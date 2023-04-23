@@ -115,11 +115,11 @@ class ComboBox(VanillaBaseControl):
             self._nsObject.setFormatter_(formatter)
 
     def _breakCycles(self):
-        super(ComboBox, self)._breakCycles()
+        super()._breakCycles()
         self._delegate = None
 
     def _setCallback(self, callback):
-        super(ComboBox, self)._setCallback(callback)
+        super()._setCallback(callback)
         if callback is not None:
             self._delegate = VanillaComboBoxDelegate.alloc().init()
             self._delegate._continuous = self._continuous

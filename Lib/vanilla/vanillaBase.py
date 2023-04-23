@@ -1,4 +1,5 @@
 import platform
+from objc import super
 
 from Foundation import NSObject
 from AppKit import NSFont, NSRegularControlSize, NSSmallControlSize, NSMiniControlSize, \

@@ -185,7 +185,7 @@ class Slider(VanillaBaseControl):
         sliderType = prefix + "Slider-" + tickPos
         self.frameAdjustments = self.allFrameAdjustments[sliderType]
         # now let the super class do the work
-        return super(Slider, self)._adjustPosSize(frame)
+        return super()._adjustPosSize(frame)
 
     def get(self):
         """

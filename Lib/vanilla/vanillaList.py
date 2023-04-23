@@ -2,6 +2,7 @@ import time
 from Foundation import NSObject, NSArray, NSMutableArray, NSDictionary, NSMutableDictionary, NSMutableIndexSet, NSString, NSAttributedString, NSKeyValueObservingOptionNew, NSKeyValueObservingOptionOld, NSNotFound
 from AppKit import NSApp, NSTableView, NSTableColumn, NSArrayController, NSScrollView, NSSwitchButton, NSButtonCell, NSSliderCell, NSPopUpButtonCell, NSImageCell, NSSegmentedCell, NSFont, NSImage, NSReturnTextMovement, NSTabTextMovement, NSBacktabTextMovement, NSIllegalTextMovement, NSNotification, NSDragOperationNone, NSTableViewDropOn, NSDragOperationCopy, NSBezelBorder, NSFocusRingTypeNone, NSTableViewSolidVerticalGridLineMask, NSTableViewSolidHorizontalGridLineMask, NSTableViewUniformColumnAutoresizingStyle, NSTableColumnNoResizing, NSTableColumnUserResizingMask, NSTableColumnAutoresizingMask, NSCreatesSortDescriptorBindingOption, NSBackspaceCharacter, NSDeleteFunctionKey, NSDeleteCharacter, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSSmallControlSize, NSMiniControlSize, NSSegmentSwitchTrackingSelectOne, NSMenuItem, NSMenu
 from objc import python_method, pyobjc_unicode
+from objc import super
 
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaError, VanillaCallbackWrapper
@@ -12,7 +13,7 @@ class VanillaTableViewSubclass(NSTableView):
     def keyDown_(self, event):
         didSomething = self.vanillaWrapper()._keyDown(event)
         if not didSomething:
-            super(VanillaTableViewSubclass, self).keyDown_(event)
+            super().keyDown_(event)
 
     def textDidEndEditing_(self, notification):
         info = notification.userInfo()
@@ -27,10 +28,10 @@ class VanillaTableViewSubclass(NSTableView):
                     notification.name(),
                     notification.object(),
                     info)
-            super(VanillaTableViewSubclass, self).textDidEndEditing_(newNotification)
+            super().textDidEndEditing_(newNotification)
             self.window().makeFirstResponder_(self)
         else:
-            super(VanillaTableViewSubclass, self).textDidEndEditing_(notification)
+            super().textDidEndEditing_(notification)
 
     def menuForEvent_(self, event):
         wrapper = self.vanillaWrapper()
@@ -42,7 +43,7 @@ class _VanillaTableViewSubclass(VanillaTableViewSubclass):
     def init(self):
         from warnings import warn
         warn(DeprecationWarning("_VanillaTableViewSubclass is deprecated. Use VanillaTableViewSubclass"))
-        return super(_VanillaTableViewSubclass, self).init()
+        return super().init()
 
 
 class VanillaArrayControllerObserver(NSObject):
@@ -57,7 +58,7 @@ class _VanillaArrayControllerObserver(VanillaArrayControllerObserver):
     def init(self):
         from warnings import warn
         warn(DeprecationWarning("_VanillaArrayControllerObserver is deprecated. Use VanillaArrayControllerObserver"))
-        return super(_VanillaArrayControllerObserver, self).init()
+        return super(
 
 
 class VanillaArrayController(NSArrayController):
@@ -191,7 +192,7 @@ class _VanillaArrayController(VanillaArrayController):
     def init(self):
         from warnings import warn
         warn(DeprecationWarning("_VanillaArrayController is deprecated. Use VanillaArrayController"))
-        return super(_VanillaArrayController, self).init()
+        return super().init()
 
 
 def VanillaMenuBuilder(sender, items, menu, resetCallbackWrapper=True):
@@ -624,7 +625,7 @@ class List(VanillaBaseObject):
         self._dragSettings = dragSettings
 
     def _testForDeprecatedAttributes(self):
-        super(List, self)._testForDeprecatedAttributes()
+        super()._testForDeprecatedAttributes()
         from warnings import warn
         if hasattr(self, "_scrollViewClass"):
             warn(DeprecationWarning("The _scrollViewClass attribute is deprecated. Use the nsScrollViewClass attribute."))
@@ -657,7 +658,7 @@ class List(VanillaBaseObject):
 
     def _breakCycles(self):
         self._menuItemCallbackWrappers = None
-        super(List, self)._breakCycles()
+        super()._breakCycles()
         if hasattr(self, "_editCallback") and self._editObserver is not None:
             for column in self._tableView.tableColumns():
                 if not column.isEditable():

@@ -1,6 +1,7 @@
 from Foundation import NSObject
 from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToolbar, NSToolbarItem, NSImage, NSNormalWindowLevel, NSFloatingWindowLevel, NSClosableWindowMask, NSMiniaturizableWindowMask, NSResizableWindowMask, NSTexturedBackgroundWindowMask, NSUnifiedTitleAndToolbarWindowMask, NSHUDWindowMask, NSUtilityWindowMask, NSTitledWindowMask, NSBorderlessWindowMask, NSBackingStoreBuffered, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSToolbarPrintItemIdentifier, NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarDisplayModeDefault, NSToolbarDisplayModeIconAndLabel, NSToolbarDisplayModeIconOnly, NSToolbarDisplayModeLabelOnly, NSToolbarSizeModeDefault, NSToolbarSizeModeRegular, NSToolbarSizeModeSmall
 from objc import python_method
+from objc import super
 
 from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _addAutoLayoutRules, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaWarning, VanillaBaseControl, \
@@ -1019,7 +1020,7 @@ class FloatingWindow(Window):
     def __init__(self, posSize, title="", minSize=None, maxSize=None,
             textured=False, autosaveName=None, closable=True,
             initiallyVisible=True, screen=None):
-        super(FloatingWindow, self).__init__(posSize, title, minSize, maxSize,
+        super().__init__(posSize, title, minSize, maxSize,
                 textured, autosaveName, closable, initiallyVisible=initiallyVisible, screen=screen)
         self._window.setBecomesKeyOnlyIfNeeded_(True)
 
@@ -1142,7 +1143,7 @@ class Sheet(Window):
             parentWindow = parentWindow._window
         self.parentWindow = parentWindow
         textured = bool(parentWindow.styleMask() & NSTexturedBackgroundWindowMask)
-        super(Sheet, self).__init__(posSize, "", minSize, maxSize, textured,
+        super().__init__(posSize, "", minSize, maxSize, textured,
                 autosaveName=autosaveName)
 
     def open(self):

@@ -1,4 +1,4 @@
-import objc
+from objc import super
 from AppKit import NSBox, NSColor, NSFont, NSSmallControlSize, NSNoTitle, NSLineBorder, NSBoxSeparator, NSBoxCustom
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles, osVersionCurrent, osVersion10_10
 
@@ -91,13 +91,13 @@ class Box(VanillaBaseObject):
                 title = "None"
             boxType = "Box-" + title
             self.frameAdjustments = self.allFrameAdjustments[boxType]
-        return super(Box, self)._adjustPosSize(frame)
+        return super()._adjustPosSize(frame)
 
     def _getContentView(self):
         return self._nsObject.contentView()
 
     def _breakCycles(self):
-        super(Box, self)._breakCycles()
+        super()._breakCycles()
         view = self._nsObject.contentView()
         if view is not None:
             _breakCycles(view)
@@ -196,7 +196,7 @@ class HorizontalLine(_Line):
     """
 
     def __init__(self, posSize):
-        super(HorizontalLine, self).__init__(posSize)
+        super().__init__(posSize)
 
 
 class VerticalLine(_Line):
@@ -230,4 +230,4 @@ class VerticalLine(_Line):
     """
 
     def __init__(self, posSize):
-        super(VerticalLine, self).__init__(posSize)
+        super().__init__(posSize)

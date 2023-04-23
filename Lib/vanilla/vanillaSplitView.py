@@ -2,6 +2,7 @@ from warnings import warn
 from Foundation import NSObject
 from AppKit import NSSplitView, NSSplitViewDividerStylePaneSplitter, NSSplitViewDividerStyleThin, NSSplitViewDividerStyleThick, NSViewWidthSizable, NSViewHeightSizable
 from objc import python_method
+from objc import super
 
 import vanilla
 from vanilla.vanillaBase import VanillaBaseObject, _breakCycles
@@ -29,7 +30,7 @@ class VanillaSplitViewSubclass(NSSplitView):
 
     def dividerColor(self):
         if self._dividerColor is None:
-            return super(VanillaSplitViewSubclass, self).dividerColor()
+            return super().dividerColor()
         return self._dividerColor
 
     def setDividerColor_(self, color):
@@ -38,7 +39,7 @@ class VanillaSplitViewSubclass(NSSplitView):
 
     def dividerThickness(self):
         if self._dividerThickness is None:
-            return super(VanillaSplitViewSubclass, self).dividerThickness()
+            return super().dividerThickness()
         return self._dividerThickness
 
     def setDividerThickness_(self, value):
@@ -50,7 +51,7 @@ class VanillaSplitViewSubclass(NSSplitView):
 
     def drawDividerInRect_(self, rect):
         if self._dividerDrawingFunction is None:
-            super(VanillaSplitViewSubclass, self).drawDividerInRect_(rect)
+            super().drawDividerInRect_(rect)
         else:
             self._dividerDrawingFunction(splitView=self.vanillaWrapper(), rect=rect)
 
@@ -491,7 +492,7 @@ class SplitView(VanillaBaseObject):
         self._delegate = None
         self._paneDescriptions = None
         self._identifierToPane = None
-        super(SplitView, self)._breakCycles()
+        super()._breakCycles()
 
     def _setupPanes(self):
         self._identifierToPane = {}
@@ -596,4 +597,4 @@ def _dummySplitViewDrawingFunction(splitView, rect):
 class SplitView2(SplitView):
     def __init__(self, *args, **kwargs):
         warn(DeprecationWarning("SplitView2 has been deprecated, use SplitView instead."))
-        super(SplitView2, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)

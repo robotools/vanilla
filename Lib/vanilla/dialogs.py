@@ -1,5 +1,6 @@
 from objc import selector
 from objc import python_method
+from objc import super
 from Foundation import NSObject
 from AppKit import NSAlert, NSSavePanel, NSOpenPanel, NSAlertStyleCritical, NSAlertStyleInformational, NSAlertStyleWarning, NSAlertFirstButtonReturn, NSAlertSecondButtonReturn, NSAlertThirdButtonReturn, NSOKButton, NSURL, NSImage
 
@@ -43,7 +44,7 @@ class BasePanel(NSObject):
 class BaseMessageDialog(BasePanel):
 
     def initWithWindow_resultCallback_(cls, parentWindow=None, resultCallback=None):
-        self = super(BaseMessageDialog, cls).initWithWindow_resultCallback_(parentWindow, resultCallback)
+        self = super().initWithWindow_resultCallback_(parentWindow, resultCallback)
         self.messageText = ""
         self.informativeText = ""
         self.alertStyle = NSAlertStyleInformational
@@ -139,7 +140,7 @@ class BasePutGetPanel(BasePanel):
 class PutFilePanel(BasePutGetPanel):
 
     def initWithWindow_resultCallback_cancelCallback_(self, parentWindow=None, resultCallback=None, cancelCallback=None):
-        self = super(PutFilePanel, self).initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
+        self = super().initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
         self.messageText = None
         self.title = None
         self.fileTypes = None
@@ -186,7 +187,7 @@ class PutFilePanel(BasePutGetPanel):
 class GetFileOrFolderPanel(BasePutGetPanel):
 
     def initWithWindow_resultCallback_cancelCallback_(self, parentWindow=None, resultCallback=None, cancelCallback=None):
-        self = super(GetFileOrFolderPanel, self).initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
+        self = super().initWithWindow_resultCallback_cancelCallback_(parentWindow, resultCallback, cancelCallback)
         self.messageText = None
         self.title = None
         self.directory = None

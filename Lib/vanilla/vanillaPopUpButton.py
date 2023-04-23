@@ -208,14 +208,14 @@ class ActionButton(PopUpButton):
     """
 
     def __init__(self, posSize, items, sizeStyle="regular", bordered=True):
-        super(ActionButton, self).__init__(posSize, items, sizeStyle=sizeStyle)
+        super().__init__(posSize, items, sizeStyle=sizeStyle)
         self._nsObject.setPullsDown_(True)
         self._nsObject.setBezelStyle_(NSTexturedRoundedBezelStyle)
         self._nsObject.setBordered_(bordered)
 
     def _breakCycles(self):
         self._menuItemCallbackWrappers = None
-        super(ActionButton, self)._breakCycles()
+        super()._breakCycles()
 
     def getFirstItem(self):
         actionImage = NSImage.imageNamed_(NSImageNameActionTemplate).copy()

@@ -104,7 +104,7 @@ class EditText(VanillaBaseControl):
             self._nsObject.cell().setPlaceholderString_(placeholder)
 
     def _testForDeprecatedAttributes(self):
-        super(EditText, self)._testForDeprecatedAttributes()
+        super()._testForDeprecatedAttributes()
         from warnings import warn
         if hasattr(self, "_textFieldClass"):
             warn(DeprecationWarning("The _textFieldClass attribute is deprecated. Use the nsTextFieldClass attribute."))

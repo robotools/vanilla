@@ -97,7 +97,7 @@ class Button(VanillaBaseControl):
         self._nsObject.setButtonType_(self.nsButtonType)
 
     def _testForDeprecatedAttributes(self):
-        super(Button, self)._testForDeprecatedAttributes()
+        super()._testForDeprecatedAttributes()
         from warnings import warn
         if hasattr(self, "_nsBezelStyle"):
             warn(DeprecationWarning("The _nsBezelStyle attribute is deprecated. Use the nsBezelStyle attribute."))
@@ -209,7 +209,7 @@ class SquareButton(Button):
     frameAdjustments = None
 
     def __init__(self, posSize, title, callback=None, sizeStyle="regular"):
-        super(SquareButton, self).__init__(posSize=posSize, title=title, callback=callback, sizeStyle=sizeStyle)
+        super().__init__(posSize=posSize, title=title, callback=callback, sizeStyle=sizeStyle)
 
 
 _imagePositionMap = {
@@ -296,7 +296,7 @@ class ImageButton(SquareButton):
     def __init__(self, posSize,
                 imagePath=None, imageNamed=None, imageObject=None,
                 title=None, bordered=True, imagePosition="top", callback=None, sizeStyle="regular"):
-        super(ImageButton,  self).__init__(posSize, title=title, callback=callback, sizeStyle=sizeStyle)
+        super().__init__(posSize, title=title, callback=callback, sizeStyle=sizeStyle)
         image = None
         if imagePath is not None:
             image = NSImage.alloc().initWithContentsOfFile_(imagePath)
@@ -394,7 +394,7 @@ class HelpButton(Button):
         if callback is None:
             if page is not None or anchor is not None:
                 callback = self._helpBookCallback
-        super(HelpButton, self).__init__(posSize, title="", callback=callback)
+        super().__init__(posSize, title="", callback=callback)
 
     def _helpBookCallback(self, sender):
         from Carbon import AH

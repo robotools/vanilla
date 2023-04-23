@@ -136,7 +136,7 @@ class Popover(VanillaBaseObject):
         self._breakCycles()
 
     def _breakCycles(self):
-        super(Popover, self)._breakCycles()
+        super()._breakCycles()
         view = self._getContentView()
         if view is not None:
             _breakCycles(view)
