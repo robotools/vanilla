@@ -58,7 +58,7 @@ class _VanillaArrayControllerObserver(VanillaArrayControllerObserver):
     def init(self):
         from warnings import warn
         warn(DeprecationWarning("_VanillaArrayControllerObserver is deprecated. Use VanillaArrayControllerObserver"))
-        return super(
+        return super().init()
 
 
 class VanillaArrayController(NSArrayController):
