@@ -3,6 +3,7 @@ import weakref
 import types
 import objc
 from objc import python_method
+from objc import super
 import AppKit
 from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaCallbackWrapper, osVersionCurrent, osVersion10_16

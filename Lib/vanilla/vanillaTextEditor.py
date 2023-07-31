@@ -73,7 +73,7 @@ class TextEditor(VanillaBaseObject):
         self._setAutosizingFromPosSize(posSize)
 
     def _testForDeprecatedAttributes(self):
-        super(TextEditor, self)._testForDeprecatedAttributes()
+        super()._testForDeprecatedAttributes()
         from warnings import warn
         if hasattr(self, "_textViewClass"):
             warn(DeprecationWarning("The _textViewClass attribute is deprecated. Use the nsTextViewClass attribute."))

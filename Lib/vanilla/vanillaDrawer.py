@@ -111,7 +111,7 @@ class Drawer(VanillaBaseObject):
         return self._nsObject.contentView()
 
     def _breakCycles(self):
-        super(Drawer, self)._breakCycles()
+        super()._breakCycles()
         view = self._getContentView()
         if view is not None:
             _breakCycles(view)

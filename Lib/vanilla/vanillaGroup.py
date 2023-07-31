@@ -124,17 +124,17 @@ class Group(VanillaBaseObject, DropTargetProtocolMixIn):
     def __setattr__(self, attr, value):
         # __init__
         if not hasattr(self, "_visualEffectGroup") or attr == "_visualEffectGroup":
-            super(Group, self).__setattr__(attr, value)
+            super().__setattr__(attr, value)
         # adding a vanilla subview: add to the visual effect view
         elif hasattr(self, "_visualEffectGroup") and isinstance(value, VanillaBaseObject) and hasattr(value, "_posSize"):
             setattr(self._visualEffectGroup, attr, value)
         # fallback: add to the main view
         else:
-            super(Group, self).__setattr__(attr, value)
+            super().__setattr__(attr, value)
 
     def __delattr__(self, attr):
         if hasattr(self, attr):
-            super(Group, self).__delattr__(attr)
+            super().__delattr__(attr)
         elif hasattr(self, "_visualEffectView"):
             delattr(self._visualEffectView, attr)
 

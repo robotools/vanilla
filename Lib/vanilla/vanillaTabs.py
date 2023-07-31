@@ -1,4 +1,6 @@
 from Foundation import NSObject
+from objc import super
+
 from AppKit import NSViewController,\
     NSTabViewController, NSTabView, NSTabViewItem,\
     NSTabPositionTop,\
@@ -215,7 +217,7 @@ class Tabs(VanillaBaseObject):
         sizeStyle = _reverseSizeStyleMap[self._nsObject.controlSize()]
         tabsType = "Tabs-" + sizeStyle
         self.frameAdjustments = self.allFrameAdjustments[tabsType]
-        return super(Tabs, self)._adjustPosSize(frame)
+        return super()._adjustPosSize(frame)
 
     def _setCallback(self, callback):
         if callback is not None:
@@ -233,7 +235,7 @@ class Tabs(VanillaBaseObject):
         return self._tabItems[index]
 
     def _breakCycles(self):
-        super(Tabs, self)._breakCycles()
+        super()._breakCycles()
         for item in self._tabItems:
             item._breakCycles()
 

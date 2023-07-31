@@ -23,7 +23,7 @@ class _RadioGroupMixin(object):
         self._buttonHeight = self._heights[sizeStyle]
         self._callback = callback
         self._sizeStyle = sizeStyle
-        super(cls, self).__init__(posSize, spacing=spacing, alignment="leading")
+        super().__init__(posSize, spacing=spacing, alignment="leading")
         self._buildButtons(titles, sizeStyle)
 
     def _buildButtons(self, titles, sizeStyle):
@@ -201,7 +201,7 @@ class RadioButton(Button):
     nsButtonType = NSRadioButtonType
 
     def __init__(self, posSize, title, value=False, callback=None, sizeStyle="regular"):
-        super(RadioButton, self).__init__(posSize, title, callback=callback, sizeStyle=sizeStyle)
+        super().__init__(posSize, title, callback=callback, sizeStyle=sizeStyle)
         self.set(value)
 
     def set(self, value):
@@ -316,7 +316,7 @@ class RadioGroup(VanillaBaseControl):
             cell.setFont_(font)
 
     def _testForDeprecatedAttributes(self):
-        super(RadioGroup, self)._testForDeprecatedAttributes()
+        super()._testForDeprecatedAttributes()
         from warnings import warn
         if hasattr(self, "_cellClass"):
             warn(DeprecationWarning("The _cellClass attribute is deprecated. Use the nsCellClass attribute."))

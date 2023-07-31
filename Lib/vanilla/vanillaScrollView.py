@@ -68,7 +68,7 @@ class ScrollView(VanillaBaseObject):
         self._nsObject.setDrawsBackground_(drawsBackground)
 
     def _testForDeprecatedAttributes(self):
-        super(ScrollView, self)._testForDeprecatedAttributes()
+        super()._testForDeprecatedAttributes()
         from warnings import warn
         if hasattr(self, "_scrollViewClass"):
             warn(DeprecationWarning("The _scrollViewClass attribute is deprecated. Use the nsScrollViewClass attribute."))
