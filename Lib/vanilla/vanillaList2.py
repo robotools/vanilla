@@ -9,6 +9,8 @@ from vanilla.nsSubclasses import getNSSubclass
 from vanilla.vanillaBase import VanillaBaseObject, VanillaCallbackWrapper, osVersionCurrent, osVersion10_16
 from vanilla.vanillaScrollView import ScrollView
 from vanilla.dragAndDrop import DropTargetProtocolMixIn, dropOperationMap, makePasteboardItem
+from vanilla.vanillaMenuBuilder import VanillaMenuBuilder
+
 
 simpleDataTypes = (
     str,
@@ -313,6 +315,12 @@ class VanillaList2TableViewSubclass(AppKit.NSTableView):
     def canDragRowsWithIndexes_atPoint_(self, indexes, point):
         return self.vanillaWrapper()._validateRowsForDrag(indexes)
 
+    # contextual menu support
+
+    def menuForEvent_(self, event):
+        wrapper = self.vanillaWrapper()
+        return wrapper._menuForEvent(event)
+
 
 class List2(ScrollView, DropTargetProtocolMixIn):
 
@@ -395,7 +403,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
 
     **editCallback** Callback to be called after an item has been edited.
 
-    # **menuCallback** Callback to be called when a contextual menu is requested.
+    **menuCallback** Callback to be called when a contextual menu is requested.
 
     # **enableDelete** A boolean representing if items in the list can be deleted via the interface.
 
@@ -510,6 +518,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             selectionCallback=None,
             doubleClickCallback=None,
             editCallback=None,
+            menuCallback=None,
             allowsGroupRows=False,
             floatsGroupRows=False,
             groupRowCellClass=None,
@@ -544,6 +553,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             self._doubleClickTarget = VanillaCallbackWrapper(doubleClickCallback)
             self._tableView.setTarget_(self._doubleClickTarget)
             self._tableView.setDoubleAction_("action:")
+        # contextual menu
+        self._menuCallback = menuCallback
         # behavior attributes
         self._allowsSelection = allowsSelection
         self._tableView.setAllowsEmptySelection_(allowsEmptySelection)
@@ -869,6 +880,29 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         if not typesAndValues:
             return None
         return makePasteboardItem(typesAndValues)
+
+    # contextual menu
+
+    def _menuForEvent(self, event):
+        # this method is called by the NSTableView subclass to request a contextual menu
+        # if there is a menuCallack convert a the incomming items to an nsmenu
+        if self._menuCallback is not None:
+            items = self._menuCallback(self)
+            # if the list is empty or None, dont do anything
+            if items:
+                menu = AppKit.NSMenu.alloc().init()
+                VanillaMenuBuilder(self, items, menu)
+                return menu
+        # if a menu is been set by setMenu
+        if self._menu is not None:
+            return self._menu
+        return None
+
+    _menu = None
+
+    def setMenu(self, items):
+        self._menu = menu = AppKit.NSMenu.alloc().init()
+        VanillaMenuBuilder(self, items, menu)
 
     # Drop
 
