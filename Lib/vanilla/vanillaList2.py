@@ -604,6 +604,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         self.set(items)
 
     def _breakCycles(self):
+        self._menuItemCallbackWrappers = None
         super()._breakCycles()
         self._selectionCallback = None
         self._editCallback = None

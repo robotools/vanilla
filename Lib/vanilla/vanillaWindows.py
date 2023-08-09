@@ -1,11 +1,12 @@
 from Foundation import NSObject
-from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToolbar, NSToolbarItem, NSImage, NSNormalWindowLevel, NSFloatingWindowLevel, NSClosableWindowMask, NSMiniaturizableWindowMask, NSResizableWindowMask, NSTexturedBackgroundWindowMask, NSUnifiedTitleAndToolbarWindowMask, NSHUDWindowMask, NSUtilityWindowMask, NSTitledWindowMask, NSBorderlessWindowMask, NSBackingStoreBuffered, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSToolbarPrintItemIdentifier, NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarDisplayModeDefault, NSToolbarDisplayModeIconAndLabel, NSToolbarDisplayModeIconOnly, NSToolbarDisplayModeLabelOnly, NSToolbarSizeModeDefault, NSToolbarSizeModeRegular, NSToolbarSizeModeSmall
+from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToolbar, NSToolbarItem, NSImage, NSNormalWindowLevel, NSFloatingWindowLevel, NSClosableWindowMask, NSMiniaturizableWindowMask, NSResizableWindowMask, NSTexturedBackgroundWindowMask, NSUnifiedTitleAndToolbarWindowMask, NSHUDWindowMask, NSUtilityWindowMask, NSTitledWindowMask, NSBorderlessWindowMask, NSBackingStoreBuffered, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSToolbarPrintItemIdentifier, NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarDisplayModeDefault, NSToolbarDisplayModeIconAndLabel, NSToolbarDisplayModeIconOnly, NSToolbarDisplayModeLabelOnly, NSToolbarSizeModeDefault, NSToolbarSizeModeRegular, NSToolbarSizeModeSmall, NSMenu
 from objc import python_method
 from objc import super
 
 from vanilla.vanillaBase import _breakCycles, _calcFrame, _setAttr, _delAttr, _addAutoLayoutRules, _flipFrame, \
         VanillaCallbackWrapper, VanillaError, VanillaWarning, VanillaBaseControl, \
         osVersionCurrent, osVersion10_7, osVersion10_10, osVersion10_16
+from vanilla.vanillaMenuBuilder import VanillaMenuBuilder
 
 # PyObjC may not have these constants wrapped,
 # so test and fallback if needed.
@@ -211,6 +212,7 @@ class Window(NSObject):
 
     def _breakCycles(self):
         self._bindings = {}
+        self._menuItemCallbackWrappers = None
         _breakCycles(self._window.contentView())
         drawers = self._window.drawers()
         if drawers is not None:
@@ -702,34 +704,36 @@ class Window(NSObject):
 
         **toolbarItems** An ordered list of dictionaries containing the following items:
 
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *itemIdentifier*              | A unique string identifier for the item. This is only used internally.    |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *label* (optional)            | The text label for the item. Defaults to *None*.                          |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *paletteLabel* (optional)     | The text label shown in the customization palette. Defaults to *label*.   |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *toolTip* (optional)          | The tool tip for the item. Defaults to *label*.                           |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imagePath* (optional)        | A file path to an image. Defaults to *None*.                              |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imageNamed* (optional)       | The name of an image already loaded as a `NSImage`_ by the application.   |
-        |                               | Defaults to *None*.                                                       |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imageObject* (optional)      | A `NSImage`_ object. Defaults to *None*.                                  |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *imageTemplate* (optional)    | A boolean representing if the image should converted to a template image. |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *selectable* (optional)       | A boolean representing if the item is selectable or not. The default      |
-        |                               | value is _False_. For more information on selectable toolbar items, refer |
-        |                               | to Apple's documentation.                                                 |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *view* (optional)             | A `NSView`_ object to be used instead of an image. Defaults to *None*.    |
-        +-------------------------------+---------------------------------------------------------------------------+
-        | *visibleByDefault* (optional) | If the item should be visible by default pass True to this argument.      |
-        |                               | If the item should be added to the toolbar only through the customization |
-        |                               | palette, use a value of _False_. Defaults to _True_.                      |
-        +-------------------------------+---------------------------------------------------------------------------+
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *itemIdentifier*                | A unique string identifier for the item. This is only used internally.    |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *label* (optional)              | The text label for the item. Defaults to *None*.                          |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *paletteLabel* (optional)       | The text label shown in the customization palette. Defaults to *label*.   |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *toolTip* (optional)            | The tool tip for the item. Defaults to *label*.                           |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *imagePath* (optional)          | A file path to an image. Defaults to *None*.                              |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *imageNamed* (optional)         | The name of an image already loaded as a `NSImage`_ by the application.   |
+        |                                 | Defaults to *None*.                                                       |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *imageObject* (optional)        | A `NSImage`_ object. Defaults to *None*.                                  |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *imageTemplate* (optional)      | A boolean representing if the image should converted to a template image. |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *selectable* (optional)         | A boolean representing if the item is selectable or not. The default      |
+        |                                 | value is _False_. For more information on selectable toolbar items, refer |
+        |                                 | to Apple's documentation.                                                 |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *view* (optional)               | A `NSView`_ object to be used instead of an image. Defaults to *None*.    |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *menuRepresentation* (optional) | A `dict` or `NSMenuItem` to represent the toolbar item when hidden.       |
+        +---------------------------------+---------------------------------------------------------------------------+
+        | *visibleByDefault* (optional)   | If the item should be visible by default pass True to this argument.      |
+        |                                 | If the item should be added to the toolbar only through the customization |
+        |                                 | palette, use a value of _False_. Defaults to _True_.                      |
+        +---------------------------------+---------------------------------------------------------------------------+
 
         .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
 
@@ -912,6 +916,7 @@ class Window(NSObject):
         imageObject = itemData.get("imageObject")
         imageTemplate = itemData.get("imageTemplate")
         view = itemData.get("view")
+        menuRepresentation = itemData.get("menuRepresentation")
         callback = itemData.get("callback", None)
         # create the NSImage if needed
         if imagePath is not None:
@@ -935,6 +940,12 @@ class Window(NSObject):
             toolbarItem.setView_(view)
             toolbarItem.setMinSize_(view.frame().size)
             toolbarItem.setMaxSize_(view.frame().size)
+        if menuRepresentation is not None:
+            if isinstance(menuRepresentation, dict):
+                dummyMenu = NSMenu.alloc().init()
+                VanillaMenuBuilder(self, [menuRepresentation], dummyMenu)
+                menuRepresentation = dummyMenu.itemAtIndex_(0)
+            toolbarItem.setMenuFormRepresentation_(menuRepresentation)
         if callback is not None:
             target = VanillaCallbackWrapper(callback)
             toolbarItem.setTarget_(target)
@@ -942,6 +953,7 @@ class Window(NSObject):
             self._toolbarCallbackWrappers[itemIdentifier] = target
         if itemData.get("selectable", False):
             self._toolbarSelectableItemIdentifiers.append(itemIdentifier)
+
         self._toolbarItems[itemIdentifier] = toolbarItem
 
     # Toolbar delegate methods
