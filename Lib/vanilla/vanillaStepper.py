@@ -55,7 +55,7 @@ class Stepper(VanillaBaseControl):
 
     nsStepperClass = NSStepper
 
-    def __init__(self, posSize, value=None, minValue=0, maxValue=10**3, increment=1, autoRepeat=False, callback=None, sizeStyle="regular"):
+    def __init__(self, posSize, value=None, minValue=0, maxValue=10**3, increment=1, autoRepeat=True, callback=None, sizeStyle="regular"):
         self._setupView(self.nsStepperClass, posSize, callback=callback)
         self._setSizeStyle(sizeStyle)
 
