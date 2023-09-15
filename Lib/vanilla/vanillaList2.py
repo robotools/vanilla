@@ -294,6 +294,11 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 
 class VanillaList2TableViewSubclass(AppKit.NSTableView):
 
+    def keyDown_(self, event):
+        didSomething = self.vanillaWrapper()._keyDown(event)
+        if not didSomething:
+            super().keyDown_(event)
+
     def draggingEntered_(self, draggingInfo):
         super().draggingEntered_(draggingInfo)
         return self.vanillaWrapper()._dropCandidateEntered(draggingInfo)
@@ -405,7 +410,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
 
     **menuCallback** Callback to be called when a contextual menu is requested.
 
-    # **enableDelete** A boolean representing if items in the list can be deleted via the interface.
+    **enableDelete** A boolean representing if items in the list can be deleted via the interface.
 
     **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
     closest match as the entered keystrokes.
@@ -508,6 +513,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             allowsEmptySelection=True,
             allowsSorting=True,
             allowColumnReordering=True,
+            enableDelete=False,
             enableTypingSensitivity=False,
             showColumnTitles=True,
             drawFocusRing=True,
@@ -561,6 +567,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         self._tableView.setAllowsMultipleSelection_(allowsMultipleSelection)
         self._tableView.setAllowsColumnReordering_(allowColumnReordering)
         self._allowsSorting = allowsSorting
+        self._enableDelete = enableDelete
         self._tableView.setAllowsTypeSelect_(enableTypingSensitivity)
         # visual attributes
         if not showColumnTitles:
@@ -860,6 +867,18 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         """
         self._tableView.scrollRowToVisible_(row)
 
+    def removeSelection(self):
+        """
+        Remove selected items.
+        """
+        selection = self.getSelectedIndexes()
+        if not selection:
+            return
+        items = self.get()
+        for index in reversed(sorted(selection)):
+            del items[index]
+        self.set(items)
+
     # Drag
 
     _dragCandidateCallback = None
@@ -881,6 +900,33 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         if not typesAndValues:
             return None
         return makePasteboardItem(typesAndValues)
+
+    # key down
+
+    def _keyDown(self, event):
+        # this method is called by the NSTableView subclass after a key down
+        # has occurred. the subclass expects that a boolean will be returned
+        # that indicates if this method has done something (delete an item or
+        # select an item). if False is returned, the delegate calls the super
+        # method to insure standard key down behavior.
+        #
+        # get the characters
+        characters = event.characters()
+        # get the field editor
+        #
+        deleteCharacters = [
+            AppKit.NSBackspaceCharacter,
+            AppKit.NSDeleteFunctionKey,
+            AppKit.NSDeleteCharacter,
+            chr(0x007F),
+        ]
+        if characters in deleteCharacters:
+            if self._enableDelete:
+                self.removeSelection()
+                return True
+
+        return False
+
 
     # contextual menu
 
