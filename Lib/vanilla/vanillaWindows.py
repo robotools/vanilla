@@ -599,7 +599,7 @@ class Window(NSObject):
     def _alertBindings(self, key):
         returnValues = []
         if key in self._bindings:
-            for callback in self._bindings[key]:
+            for callback in list(self._bindings[key]):
                 value = callback(self)
                 if value is not None:
                     # elimitate None return value
