@@ -16,9 +16,10 @@ try:
 except AttributeError:
     NSPasteboardTypeFileURL = "public.file-url"
 
+plistPasteboardType = "dev.robotools.vanilla.propertyList"
 pasteboardTypeMap = dict(
     string=AppKit.NSPasteboardTypeString,
-    plist="dev.robotools.vanilla.propertyList",
+    plist=plistPasteboardType,
     fileURL=NSPasteboardTypeFileURL
 )
 
@@ -231,6 +232,7 @@ class DropTargetProtocolMixIn:
     _prepareForDropCallback = None
     _performDropCallback = None
     _finishDropCallback = None
+    _unpackDragDataCallback = None
 
     def _getDropView(self):
         return self._nsObject
@@ -258,7 +260,7 @@ class DropTargetProtocolMixIn:
             unwrapped.append(pasteboardType)
         view.registerForDraggedTypes_(unwrapped)
 
-    def getDropItemValues(self, items, pasteboardType=None):
+    def getDropItemValues(self, items, pasteboardType=None, sender=None):
         """
         Get Python objects from the given NSPasteboardItem
         objects for the given pasteboard type. If this view
@@ -272,12 +274,16 @@ class DropTargetProtocolMixIn:
         pasteboardType = pasteboardTypeMap.get(pasteboardType, pasteboardType)
         values = []
         for item in items:
+            value = None
             if pasteboardType == AppKit.NSPasteboardTypeFileURL:
                 value = item.stringForType_(pasteboardType)
                 value = AppKit.NSURL.URLWithString_(value)
             else:
                 value = item.propertyListForType_(pasteboardType)
-            values.append(value)
+                if self._unpackDragDataCallback is not None:
+                    value = self._unpackDragDataCallback(value, pasteboardType)
+            if value is not None:
+                values.append(value)
         return values
 
     # Drop Candidate

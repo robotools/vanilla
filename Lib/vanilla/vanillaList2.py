@@ -604,6 +604,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             self._dragStartedCallback = dragSettings.get("dragStartedCallback")
             self._makeDragDataCallback = dragSettings.get("makeDragDataCallback")
             self._dragEndedCallback = dragSettings.get("dragEndedCallback")
+            self._unpackDragDataCallback = dragSettings.get("unpackDragDataCallback")
         if dropSettings is not None:
             self.setDropSettings(dropSettings)
         # populate
