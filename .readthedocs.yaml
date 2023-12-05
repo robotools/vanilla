@@ -11,7 +11,7 @@ build:
     python: "3"
 
 sphinx:
-  configuration: documentation/source/conf.py
+  configuration: Documentation/source/conf.py
 
 python:
   install:
