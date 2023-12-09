@@ -260,7 +260,7 @@ class DropTargetProtocolMixIn:
             unwrapped.append(pasteboardType)
         view.registerForDraggedTypes_(unwrapped)
 
-    def getDropItemValues(self, items, pasteboardType=None, sender=None):
+    def getDropItemValues(self, items, pasteboardType=None):
         """
         Get Python objects from the given NSPasteboardItem
         objects for the given pasteboard type. If this view
