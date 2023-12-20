@@ -533,6 +533,12 @@ class GridView(VanillaBaseObject):
         Remove row at *index*.
         """
         gridView = self.getNSGridView()
+        # XXX
+        # removeRowAtIndex_ doesn't remove the
+        # visualization of the row, but the row
+        # object is gone. to hack around this,
+        # hide the row before removing it.
+        self.showRow(index, False)
         gridView.removeRowAtIndex_(index)
 
     def moveRow(self, fromIndex, toIndex):
