@@ -408,9 +408,13 @@ class List2(ScrollView, DropTargetProtocolMixIn):
 
     **editCallback** Callback to be called after an item has been edited.
 
+    **deleteCallback** Callback to be called after the delete key has been pressed.
+    The receiver may delete the selection or perform other operations as needed.
+
     **menuCallback** Callback to be called when a contextual menu is requested.
 
-    **enableDelete** A boolean representing if items in the list can be deleted via the interface.
+    **enableDelete** A boolean representing if items in the list can be deleted via
+    the interface. This will be ignored if `deleteCallback` is given.
 
     **enableTypingSensitivity** A boolean representing if typing in the list will jump to the
     closest match as the entered keystrokes.
@@ -524,6 +528,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             selectionCallback=None,
             doubleClickCallback=None,
             editCallback=None,
+            deleteCallback=None,
             menuCallback=None,
             allowsGroupRows=False,
             floatsGroupRows=False,
@@ -555,6 +560,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         # callbacks
         self._selectionCallback = selectionCallback
         self._editCallback = editCallback
+        self._deleteCallback = deleteCallback
         if doubleClickCallback is not None:
             self._doubleClickTarget = VanillaCallbackWrapper(doubleClickCallback)
             self._tableView.setTarget_(self._doubleClickTarget)
@@ -910,11 +916,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         # that indicates if this method has done something (delete an item or
         # select an item). if False is returned, the delegate calls the super
         # method to insure standard key down behavior.
-        #
-        # get the characters
         characters = event.characters()
-        # get the field editor
-        #
         deleteCharacters = [
             AppKit.NSBackspaceCharacter,
             AppKit.NSDeleteFunctionKey,
@@ -922,12 +924,13 @@ class List2(ScrollView, DropTargetProtocolMixIn):
             chr(0x007F),
         ]
         if characters in deleteCharacters:
-            if self._enableDelete:
+            if self._deleteCallback is not None:
+                self._deleteCallback(self)
+                return True
+            elif self._enableDelete:
                 self.removeSelection()
                 return True
-
         return False
-
 
     # contextual menu
 
