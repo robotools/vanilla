@@ -325,6 +325,12 @@ class VanillaBaseObject(object):
             value = NSFocusRingTypeNone
         self._nsObject.setFocusRingType_(value)
 
+    def setToolTip(self, toolTipMessage):
+        """
+        Add tool tip message to the object when hover over it with the cursor.
+        """
+        self._nsObject.setToolTip_(toolTipMessage)
+
 # ------------
 # Base Control
 # ------------
