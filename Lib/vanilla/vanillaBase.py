@@ -311,6 +311,16 @@ class VanillaBaseObject(object):
         l, t, w, h = posSize
         self.setPosSize((l, t, width, height))
 
+    def setShowFocusRing(self, value):
+        from AppKit import (
+            NSFocusRingTypeDefault,
+            NSFocusRingTypeNone
+        )
+        if value:
+            value = NSFocusRingTypeDefault
+        else:
+            value = NSFocusRingTypeNone
+        self._nsObject.setFocusRingType_(value)
 
 # ------------
 # Base Control

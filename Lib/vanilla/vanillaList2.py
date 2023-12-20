@@ -734,6 +734,17 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         """
         self._tableView.setEnabled_(onOff)
 
+    def setShowFocusRing(self, value):
+        from AppKit import (
+            NSFocusRingTypeDefault,
+            NSFocusRingTypeNone
+        )
+        if value:
+            value = NSFocusRingTypeDefault
+        else:
+            value = NSFocusRingTypeNone
+        self._tableView.setFocusRingType_(value)
+
     # Data
 
     def set(self, items):

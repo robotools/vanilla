@@ -1105,6 +1105,16 @@ class List(VanillaBaseObject):
                 break
         return sortedIndexes
 
+    def setShowFocusRing(self, value):
+        from AppKit import (
+            NSFocusRingTypeDefault,
+            NSFocusRingTypeNone
+        )
+        if value:
+            value = NSFocusRingTypeDefault
+        else:
+            value = NSFocusRingTypeNone
+        self._tableView.setFocusRingType_(value)
 
 def CheckBoxListCell(title=None):
     """
