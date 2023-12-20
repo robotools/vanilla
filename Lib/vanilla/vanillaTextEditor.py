@@ -147,3 +147,12 @@ class TextEditor(VanillaBaseObject):
     #
     #def insert(self, text):
     #    self._textView.insert_(text)
+
+    def enable(self, onOff):
+        self._textView.setEditable_(onOff)
+        self._textView.setSelectable_(onOff)
+        if onOff:
+            alpha = 1.0
+        else:
+            alpha = 0.2
+        self._textView.setAlphaValue_(alpha)
