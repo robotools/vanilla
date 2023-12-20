@@ -31,7 +31,7 @@ from vanilla.vanillaStepper import Stepper
 from vanilla.vanillaTabs import Tabs
 from vanilla.vanillaTextBox import TextBox
 from vanilla.vanillaTextEditor import TextEditor
-from vanilla.vanillaWindows import Window, FloatingWindow, HUDFloatingWindow, Sheet
+from vanilla.vanillaWindows import Window, FloatingWindow, HUDFloatingWindow, Sheet, ModalWindow
 from vanilla.dragAndDrop import startDraggingSession, DropTargetProtocolMixIn
 
 __all__ = [
@@ -70,7 +70,7 @@ __all__ = [
     "Tabs",
     "TextBox",
     "TextEditor",
-    "Window", "FloatingWindow", "HUDFloatingWindow", "Sheet",
+    "Window", "FloatingWindow", "HUDFloatingWindow", "Sheet", "ModalWindow",
 
     "startDraggingSession",
     "DropTargetProtocolMixIn"

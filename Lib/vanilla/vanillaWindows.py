@@ -1,5 +1,42 @@
 from Foundation import NSObject
-from AppKit import NSApp, NSWindow, NSPanel, NSScreen, NSWindowController, NSToolbar, NSToolbarItem, NSImage, NSNormalWindowLevel, NSFloatingWindowLevel, NSClosableWindowMask, NSMiniaturizableWindowMask, NSResizableWindowMask, NSTexturedBackgroundWindowMask, NSUnifiedTitleAndToolbarWindowMask, NSHUDWindowMask, NSUtilityWindowMask, NSTitledWindowMask, NSBorderlessWindowMask, NSBackingStoreBuffered, NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier, NSToolbarPrintItemIdentifier, NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarDisplayModeDefault, NSToolbarDisplayModeIconAndLabel, NSToolbarDisplayModeIconOnly, NSToolbarDisplayModeLabelOnly, NSToolbarSizeModeDefault, NSToolbarSizeModeRegular, NSToolbarSizeModeSmall, NSMenu
+from AppKit import (
+    NSApp,
+    NSWindow,
+    NSPanel,
+    NSScreen,
+    NSWindowController,
+    NSToolbar,
+    NSToolbarItem,
+    NSImage,
+    NSNormalWindowLevel,
+    NSFloatingWindowLevel,
+    NSModalPanelWindowLevel,
+    NSClosableWindowMask,
+    NSMiniaturizableWindowMask,
+    NSResizableWindowMask,
+    NSTexturedBackgroundWindowMask,
+    NSUnifiedTitleAndToolbarWindowMask,
+    NSHUDWindowMask,
+    NSUtilityWindowMask,
+    NSTitledWindowMask,
+    NSBorderlessWindowMask,
+    NSBackingStoreBuffered,
+    NSToolbarFlexibleSpaceItemIdentifier,
+    NSToolbarSpaceItemIdentifier,
+    NSToolbarSeparatorItemIdentifier,
+    NSToolbarCustomizeToolbarItemIdentifier,
+    NSToolbarPrintItemIdentifier,
+    NSToolbarShowFontsItemIdentifier,
+    NSToolbarShowColorsItemIdentifier,
+    NSToolbarDisplayModeDefault,
+    NSToolbarDisplayModeIconAndLabel,
+    NSToolbarDisplayModeIconOnly,
+    NSToolbarDisplayModeLabelOnly,
+    NSToolbarSizeModeDefault,
+    NSToolbarSizeModeRegular,
+    NSToolbarSizeModeSmall,
+    NSMenu
+)
 from objc import python_method
 from objc import super
 
@@ -1168,3 +1205,31 @@ class Sheet(Window):
         # See Window.open():
         self.retain()
         self._validateMinMaxSize()
+
+
+class VModalWindow(Window):
+
+    """
+    A modal window. Modal windows should be used very rarely.
+    [Modal usage documentation.](https://developer.apple.com/design/human-interface-guidelines/patterns/modality)
+    """
+
+    nsWindowLevel = NSModalPanelWindowLevel
+
+    def __init__(self, *args, **kwargs):
+        kwargs["closable"] = False
+        kwargs["miniaturizable"] = False
+        super().__init__(*args, **kwargs)
+
+    def open(self):
+        super().open()
+        self.center()
+        NSApp().runModalForWindow_(self._window)
+
+    def windowWillClose_(self, notification):
+        super().windowWillClose_(notification)
+        NSApp().stopModal()
+
+# XXX hack to get around vanilla derivatives that
+# have already implemented a class named ModalWindow
+ModalWindow = VModalWindow
