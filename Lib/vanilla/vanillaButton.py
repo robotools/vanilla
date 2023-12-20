@@ -1,13 +1,27 @@
-from AppKit import NSButton, NSImage, NSBundle, NSRoundedBezelStyle, NSShadowlessSquareBezelStyle, NSHelpButtonBezelStyle, NSMomentaryPushInButton, NSCommandKeyMask, NSAlternateKeyMask, NSAlternateKeyMask, NSShiftKeyMask, NSAlphaShiftKeyMask, NSHelpFunctionKey, NSHomeFunctionKey, NSEndFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSDeleteFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSImageLeft, NSImageRight, NSImageAbove, NSImageBelow, NSImageOnly, NSTextAlignmentRight, NSTextAlignmentLeft, NSNoCellMask
+from AppKit import NSButton, NSImage, NSBundle, NSRoundedBezelStyle, NSShadowlessSquareBezelStyle, NSHelpButtonBezelStyle, NSMomentaryPushInButton, NSCommandKeyMask, NSControlKeyMask, NSAlternateKeyMask, NSShiftKeyMask, NSAlphaShiftKeyMask, NSHelpFunctionKey, NSHomeFunctionKey, NSEndFunctionKey, NSPageUpFunctionKey, NSPageDownFunctionKey, NSDeleteFunctionKey, NSLeftArrowFunctionKey, NSRightArrowFunctionKey, NSUpArrowFunctionKey, NSDownArrowFunctionKey, NSImageLeft, NSImageRight, NSImageAbove, NSImageBelow, NSImageOnly, NSTextAlignmentRight, NSTextAlignmentLeft, NSNoCellMask
 from vanilla.vanillaBase import VanillaBaseControl
+try:
+    from AppKit import (
+        NSEventModifierFlagCapsLock,
+        NSEventModifierFlagShift,
+        NSEventModifierFlagControl,
+        NSEventModifierFlagOption,
+        NSEventModifierFlagCommand
+    )
+except ImportError:
+    NSEventModifierFlagCapsLock = NSAlphaShiftKeyMask
+    NSEventModifierFlagShift = NSShiftKeyMask
+    NSEventModifierFlagControl = NSControlKeyMask
+    NSEventModifierFlagOption = NSAlternateKeyMask
+    NSEventModifierFlagCommand = NSCommandKeyMask
 
 
 _modifierMap = {
-    "command": NSCommandKeyMask,
-    "control": NSAlternateKeyMask,
-    "option": NSAlternateKeyMask,
-    "shift": NSShiftKeyMask,
-    "capslock": NSAlphaShiftKeyMask,
+    "command": NSEventModifierFlagCommand,
+    "control": NSEventModifierFlagControl,
+    "option": NSEventModifierFlagOption,
+    "shift": NSEventModifierFlagShift,
+    "capslock": NSEventModifierFlagCapsLock,
 }
 
 _keyMap = {
