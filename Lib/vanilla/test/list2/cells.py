@@ -13,6 +13,8 @@ class Test:
             d = dict(
                 textField="ABC",
                 editableTextField="XYZ",
+                comboBox="AAA",
+                editableComboBox="BBB",
                 slider=25,
                 editableSlider=75,
                 checkBox=True,
@@ -44,6 +46,26 @@ class Test:
                 identifier="editableTextField",
                 title="TextField-E",
                 width=75,
+                editable=True
+            ),
+            dict(
+                identifier="comboBox",
+                title="ComboBox",
+                width=75,
+                cellClass=vanilla.ComboBoxList2Cell,
+                cellClassArguments=dict(
+                    items=["AAA", "BBB", "CCC"]
+                ),
+                editable=False
+            ),
+            dict(
+                identifier="editableComboBox",
+                title="ComboBox-E",
+                width=75,
+                cellClass=vanilla.ComboBoxList2Cell,
+                cellClassArguments=dict(
+                    items=["AAA", "BBB", "CCC"]
+                ),
                 editable=True
             ),
             dict(

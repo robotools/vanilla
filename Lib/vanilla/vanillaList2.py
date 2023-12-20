@@ -956,7 +956,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
 
     def _menuForEvent(self, event):
         # this method is called by the NSTableView subclass to request a contextual menu
-        # if there is a menuCallack convert a the incomming items to an nsmenu
+        # if there is a menuCallack convert the incoming items to an nsmenu
         if self._menuCallback is not None:
             items = self._menuCallback(self)
             # if the list is empty or None, dont do anything
@@ -1527,3 +1527,34 @@ class LevelIndicatorList2Cell(LevelIndicator):
             image = imageObject
         if imageObject is not None:
             cell.setImage_(image)
+
+
+from vanilla.vanillaComboBox import ComboBox
+
+class ComboBoxList2Cell(ComboBox):
+
+    """
+    An object that displays a combo box in a List2 column.
+    Refer to the ComboBox documentation for options.
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
+
+    def __init__(self,
+            items=[],
+            completes=True,
+            editable=False,
+            callback=None
+        ):
+        super().__init__(
+            posSize="auto",
+            items=items,
+            completes=completes,
+            continuous=False,
+            sizeStyle="small",
+            callback=callback
+        )
+        self.enable(editable)
