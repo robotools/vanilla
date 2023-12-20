@@ -295,7 +295,11 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 class VanillaList2TableViewSubclass(AppKit.NSTableView):
 
     def keyDown_(self, event):
-        didSomething = self.vanillaWrapper()._keyDown(event)
+        wrapper = self.vanillaWrapper()
+        if wrapper is None:
+            didSomething = False
+        else:
+            didSomething = wrapper._keyDown(event)
         if not didSomething:
             super().keyDown_(event)
 
