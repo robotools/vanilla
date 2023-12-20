@@ -14,6 +14,14 @@ else:
     colorWellStyleMap = dict()
 
 
+class VanillaColorWellSubclass(NSColorWell):
+
+    def activate_(self, activate):
+        colorPanel = NSColorPanel.sharedColorPanel()
+        colorPanel.setShowsAlpha_(True)
+        super().activate_(activate)
+
+
 class ColorWell(VanillaBaseObject):
 
     """
@@ -63,19 +71,19 @@ class ColorWell(VanillaBaseObject):
     .. _NSColor: https://developer.apple.com/documentation/appkit/nscolor?language=objc
     """
 
-    nsColorWellClass = NSColorWell
+    nsColorWellClass = VanillaColorWellSubclass
 
     def __init__(self, posSize, callback=None, color=None, colorWellStyle=None):
         self._setupView(self.nsColorWellClass, posSize, callback=callback)
         if color is not None:
             self._nsObject.setColor_(color)
-        colorPanel = NSColorPanel.sharedColorPanel()
-        colorPanel.setShowsAlpha_(True)
         if osVersionCurrent >= osVersion13_0:
             # https://developer.apple.com/documentation/appkit/nscolorwell/3955203-colorwellstyle?language=objc
             nsColorWellStyle = colorWellStyleMap.get(colorWellStyle)
             if nsColorWellStyle is not None:
                 self._nsObject.setColorWellStyle_(nsColorWellStyle)
+        colorPanel = NSColorPanel.sharedColorPanel()
+        colorPanel.setShowsAlpha_(True)
 
     def getNSColorWell(self):
         """
