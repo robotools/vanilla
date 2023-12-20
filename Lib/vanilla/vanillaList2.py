@@ -1028,6 +1028,7 @@ def makeIndexSet(indexes):
 
 from vanilla.vanillaGroup import Group
 from vanilla.vanillaEditText import EditText
+from vanilla.vanillaTextBox import _textAlignmentMap
 
 truncationMap = dict(
     clipping=AppKit.NSLineBreakByClipping,
@@ -1040,6 +1041,14 @@ class EditTextList2Cell(Group):
 
     """
     An object that displays text in a List2 column.
+
+    **alignment** The alignment of the text within the row. Options:
+
+    - `"left"`
+    - `"right"`
+    - `"center"`
+    - `"justified"`
+    - `"natural"`
 
     **verticalAlignment** The vertical alignment of the text
     within the row. Options:
@@ -1079,6 +1088,7 @@ class EditTextList2Cell(Group):
     # Sigh.
 
     def __init__(self,
+            alignment="natural",
             verticalAlignment="center",
             editable=False,
             truncationMode="tail",
@@ -1121,6 +1131,7 @@ class EditTextList2Cell(Group):
         textField.setBezeled_(False)
         lineBreakMode = truncationMap.get(truncationMode, truncationMode)
         textField.setLineBreakMode_(lineBreakMode)
+        textField.setAlignment_(_textAlignmentMap[alignment])
 
     def getNSTextField(self):
         return self.editText.getNSTextField()
