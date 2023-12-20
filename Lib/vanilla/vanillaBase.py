@@ -312,6 +312,9 @@ class VanillaBaseObject(object):
         self.setPosSize((l, t, width, height))
 
     def setShowFocusRing(self, value):
+        """
+        Set if the focus ring is visible.
+        """
         from AppKit import (
             NSFocusRingTypeDefault,
             NSFocusRingTypeNone

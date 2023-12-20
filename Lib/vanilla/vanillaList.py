@@ -1106,6 +1106,9 @@ class List(VanillaBaseObject):
         return sortedIndexes
 
     def setShowFocusRing(self, value):
+        """
+        Set if the focus ring is visible.
+        """
         from AppKit import (
             NSFocusRingTypeDefault,
             NSFocusRingTypeNone
