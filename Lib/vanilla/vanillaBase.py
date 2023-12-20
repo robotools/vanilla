@@ -106,13 +106,13 @@ class VanillaBaseObject(object):
         mask = 0
         if l < 0:
             mask |= NSViewMinXMargin
-        if w <= 0 and (w > 0 or l >= 0):
+        if w <= 0 and l >= 0:
             mask |= NSViewWidthSizable
         if w > 0 and l >= 0:
             mask |= NSViewMaxXMargin
         if t < 0:
             mask |= NSViewMaxYMargin
-        if h <= 0 and (h > 0 or t >= 0):
+        if h <= 0 and t >= 0:
             mask |= NSViewHeightSizable
         if h > 0 and t >= 0:
             mask |= NSViewMinYMargin
