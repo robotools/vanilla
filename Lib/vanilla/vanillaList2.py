@@ -1107,6 +1107,18 @@ class EditTextList2Cell(Group):
         )
         container = self._nsObject
         textField = self.editText.getNSTextField()
+        # Hi! If you are here trying to debug a strange auto layout issue
+        # where the cell inside of a table is affecting the fixed position
+        # layout of controls outside of the table heirarchy, well, good news:
+        # I'm here to help, bad news: I have no clue what is going on.
+        # The initial version used method 1. Then this issue was reported:
+        # https://github.com/robotools/vanilla/issues/188
+        # I created method 2 thinking that having tight control over the layout
+        # would work better than doing it through the text syntax. Nope. It
+        # was just a separate set of problems. So, future reader, I leave my
+        # code here for you to see so that you don't venture down the same
+        # pointless path.
+        # > method 1
         if verticalAlignment == "top":
             yRule = "V:|[editText]"
         elif verticalAlignment == "bottom":
@@ -1131,6 +1143,17 @@ class EditTextList2Cell(Group):
             )
             rules.append(heightRule)
         self.addAutoPosSizeRules(rules)
+        # < method 1
+        # > method 2
+        # textField.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        # textField.widthAnchor().constraintEqualToAnchor_(container.widthAnchor()).setActive_(True)
+        # if verticalAlignment == "top":
+        #     textField.topAnchor().constraintEqualToAnchor_(container.topAnchor()).setActive_(True)
+        # elif verticalAlignment == "bottom":
+        #     textField.bottomAnchor().constraintEqualToAnchor_(container.bottomAnchor()).setActive_(True)
+        # elif verticalAlignment == "center":
+        #     textField.centerYAnchor().constraintEqualToAnchor_(container.centerYAnchor()).setActive_(True)
+        # < method 2
         textField.setDrawsBackground_(False)
         textField.setBezeled_(False)
         lineBreakMode = truncationMap.get(truncationMode, truncationMode)
