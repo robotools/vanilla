@@ -947,6 +947,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
                 return True
             elif self._enableDelete:
                 self.removeSelection()
+                if self._editCallback is not None:
+                    self._editCallback(self)
                 return True
         return False
 
