@@ -148,12 +148,18 @@ class SegmentedButton(VanillaBaseControl):
         """
         return self._nsObject
 
-    def enable(self, onOff):
+    def enable(self, onOff, indexes=None):
         """
         Enable or disable the object. **onOff** should be a boolean.
+        If `indexes` is given, only that indexes in that list will
+        be changed. If `indexes` is `None` all segments will be changed.
         """
-        for index in range(self._nsObject.segmentCount()):
-            self._nsObject.setEnabled_forSegment_(onOff, index)
+        allSegmentIndexes = list(range(self._nsObject.segmentCount()))
+        if indexes is None:
+            indexes = allSegmentIndexes
+        for index in allSegmentIndexes:
+            if index in indexes:
+                self._nsObject.setEnabled_forSegment_(onOff, index)
 
     def set(self, value):
         """
