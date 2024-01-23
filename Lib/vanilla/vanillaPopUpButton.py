@@ -114,10 +114,14 @@ class PopUpButton(VanillaBaseControl):
         Set the items to appear in the pop up list.
         """
         self._nsObject.removeAllItems()
+        menu = self._nsObject.menu()
         for item in items:
             if isinstance(item, NSMenuItem):
-                menu = self._nsObject.menu()
                 menu.addItem_(item)
+            elif item == "---":
+                separatorItem = NSMenuItem.separatorItem()
+                separatorItem.setTitle_(item)
+                menu.addItem_(separatorItem)
             else:
                 self._nsObject.addItemWithTitle_(item)
 
