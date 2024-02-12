@@ -1316,11 +1316,13 @@ class PopUpButtonList2Cell(PopUpButton):
     def __init__(self,
             items=[],
             editable=False,
-            callback=None
+            callback=None,
+            bordered=False,
         ):
         super().__init__(
             "auto",
             items=items,
+            bordered=bordered,
             sizeStyle="small",
             callback=callback
         )
