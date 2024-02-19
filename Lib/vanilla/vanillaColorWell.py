@@ -1,4 +1,5 @@
 from AppKit import NSColorWell, NSColorPanel
+from objc import super
 from vanilla.vanillaBase import VanillaBaseObject, osVersionCurrent, osVersion13_0
 
 if osVersionCurrent >= osVersion13_0:
