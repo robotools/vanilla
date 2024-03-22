@@ -2,6 +2,7 @@ from AppKit import NSMatrix, NSRadioButton, NSButtonCell, NSRadioModeMatrix, NSF
 from vanilla.vanillaBase import VanillaBaseControl, _sizeStyleMap
 from vanilla.vanillaButton import Button
 from vanilla.vanillaStackGroup import VerticalStackGroup, HorizontalStackGroup
+from objc import super
 
 try:
     from AppKit import NSRadioButtonType
@@ -23,7 +24,7 @@ class _RadioGroupMixin(object):
         self._buttonHeight = self._heights[sizeStyle]
         self._callback = callback
         self._sizeStyle = sizeStyle
-        super().__init__(posSize, spacing=spacing, alignment="leading")
+        cls.__init__(self, posSize, spacing=spacing, alignment="leading")
         self._buildButtons(titles, sizeStyle)
 
     def _buildButtons(self, titles, sizeStyle):
@@ -126,7 +127,7 @@ class VerticalRadioGroup(VerticalStackGroup, _RadioGroupMixin):
     )
 
     def __init__(self, posSize, titles, callback=None, sizeStyle="regular"):
-        self._init(VerticalRadioGroup, posSize, titles, callback=callback, sizeStyle=sizeStyle)
+        self._init(VerticalStackGroup, posSize, titles, callback=callback, sizeStyle=sizeStyle)
 
 
 class HorizontalRadioGroup(HorizontalStackGroup, _RadioGroupMixin):
@@ -188,7 +189,7 @@ class HorizontalRadioGroup(HorizontalStackGroup, _RadioGroupMixin):
     )
 
     def __init__(self, posSize, titles, callback=None, sizeStyle="regular"):
-        self._init(HorizontalRadioGroup, posSize, titles, callback=callback, sizeStyle=sizeStyle)
+        self._init(HorizontalStackGroup, posSize, titles, callback=callback, sizeStyle=sizeStyle)
 
 
 class RadioButton(Button):
