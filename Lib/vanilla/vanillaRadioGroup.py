@@ -67,6 +67,13 @@ class _RadioGroupMixin(object):
         for other, button in enumerate(self._buttons):
             button.set(other == index)
 
+    def enable(self, onOff):
+        """
+        Enable or disable the object. **onOff** should be a boolean.
+        """
+        for button in self._buttons:
+            button.enable(onOff)
+
 
 class VerticalRadioGroup(VerticalStackGroup, _RadioGroupMixin):
 
