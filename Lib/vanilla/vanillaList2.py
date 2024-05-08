@@ -34,6 +34,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         self._cellToValueConverters = {} # { identifier : function }
         self._groupRowCellClass = None
         self._groupRowCellClassKwargs = {}
+        self._editedRowIndex = None
         self._cellWrappers = {} # { nsView : vanilla wrapper } for view + wrapper reuse purposes
         self._valueGetters = {} # { identifier : options (see below) }
         self._valueSetters = {} # { identifier : options (see below) }
@@ -246,8 +247,14 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         value = sender.get()
         self.setItemValueForColumnAndRow(value, identifier, row)
         wrapper = self.vanillaWrapper()
+        self._editedRowIndex = row
         if wrapper._editCallback is not None:
             wrapper._editCallback(wrapper)
+        self._editedRowIndex = None
+
+    @python_method
+    def getEditedRowIndex(self):
+        return self._editedRowIndex
 
     # Drag
 
@@ -875,6 +882,18 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         ]
         rowIndexes = makeIndexSet(rowIndexes)
         self._tableView.selectRowIndexes_byExtendingSelection_(rowIndexes, False)
+
+    def getEditedIndex(self):
+        """
+        Return the index of the edited row.
+        """
+        return self._dataSourceAndDelegate.getEditedRowIndex()
+
+    def getEditedItem(self):
+        """
+        Return the item of the edited row.
+        """
+        return self.get()[self.getEditedIndex()]
 
     def scrollToSelection(self):
         """
