@@ -1,21 +1,22 @@
 .. highlight:: python
 
-====
-List
-====
+=====
+List2
+=====
 
 .. module:: vanilla
-.. autoclass:: List
+.. autoclass:: List2
    :inherited-members:
    :members:
 
-===============
-List Item Cells
-===============
+================
+List2 Item Cells
+================
 
-.. autofunction:: CheckBoxListCell
-.. autofunction:: SliderListCell
-.. autofunction:: PopUpButtonListCell
-.. autofunction:: ImageListCell
-.. autofunction:: SegmentedButtonListCell
-.. autofunction:: LevelIndicatorListCell
+.. autofunction:: EditTextList2Cell
+.. autofunction:: CheckBoxList2Cell
+.. autofunction:: SliderList2Cell
+.. autofunction:: PopUpButtonList2Cell
+.. autofunction:: ImageList2Cell
+.. autofunction:: SegmentedButtonList2Cell
+.. autofunction:: ColorWellList2Cell
