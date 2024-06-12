@@ -543,9 +543,8 @@ def _breakCycles(view):
     """
     Break cyclic references by deleting _target attributes.
     """
-    if hasattr(view, "vanillaWrapper"):
+    if view.respondsToSelector_("vanillaWrapper"):
         obj = view.vanillaWrapper()
-        if hasattr(obj, "_breakCycles"):
-            obj._breakCycles()
+        obj._breakCycles()
     for view in view.subviews():
         _breakCycles(view)
