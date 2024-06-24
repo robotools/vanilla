@@ -163,7 +163,8 @@ def getArguments(obj):
     and leave 'self' out.
     """
     try:
-        arguments = inspect.formatargspec(*inspect.getargspec(obj))
+        sig = inspect.signature(obj)
+        arguments = ", ".join(sig.parameters.keys())
     except TypeError:
         arguments = ""
     return arguments.replace("self, ", "").replace("self", "")
