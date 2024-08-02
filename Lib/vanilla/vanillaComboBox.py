@@ -24,7 +24,11 @@ class VanillaComboBoxDelegate(NSObject):
 
     def comboBoxSelectionDidChange_(self, notification):
         obj = notification.object()
-        obj.setObjectValue_(obj.objectValueOfSelectedItem())
+        if obj.usesDataSource():
+            value = obj.dataSource().comboBox_objectValueForItemAtIndex_(obj, obj.indexOfSelectedItem())
+        else:
+            value = obj.objectValueOfSelectedItem()
+        obj.setObjectValue_(value)
         self._callVanillaCallback(notification)
 
 
