@@ -318,10 +318,10 @@ class Window(NSObject):
         maxSize = self._window.maxSize()
         if size.width < minSize.width or size.height < minSize.height:
             from warnings import warn
-            warn("The windows `minSize` is bigger then the initial size.", VanillaWarning)
+            warn("The window's `minSize` is bigger than the initial size.", VanillaWarning)
         elif size.width > maxSize.width or size.height > maxSize.height:
             from warnings import warn
-            warn("The windows `maxSize` is bigger then the initial size.", VanillaWarning)
+            warn("The window's initial size is bigger than the `maxSize`.", VanillaWarning)
 
     def close(self):
         """
