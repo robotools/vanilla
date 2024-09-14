@@ -308,7 +308,7 @@ class ListTest(BaseTest):
         simpleList = List((0, 0, 0, 0), listOptions, enableTypingSensitivity=True)
 
         multiItems = [
-            {"name": name, "path": os.path.basename(getattr(module, "__file__", "Unknown"))}
+            {"name": name, "path": os.path.basename(getattr(module, "__file__", None) or "Unknow")}
             for name, module in sys.modules.items()
         ]
         columnDescriptions = [
