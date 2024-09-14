@@ -57,20 +57,40 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         self._groupRowCellClassKwargs = kwargs
 
     @python_method
-    def setGetters(self, getters):
-        self._valueGetters = getters
+    def addGetter(self, identifier, getter):
+        self._valueGetters[identifier] = getter
 
     @python_method
-    def setSetters(self, setters):
-        self._valueSetters = setters
+    def removeGetter(self, identifier):
+        if identifier in self._valueGetters:
+            del self._valueGetters[identifier]
 
     @python_method
-    def setValueToCellConverters(self, converters):
-        self._valueToCellConverters = converters
+    def addSetter(self, identifier, setter):
+        self._valueSetters[identifier] = setter
 
     @python_method
-    def setCellToValueConverters(self, converters):
-        self._cellToValueConverters = converters
+    def removeSetter(self, identifier):
+        if identifier in self._valueGetters:
+            del self._valueSetters[identifier]
+
+    @python_method
+    def addValueToCellConverters(self, identifier, converter):
+        self._valueToCellConverters[identifier] = converter
+
+    @python_method
+    def removeValueToCellConverters(self, identifier):
+        if identifier in self._valueToCellConverters:
+            del self._valueToCellConverters[identifier]
+
+    @python_method
+    def addCellToValueConverters(self, identifier, converter):
+        self._cellToValueConverters[identifier] = converter
+
+    @python_method
+    def removeCellToValueConverters(self, identifier):
+        if identifier in self._cellToValueConverters:
+            del self._cellToValueConverters[identifier]
 
     @python_method
     def vanillaWrapper(self):
@@ -157,7 +177,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         elif function is not None:
             value = function(item)
         else:
-            value = item[identifier]
+            value = item.get(identifier, "")
         if identifier in self._valueToCellConverters:
             value = self._valueToCellConverters[identifier](value)
         return value
@@ -638,84 +658,125 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         return self._tableView
 
     def _buildColumns(self, columnDescriptions):
-        getters = {}
-        setters = {}
-        cellToValueConverters = {}
-        valueToCellConverters = {}
-        rowHeights = []
         if osVersionCurrent >= osVersion10_16:
-            rowHeights.append(24)
+            self._tableView.setRowHeight_(24)
         else:
-            rowHeights.append(17)
+            self._tableView.setRowHeight_(17)
         for columnDescription in columnDescriptions:
-            identifier = columnDescription["identifier"]
-            title = columnDescription.get("title", "")
-            width = columnDescription.get("width")
-            minWidth = columnDescription.get("minWidth", width)
-            maxWidth = columnDescription.get("maxWidth", width)
-            sortable = columnDescription.get("sortable")
-            cellClass = columnDescription.get("cellClass", EditTextList2Cell)
-            cellKwargs = columnDescription.get("cellClassArguments", {})
-            editable = columnDescription.get("editable", False)
-            property = columnDescription.get("property")
-            getMethod = columnDescription.get("getMethod")
-            setMethod = columnDescription.get("setMethod")
-            getFunction = columnDescription.get("getFunction")
-            setFunction = columnDescription.get("setFunction")
-            cellToValueConverter = columnDescription.get("cellToValueConverter")
-            valueToCellConverter = columnDescription.get("valueToCellConverter")
-            getters[identifier] = dict(
+            self.appendColumn(columnDescription)
+
+    def appendColumn(self, columnDescription):
+        """
+        Append a column discription.
+        The column identifier has to be unique for this table.
+        """
+        self.insertColumn(-1, columnDescription)
+
+    def removeColumn(self, identifier):
+        """
+        Remove a column by the `identifier`.
+        This will fail silently when the column does not exists.
+        """
+        column = self._tableView.tableColumnWithIdentifier_(identifier)
+        if column:
+            self._tableView.removeTableColumn_(column)
+            self._dataSourceAndDelegate.removeGetter(identifier)
+            self._dataSourceAndDelegate.removeSetter(identifier)
+            self._dataSourceAndDelegate.removeValueToCellConverters(identifier)
+            self._dataSourceAndDelegate.removeCellToValueConverters(identifier)
+
+    def insertColumn(self, index, columnDescription):
+        """
+        Insert a column discription and an index.
+        The column identifier has to be unique for this table.
+        """
+        identifier = columnDescription["identifier"]
+        # dont allow columns with the same identifier
+        assert not self._tableView.tableColumnWithIdentifier_(identifier), f"Column with identifier '{identifier}' already exists."
+        title = columnDescription.get("title", "")
+        width = columnDescription.get("width")
+        minWidth = columnDescription.get("minWidth", width)
+        maxWidth = columnDescription.get("maxWidth", width)
+        sortable = columnDescription.get("sortable")
+        cellClass = columnDescription.get("cellClass", EditTextList2Cell)
+        cellKwargs = columnDescription.get("cellClassArguments", {})
+        editable = columnDescription.get("editable", False)
+        property = columnDescription.get("property")
+        getMethod = columnDescription.get("getMethod")
+        setMethod = columnDescription.get("setMethod")
+        getFunction = columnDescription.get("getFunction")
+        setFunction = columnDescription.get("setFunction")
+        cellToValueConverter = columnDescription.get("cellToValueConverter")
+        valueToCellConverter = columnDescription.get("valueToCellConverter")
+
+        self._dataSourceAndDelegate.addGetter(
+            identifier,
+            dict(
                 property=property,
                 method=getMethod,
                 function=getFunction
             )
-            setters[identifier] = dict(
+        )
+        self._dataSourceAndDelegate.addSetter(
+            identifier,
+            dict(
                 property=property,
                 method=setMethod,
                 function=setFunction
             )
-            if cellToValueConverter is not None:
-                cellToValueConverters[identifier] = cellToValueConverter
-            if valueToCellConverter is not None:
-                valueToCellConverters[identifier] = valueToCellConverter
-            cellKwargs["editable"] = editable
-            if editable:
-                cellKwargs["callback"] = True
-            self._dataSourceAndDelegate.setCellClassWithKwargsForColumn(
-                cellClass, cellKwargs, identifier
+        )
+
+        if cellToValueConverter is not None:
+            self._dataSourceAndDelegate.addCellToValueConverters(
+                identifier,
+                cellToValueConverter
             )
-            if width is not None:
-                if width == minWidth and width == maxWidth:
-                    resizingMask = AppKit.NSTableColumnNoResizing
-                else:
-                    resizingMask = AppKit.NSTableColumnUserResizingMask | AppKit.NSTableColumnAutoresizingMask
+        if valueToCellConverter is not None:
+            self._dataSourceAndDelegate.addValueToCellConverters(
+                identifier,
+                valueToCellConverter
+            )
+
+        cellKwargs["editable"] = editable
+        if editable:
+            cellKwargs["callback"] = True
+        self._dataSourceAndDelegate.setCellClassWithKwargsForColumn(
+            cellClass, cellKwargs, identifier
+        )
+        if width is not None:
+            if width == minWidth and width == maxWidth:
+                resizingMask = AppKit.NSTableColumnNoResizing
             else:
                 resizingMask = AppKit.NSTableColumnUserResizingMask | AppKit.NSTableColumnAutoresizingMask
-            column = AppKit.NSTableColumn.alloc().initWithIdentifier_(identifier)
-            column.setTitle_(title)
-            column.setResizingMask_(resizingMask)
-            if width is not None:
-                column.setWidth_(width)
-                column.setMinWidth_(minWidth)
-                column.setMaxWidth_(maxWidth)
-            if self._allowsSorting and sortable:
-                sortDescriptor = AppKit.NSSortDescriptor.sortDescriptorWithKey_ascending_selector_(
-                    identifier,
-                    True,
-                    "compare:"
-                )
-                column.setSortDescriptorPrototype_(sortDescriptor)
-            self._tableView.addTableColumn_(column)
-            # measure the cell to get the row height
-            cell = cellClass(**cellKwargs)
-            height = cell._nsObject.fittingSize().height
-            del cell
-            rowHeights.append(height)
-        self._dataSourceAndDelegate.setGetters(getters)
-        self._dataSourceAndDelegate.setSetters(setters)
-        self._dataSourceAndDelegate.setCellToValueConverters(cellToValueConverters)
-        self._dataSourceAndDelegate.setValueToCellConverters(valueToCellConverters)
-        self._tableView.setRowHeight_(max(rowHeights))
+        else:
+            resizingMask = AppKit.NSTableColumnUserResizingMask | AppKit.NSTableColumnAutoresizingMask
+        column = AppKit.NSTableColumn.alloc().initWithIdentifier_(identifier)
+        column.setTitle_(title)
+        column.setResizingMask_(resizingMask)
+        if width is not None:
+            column.setWidth_(width)
+            column.setMinWidth_(minWidth)
+            column.setMaxWidth_(maxWidth)
+        if self._allowsSorting and sortable:
+            sortDescriptor = AppKit.NSSortDescriptor.sortDescriptorWithKey_ascending_selector_(
+                identifier,
+                True,
+                "compare:"
+            )
+            column.setSortDescriptorPrototype_(sortDescriptor)
+        self._tableView.addTableColumn_(column)
+
+        if index != -1 and index != len(self._tableView.tableColumns()):
+            self._tableView.moveColumn_toColumn_(
+                self._tableView.columnWithIdentifier_(identifier),
+                index
+            )
+        # measure the cell to get the row height
+        cell = cellClass(**cellKwargs)
+        height = cell._nsObject.fittingSize().height
+        del cell
+        if height > self._tableView.rowHeight():
+            self._tableView.setRowHeight_(height)
 
     def _wrapItem(self, item):
         if isinstance(item, simpleDataTypes):
