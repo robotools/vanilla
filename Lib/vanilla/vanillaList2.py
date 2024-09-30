@@ -199,6 +199,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
             return function(item, value)
         elif isinstance(item, dict):
             item[identifier] = value
+        return value
 
     # Data Source
 
@@ -265,7 +266,9 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
     def cellEditCallback(self, sender):
         identifier, row = sender._representedColumnRow
         value = sender.get()
-        self.setItemValueForColumnAndRow(value, identifier, row)
+        editedValue = self.setItemValueForColumnAndRow(value, identifier, row)
+        if identifier in self._valueToCellConverters:
+            sender.set(self._valueToCellConverters[identifier](editedValue))
         wrapper = self.vanillaWrapper()
         self._editedRowIndex = row
         if wrapper._editCallback is not None:
@@ -1184,14 +1187,16 @@ class EditTextList2Cell(Group):
             verticalAlignment="center",
             editable=False,
             truncationMode="tail",
-            callback=None
+            callback=None,
+            continuous=False
         ):
         self._externalCallback = callback
         super().__init__("auto")
         self.editText = EditText(
             "auto",
             readOnly=not editable,
-            callback=self._internalCallback
+            callback=self._internalCallback,
+            continuous=continuous
         )
         container = self._nsObject
         textField = self.editText.getNSTextField()
