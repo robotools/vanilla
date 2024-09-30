@@ -1178,14 +1178,16 @@ class EditTextList2Cell(Group):
             verticalAlignment="center",
             editable=False,
             truncationMode="tail",
-            callback=None
+            callback=None,
+            continuous=False
         ):
         self._externalCallback = callback
         super().__init__("auto")
         self.editText = EditText(
             "auto",
             readOnly=not editable,
-            callback=self._internalCallback
+            callback=self._internalCallback,
+            continuous=continuous
         )
         container = self._nsObject
         textField = self.editText.getNSTextField()
