@@ -665,6 +665,12 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         for columnDescription in columnDescriptions:
             self.appendColumn(columnDescription)
 
+    def getColumnIdentifiers(self):
+        """
+        Return a list of column identifiers.
+        """
+        return [column.identifier() for column in self._tableView.tableColumns()]
+
     def appendColumn(self, columnDescription):
         """
         Append a column discription.
