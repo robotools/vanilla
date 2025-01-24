@@ -545,6 +545,7 @@ def _breakCycles(view):
     """
     if view.respondsToSelector_("vanillaWrapper"):
         obj = view.vanillaWrapper()
-        obj._breakCycles()
+        if obj is not None:
+            obj._breakCycles()
     for view in view.subviews():
         _breakCycles(view)
