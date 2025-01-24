@@ -8,3 +8,10 @@ ModalWindow
 .. autoclass:: ModalWindow
    :inherited-members:
    :members:
+
+
+.. module:: vanilla
+.. autoclass:: vanilla.vanillaWindows.VModalWindow
+   :inherited-members:
+   :members:
+

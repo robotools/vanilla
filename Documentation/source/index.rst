@@ -21,6 +21,7 @@ Windows
 
   objects/Window
   objects/FloatingWindow
+  objects/ModalWindow
   objects/Sheet
   objects/Drawer
 

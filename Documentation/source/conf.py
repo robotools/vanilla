@@ -30,7 +30,11 @@ sys.path.insert(0, os.path.abspath('../../Lib'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx_rtd_theme']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx_rtd_theme',
+    'sphinx.ext.todo'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -227,6 +231,15 @@ class Mock(object, metaclass=MetaMock):
     def __getattr__(cls, name):
         if name in ('__file__', '__path__'):
             return '/dev/null'
+        elif name == "NSObject":
+            return object
+        elif name == "python_method":
+            def dummyDecorator(func):
+                def wrapper(*args, **kwargs):
+                    return func(*args, **kwargs)
+                wrapper.__doc__ = func.__doc__
+                return wrapper
+            return dummyDecorator
         else:
             return Mock
 

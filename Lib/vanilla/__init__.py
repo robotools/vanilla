@@ -13,7 +13,20 @@ from vanilla.vanillaGroup import Group
 from vanilla.vanillaImageView import ImageView
 from vanilla.vanillaLevelIndicator import LevelIndicator, LevelIndicatorListCell
 from vanilla.vanillaList import List, CheckBoxListCell, SliderListCell, PopUpButtonListCell, ImageListCell, SegmentedButtonListCell
-from vanilla.vanillaList2 import List2, List2GroupRow, EditTextList2Cell, GroupTitleList2Cell, SliderList2Cell, CheckBoxList2Cell, PopUpButtonList2Cell, ImageList2Cell, SegmentedButtonList2Cell, ColorWellList2Cell, LevelIndicatorList2Cell
+from vanilla.vanillaList2 import (
+    List2,
+    List2GroupRow,
+    EditTextList2Cell,
+    GroupTitleList2Cell,
+    SliderList2Cell,
+    CheckBoxList2Cell,
+    PopUpButtonList2Cell,
+    ImageList2Cell,
+    SegmentedButtonList2Cell,
+    ColorWellList2Cell,
+    LevelIndicatorList2Cell,
+    ComboBoxList2Cell
+)
 from vanilla.vanillaPathControl import PathControl
 from vanilla.vanillaPopUpButton import PopUpButton, ActionButton
 from vanilla.vanillaPopover import Popover
@@ -49,7 +62,7 @@ __all__ = [
     "ImageView",
     "LevelIndicator", "LevelIndicatorListCell",
     "List", "CheckBoxListCell", "SliderListCell", "PopUpButtonListCell", "ImageListCell", "SegmentedButtonListCell",
-    "List2", "List2GroupRow", "EditTextList2Cell", "GroupTitleList2Cell", "SliderList2Cell", "CheckBoxList2Cell", "PopUpButtonList2Cell", "ImageList2Cell", "SegmentedButtonList2Cell", "ColorWellList2Cell",
+    "List2", "List2GroupRow", "EditTextList2Cell", "GroupTitleList2Cell", "SliderList2Cell", "CheckBoxList2Cell", "PopUpButtonList2Cell", "ImageList2Cell", "SegmentedButtonList2Cell", "ColorWellList2Cell", "ComboBoxList2Cell",
     "ObjectBrowser",
     "PathControl",
     "PopUpButton", "ActionButton",

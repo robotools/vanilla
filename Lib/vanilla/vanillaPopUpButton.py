@@ -68,7 +68,7 @@ class PopUpButton(VanillaBaseControl):
         "regular": (-3, -4, 6, 6),
     }
 
-    def __init__(self, posSize, items, callback=None, sizeStyle="regular"):
+    def __init__(self, posSize, items, callback=None, sizeStyle="regular", bordered=True):
         self._setupView(self.nsPopUpButtonClass, posSize)
         if self.nsPopUpButtonCellClass != NSPopUpButtonCell:
             self._nsObject.setCell_(self.nsPopUpButtonCellClass.alloc().init())
@@ -76,6 +76,7 @@ class PopUpButton(VanillaBaseControl):
             self._setCallback(callback)
         self._setSizeStyle(sizeStyle)
         self.setItems(items)
+        self._nsObject.setBordered_(bordered)
 
     def getNSPopUpButton(self):
         """
@@ -114,10 +115,14 @@ class PopUpButton(VanillaBaseControl):
         Set the items to appear in the pop up list.
         """
         self._nsObject.removeAllItems()
+        menu = self._nsObject.menu()
         for item in items:
             if isinstance(item, NSMenuItem):
-                menu = self._nsObject.menu()
                 menu.addItem_(item)
+            elif item == "---":
+                separatorItem = NSMenuItem.separatorItem()
+                separatorItem.setTitle_(item)
+                menu.addItem_(separatorItem)
             else:
                 self._nsObject.addItemWithTitle_(item)
 
@@ -208,10 +213,9 @@ class ActionButton(PopUpButton):
     """
 
     def __init__(self, posSize, items, sizeStyle="regular", bordered=True):
-        super().__init__(posSize, items, sizeStyle=sizeStyle)
+        super().__init__(posSize, items, sizeStyle=sizeStyle, bordered=bordered)
         self._nsObject.setPullsDown_(True)
         self._nsObject.setBezelStyle_(NSTexturedRoundedBezelStyle)
-        self._nsObject.setBordered_(bordered)
 
     def _breakCycles(self):
         self._menuItemCallbackWrappers = None

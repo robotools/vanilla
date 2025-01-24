@@ -34,6 +34,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         self._cellToValueConverters = {} # { identifier : function }
         self._groupRowCellClass = None
         self._groupRowCellClassKwargs = {}
+        self._editedRowIndex = None
         self._cellWrappers = {} # { nsView : vanilla wrapper } for view + wrapper reuse purposes
         self._valueGetters = {} # { identifier : options (see below) }
         self._valueSetters = {} # { identifier : options (see below) }
@@ -56,20 +57,40 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         self._groupRowCellClassKwargs = kwargs
 
     @python_method
-    def setGetters(self, getters):
-        self._valueGetters = getters
+    def addGetter(self, identifier, getter):
+        self._valueGetters[identifier] = getter
 
     @python_method
-    def setSetters(self, setters):
-        self._valueSetters = setters
+    def removeGetter(self, identifier):
+        if identifier in self._valueGetters:
+            del self._valueGetters[identifier]
 
     @python_method
-    def setValueToCellConverters(self, converters):
-        self._valueToCellConverters = converters
+    def addSetter(self, identifier, setter):
+        self._valueSetters[identifier] = setter
 
     @python_method
-    def setCellToValueConverters(self, converters):
-        self._cellToValueConverters = converters
+    def removeSetter(self, identifier):
+        if identifier in self._valueGetters:
+            del self._valueSetters[identifier]
+
+    @python_method
+    def addValueToCellConverters(self, identifier, converter):
+        self._valueToCellConverters[identifier] = converter
+
+    @python_method
+    def removeValueToCellConverters(self, identifier):
+        if identifier in self._valueToCellConverters:
+            del self._valueToCellConverters[identifier]
+
+    @python_method
+    def addCellToValueConverters(self, identifier, converter):
+        self._cellToValueConverters[identifier] = converter
+
+    @python_method
+    def removeCellToValueConverters(self, identifier):
+        if identifier in self._cellToValueConverters:
+            del self._cellToValueConverters[identifier]
 
     @python_method
     def vanillaWrapper(self):
@@ -156,7 +177,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         elif function is not None:
             value = function(item)
         else:
-            value = item[identifier]
+            value = item.get(identifier, "")
         if identifier in self._valueToCellConverters:
             value = self._valueToCellConverters[identifier](value)
         return value
@@ -178,6 +199,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
             return function(item, value)
         elif isinstance(item, dict):
             item[identifier] = value
+        return value
 
     # Data Source
 
@@ -244,10 +266,18 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
     def cellEditCallback(self, sender):
         identifier, row = sender._representedColumnRow
         value = sender.get()
-        self.setItemValueForColumnAndRow(value, identifier, row)
+        editedValue = self.setItemValueForColumnAndRow(value, identifier, row)
+        if identifier in self._valueToCellConverters:
+            sender.set(self._valueToCellConverters[identifier](editedValue))
         wrapper = self.vanillaWrapper()
+        self._editedRowIndex = row
         if wrapper._editCallback is not None:
             wrapper._editCallback(wrapper)
+        self._editedRowIndex = None
+
+    @python_method
+    def getEditedRowIndex(self):
+        return self._editedRowIndex
 
     # Drag
 
@@ -295,7 +325,11 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 class VanillaList2TableViewSubclass(AppKit.NSTableView):
 
     def keyDown_(self, event):
-        didSomething = self.vanillaWrapper()._keyDown(event)
+        wrapper = self.vanillaWrapper()
+        if wrapper is None:
+            didSomething = False
+        else:
+            didSomething = wrapper._keyDown(event)
         if not didSomething:
             super().keyDown_(event)
 
@@ -627,84 +661,131 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         return self._tableView
 
     def _buildColumns(self, columnDescriptions):
-        getters = {}
-        setters = {}
-        cellToValueConverters = {}
-        valueToCellConverters = {}
-        rowHeights = []
         if osVersionCurrent >= osVersion10_16:
-            rowHeights.append(24)
+            self._tableView.setRowHeight_(24)
         else:
-            rowHeights.append(17)
+            self._tableView.setRowHeight_(17)
         for columnDescription in columnDescriptions:
-            identifier = columnDescription["identifier"]
-            title = columnDescription.get("title", "")
-            width = columnDescription.get("width")
-            minWidth = columnDescription.get("minWidth", width)
-            maxWidth = columnDescription.get("maxWidth", width)
-            sortable = columnDescription.get("sortable")
-            cellClass = columnDescription.get("cellClass", EditTextList2Cell)
-            cellKwargs = columnDescription.get("cellClassArguments", {})
-            editable = columnDescription.get("editable", False)
-            property = columnDescription.get("property")
-            getMethod = columnDescription.get("getMethod")
-            setMethod = columnDescription.get("setMethod")
-            getFunction = columnDescription.get("getFunction")
-            setFunction = columnDescription.get("setFunction")
-            cellToValueConverter = columnDescription.get("cellToValueConverter")
-            valueToCellConverter = columnDescription.get("valueToCellConverter")
-            getters[identifier] = dict(
+            self.appendColumn(columnDescription)
+
+    def getColumnIdentifiers(self):
+        """
+        Return a list of column identifiers.
+        """
+        return [column.identifier() for column in self._tableView.tableColumns()]
+
+    def appendColumn(self, columnDescription):
+        """
+        Append a column discription.
+        The column identifier has to be unique for this table.
+        """
+        self.insertColumn(-1, columnDescription)
+
+    def removeColumn(self, identifier):
+        """
+        Remove a column by the `identifier`.
+        This will fail silently when the column does not exists.
+        """
+        column = self._tableView.tableColumnWithIdentifier_(identifier)
+        if column:
+            self._tableView.removeTableColumn_(column)
+            self._dataSourceAndDelegate.removeGetter(identifier)
+            self._dataSourceAndDelegate.removeSetter(identifier)
+            self._dataSourceAndDelegate.removeValueToCellConverters(identifier)
+            self._dataSourceAndDelegate.removeCellToValueConverters(identifier)
+
+    def insertColumn(self, index, columnDescription):
+        """
+        Insert a column discription and an index.
+        The column identifier has to be unique for this table.
+        """
+        identifier = columnDescription["identifier"]
+        # dont allow columns with the same identifier
+        assert not self._tableView.tableColumnWithIdentifier_(identifier), f"Column with identifier '{identifier}' already exists."
+        title = columnDescription.get("title", "")
+        width = columnDescription.get("width")
+        minWidth = columnDescription.get("minWidth", width)
+        maxWidth = columnDescription.get("maxWidth", width)
+        sortable = columnDescription.get("sortable")
+        cellClass = columnDescription.get("cellClass", EditTextList2Cell)
+        cellKwargs = columnDescription.get("cellClassArguments", {})
+        editable = columnDescription.get("editable", False)
+        property = columnDescription.get("property")
+        getMethod = columnDescription.get("getMethod")
+        setMethod = columnDescription.get("setMethod")
+        getFunction = columnDescription.get("getFunction")
+        setFunction = columnDescription.get("setFunction")
+        cellToValueConverter = columnDescription.get("cellToValueConverter")
+        valueToCellConverter = columnDescription.get("valueToCellConverter")
+
+        self._dataSourceAndDelegate.addGetter(
+            identifier,
+            dict(
                 property=property,
                 method=getMethod,
                 function=getFunction
             )
-            setters[identifier] = dict(
+        )
+        self._dataSourceAndDelegate.addSetter(
+            identifier,
+            dict(
                 property=property,
                 method=setMethod,
                 function=setFunction
             )
-            if cellToValueConverter is not None:
-                cellToValueConverters[identifier] = cellToValueConverter
-            if valueToCellConverter is not None:
-                valueToCellConverters[identifier] = valueToCellConverter
-            cellKwargs["editable"] = editable
-            if editable:
-                cellKwargs["callback"] = True
-            self._dataSourceAndDelegate.setCellClassWithKwargsForColumn(
-                cellClass, cellKwargs, identifier
+        )
+
+        if cellToValueConverter is not None:
+            self._dataSourceAndDelegate.addCellToValueConverters(
+                identifier,
+                cellToValueConverter
             )
-            if width is not None:
-                if width == minWidth and width == maxWidth:
-                    resizingMask = AppKit.NSTableColumnNoResizing
-                else:
-                    resizingMask = AppKit.NSTableColumnUserResizingMask | AppKit.NSTableColumnAutoresizingMask
+        if valueToCellConverter is not None:
+            self._dataSourceAndDelegate.addValueToCellConverters(
+                identifier,
+                valueToCellConverter
+            )
+
+        cellKwargs["editable"] = editable
+        if editable:
+            cellKwargs["callback"] = True
+        self._dataSourceAndDelegate.setCellClassWithKwargsForColumn(
+            cellClass, cellKwargs, identifier
+        )
+        if width is not None:
+            if width == minWidth and width == maxWidth:
+                resizingMask = AppKit.NSTableColumnNoResizing
             else:
                 resizingMask = AppKit.NSTableColumnUserResizingMask | AppKit.NSTableColumnAutoresizingMask
-            column = AppKit.NSTableColumn.alloc().initWithIdentifier_(identifier)
-            column.setTitle_(title)
-            column.setResizingMask_(resizingMask)
-            if width is not None:
-                column.setWidth_(width)
-                column.setMinWidth_(minWidth)
-                column.setMaxWidth_(maxWidth)
-            if self._allowsSorting and sortable:
-                sortDescriptor = AppKit.NSSortDescriptor.sortDescriptorWithKey_ascending_selector_(
-                    identifier,
-                    True,
-                    "compare:"
-                )
-                column.setSortDescriptorPrototype_(sortDescriptor)
-            self._tableView.addTableColumn_(column)
-            # measure the cell to get the row height
-            cell = cellClass(**cellKwargs)
-            height = cell._nsObject.fittingSize().height
-            del cell
-            rowHeights.append(height)
-        self._dataSourceAndDelegate.setGetters(getters)
-        self._dataSourceAndDelegate.setSetters(setters)
-        self._dataSourceAndDelegate.setCellToValueConverters(cellToValueConverters)
-        self._dataSourceAndDelegate.setValueToCellConverters(valueToCellConverters)
-        self._tableView.setRowHeight_(max(rowHeights))
+        else:
+            resizingMask = AppKit.NSTableColumnUserResizingMask | AppKit.NSTableColumnAutoresizingMask
+        column = AppKit.NSTableColumn.alloc().initWithIdentifier_(identifier)
+        column.setTitle_(title)
+        column.setResizingMask_(resizingMask)
+        if width is not None:
+            column.setWidth_(width)
+            column.setMinWidth_(minWidth)
+            column.setMaxWidth_(maxWidth)
+        if self._allowsSorting and sortable:
+            sortDescriptor = AppKit.NSSortDescriptor.sortDescriptorWithKey_ascending_selector_(
+                identifier,
+                True,
+                "compare:"
+            )
+            column.setSortDescriptorPrototype_(sortDescriptor)
+        self._tableView.addTableColumn_(column)
+
+        if index != -1 and index != len(self._tableView.tableColumns()):
+            self._tableView.moveColumn_toColumn_(
+                self._tableView.columnWithIdentifier_(identifier),
+                index
+            )
+        # measure the cell to get the row height
+        cell = cellClass(**cellKwargs)
+        height = cell._nsObject.fittingSize().height
+        del cell
+        if height > self._tableView.rowHeight():
+            self._tableView.setRowHeight_(height)
 
     def _wrapItem(self, item):
         if isinstance(item, simpleDataTypes):
@@ -872,6 +953,18 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         rowIndexes = makeIndexSet(rowIndexes)
         self._tableView.selectRowIndexes_byExtendingSelection_(rowIndexes, False)
 
+    def getEditedIndex(self):
+        """
+        Return the index of the edited row.
+        """
+        return self._dataSourceAndDelegate.getEditedRowIndex()
+
+    def getEditedItem(self):
+        """
+        Return the item of the edited row.
+        """
+        return self.get()[self.getEditedIndex()]
+
     def scrollToSelection(self):
         """
         Scroll the selected rows to visible.
@@ -943,6 +1036,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
                 return True
             elif self._enableDelete:
                 self.removeSelection()
+                if self._editCallback is not None:
+                    self._editCallback(self)
                 return True
         return False
 
@@ -950,7 +1045,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
 
     def _menuForEvent(self, event):
         # this method is called by the NSTableView subclass to request a contextual menu
-        # if there is a menuCallack convert a the incomming items to an nsmenu
+        # if there is a menuCallack convert the incoming items to an nsmenu
         if self._menuCallback is not None:
             items = self._menuCallback(self)
             # if the list is empty or None, dont do anything
@@ -1028,6 +1123,7 @@ def makeIndexSet(indexes):
 
 from vanilla.vanillaGroup import Group
 from vanilla.vanillaEditText import EditText
+from vanilla.vanillaTextBox import _textAlignmentMap
 
 truncationMap = dict(
     clipping=AppKit.NSLineBreakByClipping,
@@ -1040,6 +1136,14 @@ class EditTextList2Cell(Group):
 
     """
     An object that displays text in a List2 column.
+
+    **alignment** The alignment of the text within the row. Options:
+
+    - `"left"`
+    - `"right"`
+    - `"center"`
+    - `"justified"`
+    - `"natural"`
 
     **verticalAlignment** The vertical alignment of the text
     within the row. Options:
@@ -1079,20 +1183,35 @@ class EditTextList2Cell(Group):
     # Sigh.
 
     def __init__(self,
+            alignment="natural",
             verticalAlignment="center",
             editable=False,
             truncationMode="tail",
-            callback=None
+            callback=None,
+            continuous=False
         ):
         self._externalCallback = callback
         super().__init__("auto")
         self.editText = EditText(
             "auto",
             readOnly=not editable,
-            callback=self._internalCallback
+            callback=self._internalCallback,
+            continuous=continuous
         )
         container = self._nsObject
         textField = self.editText.getNSTextField()
+        # Hi! If you are here trying to debug a strange auto layout issue
+        # where the cell inside of a table is affecting the fixed position
+        # layout of controls outside of the table heirarchy, well, good news:
+        # I'm here to help, bad news: I have no clue what is going on.
+        # The initial version used method 1. Then this issue was reported:
+        # https://github.com/robotools/vanilla/issues/188
+        # I created method 2 thinking that having tight control over the layout
+        # would work better than doing it through the text syntax. Nope. It
+        # was just a separate set of problems. So, future reader, I leave my
+        # code here for you to see so that you don't venture down the same
+        # pointless path.
+        # > method 1
         if verticalAlignment == "top":
             yRule = "V:|[editText]"
         elif verticalAlignment == "bottom":
@@ -1117,10 +1236,22 @@ class EditTextList2Cell(Group):
             )
             rules.append(heightRule)
         self.addAutoPosSizeRules(rules)
+        # < method 1
+        # > method 2
+        # textField.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        # textField.widthAnchor().constraintEqualToAnchor_(container.widthAnchor()).setActive_(True)
+        # if verticalAlignment == "top":
+        #     textField.topAnchor().constraintEqualToAnchor_(container.topAnchor()).setActive_(True)
+        # elif verticalAlignment == "bottom":
+        #     textField.bottomAnchor().constraintEqualToAnchor_(container.bottomAnchor()).setActive_(True)
+        # elif verticalAlignment == "center":
+        #     textField.centerYAnchor().constraintEqualToAnchor_(container.centerYAnchor()).setActive_(True)
+        # < method 2
         textField.setDrawsBackground_(False)
         textField.setBezeled_(False)
         lineBreakMode = truncationMap.get(truncationMode, truncationMode)
         textField.setLineBreakMode_(lineBreakMode)
+        textField.setAlignment_(_textAlignmentMap[alignment])
 
     def getNSTextField(self):
         return self.editText.getNSTextField()
@@ -1276,11 +1407,13 @@ class PopUpButtonList2Cell(PopUpButton):
     def __init__(self,
             items=[],
             editable=False,
-            callback=None
+            callback=None,
+            bordered=False,
         ):
         super().__init__(
             "auto",
             items=items,
+            bordered=bordered,
             sizeStyle="small",
             callback=callback
         )
@@ -1487,3 +1620,34 @@ class LevelIndicatorList2Cell(LevelIndicator):
             image = imageObject
         if imageObject is not None:
             cell.setImage_(image)
+
+
+from vanilla.vanillaComboBox import ComboBox
+
+class ComboBoxList2Cell(ComboBox):
+
+    """
+    An object that displays a combo box in a List2 column.
+    Refer to the ComboBox documentation for options.
+
+    .. note::
+       This class should only be used in the *columnDescriptions*
+       *cellClass* argument during the construction of a List.
+       This is never constructed directly.
+    """
+
+    def __init__(self,
+            items=[],
+            completes=True,
+            editable=False,
+            callback=None
+        ):
+        super().__init__(
+            posSize="auto",
+            items=items,
+            completes=completes,
+            continuous=False,
+            sizeStyle="small",
+            callback=callback
+        )
+        self.enable(editable)
