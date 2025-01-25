@@ -550,17 +550,8 @@ def _breakCycles(view):
         # some of the objects that arrive here,
         # defconAppKit's BaseWindowController
         # for example, don't have a _breakCycles
-        # method and will raise an error. we can't
-        # do a hasattr(obj, "_breakCycles") on all
-        # objects because NSObjects will arrive here
-        # and hasattr on NSObject is very expensive.
-        # so, go ahead and call _breakCycles on
-        # NSObject, but test for the method on
-        # other objects. this is convoluted, but
-        # there doesn't seem to be a way around it.
-        elif isinstance(obj, NSObject):
-            obj._breakCycles()
-        elif hasattr(obj, "_breakCycles"):
+        # method and will raise an error.
+        if hasattr(obj, "_breakCycles"):
             obj._breakCycles()
     for view in view.subviews():
         _breakCycles(view)
