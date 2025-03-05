@@ -35,7 +35,9 @@ from AppKit import (
     NSToolbarSizeModeDefault,
     NSToolbarSizeModeRegular,
     NSToolbarSizeModeSmall,
-    NSMenu
+    NSMenu,
+    NSToolbarItemVisibilityPriorityLow,
+    NSToolbarItemVisibilityPriorityHigh
 )
 from objc import python_method
 from objc import super
@@ -771,6 +773,9 @@ class Window(NSObject):
         |                                 | If the item should be added to the toolbar only through the customization |
         |                                 | palette, use a value of _False_. Defaults to _True_.                      |
         +---------------------------------+---------------------------------------------------------------------------+
+        | *priority* (optional)           | A `string`, the display priority associated with the toolbar item.        |
+        |                                 | Options are `"high"` or `"low"`. Defaults to *None*.                      |
+        +---------------------------------+---------------------------------------------------------------------------+
 
         .. _NSImage: https://developer.apple.com/documentation/appkit/nsimage?language=objc
 
@@ -953,6 +958,8 @@ class Window(NSObject):
         imageObject = itemData.get("imageObject")
         imageTemplate = itemData.get("imageTemplate")
         view = itemData.get("view")
+        priority = itemData.get("priority")
+
         menuRepresentation = itemData.get("menuRepresentation")
         callback = itemData.get("callback", None)
         # create the NSImage if needed
@@ -983,6 +990,10 @@ class Window(NSObject):
                 VanillaMenuBuilder(self, [menuRepresentation], dummyMenu)
                 menuRepresentation = dummyMenu.itemAtIndex_(0)
             toolbarItem.setMenuFormRepresentation_(menuRepresentation)
+        if priority == "low":
+            toolbarItem.setVisibilityPriority_(NSToolbarItemVisibilityPriorityLow)
+        elif priority == "high":
+            toolbarItem.setVisibilityPriority_(NSToolbarItemVisibilityPriorityHigh)
         if callback is not None:
             target = VanillaCallbackWrapper(callback)
             toolbarItem.setTarget_(target)
