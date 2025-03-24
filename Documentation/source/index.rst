@@ -86,6 +86,7 @@ Inputs
   objects/ActionButton
   objects/RadioGroup
   objects/Slider
+  objects/PathControl
 
 Progress Indicators
 ^^^^^^^^^^^^^^^^^^^
