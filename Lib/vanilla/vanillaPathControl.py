@@ -92,5 +92,4 @@ class PathControl(VanillaBaseControl):
         return os.sep.join(path)
 
     def setEditable(self, value):
-        self._nsObjec.setEditable_(value)
-
+        self._nsObject.setEditable_(value)
