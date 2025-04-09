@@ -49,11 +49,15 @@ class PathControl(VanillaBaseControl):
     +-----------+
     | "mini"    |
     +-----------+
+
+    **isEditable* (optional) A boolean representing of the control is editable or not.
+
+    **fileTypes** (optional) A list of file supported file extensions.
     """
 
     nsPathControlClass = NSPathControl
 
-    def __init__(self, posSize, url, callback=None, pathStyle="standard", sizeStyle="regular"):
+    def __init__(self, posSize, url, callback=None, pathStyle="standard", sizeStyle="regular", fileTypes=None, isEditable=None):
         self._setupView(self.nsPathControlClass, posSize, callback=callback)
         self._nsObject.setPathStyle_(_pathStylesMap[pathStyle])
         self._setSizeStyle(sizeStyle)
@@ -61,6 +65,10 @@ class PathControl(VanillaBaseControl):
         self._nsObject.setFocusRingType_(NSFocusRingTypeNone)
         self._nsObject.cell().setBordered_(True)
         self._nsObject.cell().setBezelStyle_(NSRoundedBezelStyle)
+        if isEditable is not None:
+            self.setEditable(isEditable)
+        if fileTypes is not None:
+            self._nsObject.setAllowedTypes_(fileTypes)
         self.set(url)
 
     def set(self, url):
@@ -82,3 +90,6 @@ class PathControl(VanillaBaseControl):
             if cell == self._nsObject.clickedPathComponentCell():
                 break
         return os.sep.join(path)
+
+    def setEditable(self, value):
+        self._nsObject.setEditable_(value)
