@@ -115,6 +115,7 @@ class _StackView(VanillaBaseObject):
         stackView.setSpacing_(spacing)
         stackView.setAlignment_(alignment)
         stackView.setDistribution_(distribution)
+        stackView.setDetachesHiddenViews_(True)
         self.setEdgeInsets(edgeInsets)
         for view in views:
             if not isinstance(view, dict):
