@@ -543,8 +543,14 @@ def _breakCycles(view):
     """
     Break cyclic references by deleting _target attributes.
     """
-    if hasattr(view, "vanillaWrapper"):
+    if view.respondsToSelector_("vanillaWrapper"):
         obj = view.vanillaWrapper()
+        if obj is None:
+            pass
+        # some of the objects that arrive here,
+        # defconAppKit's BaseWindowController
+        # for example, don't have a _breakCycles
+        # method and will raise an error.
         if hasattr(obj, "_breakCycles"):
             obj._breakCycles()
     for view in view.subviews():
