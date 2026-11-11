@@ -25,12 +25,22 @@ class Test:
             dict(
                 identifier="letter",
                 title="Letter",
-                sortable=True
+                sortable=True,
+                visible=True,
+                hideable=True
             ),
             dict(
                 identifier="number",
                 title="Number",
                 sortable=True,
+                visible=True,
+                hideable=False
+            ),
+            dict(
+                identifier="nothing",
+                title="Nothing",
+                visible=False,
+                hideable=True
             )
         ]
         self.w.list = vanilla.List2(

@@ -43,6 +43,7 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
         #     method : str
         #     function : func
         # }
+        self._columnVisibilityOptions = {}
         return self
 
     @python_method
@@ -91,6 +92,12 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
     def removeCellToValueConverters(self, identifier):
         if identifier in self._cellToValueConverters:
             del self._cellToValueConverters[identifier]
+
+    @python_method
+    def setColumnVisibilityOptions(self, identifier, visible, hideable):
+        if not hideable:
+            visible = True
+        self._columnVisibilityOptions[identifier] = (visible, hideable)
 
     @python_method
     def vanillaWrapper(self):
@@ -260,6 +267,11 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
             return False
         return True
 
+    def tableView_userCanChangeVisibilityOfTableColumn_(self, tableView, column):
+        identifier = column.identifier()
+        visible, hideable = self._columnVisibilityOptions[identifier]
+        return hideable
+
     # Editing
 
     @python_method
@@ -421,6 +433,12 @@ class List2(ScrollView, DropTargetProtocolMixIn):
     |                                     | to sort the table by clicking the column's header.        |
     |                                     | The fallback is `True`. If a List is set to disallow      |
     |                                     | sorting the column level settings will be ignored.        |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"visible"* (optional)              | A boolean representing if this column is initially        |
+    |                                     | visible. The fallback is `True`.                          |
+    +-------------------------------------+-----------------------------------------------------------+
+    | *"hideable"* (optional)             | A boolean representing that this column allows the user   |
+    |                                     | to hide this column. The fallback is `False`.             |
     +-------------------------------------+-----------------------------------------------------------+
     | property (optional)                 | A property name for getting and setting the item value.   |
     +-------------------------------------+-----------------------------------------------------------+
@@ -710,6 +728,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
         cellClass = columnDescription.get("cellClass", EditTextList2Cell)
         cellKwargs = columnDescription.get("cellClassArguments", {})
         editable = columnDescription.get("editable", False)
+        visible = columnDescription.get("visible", True)
+        hideable = columnDescription.get("hideable", False)
         property = columnDescription.get("property")
         getMethod = columnDescription.get("getMethod")
         setMethod = columnDescription.get("setMethod")
@@ -746,6 +766,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
                 valueToCellConverter
             )
 
+        self._dataSourceAndDelegate.setColumnVisibilityOptions(identifier, visible, hideable)
+
         cellKwargs["editable"] = editable
         if editable:
             cellKwargs["callback"] = True
@@ -773,6 +795,7 @@ class List2(ScrollView, DropTargetProtocolMixIn):
                 "compare:"
             )
             column.setSortDescriptorPrototype_(sortDescriptor)
+        column.setHidden_(not visible)
         self._tableView.addTableColumn_(column)
 
         if index != -1 and index != len(self._tableView.tableColumns()):
