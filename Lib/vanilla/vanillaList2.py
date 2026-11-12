@@ -95,8 +95,6 @@ class VanillaList2DataSourceAndDelegate(AppKit.NSObject):
 
     @python_method
     def setColumnVisibilityOptions(self, identifier, visible, hideable):
-        if not hideable:
-            visible = True
         self._columnVisibilityOptions[identifier] = (visible, hideable)
 
     @python_method
@@ -766,6 +764,8 @@ class List2(ScrollView, DropTargetProtocolMixIn):
                 valueToCellConverter
             )
 
+        if not hideable:
+            visible = True
         self._dataSourceAndDelegate.setColumnVisibilityOptions(identifier, visible, hideable)
 
         cellKwargs["editable"] = editable
